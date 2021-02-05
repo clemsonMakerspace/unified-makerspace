@@ -1,0 +1,24 @@
+
+.spinner {
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  animation: spin 1s ease-in-out infinite;
+}
+
+.card {
+  transition: transform .2s;
+  transition-timing-function: ease-in;
+  &:hover {
+    transform: scale(1.005);
+  }
+  a.card:hover {
+    text-decoration: none;
+  }
+}
+
+.shrunk {
+  transform: scale(.9);
+}
+

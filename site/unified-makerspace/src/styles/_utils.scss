@@ -1,0 +1,21 @@
+@use "bootstrap";
+
+//
+// Centering
+//
+
+.center {
+  @extend .d-flex;
+  @extend .justify-content-center;
+  @extend .align-items-center;
+}
+
+.h-center {
+  @extend .d-flex;
+  @extend .justify-content-center;
+}
+
+.v-center {
+  @extend .d-flex;
+  @extend .align-items-center;
+}

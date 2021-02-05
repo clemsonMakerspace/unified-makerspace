@@ -1,0 +1,41 @@
+@use "styles/cards";
+@use "styles/experimental";
+@use "styles/fonts";
+@use "styles/animations";
+@use "styles/utils";
+
+// for printing
+//@page {
+//  margin: 0;
+//  padding: 0;
+//  size: 1900px 6500px;
+//}
+
+* {
+  break-before: avoid;
+  break-after: avoid;
+  break-inside: avoid;
+}
+
+// no outlines
+* {
+  outline: none;
+}
+
+// root font size
+html {
+  font-size: 18px;
+}
+
+// small is extra small
+.small {
+  font-size: 0.5rem !important;
+}
+
+
+// for overlays
+.frozen {
+  position: fixed;
+  overflow: hidden;
+}
+
