@@ -4,10 +4,10 @@
     <div class="d-flex flex-row justify-content-between mb-4">
       <h1 class="card-title text-light">Current Tasks</h1>
       <div class="text-white">
-        <button id="add-task-button" class="btn btn-secondary mr-3">
+        <button id="add-task-button" class="btn btn-secondary mr-3" type="button" (click)="modal.open()">
           <h3 class="bi bi-plus-circle"></h3>
         </button>
-        <button id="clear-completed-button" class="btn btn-secondary">
+        <button id="clear-completed-button" class="btn btn-secondary" type="button" (click)="clearTasks()">
           <h3 class="bi bi-trash2-fill"></h3>
         </button>
 
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="mb-3">
       <div class="rounded bg-secondary p-2">
         <div class="card-body p-2">
           <div class="row text-center">
@@ -29,17 +29,24 @@
     </div>
 
     <div>
-      <div class="rounded bg-dark p-2 text-light my-2">
-        <div class="card-body p-2">
+      <div class="rounded bg-dark p-2 text-light my-2" *ngFor="let task of tasks">
+        <div class="card-body p-2" (mouseenter)="task.show = true" (mouseleave)="task.show = false">
           <div class="row text-center">
-            <h3 class="col-4 mb-0">Task</h3>
-            <h3 class="col-4 mb-0">Person</h3>
-            <h3 class="col-4 mb-0">Status</h3>
+            <h6 class="col-4 mb-0">{{task.task}}</h6>
+            <h4 class="col-4 mb-0">{{task.person}}</h4>
+            <div class="badge col-4 mb-0" [ngClass]="{'text-success': task.status == 'Completed'}">
+              <h4>{{task.status}}</h4>
+            </div>
+          </div>
+          <div class="pl-4 mt-3" *ngIf="task.show">
+            <hr class="text-white">
+            <h6 class="text-muted">Date assigned: N/A</h6>
+            <h6 class="text-muted">Target date: N/A</h6>
+            <h6 class="text-muted">Task description: N/A</h6>
           </div>
         </div>
       </div>
     </div>
-
 
   </div>
 </div>
