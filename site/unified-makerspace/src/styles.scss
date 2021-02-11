@@ -4,19 +4,6 @@
 @use "styles/animations";
 @use "styles/utils";
 
-// for printing
-//@page {
-//  margin: 0;
-//  padding: 0;
-//  size: 1900px 6500px;
-//}
-
-* {
-  break-before: avoid;
-  break-after: avoid;
-  break-inside: avoid;
-}
-
 // no outlines
 * {
   outline: none;
@@ -38,4 +25,14 @@ html {
   position: fixed;
   overflow: hidden;
 }
+
+
+.fill-primary {
+  fill: #FF9900;
+}
+
+.stroke-primary {
+  stroke: #FF9900;
+}
+
 

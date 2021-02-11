@@ -1,4 +1,4 @@
-<div class="position-fixed vw-100 vh-100" style="top:0; z-index:1000; overflow-y: scroll; background-color:rgba(0, 0, 0, .6)">
+<div class="position-fixed vw-100 vh-100" style="top:0; left: 0; z-index:1000; overflow-y: scroll; background-color:rgba(0, 0, 0, .6)">
   <div class="container pt-5">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-8">
@@ -27,9 +27,13 @@
                   </div>
                   <div class="col-6">
                     <div class="form-group">
-                      <label for="Machine" class="text-secondary font-weight-bold">Machine Name</label>
-                      <input type="text" id="Machine" class="form-control" formControlName="machine">
-                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('machine')">This field is required.</small>
+                      <label for="Tags" class="text-secondary font-weight-bold">Tags</label>
+                      <input type="text" id="Tags" class="form-control" formControlName="tags" (ngModelChange)="parseTags()">
+                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('tags')">This field is required.</small>
+                      <small class="text-muted">Enter tags separated by commas.</small>
+                      <h5 *ngIf="tags">
+                        <span class="badge badge-secondary mr-2" *ngFor="let tag of tags">{{tag}}</span>
+                      </h5>
                     </div>
 
 

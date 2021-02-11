@@ -1,18 +1,22 @@
-<!--<app-login></app-login>-->
-
 <div class="bg-secondary text-dark text-center w-100 p-3">
-  <h6>This site is in development mode. Do not use it on a test server.</h6>
+  <h6>This site is in development mode. Do not use it on a production server.</h6>
 </div>
 
-<nav class="navbar navbar-expand-lg bg-primary">
-  <a href="https://clemson.edu" class="navbar-brand">
-    <img src="/assets/tiger_paw.png" alt="tiger_paw" width="1800" style="width: 60px">
-  </a>
-  <h2 class="pt-2 text-secondary h1 font-weight-bold ml-3">The MakerSpace</h2>
+<nav class="navbar navbar-expand-lg bg-primary justify-content-around">
+  <div class="d-flex flex-row">
+    <a routerLink="/" class="navbar-brand">
+      <img src="/assets/tiger_paw.png" alt="tiger_paw" width="1800" style="width: 60px">
+    </a>
+    <h2 class="pt-2 text-secondary h1 font-weight-bold">The MakerSpace</h2>
+  </div>
+  <div class="">
+    <button class="btn btn-secondary" routerLink="register">Register</button>
+    <button class="btn btn-accent ml-3" routerLink="login">Login</button>
+  </div>
 </nav>
 
-<div class="container bg-dark min-vh-100 p-6 min-vw-100 max-vw-100">
-  <app-dashboard></app-dashboard>
+<div class="container py-6">
+    <router-outlet></router-outlet>
 </div>
 
 

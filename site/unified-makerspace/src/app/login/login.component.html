@@ -1,18 +1,24 @@
-<div class="container bg-dark center row min-vh-100 py-6 min-vw-100">
-  <div class="card bg-primary col-lg-4 col-md-8 col-12 p-6">
+<div class="center row h-100 w-100 no-gutters">
+  <div class="card bg-primary col-xl-6 col-lg-8 col-12">
     <div class="card-body">
       <h1 class="card-title text-light">Login</h1>
-      <div action="">
+      <form [formGroup]="loginForm">
+
         <div class="form-group text-light"><label for="username">
           Username
-        </label><input type="text" class="form-control" id="username"></div>
-        <div class="form-group text-light mb-4"><label for="password">
-          Password
-        </label><input type="text" class="form-control" id="password"></div>
-        <button class="btn py-3 btn-secondary w-100">
+        </label><input type="text" class="form-control" id="username" formControlName="username"></div>
+
+        <div class="form-group text-light mb-4">
+          <label for="password">
+          Password</label>
+          <input type="password" class="form-control" id="password" formControlName="password">
+          <small class="text-muted">Forgot password?</small>
+        </div>
+
+        <button class="btn py-3 btn-secondary w-100" routerLink="/dashboard">
           Login
         </button>
-      </div>
+      </form>
     </div>
   </div>
 </div>

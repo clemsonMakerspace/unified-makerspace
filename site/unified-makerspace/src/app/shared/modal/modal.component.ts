@@ -14,6 +14,8 @@ export class ModalComponent implements OnInit {
   formSubmitted = false;
   formLoading = false;
   errMessage = '';
+  // todo make this dynamic
+  tags = []
 
   contactForm: FormGroup;
 
@@ -21,21 +23,32 @@ export class ModalComponent implements OnInit {
   constructor(public modal: ModalService) {
   }
 
+
+  parseTags() {
+    this.tags = this.contactForm.get('tags').value.trim().split(',');
+  }
+
+
+
   ngOnInit(): void {
     document.body.style.top = String(-1 * this.initialScrollPos) + 'px';
-    document.body.classList.add('frozen');
     this.modal.modalStatus.subscribe((value) => {
       if (!value.open) {
         this.closeModal();
       }
     });
 
+    // todo only for testing
+
     this.contactForm = new FormGroup({
       task: new FormControl('', Validators.required),
-      machine: new FormControl('', Validators.required),
+      tags: new FormControl('3D Printer, Urgent', Validators.required),
       people: new FormControl('', [Validators.required]),
       description: new FormControl('', Validators.required),
     });
+
+
+    this.parseTags();
 
   }
 
@@ -52,24 +65,6 @@ export class ModalComponent implements OnInit {
     if (this.contactForm.valid) {
       this.formSubmitted = true;
       this.formLoading = true;
-      // this.api
-      //   .post('contact', {
-      //     name: this.contactForm.get('name').value,
-      //     email: this.contactForm.get('email').value,
-      //     message: this.contactForm.get('message').value,
-      //   })
-      //   .subscribe(
-      //     (res) => {
-      //       // todo check for server side errors...?
-      //       this.formLoading = false;
-      //       setTimeout(() => this.modal.close(), 3000);
-      //     },
-      //     (err) => {
-      //       console.log(err); // todo for debugging
-      //       this.formLoading = false;
-      //       this.errMessage = err.statusText;
-      //     }
-      //   );
     }
   }
 

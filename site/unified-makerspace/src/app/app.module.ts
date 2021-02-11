@@ -7,6 +7,24 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { TasksComponent } from './dashboard/tasks/tasks.component';
 import {ModalComponent} from './shared/modal/modal.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {RouterModule, Routes} from '@angular/router';
+import { RootComponent } from './root/root.component';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+let routes: Routes = [
+  // {path: 'root', component: AppComponent, children: [
+  //     {path: '', component: LoginComponent},
+  //     {path: 'dashboard', component: DashboardComponent}
+  //   ]},
+
+  {path: '', component: RootComponent},
+  {path: 'login', component: LoginComponent},
+  {path: 'register', component: LoginComponent},
+  {path: 'dashboard', component: DashboardComponent}
+
+]
+
 
 @NgModule({
   declarations: [
@@ -14,12 +32,16 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     LoginComponent,
     DashboardComponent,
     TasksComponent,
-    ModalComponent
+    ModalComponent,
+    RootComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxChartsModule,
+    BrowserAnimationsModule,
+    RouterModule.forRoot(routes)
   ],
   providers: [],
   bootstrap: [AppComponent]
