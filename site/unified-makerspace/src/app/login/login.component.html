@@ -1,8 +1,11 @@
 <div class="center row h-100 w-100 no-gutters">
   <div class="card bg-primary col-xl-6 col-lg-8 col-12">
-    <div class="card-body">
+
+
+<!--Login Form-->
+    <div class="card-body" *ngIf="formType == 'login'">
       <h1 class="card-title text-light">Login</h1>
-      <form [formGroup]="loginForm">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
 
         <div class="form-group text-light"><label for="username">
           Username
@@ -12,13 +15,55 @@
           <label for="password">
           Password</label>
           <input type="password" class="form-control" id="password" formControlName="password">
-          <small class="text-muted">Forgot password?</small>
+
+          <a class="text-muted h6 mt-1">Forgot password?</a>
         </div>
 
-        <button class="btn py-3 btn-secondary w-100" routerLink="/dashboard">
+        <button class="btn py-3 btn-secondary w-100" type="submit">
           Login
         </button>
+        <a class="text-muted mt-3 d-block" (click)="switchMode()">Need an account?</a>
       </form>
     </div>
+
+<!--Register Form-->
+    <div class="card-body" *ngIf="formType == 'register' && !registerSuccess">
+      <h1 class="card-title text-light">Register</h1>
+      <form [formGroup]="loginForm" (ngSubmit)="register()">
+
+        <div class="form-group text-light"><label for="username">
+          Email
+        </label>
+          <input type="text" class="form-control" id="new-username" formControlName="username"></div>
+
+        <div class="form-group text-light mb-3">
+          <label for="password">
+            Password</label>
+          <input type="password" class="form-control" id="new-password" formControlName="password">
+        </div>
+
+        <div class="form-group text-light mb-4">
+          <label for="confirm-password">
+            Confirm Password</label>
+          <input type="password" class="form-control" id="confirm-password" formControlName="confirm-password">
+        </div>
+
+        <button class="btn py-3 btn-secondary w-100" type="submit">
+          Register
+        </button>
+        <a class="text-muted mt-3 d-block" (click)="switchMode()">Have an account?</a>
+
+      </form>
+    </div>
+
+<!--Successful Registration-->
+    <div class="card-body" *ngIf="registerSuccess">
+      <h1 class="card-title text-light">Success!</h1>
+      <h2 class="card-title text-secondary">Check your email to confirm your account.</h2>
+      <h4 class="text-light">If you can't find it, try checking your spam. The email was sent to
+      <span class="a font-weight-bold">{{this.registerForm.get('username').value}}</span>.
+      </h4>
+    </div>
+
   </div>
 </div>

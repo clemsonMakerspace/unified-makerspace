@@ -11,9 +11,14 @@ export class AuthService {
   userLoggedIn = false;
 
 
+  // todo implement this method
   login(): void {
     this.userLoggedIn = true;
   }
 
 
+  // todo implement this method
+  register() {
+    this.userLoggedIn = true;
+  }
 }
