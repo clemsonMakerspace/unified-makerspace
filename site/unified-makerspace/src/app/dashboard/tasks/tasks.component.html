@@ -7,8 +7,11 @@
         <button id="add-task-button" class="btn btn-secondary mr-3" type="button" (click)="modal.open()">
           <h3 class="bi bi-plus-circle"></h3>
         </button>
-        <button id="clear-completed-button" class="btn btn-secondary" type="button" (click)="clearTasks()">
+        <button id="clear-completed-button" class="btn btn-secondary mr-3" type="button" (click)="clearTasks()">
           <h3 class="bi bi-trash2-fill"></h3>
+        </button>
+        <button class="btn btn-secondary" (click)="exportTaskData()">
+          <h3 class="bi bi-cloud-arrow-down-fill"></h3>
         </button>
 
         <!--              <h1 class="bi bi-cloud-arrow-down-fill mr-3"></h1>-->
