@@ -14,6 +14,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { ProfileComponent } from './profile/profile.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { UsersComponent } from './users/users.component';
+import { RequestsComponent } from './dashboard/requests/requests.component';
+import { UserGraphComponent } from './dashboard/user-graph/user-graph.component';
+import { MachinesComponent } from './dashboard/machines/machines.component';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -44,6 +47,9 @@ let routes: Routes = [
     ProfileComponent,
     NotFoundComponent,
     UsersComponent,
+    RequestsComponent,
+    UserGraphComponent,
+    MachinesComponent,
   ],
   imports: [
     BrowserModule,

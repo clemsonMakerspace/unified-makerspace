@@ -1,0 +1,31 @@
+<div class="card bg-primary">
+  <div #graph class="card-body">
+    <div class="d-flex justify-content-between">
+      <h1 class="card-title text-light">Users</h1>
+
+      <div class="">
+        <button class="btn btn-secondary" (click)="exportUserData()">
+          <h3 class="bi bi-cloud-arrow-down-fill"></h3>
+        </button>
+      </div>
+    </div>
+    <div class="w-100 bg-secondary h-100">
+      <ngx-charts-line-chart
+        [view]="[graph.offsetWidth - 80, 400]"
+        [results]="data"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showGridLines]="false"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [trimXAxisTicks]="false"
+        [scheme]="{
+              'domain': ['#FF9900', '#522D80']
+              }"
+        style="fill: white"
+        xAxisLabel="Day"
+        yAxisLabel="Users"
+      ></ngx-charts-line-chart>
+    </div>
+  </div>
+</div>
