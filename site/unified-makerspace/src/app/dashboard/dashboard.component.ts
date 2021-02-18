@@ -20,6 +20,16 @@ export class DashboardComponent implements OnInit {
   }
 
 
+  exportData( ) {
+    // functionality
+  }
+
+
+
+
+
+
+
   requests = [
     {
       "name": "Will",

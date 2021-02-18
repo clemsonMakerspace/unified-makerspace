@@ -13,6 +13,7 @@ import {NgxChartsModule} from '@swimlane/ngx-charts';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { ProfileComponent } from './profile/profile.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { UsersComponent } from './users/users.component';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -25,6 +26,7 @@ let routes: Routes = [
   {path: 'register', component: LoginComponent},
   {path: 'dashboard', component: DashboardComponent},
   {path: 'profile', component: ProfileComponent},
+  {path: 'users', component: UsersComponent},
   {path: '**', component: NotFoundComponent}
 
 
@@ -41,6 +43,7 @@ let routes: Routes = [
     RootComponent,
     ProfileComponent,
     NotFoundComponent,
+    UsersComponent,
   ],
   imports: [
     BrowserModule,
