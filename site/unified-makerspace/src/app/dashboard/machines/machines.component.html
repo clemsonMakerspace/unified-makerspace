@@ -1,10 +1,21 @@
-
-
-<div class="card bg-primary">
+<div class="card bg-primary" #graph>
   <div class="card-body">
     <h1 class="card-title text-light">Status</h1>
-    <div class="mb-3" *ngFor="let request of requests">
+    <ngx-charts-heat-map
 
-    </div>
+      class="text-white"
+      [view]="[graph.offsetWidth - 80, 300]"
+      [results]="machines"
+      [xAxis]="true"
+      [yAxis]="true"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [yAxisLabel]="'Machines'"
+      [xAxisLabel]="'Past 24 hours'"
+      [tooltipText]="tooltip"
+      [scheme]="{'domain':['#dc3545','#ffc107', '#28a745']}"
+      style="fill: white"
+    >
+    </ngx-charts-heat-map>
   </div>
 </div>
