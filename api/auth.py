@@ -4,6 +4,9 @@ def create_user(email: str, password: str, role: str):
 
 
 
+    Payload
+    -------
+
 
 
 
@@ -31,16 +34,24 @@ def delete_user(email: str, auth_token: str):
 
 
 
+
+@get
 def get_tasks():
     """
 
 
+    Payload
+    --------
+    None
 
 
 
 
-    Returns
-    -------
+
+    Response
+    --------
+    task_name:
+
 
     """
 
