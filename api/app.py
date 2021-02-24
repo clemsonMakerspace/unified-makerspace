@@ -46,9 +46,13 @@ def get_user_info(pk):
     return '200'
 
 # GET MACHINES LIST BY TYPE
-@app.route("/machine/<type>")
-def get_machines(type):
-    return '200'
+@app.route("/viewMachine")
+def get_machines():
+    id = request.args.get('machine_id')
+    payload = {'id': id }
+    response = requests.get("https://m0g7r8hjsk.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
+
 
 @app.route("/addMachine")
 def add_machine():
@@ -56,5 +60,5 @@ def add_machine():
     type = request.args.get('machine_type')
     name = request.args.get('machine_name')
     payload = { 'id': id, 'type': type, 'name': name}
-    response = requests.get("https://28igyfdybf.execute-api.us-east-1.amazonaws.com/",params=payload)
+    response = requests.get("https://28igyfdybf.execute-api.us-east-1.amazonaws.com/prod",params=payload)
     return response.text
