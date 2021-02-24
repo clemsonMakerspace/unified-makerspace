@@ -45,20 +45,29 @@ def get_task_info(id):
 def get_user_info(pk):
     return '200'
 
-# GET MACHINES LIST BY TYPE
+# VIEW MACHINE BY ID
 @app.route("/viewMachine")
 def get_machines():
-    id = request.args.get('machine_id')
-    payload = {'id': id }
+    machine_id = request.args.get('machine_id')
+    payload = {'machine_id': machine_id }
     response = requests.get("https://m0g7r8hjsk.execute-api.us-east-1.amazonaws.com/prod",params=payload)
     return response.text
 
 
+# ADD MACHINE BY URL QUERY PARAMS
 @app.route("/addMachine")
 def add_machine():
-    id = request.args.get('machine_id')
-    type = request.args.get('machine_type')
-    name = request.args.get('machine_name')
-    payload = { 'id': id, 'type': type, 'name': name}
+    machine_id = request.args.get('machine_id')
+    machine_type = request.args.get('machine_type')
+    machine_name = request.args.get('machine_name')
+    payload = { 'machine_id': machine_id, 'machine_type': machine_type, 'machine_name': machine_name}
     response = requests.get("https://28igyfdybf.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
+
+# VIEW MACHINE BY TYPE
+@app.route("/viewMachineByType")
+def view_machine_by_type():
+    machine_type = request.args.get('machine_type')
+    payload = {'machine_type': machine_type }
+    response = requests.get("https://yxnx3ps6ai.execute-api.us-east-1.amazonaws.com/prod",params=payload)
     return response.text
