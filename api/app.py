@@ -154,3 +154,40 @@ def view_machine_by_types():
     payload = {'machine_type' : machine_type}
     response = requests.get("https://yxnx3ps6ai.execute-api.us-east-1.amazonaws.com/prod",params=payload)
     return response.text
+
+# CREATE TASK
+@app.route("/createTask")
+def create_task():
+    pass
+
+# MAINTAIN TASKS
+@app.route("/maintainTasks")
+def maintain_tasks():
+    pass
+
+# EDIT TASK
+@app.route("/editTask")
+def edit_task():
+    pass
+
+# DELETE TASK
+@app.route("/deleteTask")
+def delete_task():
+    pass
+
+# VIEW TASK
+@app.route("/viewTask")
+def view_task():
+    pass
+
+
+# VIEW UPCOMING TASKS
+@app.route("/viewUpcomingTasks")
+def view_upcoming_tasks():
+    pass
+
+
+# COMPLETE TASK
+@app.route("/completeTask")
+def complete_task():
+    pass
