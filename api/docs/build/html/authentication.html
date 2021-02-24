@@ -1,10 +1,10 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Authentication" href="authentication.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tasks" href="tasks.html" /><link rel="prev" title="The MakerSpace Developer’s Documentation" href="index.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
-        <title>Home - The Unified MakerSpace documentation</title>
+        <title>Authentication - The Unified MakerSpace documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=33d2fc4f3f180ec1ffc6524e273e21d7d58cbe49">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
@@ -85,10 +85,10 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">The Unified MakerSpace  documentation</div></a>
+      <a href="index.html"><div class="brand">The Unified MakerSpace  documentation</div></a>
     </div>
     <div class="header-right">
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -96,7 +96,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
   <span class="sidebar-brand-text">The Unified MakerSpace  documentation</span>
@@ -107,8 +107,8 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users.html">Users</a></li>
 </ul>
@@ -122,49 +122,85 @@
   <main class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="the-makerspace-developer-s-documentation">
-<h1>The MakerSpace Developer’s Documentation<a class="headerlink" href="#the-makerspace-developer-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tasks.html#todo">Todo</a></li>
+        <div class="section" id="authentication">
+<h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<p>This is the API for authentication</p>
+<span class="target" id="module-auth"></span><dl class="py function">
+<dt id="auth.create_user">
+<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">password</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">role</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.create_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new user in the Cognito Pool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>str</em>) – The email of the user.</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – The raw password of the user.</p></li>
+<li><p><strong>role</strong> (<em>str</em>) – Specified role of the user.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="users.html">Users</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="users.html#todo">Todo</a></li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>code</em> – 200</p></li>
+<li><p><strong>token</strong> (<em>str</em>) – 32-bit authentication token.</p></li>
 </ul>
-</li>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> – 400</p></li>
+<li><p><strong>message</strong> – str: The email is already in use.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="auth.delete_user">
+<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a user specified by their email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>str</em>) – The email of the user.</p></li>
+<li><p><strong>auth_token</strong> (<em>str</em>) – Token to very user credentials.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>code</em> – 200</p></li>
+<li><p><em>message</em> – The user has been successfully deleted.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="authentication.html">
+          <a class="next-page" href="tasks.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Authentication</div>
+                <div class="title">Tasks</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          
+          <a class="prev-page" href="index.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
         </div>
 
         <div class="related-information">
@@ -175,7 +211,7 @@
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
             |
-            <a class="muted-link" href="_sources/index.rst.txt"
+            <a class="muted-link" href="_sources/authentication.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -183,25 +219,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">The MakerSpace Developer’s Documentation</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
