@@ -80,3 +80,12 @@ def view_machine_history():
     payload = { 'MachineId': machine_id, 'DaysBack': days_back }
     response = requests.get("https://kbh1vbi02h.execute-api.us-east-1.amazonaws.com/prod", params=payload)
     return response.text
+
+# EXPORT MACHINE HISTORY
+@app.route("/exportMachineHistory")
+def export_machine_history():
+    machine_id = request.args.get('MachineId')
+    days_back = request.args.get('DaysBack')
+    payload = {'MachineId': machine_id, 'DaysBack': days_back}
+    response = requests.get("https://8jhka7ee33.execute-api.us-east-1.amazonaws.com/prod", params=payload)
+    return response.text
