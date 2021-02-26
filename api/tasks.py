@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 # CREATE TASK
-@app.route("/createTask")
+@app.route("/task/create")
 def create_task():
     task_name = request.args.get('TaskName')
     description = request.args.get('Description')
@@ -25,7 +25,7 @@ def create_task():
 
 
 # EDIT TASK
-@app.route("/editTask")
+@app.route("/task/edit")
 def edit_task():
     parent_id = request.args.get('ParentId')
     task_name = request.args.get('TaskName')
@@ -40,7 +40,7 @@ def edit_task():
     return response.text
 
 # DELETE TASK
-@app.route("/deleteTask")
+@app.route("/task/delete")
 def delete_task():
     parent_id = request.args.get('ParentId')
 
@@ -50,7 +50,7 @@ def delete_task():
     return response.text
 
 # VIEW TASK
-@app.route("/viewTask")
+@app.route("/task/view")
 def view_task():
     parent_id = request.args.get('ParentId')
     due_date = request.args.get('DueDate')
@@ -61,7 +61,7 @@ def view_task():
 
 
 # VIEW UPCOMING TASKS
-@app.route("/viewUpcomingTasks")
+@app.route("/task/upcoming")
 def view_upcoming_tasks():
     days_forward = request.args.get('DaysForward')
 
@@ -71,7 +71,7 @@ def view_upcoming_tasks():
 
 
 # COMPLETE TASK
-@app.route("/completeTask")
+@app.route("/task/complete")
 def complete_task():
     due_date = request.args.get('DueDate')
     parent_id = request.args.get('ParentId')
