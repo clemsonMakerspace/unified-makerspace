@@ -166,16 +166,32 @@ def delete_task():
 # VIEW TASK
 @app.route("/viewTask")
 def view_task():
+    parent_id = request.args.get('ParentId')
+    due_date = request.args.get('DueDate')
 
+    payload = {'ParentId' : parent_id, 'DueDate' : due_date }
+    response = requests.get("https://i7z47ol3l4.execute-api.us-east-1.amazonaws.com/prod", params=payload)
+    return response.text
 
 
 # VIEW UPCOMING TASKS
 @app.route("/viewUpcomingTasks")
 def view_upcoming_tasks():
-    pass
+    days_forward = request.args.get('DaysForward')
+
+    payload = {'DaysForward': days_forward }
+    response = requests.get("https://72aw5tpqba.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
 
 
 # COMPLETE TASK
 @app.route("/completeTask")
 def complete_task():
-    pass
+    due_date = request.args.get('DueDate')
+    parent_id = request.args.get('ParentId')
+    completed_by = request.args.get('CompletedBy')
+
+    payload = {'DueDate': due_date, 'ParentId': parent_id, 'CompletedBy': completed_by }
+
+    response = requests.get("https://uev3a2amyh.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
