@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "unifiedmakerspace2ad737af": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

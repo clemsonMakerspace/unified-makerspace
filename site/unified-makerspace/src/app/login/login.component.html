@@ -60,6 +60,20 @@
     <div class="card-body" *ngIf="registerSuccess">
       <h1 class="card-title text-light">Success!</h1>
       <h2 class="card-title text-secondary">Check your email to confirm your account.</h2>
+
+        <form [formGroup]="verificationForm" (ngSubmit)="verify()">
+  
+          <div class="form-group text-light"><label for="code">
+            6-Digit Verification Code
+          </label>
+            <input type="text" class="form-control" id="email-code" formControlName="code"></div>
+  
+          <button class="btn py-3 btn-secondary w-100" type="submit">
+            Verify
+          </button>
+  
+        </form>
+
       <h4 class="text-light">If you can't find it, try checking your spam. The email was sent to
       <span class="a font-weight-bold">{{this.registerForm.get('username').value}}</span>.
       </h4>
