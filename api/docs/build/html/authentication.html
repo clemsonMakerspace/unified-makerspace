@@ -132,26 +132,41 @@
 <dt id="auth.create_user">
 <code class="sig-prename descclassname">auth.</code><code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">password</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">role</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.create_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new user in the Cognito Pool.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 47%"/>
+<col style="width: 53%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/users/create</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>POST</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>ALL</p></td>
+</tr>
+</tbody>
+</table></div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>email</strong> (<em>str</em>) – The email of the user.</p></li>
-<li><p><strong>password</strong> (<em>str</em>) – The raw password of the user.</p></li>
-<li><p><strong>role</strong> (<em>str</em>) – Specified role of the user.</p></li>
+<li><p><strong>email</strong> (<em>str</em><em>, </em><em>required</em>) – The email of the user.</p></li>
+<li><p><strong>password</strong> (<em>str</em><em>, </em><em>required</em>) – The raw password of the user.</p></li>
+<li><p><strong>role</strong> (<em>str</em><em>, </em><em>required</em>) – Specified role of the user.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
+<li><p><strong>UserCreationSuccess</strong> (<em>Response</em>)</p></li>
 <li><p><em>code</em> – 200</p></li>
-<li><p><strong>token</strong> (<em>str</em>) – 32-bit authentication token.</p></li>
+<li><p><em>message</em> – The user has been successfully created.</p></li>
+<li><p><strong>EmailInUse</strong> (<em>Response</em>)</p></li>
+<li><p><em>code</em> – 400</p></li>
+<li><p><em>message</em> – This email is already being used.</p></li>
 </ul>
 </p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>code</strong> – 400</p></li>
-<li><p><strong>message</strong> – str: The email is already in use.</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -159,17 +174,38 @@
 <dt id="auth.delete_user">
 <code class="sig-prename descclassname">auth.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.delete_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a user specified by their email.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 47%"/>
+<col style="width: 53%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/users/delete</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>POST</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MANAGER</p></td>
+</tr>
+</tbody>
+</table></div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>email</strong> (<em>str</em>) – The email of the user.</p></li>
-<li><p><strong>auth_token</strong> (<em>str</em>) – Token to very user credentials.</p></li>
+<li><p><strong>email</strong> (<em>str</em><em>, </em><em>required</em>) – The email of the user.</p></li>
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
+<li><p><strong>SuccessfulDelete</strong> (<em>Response</em>)</p></li>
 <li><p><em>code</em> – 200</p></li>
-<li><p><em>message</em> – The user has been successfully deleted.</p></li>
+<li><p><em>message</em> – Success</p></li>
+<li><p><strong>FailedDelete</strong> (<em>Response</em>)</p></li>
+<li><p><em>code</em> – 404</p></li>
+<li><p><em>message</em> – Unauthorized.</p></li>
 </ul>
 </p>
 </dd>
