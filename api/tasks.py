@@ -7,8 +7,39 @@ app = Flask(__name__)
 
 
 # CREATE TASK
-@app.route("/task/create")
+@app.route("/tasks/create")
 def create_task():
+    """
+        Creates a new task in the database
+
+        ================   ============
+        **Endpoint**        /api/tasks/create
+        **Request Type**    POST
+        **Access**          ALL
+        ================   ============
+
+
+        Parameters
+        -----------
+        task_name: str, required
+            The name of the task to be added.
+        description : str, required
+            The description of the task to be added.
+        frequency: str, required
+            The frequency of the task to be added.
+        machine_id : str, required
+            The machine id of the task to be added.
+        machine_name : str, required
+            The machine name on which the task to be added will be performed.
+        completion_date : datetime, required
+            The completion date of the task to be added.
+        start_date: datetime, required
+            The start date of the task to be added.
+
+        Returns
+        --------
+
+        """
     task_name = request.args.get('TaskName')
     description = request.args.get('Description')
     frequency = request.args.get('Frequency')
@@ -25,7 +56,7 @@ def create_task():
 
 
 # EDIT TASK
-@app.route("/task/edit")
+@app.route("/tasks/edit")
 def edit_task():
     parent_id = request.args.get('ParentId')
     task_name = request.args.get('TaskName')
@@ -40,7 +71,7 @@ def edit_task():
     return response.text
 
 # DELETE TASK
-@app.route("/task/delete")
+@app.route("/tasks/delete")
 def delete_task():
     parent_id = request.args.get('ParentId')
 
@@ -50,7 +81,7 @@ def delete_task():
     return response.text
 
 # VIEW TASK
-@app.route("/task/view")
+@app.route("/tasks/view")
 def view_task():
     parent_id = request.args.get('ParentId')
     due_date = request.args.get('DueDate')
@@ -61,7 +92,7 @@ def view_task():
 
 
 # VIEW UPCOMING TASKS
-@app.route("/task/upcoming")
+@app.route("/tasks/upcoming")
 def view_upcoming_tasks():
     days_forward = request.args.get('DaysForward')
 
@@ -71,7 +102,7 @@ def view_upcoming_tasks():
 
 
 # COMPLETE TASK
-@app.route("/task/complete")
+@app.route("/tasks/complete")
 def complete_task():
     due_date = request.args.get('DueDate')
     parent_id = request.args.get('ParentId')
