@@ -8,42 +8,7 @@ app = Flask(__name__)
 # Lambda Application Endpoint (MakerSpace): https://9mgegu2fge.execute-api.us-east-1.amazonaws.com/prod
 
 makerspace_endpoint = "https://9mgegu2fge.execute-api.us-east-1.amazonaws.com/prod"
-# GET TASKS
-@app.route("/tasks")
-def get_tasks():
-    payload= {'DaysForward':'1'}
-    response = requests.get(makerspace_endpoint,params=payload)
-    print(response.json())
-    return response.json()
 
-#def query_tasks(year, dynamodb  =None):
-
-
-# GET TASK REQUESTS
-@app.route("/requests")
-def get_task_requests():
-    return '200'
-
-# GET NUMBER OF USERS
-@app.route("/num_users")
-def get_num_users():
-    return '200'
-
-# GET NUMBER OF NEW USERS
-@app.route("/num_new_users")
-def get_num_new_users():
-    return '200'
-
-
-# GET TASK INFO BY ID
-@app.route("/task/<id>")
-def get_task_info(id):
-    return '200'
-
-# GET USER INFO BY PK
-@app.route("/user/<pk>")
-def get_user_info(pk):
-    return '200'
 
 # VIEW MACHINE BY ID
 @app.route("/viewMachine")
@@ -158,27 +123,50 @@ def view_machine_by_types():
 # CREATE TASK
 @app.route("/createTask")
 def create_task():
-    pass
+    task_name = request.args.get('TaskName')
+    description = request.args.get('Description')
+    frequency = request.args.get('Frequency')
+    machine_id = request.args.get('MachineId')
+    machine_name = request.args.get('MachineName')
+    completion_time = request.args.get('CompletionTime')
+    start_date = request.args.get('StartDate')
 
-# MAINTAIN TASKS
-@app.route("/maintainTasks")
-def maintain_tasks():
-    pass
+    payload = { 'TaskName' : task_name, 'Description': description, 'Frequency' : frequency, 'MachineId' : machine_id,
+                'MachineName' : machine_name, 'CompletionTime' : completion_time, 'StartDate': start_date }
+
+    response = requests.get("https://iilws7onba.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
+
 
 # EDIT TASK
 @app.route("/editTask")
 def edit_task():
-    pass
+    parent_id = request.args.get('ParentId')
+    task_name = request.args.get('TaskName')
+    description = request.args.get('Description')
+    frequency = request.args.get('Frequency')
+    machine_id = request.args.get('MachineId')
+    completion_time = request.args.get('CompletionTime')
+
+    payload = {'TaskName': task_name, 'Description': description, 'Frequency': frequency, 'MachineId': machine_id,
+                'CompletionTime': completion_time, 'ParentId': parent_id }
+    response = requests.get("https://imxhdniv4b.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    return response.text
 
 # DELETE TASK
 @app.route("/deleteTask")
 def delete_task():
-    pass
+    parent_id = request.args.get('ParentId')
+
+    payload ={'ParentId': parent_id }
+
+    response = requests.get("https://lkohfoidbc.execute-api.us-east-1.amazonaws.com/prod", params=payload)
+    return response.text
 
 # VIEW TASK
 @app.route("/viewTask")
 def view_task():
-    pass
+
 
 
 # VIEW UPCOMING TASKS
