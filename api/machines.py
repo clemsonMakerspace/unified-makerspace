@@ -5,7 +5,7 @@ import requests
 app = Flask(__name__)
 
 # VIEW MACHINE BY ID
-@app.route("/viewMachine")
+@app.route("/machine/view")
 def get_machines():
     machine_id = request.args.get('machine_id')
     payload = {'machine_id': machine_id }
@@ -14,7 +14,7 @@ def get_machines():
 
 
 # ADD MACHINE BY URL QUERY PARAMS
-@app.route("/addMachine")
+@app.route("/machine/add")
 def add_machine():
     machine_id = request.args.get('machine_id')
     machine_type = request.args.get('machine_type')
@@ -24,7 +24,7 @@ def add_machine():
     return response.text
 
 # VIEW MACHINE BY TYPE
-@app.route("/viewMachineByType")
+@app.route("/machine/view/type")
 def view_machine_by_type():
     machine_type = request.args.get('machine_type')
     payload = {'machine_type': machine_type }
@@ -32,7 +32,7 @@ def view_machine_by_type():
     return response.text
 
 # VIEW MACHINE HISTORY
-@app.route("/viewMachineHistory")
+@app.route("/machine/view/history")
 def view_machine_history():
     machine_id = request.args.get('MachineId')
     days_back = request.args.get('DaysBack')
@@ -41,7 +41,7 @@ def view_machine_history():
     return response.text
 
 # EXPORT MACHINE HISTORY
-@app.route("/exportMachineHistory")
+@app.route("/machine/export")
 def export_machine_history():
     machine_id = request.args.get('MachineId')
     days_back = request.args.get('DaysBack')
@@ -50,7 +50,7 @@ def export_machine_history():
     return response.text
 
 # VIEW MACHINE UPCOMING TASKS
-@app.route("/viewMachineUpcomingTasks")
+@app.route("/machine/view/upcoming")
 def view_machine_upcoming_tasks():
     machine_id = request.args.get('MachineId')
     days_forward = request.args.get('DaysForward')
@@ -59,7 +59,7 @@ def view_machine_upcoming_tasks():
     return response.text
 
 # DELETE MACHINE TYPE
-@app.route("/deleteMachineType")
+@app.route("/machine/type/delete")
 def delete_machine_type():
     machine_type = request.args.get('machine_type')
     payload = { 'machine_type' : machine_type }
@@ -67,7 +67,7 @@ def delete_machine_type():
     return response.text
 
 # EDIT MACHINE NAME
-@app.route("/editMachineName")
+@app.route("/machine/edit")
 def edit_machine_name():
     machine_id = request.args.get('machine_id')
     new_name = request.args.get('new_name')
@@ -76,7 +76,7 @@ def edit_machine_name():
     return response.text
 
 # DELETE MACHINE
-@app.route("/deleteMachine")
+@app.route("/machine/delete")
 def delete_machine():
     machine_id = request.args.get('machine_id')
     machine_type = request.args.get('machine_type')
@@ -85,13 +85,13 @@ def delete_machine():
     return response.text
 
 # VIEW MACHINE TYPES
-@app.route("/viewMachineTypes")
+@app.route("/machine/view/types")
 def view_machine_types():
     response = requests.get("https://bqlj5bqdkl.execute-api.us-east-1.amazonaws.com/prod")
     return response.text
 
 # ADD MACHINE TYPE
-@app.route("/addMachineType")
+@app.route("/machine/add/type")
 def add_machine_type():
     machine_type = request.args.get('machine_type')
     payload = { 'machine_type' : machine_type }
@@ -99,17 +99,10 @@ def add_machine_type():
     return response.text
 
 # VIEW PARENTS BY MACHINE
-@app.route("/viewParentsByMachine")
+@app.route("/machine/view/parents")
 def view_parents_by_machine():
     machine_id = request.args.get('MachineId')
     payload = {'MachineId' : machine_id }
     response = requests.get("https://fpzztw4zoe.execute-api.us-east-1.amazonaws.com/prod", params=payload)
     return response.text
 
-# VIEW MACHINE BY TYPES
-@app.route("/viewMachineByTypes")
-def view_machine_by_types():
-    machine_type = request.args.get('machine_type')
-    payload = {'machine_type' : machine_type}
-    response = requests.get("https://yxnx3ps6ai.execute-api.us-east-1.amazonaws.com/prod",params=payload)
-    return response.text
