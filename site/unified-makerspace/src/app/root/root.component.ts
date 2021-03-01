@@ -12,4 +12,6 @@ export class RootComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  machines = ['3D Printer #1', '3D Printer #2', 'Satellite Controller', 'Mars Rover']
+
 }

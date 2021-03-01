@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, DoCheck, HostListener, OnChanges, SimpleChanges} from '@angular/core';
 import {AuthService} from './shared/auth/auth.service';
 
 
@@ -7,11 +7,29 @@ import {AuthService} from './shared/auth/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent{
 
-  constructor(public auth: AuthService) {
+  constructor(public auth: AuthService) {}
+
+
+
+  title = 'The MakerSpace';
+  layerTransforms = this.positionFooter();
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(e) {
+    this.layerTransforms = this.positionFooter();
+  }
+
+
+  positionFooter() {
+    let base = 0;
+    let percent = Math.pow(window.scrollY / (document.body.scrollHeight - window.innerHeight), 2);
+    let ranges = [[500, 1000], [200, 500], [0, 0]];
+    let positions = ranges.map(r => base + r[0] + (r[1] - r[0])*percent)
+    return positions.map(p => 'translateY(' + p + 'px)');
 
   }
 
-  title = 'The MakerSpace';
+
 }

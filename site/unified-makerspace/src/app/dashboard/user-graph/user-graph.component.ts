@@ -92,7 +92,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    document.getElementById("csv-dl").remove()
+    // document.getElementById("csv-dl").remove()
   }
 
 }
