@@ -13,17 +13,17 @@ def getStudentInfo(id):
 
     # Get user by id
     response = table.query(
-        KeyConditionExpression = Key('StudentID').eq(id)
+        KeyConditionExpression = Key('StudentID').eq(str(id))
     )
 
-    # Might need to change this lineW
-    return response
+    # Might need to change this line
+    return response["Items"][0]
 
 def getStudentInfoHandler(event, context):
 
     params = event['queryStringParameters']
 
-    reqParams = ['StudentID']
+    reqParams = ["StudentID"]
 
     if (params is None):
         return {
@@ -48,9 +48,11 @@ def getStudentInfoHandler(event, context):
                 })
             }
 
+
     try:
         # Call function
-        result = getStudentInfo(params)
+        id = params['StudentID']
+        result = getStudentInfo(id)
         # Send Response
         return {
             'statusCode': 200,
@@ -70,6 +72,7 @@ def getStudentInfoHandler(event, context):
                 'Message': str(e)
             })
         }
+
 
 
 
