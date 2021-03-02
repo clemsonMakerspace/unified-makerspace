@@ -9,7 +9,7 @@ dynamodb_client = boto3.client('dynamodb')
 # adds a new machine with its details to the Machines table
 # also adds the machine id to the Machine_Types table
 # machine type must already exist
-def addMachine(id, threed_certified,access_level,college,degree_type,designation,email,fn,gen_cert,laser_cert,ln,major,
+def insertNewStudent(id, threed_certified,access_level,college,degree_type,designation,email,fn,gen_cert,laser_cert,ln,major,
                vinyl_cert, year):
     # Table Resources
     table = dynamodb.Table('MakerspaceUser')
@@ -52,7 +52,7 @@ def addMachine(id, threed_certified,access_level,college,degree_type,designation
 
 
 # input:
-def addMachineHandler(event, context):
+def insertNewStudentHandler(event, context):
     params = event['queryStringParameters']
 
     reqParams = ["PK","3D_Certified","AccessLevel","College","DegreeType","Designation","Email","First_Name",
@@ -110,7 +110,7 @@ def addMachineHandler(event, context):
             'headers': {
                 'Content-Type': 'text/plain'
             },
-            'body': "Machine already exists"
+            'body': "User already exists"
         }
     # Success Message
     else:
