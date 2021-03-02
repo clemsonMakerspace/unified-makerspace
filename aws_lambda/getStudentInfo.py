@@ -16,7 +16,7 @@ def getStudentInfo(id):
         KeyConditionExpression = Key('StudentID').eq(id)
     )
 
-    # Might need to change this line
+    # Might need to change this lineW
     return response
 
 def getStudentInfoHandler(event, context):
