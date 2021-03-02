@@ -25,6 +25,7 @@ def getStudentInfoHandler(event, context):
 
     reqParams = ["StudentID"]
 
+
     if (params is None):
         return {
             'statusCode': 400,
