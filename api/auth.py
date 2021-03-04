@@ -1,10 +1,10 @@
 import flask
+import requests
 
 app = flask.Flask('__main__')
 
 def get_users():
     pass
-
 
 @app.route('/users/')
 def create_user(email: str, password: str, role: str):
@@ -41,6 +41,12 @@ def create_user(email: str, password: str, role: str):
     message
         This email is already being used.
     """
+
+    payload = {'username':email, 'password':password, 'role':role, 'email':email, 'first': '', 'last': ''}
+    
+    response = requests.get("https://s0as70qh0h.execute-api.us-east-1.amazonaws.com/prod",params=payload)
+    
+    return response.text
 
 
 def delete_user(email: str, auth_token: str):
