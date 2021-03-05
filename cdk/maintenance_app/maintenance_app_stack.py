@@ -605,21 +605,47 @@ class MaintenanceAppStack(core.Stack):
 
     #----------------Sign-In Lambdas----------------
     ### NOTE: Don't transfer over yet because these are RDS queries/editors
-    #getCurrentStudents
+        #createUser
+        #View machine types function
+        createUser = _lambda.Function(
+            self, 'createUser',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='CreateUser.CreateUserHandler',
+        )    
+        #getMajors
+        getMajor = _lambda.Function(
+            self, 'getMajors',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='getMajors.getStudentInfoHandler',
+        )    
+        #getStudentInfo
+        getStudentInfo = _lambda.Function(
+            self, 'getStudentInfo',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='getStudentInfo.getStudentInfoHandler',
+        )    
+        #getTotals
 
-    #getMajors
+        #insertID
 
-    #getStudentInfo
+        #insertNewStudent
+        insertNewStudent = _lambda.Function(
+            self, 'insertNewStudent',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='insertNewStudent.insertNewStudentHandler',
+        )    
+        #isCardInDatabase
+        isCardInDatabase = _lambda.Function(
+            self, 'isCardInDatabase',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='isCardInDatabase.isCardInDatabaseHandler',
+        )   
+        #isUsernameInDatabase
 
-    #getTotals
-
-    #insertID
-
-    #insertNewStudent
-
-    #isCardInDatabase
-
-    #isUsernameInDatabse
-
-    #Lambda@Edge
+        #Lambda@Edge authenticator
 
