@@ -25,7 +25,7 @@ def insertNewStudent(id, threed_certified,access_level,college,degree_type,desig
         return 0
 
 
-    # Define New Machine Object
+    # Define New Student Object
     newUser = {}
     newUser['PK'] = id
     newUser['3D_Certified'] = threed_certified
@@ -44,7 +44,7 @@ def insertNewStudent(id, threed_certified,access_level,college,degree_type,desig
 
 
 
-    # Add New Machine to Db
+    # Add New Student to Db
     table.put_item(Item=newUser)
 
     # Success
