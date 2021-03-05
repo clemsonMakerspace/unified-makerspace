@@ -16,7 +16,8 @@ class Maintainer:
     """
     Model for a person who can be assigned tasks.
     """
-    tasks: [Task]
+    name: str
+    assigned_tasks: [Task]
 
 
 @dataclass()
@@ -40,3 +41,14 @@ class Visitor:
     """
     date_visited: str
     is_new: bool
+
+
+@dataclass()
+class Request:
+    """
+    Represents a user request to the MakerSpace staff. `request_id`
+    is not passed in when creating requests.
+    """
+    requester_name: str
+    description: str
+    request_id: str
