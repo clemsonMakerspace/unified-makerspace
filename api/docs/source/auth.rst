@@ -1,6 +1,6 @@
 
 ===============
-Authentication
+Auth
 ===============
 This is the API for authentication
 

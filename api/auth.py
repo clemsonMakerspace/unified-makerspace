@@ -1,13 +1,35 @@
-import flask
-import json
+"""
+auth.py
+"""
+
+import models
 import requests
 
-app = flask.Flask('__main__')
 
-def get_users():
-    pass
+def get_users(auth_token: str):
+    """
+    Gets all the users with their permissions.
 
-@app.route('/users/')
+    ================   ============
+    **Endpoint**        /api/users
+    **Request Type**    GET
+    **Access**          MANAGER
+    ================   ============
+
+    Parameters
+    -----------
+    auth_token : str, required
+        Token to verify user credentials.
+
+    Returns
+    --------
+    Success : Response
+    code
+       200
+    users: [models.User]
+    """
+
+
 def create_user(email: str, password: str, role: str):
     """
     Creates a new user in the Cognito Pool.
@@ -42,11 +64,6 @@ def create_user(email: str, password: str, role: str):
     message
         This email is already being used.
     """
-
-    payload = {'username':email,'password':password,'role':role,'email':email, 'first': 'my', 'last': 'name'}
-    response = requests.put("https://muq6dxolc9.execute-api.us-east-1.amazonaws.com/prod/CreateUser", data = json.dumps(payload))
-    
-    return response.json()
 
 
 def delete_user(email: str, auth_token: str):

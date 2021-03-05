@@ -20,3 +20,17 @@ G
 :
 
 api/app.py,2/b/2b829e25c7d72bb6b04ca84f1764732278d2c9cf
+H
+aws_lambda/CreateUser.py,5/8/5899cc7b506e684ca72968f7f92de56b0871f8d2
+R
+"aws_lambda/isUsernameInDatabase.py,f/e/fe28ece28a74a7676dba567ff401495741b6d43a
+N
+aws_lambda/isCardInDatabase.py,1/5/15c58e2abef8752cb3577eabe5d15e197732c720
+G
+aws_lambda/getMajors.py,e/a/ea7fa987831d7dd121be4b2fb6963ec7efdb5a53
+L
+aws_lambda/getStudentInfo.py,2/c/2c1152abd4fb0733414b19df700b0ee3c0157a02
+<
+api/tasks.py,2/2/224e01b81969f04785729ea174fe6b5e747ba38d
+?
+api/machines.py,e/3/e35a7563e92d549701dc180f7e8f7bdacfd8f217

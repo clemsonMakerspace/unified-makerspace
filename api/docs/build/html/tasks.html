@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Users" href="users.html" /><link rel="prev" title="Authentication" href="authentication.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Visitors" href="visitors.html" /><link rel="prev" title="Auth" href="auth.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
         <title>Tasks - The Unified MakerSpace documentation</title>
@@ -88,7 +88,7 @@
       <a href="index.html"><div class="brand">The Unified MakerSpace  documentation</div></a>
     </div>
     <div class="header-right">
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -108,9 +108,10 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Auth</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
 
 </div>
@@ -122,37 +123,99 @@
   <main class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="tasks">
-<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="todo">
-<h2>Todo<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
-</div>
+        <div class="section" id="module-tasks">
+<span id="tasks"></span><h1>Tasks<a class="headerlink" href="#module-tasks" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="tasks.create_task">
+<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">create_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task</span><span class="p">:</span> <span class="n"><a class="reference internal" href="models.html#models.Task" title="models.Task">models.Task</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.create_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a task.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 48%"/>
+<col style="width: 52%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/task/create</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>POST</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MAINTAINER</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>task</strong> (<a class="reference internal" href="models.html#models.Task" title="models.Task"><em>models.Task</em></a><em>, </em><em>required</em>) – The task to create.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Success</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="tasks.delete_task">
+<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">delete_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.delete_task" title="Permalink to this definition">¶</a></dt>
+<dd><div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 48%"/>
+<col style="width: 52%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/task/delete</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>POST</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MAINTAINER</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_token</strong> – </p></li>
+<li><p><strong>task_id</strong> (<em>str</em>) – The id of the task to be deleted.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="users.html">
+          <a class="next-page" href="visitors.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Users</div>
+                <div class="title">Visitors</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="authentication.html">
+          <a class="prev-page" href="auth.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Authentication</div>
+                <div class="title">Auth</div>
                 
               </div>
             </a>
@@ -174,27 +237,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Tasks</a><ul>
-<li><a class="reference internal" href="#todo">Todo</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

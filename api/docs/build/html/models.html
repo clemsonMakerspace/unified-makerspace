@@ -1,9 +1,11 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Visitors" href="visitors.html" />
 
-    <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/><title>Search - The Unified MakerSpace  documentation</title><link rel="stylesheet" href="_static/styles/furo.css?digest=33d2fc4f3f180ec1ffc6524e273e21d7d58cbe49">
+    <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
+        <title>Models - The Unified MakerSpace documentation</title>
+      <link rel="stylesheet" href="_static/styles/furo.css?digest=33d2fc4f3f180ec1ffc6524e273e21d7d58cbe49">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
     
@@ -99,17 +101,17 @@
   
   <span class="sidebar-brand-text">The Unified MakerSpace  documentation</span>
   
-</a><form class="sidebar-search-container" method="get" action="#">
+</a><form class="sidebar-search-container" method="get" action="search.html">
   <input class="sidebar-search" placeholder=Search name="q">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="auth.html">Auth</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Models</a></li>
 </ul>
 
 </div>
@@ -124,23 +126,45 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        
-<div id="fallback" class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
+        <div class="section" id="module-models">
+<span id="models"></span><h1>Models<a class="headerlink" href="#module-models" title="Permalink to this headline">¶</a></h1>
+<p>These are the various objects, or “models” that will be exchanged
+with the api. Each class should be represented as a javascript object,
+with the parameters as keys.</p>
+<dl class="py class">
+<dt id="models.Maintainer">
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Maintainer</code><span class="sig-paren">(</span><em class="sig-param">tasks: [&lt;class 'models.Task'&gt;]</em><span class="sig-paren">)</span><a class="headerlink" href="#models.Maintainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model for a person who can be assigned tasks.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="models.Task">
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param">task_id: str, tags: [&lt;class 'str'&gt;], description: str, assigned_to: models.Maintainer, status: str</em><span class="sig-paren">)</span><a class="headerlink" href="#models.Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model for task object. <cite>status</cite> must be either “Completed”, “In-Progress”,
+or “Not Started”.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="models.Visitor">
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Visitor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date_visited</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_new</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Visitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a visitor to the MakerSpace.</p>
+</dd></dl>
 </div>
-<script>document.getElementById('fallback').hidden = true;</script>
-
-<div id="search-results"></div>
 
       </article>
       <footer>
         
         <div class="related-pages">
           
-          
+          <a class="prev-page" href="visitors.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Visitors</div>
+                
+              </div>
+            </a>
         </div>
 
         <div class="related-information">
@@ -150,6 +174,11 @@
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="_sources/models.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
         </div>
         
       </footer>
@@ -166,8 +195,5 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script><script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script>
-<script src="searchindex.js"></script></body>
+    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>
