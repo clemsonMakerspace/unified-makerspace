@@ -1,4 +1,5 @@
 import flask
+import json
 import requests
 
 app = flask.Flask('__main__')
@@ -42,11 +43,10 @@ def create_user(email: str, password: str, role: str):
         This email is already being used.
     """
 
-    payload = {'username':email, 'password':password, 'role':role, 'email':email, 'first': '', 'last': ''}
+    payload = {'username':email,'password':password,'role':role,'email':email, 'first': 'my', 'last': 'name'}
+    response = requests.put("https://muq6dxolc9.execute-api.us-east-1.amazonaws.com/prod/CreateUser", data = json.dumps(payload))
     
-    response = requests.get("https://s0as70qh0h.execute-api.us-east-1.amazonaws.com/prod",params=payload)
-    
-    return response.text
+    return response.json()
 
 
 def delete_user(email: str, auth_token: str):
