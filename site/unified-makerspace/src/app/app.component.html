@@ -1,6 +1,9 @@
 <!--Development Mode Warning-->
 <div class="bg-secondary text-dark text-center w-100 p-3">
-  <h6>This site is in development mode. Do not use it on a production server.</h6>
+  <h6>This site is in development mode. Do not use it on a production server. <a
+    href="http://makerspace-documentation.s3-website-us-east-1.amazonaws.com/" class="font-weight-bold">Looking
+    for the documentation?</a></h6>
+
 </div>
 
 
@@ -11,7 +14,7 @@
       <img src="/assets/tiger_paw.png" alt="tiger_paw" width="1800" style="width: 60px">
     </a>
     <h2 class="pt-2 text-secondary h1 font-weight-bold"
-    routerLink="/">The MakerSpace</h2>
+        routerLink="/">The MakerSpace</h2>
   </div>
 
   <div *ngIf="!auth.userLoggedIn">
@@ -31,10 +34,11 @@
 
 <!--Main Content-->
 <div class="container py-6">
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </div>
 
-<footer class="w-100 container-fluid" style="opacity:30%; margin-top: -400px; z-index: -1000; position: relative" id="gear-art" >
+<footer class="w-100 container-fluid" style="opacity:30%; margin-top: -400px; z-index: -1000; position: relative"
+        id="gear-art">
   <img src="assets/footer-1.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[0]}">
   <img src="assets/footer-2.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[1]}">
   <img src="assets/footer-3.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[2]}">
