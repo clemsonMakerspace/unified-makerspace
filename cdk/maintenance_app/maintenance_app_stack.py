@@ -88,7 +88,7 @@ class MaintenanceAppStack(core.Stack):
             MachineTypesTable = ddb.Table.from_table_name(self,
                 'Machine_Types', 'Machine_Types')
 
-        ############# Sign-In System Table #############
+        ############# Sign-In System Tables #############
 
         #Create Makerspace_User resource
         if 'Makerspace_User' not in existing_tables:
@@ -628,9 +628,7 @@ class MaintenanceAppStack(core.Stack):
             handler='getStudentInfo.getStudentInfoHandler',
         )    
         #getTotals
-
-        #insertID
-
+        
         #insertNewStudent
         insertNewStudent = _lambda.Function(
             self, 'insertNewStudent',
@@ -644,8 +642,7 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
             handler='isCardInDatabase.isCardInDatabaseHandler',
-        )   
-        #isUsernameInDatabase
+        )
 
         #Lambda@Edge authenticator
 
