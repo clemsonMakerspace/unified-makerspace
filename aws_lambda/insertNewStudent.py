@@ -100,7 +100,7 @@ def insertNewStudentHandler(event, context):
     year = params["Year"]
 
     # Call Function
-    flag = addMachine(id, threed_certified,access_level,college,degree_type,designation,email,fn,gen_cert,laser_cert,ln,major,
+    flag = insertNewStudent(id, threed_certified,access_level,college,degree_type,designation,email,fn,gen_cert,laser_cert,ln,major,
                vinyl_cert, year)
 
     # Error Message
