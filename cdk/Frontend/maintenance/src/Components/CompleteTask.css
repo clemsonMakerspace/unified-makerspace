@@ -1,0 +1,39 @@
+.root {
+    background: rgba(236,159,5,1);
+    border-radius: 5px;
+    border: 0;
+    color: white;
+    height: 48;
+    padding: 0 15px;
+    font-family: Helvetica-Neue;
+        font-style: normal;
+        font-weight: bold;
+}
+
+.root2 {
+    background-color: rgba(248,247,247,.5);
+    border-radius: 5;
+    border: 0;
+    color: white;
+    height: 48;
+    padding: 0 10%;
+    font-family: Helvetica-Neue;
+        font-style: normal;
+        font-weight: bold;
+}
+
+.baseroot{
+    border-style: solid;
+    border-color: rgba(172,134,150,1);
+    background-color: rgba(248,247,247,.15);
+    width: 90%;
+    margin: auto;
+    border-radius:15px;
+  }  
+.title {
+    font-family: Helvetica-Neue;
+        font-style: normal;
+        font-weight: bold;
+    font-size: 120%;
+    color: white;
+}
