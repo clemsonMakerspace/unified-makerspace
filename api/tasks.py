@@ -1,13 +1,18 @@
+"""
+The MakerSpace staff is able to manage maintenance tasks
+so that equipment can be repaired in a timely manner.
+"""
+
 import models
 
 
-def create_task(auth_token: str, task: models.Task):
+def get_tasks(auth_token: str):
     """
-    Creates a task.
+    Gets all tasks.
 
     ================   ============
-    **Endpoint**        /api/task/create
-    **Request Type**    POST
+    **Endpoint**        /api/tasks
+    **Request Type**    GET
     **Access**          MAINTAINER
     ================   ============
 
@@ -17,38 +22,96 @@ def create_task(auth_token: str, task: models.Task):
     auth_token : str, required
         Token to verify user credentials.
 
+    Returns
+    -------
+    Success
+    code: int
+        Return Code
+    tasks: [models.Task]
+        List of tasks.
+
+    """
+
+
+def create_task(auth_token: str, task: models.Task):
+    """
+    Creates a task.
+
+    ================   ============
+    **Endpoint**        /api/tasks
+    **Request Type**    POST
+    **Access**          MAINTAINER
+    ================   ============
+
+
+    Parameters
+    ----------
+    auth_token : str, required
+        Token to verify user credentials.
     task: models.Task, required
         The task to create.
 
     Returns
     -------
-    Success: Response
+    Success
+    code: int
+        Return Code
+    task_id: str
+        Task_id of newly created task.
 
     """
 
 
-def delete_task(auth_token: str, task_id: str):
+def resolve_task(auth_token: str, task_id: str):
     """
+    Resolves or completes a task.
 
     ================   ============
-    **Endpoint**        /api/task/delete
-    **Request Type**    POST
+    **Endpoint**        /api/tasks
+    **Request Type**    DELETE
     **Access**          MAINTAINER
     ================   ============
 
     Parameters
     ----------
-    auth_token
-    task_id: str
+    auth_token : str, required
+        Token to verify user credentials.
+    task_id: str, required
         The id of the task to be deleted.
 
+    Notes
+    -----
+    This does **not** delete the task. Resolved tasks
+    are still stored in the database.
 
     Returns
     -------
-
+    Success
+    code: int
+        Return Code
     """
-    pass
 
 
 def update_task(auth_token: str, task: models.Task):
-    pass
+    """
+    Updates a task.
+
+    ================   ============
+    **Endpoint**        /api/tasks
+    **Request Type**    PATCH
+    **Access**          MAINTAINER
+    ================   ============
+
+    Parameters
+    ----------
+    auth_token : str, required
+        Token to verify user credentials.
+    task: models.Task, required
+        The task to be updated.
+
+    Returns
+    -------
+    Success
+    code: int
+        Return Code
+    """

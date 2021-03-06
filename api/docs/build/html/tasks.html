@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Visitors" href="visitors.html" /><link rel="prev" title="Auth" href="auth.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Machines" href="machines.html" /><link rel="prev" title="Authentication" href="auth.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
         <title>Tasks - The Unified MakerSpace documentation</title>
@@ -108,8 +108,9 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="auth.html">Auth</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machines.html">Machines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
@@ -128,18 +129,20 @@
         </label>
         <div class="section" id="module-tasks">
 <span id="tasks"></span><h1>Tasks<a class="headerlink" href="#module-tasks" title="Permalink to this headline">¶</a></h1>
+<p>The MakerSpace staff is able to manage maintenance tasks
+so that equipment can be repaired in a timely manner.</p>
 <dl class="py function">
 <dt id="tasks.create_task">
 <code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">create_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task</span><span class="p">:</span> <span class="n"><a class="reference internal" href="models.html#models.Task" title="models.Task">models.Task</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.create_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a task.</p>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
-<col style="width: 48%"/>
-<col style="width: 52%"/>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
-<td><p>/api/task/create</p></td>
+<td><p>/api/tasks</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Request Type</strong></p></td>
 <td><p>POST</p></td>
@@ -157,27 +160,65 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>Success</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Response</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>task_id</strong> (<em>str</em>) – Task_id of newly created task.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py function">
-<dt id="tasks.delete_task">
-<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">delete_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.delete_task" title="Permalink to this definition">¶</a></dt>
-<dd><div class="table-wrapper"><table class="docutils align-default">
+<dt id="tasks.get_tasks">
+<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">get_tasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.get_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all tasks.</p>
+<div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
-<col style="width: 48%"/>
-<col style="width: 52%"/>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
-<td><p>/api/task/delete</p></td>
+<td><p>/api/tasks</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Request Type</strong></p></td>
-<td><p>POST</p></td>
+<td><p>GET</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MAINTAINER</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>tasks</strong> (<em>[models.Task]</em>) – List of tasks.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="tasks.resolve_task">
+<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">resolve_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.resolve_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolves or completes a task.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/tasks</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>DELETE</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Access</strong></p></td>
 <td><p>MAINTAINER</p></td>
@@ -187,9 +228,58 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>auth_token</strong> – </p></li>
-<li><p><strong>task_id</strong> (<em>str</em>) – The id of the task to be deleted.</p></li>
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>task_id</strong> (<em>str</em><em>, </em><em>required</em>) – The id of the task to be deleted.</p></li>
 </ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This does <strong>not</strong> delete the task. Resolved tasks
+are still stored in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="tasks.update_task">
+<code class="sig-prename descclassname">tasks.</code><code class="sig-name descname">update_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">task</span><span class="p">:</span> <span class="n"><a class="reference internal" href="models.html#models.Task" title="models.Task">models.Task</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tasks.update_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a task.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/tasks</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>PATCH</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MAINTAINER</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>task</strong> (<a class="reference internal" href="models.html#models.Task" title="models.Task"><em>models.Task</em></a><em>, </em><em>required</em>) – The task to be updated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -199,12 +289,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="visitors.html">
+          <a class="next-page" href="machines.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Visitors</div>
+                <div class="title">Machines</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -215,7 +305,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Auth</div>
+                <div class="title">Authentication</div>
                 
               </div>
             </a>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Models" href="models.html" /><link rel="prev" title="Tasks" href="tasks.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Models" href="models.html" /><link rel="prev" title="Machines" href="machines.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
         <title>Visitors - The Unified MakerSpace documentation</title>
@@ -108,8 +108,9 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="auth.html">Auth</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machines.html">Machines</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Visitors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
@@ -128,10 +129,14 @@
         </label>
         <div class="section" id="module-visitors">
 <span id="visitors"></span><h1>Visitors<a class="headerlink" href="#module-visitors" title="Permalink to this headline">¶</a></h1>
+<p>The MakerSpace is visited by students and faculty
+from all walks of life. The API enables the staff to see
+who exactly is visiting the MakerSpace, if they are a new
+member, and when.</p>
 <dl class="py function">
 <dt id="visitors.get_visitors">
-<code class="sig-prename descclassname">visitors.</code><code class="sig-name descname">get_visitors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visitors.get_visitors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets all MakerSpace visitors between a certain timeframe.</p>
+<code class="sig-prename descclassname">visitors.</code><code class="sig-name descname">get_visitors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visitors.get_visitors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all MakerSpace visitors within a given timeframe.</p>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
 <col style="width: 53%"/>
@@ -152,14 +157,16 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>auth_id</strong> (<em>str</em>) – </p></li>
-<li><p><strong>start_date</strong> – </p></li>
-<li><p><strong>end_date</strong> – </p></li>
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>start_date</strong> (<em>str</em><em>, </em><em>required</em>) – The start date (inclusive) of the time frame.</p></li>
+<li><p><strong>end_date</strong> (<em>str</em><em>, </em><em>optional</em>) – The end date (inclusive) of the time frame. If not specified,
+“today” is assumed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>Success</strong> (<em>Response</em>)</p></li>
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
 <li><p><strong>visitors</strong> (<em>[model.Visitor]</em>)</p></li>
 </ul>
 </p>
@@ -181,14 +188,14 @@
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="tasks.html">
+          <a class="prev-page" href="machines.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Tasks</div>
+                <div class="title">Machines</div>
                 
               </div>
             </a>

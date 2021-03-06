@@ -1,9 +1,84 @@
 """
-auth.py
+To access most of the MakerSpace data, an account with sufficient permissions
+is needed. The API provides functionality to create, edit, and delete accounts.
+
+.. note::
+   *Managers* can not be created directly, instead they must be promoted
+   by an existing account.
 """
 
 import models
-import requests
+
+
+def create_user(email: str, password: str):
+    """
+    Creates a new user in the Cognito Pool.
+
+    ================   ============
+    **Endpoint**        /api/users
+    **Request Type**    POST
+    **Access**          ALL
+    ================   ============
+
+
+    Parameters
+    -----------
+    email : str, required
+        The email of the user.
+    password : str, required
+        The raw password of the user.
+
+    Returns
+    --------
+    UserCreationSuccess
+    code: int
+        Return Code
+    message: str
+        Response Message
+    auth_token: str
+        The authentication token of the newly created user.
+
+    EmailInUse
+    code: int
+        Return Code
+    message: str
+        Response Message
+    """
+
+
+def delete_user(auth_token: str, user_id: str):
+    """
+    Deletes a user specified by their email.
+
+    ================   ============
+    **Endpoint**        /api/users
+    **Request Type**    DELETE
+    **Access**          MANAGER
+    ================   ============
+
+    Parameters
+    -----------
+    auth_token : str, required
+        Token to verify user credentials.
+    user_id : str, required
+        The id of the user.
+
+
+    Returns
+    --------
+    Success
+    code: int
+        Return Code
+    message: str
+        Response Message
+
+    InsufficientPermissions
+    code: int
+        Return Code
+    message: str
+        Response Message
+
+    """
 
 
 def get_users(auth_token: str):
@@ -23,78 +98,36 @@ def get_users(auth_token: str):
 
     Returns
     --------
-    Success : Response
-    code
-       200
+    Success
+    code: int
+        Return Code
     users: [models.User]
+        List of returned users.
     """
 
 
-def create_user(email: str, password: str, role: str):
+def update_permissions(auth_token: str, user_id: str, user: models.User):
     """
-    Creates a new user in the Cognito Pool.
+    Gets all the users with their permissions.
 
     ================   ============
-    **Endpoint**        /api/users/create
-    **Request Type**    POST
-    **Access**          ALL
-    ================   ============
-
-
-    Parameters
-    -----------
-    email : str, required
-        The email of the user.
-    password : str, required
-        The raw password of the user.
-    role : str, required
-        Specified role of the user.
-
-    Returns
-    --------
-    UserCreationSuccess : Response
-    code
-       200
-    message
-        The user has been successfully created.
-
-    EmailInUse : Response
-    code
-       400
-    message
-        This email is already being used.
-    """
-
-
-def delete_user(email: str, auth_token: str):
-    """
-    Deletes a user specified by their email.
-
-    ================   ============
-    **Endpoint**        /api/users/delete
-    **Request Type**    POST
+    **Endpoint**        /api/users
+    **Request Type**    PATCH
     **Access**          MANAGER
     ================   ============
 
     Parameters
     -----------
-    email : str, required
-        The email of the user.
     auth_token : str, required
         Token to verify user credentials.
+    user_id: str, required
+        The id of the user to update permissions for.
+    user:
+        The new user object with changed permissions.
 
     Returns
     --------
-    SuccessfulDelete : Response
-    code
-       200
-    message
-        Success
-
-    FailedDelete : Response
-    code
-       404
-    message
-        Unauthorized.
-
+    Success
+    code: int
+        Return Code
     """

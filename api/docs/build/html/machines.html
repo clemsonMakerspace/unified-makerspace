@@ -1,10 +1,10 @@
 <!doctype html>
 <html class="no-js">
   <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Tasks" href="tasks.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Visitors" href="visitors.html" /><link rel="prev" title="Tasks" href="tasks.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
-        <title>Users - The Unified MakerSpace documentation</title>
+        <title>Machines - The Unified MakerSpace documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=33d2fc4f3f180ec1ffc6524e273e21d7d58cbe49">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
@@ -88,7 +88,7 @@
       <a href="index.html"><div class="brand">The Unified MakerSpace  documentation</div></a>
     </div>
     <div class="header-right">
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -108,9 +108,11 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Users</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
 
 </div>
@@ -122,21 +124,72 @@
   <main class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="users">
-<h1>Users<a class="headerlink" href="#users" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="todo">
-<h2>Todo<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
-</div>
+        <div class="section" id="module-machines">
+<span id="machines"></span><h1>Machines<a class="headerlink" href="#module-machines" title="Permalink to this headline">¶</a></h1>
+<p>The MakerSpace team can quickly get an overview of the status of all MakerSpace equipment.</p>
+<dl class="py function">
+<dt id="machines.get_machines_status">
+<code class="sig-prename descclassname">machines.</code><code class="sig-name descname">get_machines_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#machines.get_machines_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the status for all machines within the given timeframe.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/machines</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>GET</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MANAGER, PUBLIC</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>start_date</strong> (<em>str</em><em>, </em><em>required</em>) – The start date (inclusive) of the time frame.</p></li>
+<li><p><strong>end_date</strong> (<em>str</em><em>, </em><em>optional</em>) – The end date (inclusive) of the time frame. If not specified,
+all requests until <em>now</em> are fetched.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If accessed with a public <em>auth_token</em>, returns only non-sensitive
+machine information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>machines</strong> (<em>[model.Machine]</em>) – List of machines with their statuses.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="visitors.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Visitors</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="tasks.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -158,7 +211,7 @@
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
             |
-            <a class="muted-link" href="_sources/users.rst.txt"
+            <a class="muted-link" href="_sources/machines.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -166,27 +219,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Users</a><ul>
-<li><a class="reference internal" href="#todo">Todo</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -1,4 +1,3 @@
-
 The MakerSpace Developer's Documentation
 ==================================================
 
@@ -7,8 +6,7 @@ Introduction
 This is the documentation for the MakerSpace API. It is divided into sections
 based on functionality. Each page documents for each endpoint, the endpoint url,
 the permissions, the parameters, and a brief description. The `models` page
-has specifications for all the objects that will be passed.
-
+has specifications for all the objects that will be exchanged by the api.
 
 Contents
 ---------
@@ -18,6 +16,7 @@ Contents
 
    auth
    tasks
+   machines
    visitors
    models
 

@@ -25,9 +25,9 @@ export class AppComponent{
   positionFooter() {
     let base = 0;
     let percent = Math.pow(window.scrollY / (document.body.scrollHeight - window.innerHeight), 2);
-    let ranges = [[500, 1000], [200, 500], [0, 0]];
+    let ranges = [[100, 170], [60, 100], [0, 0]];
     let positions = ranges.map(r => base + r[0] + (r[1] - r[0])*percent)
-    return positions.map(p => 'translateY(' + p + 'px)');
+    return positions.map(p => 'translateY(' + p + '%)');
 
   }
 

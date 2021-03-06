@@ -108,8 +108,9 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="auth.html">Auth</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machines.html">Machines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Models</a></li>
 </ul>
@@ -128,19 +129,26 @@
         </label>
         <div class="section" id="module-models">
 <span id="models"></span><h1>Models<a class="headerlink" href="#module-models" title="Permalink to this headline">¶</a></h1>
-<p>These are the various objects, or “models” that will be exchanged
-with the api. Each class should be represented as a javascript object,
-with the parameters as keys.</p>
+<p>These are the various objects, or “models” that the api uses. Each class
+should be represented as a javascript object, with the parameters as keys.
+Dates should be encoded in ISO 8601.</p>
 <dl class="py class">
-<dt id="models.Maintainer">
-<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Maintainer</code><span class="sig-paren">(</span><em class="sig-param">name: str, assigned_tasks: [&lt;class 'models.Task'&gt;]</em><span class="sig-paren">)</span><a class="headerlink" href="#models.Maintainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Model for a person who can be assigned tasks.</p>
+<dt id="models.Request">
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">requester_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">description</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">request_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a maintenance request to the MakerSpace. <cite>request_id</cite>
+is not passed in when creating requests.</p>
 </dd></dl>
 <dl class="py class">
 <dt id="models.Task">
-<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param">task_id: str, tags: [&lt;class 'str'&gt;], description: str, assigned_to: models.Maintainer, status: str</em><span class="sig-paren">)</span><a class="headerlink" href="#models.Task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Model for task object. <cite>status</cite> must be either “Completed”, “In-Progress”,
-or “Not Started”.</p>
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param">task_id: str, tags: [&lt;class 'str'&gt;], description: str, assigned_to: str, status: str</em><span class="sig-paren">)</span><a class="headerlink" href="#models.Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a task object. <cite>status</cite> must be either “Completed”, “In-Progress”,
+or “Not Started”. <cite>assigned_to</cite> is the user_id of the user to who the task
+is assigned to.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="models.User">
+<em class="property">class </em><code class="sig-prename descclassname">models.</code><code class="sig-name descname">User</code><span class="sig-paren">(</span><em class="sig-param">name: str, user_id: str, assigned_tasks: [&lt;class 'models.Task'&gt;], permissions: [&lt;class 'models.Permission'&gt;]</em><span class="sig-paren">)</span><a class="headerlink" href="#models.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a registered user of the MakerSpace.</p>
 </dd></dl>
 <dl class="py class">
 <dt id="models.Visitor">

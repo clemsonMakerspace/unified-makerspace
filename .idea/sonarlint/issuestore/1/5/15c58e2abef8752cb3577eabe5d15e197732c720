@@ -1,6 +1,6 @@
 
-spython:S1542"VRename function "isCardInDatabase" to match the regular expression ^[a-z_][a-z0-9_]*$.(ã¾äíùÿÿÿÿ
-hpython:S1192)"KDefine a constant instead of duplicating this literal 'text/plain' 4 times.(ÇĞŸÂıÿÿÿÿ
-zpython:S1542"]Rename function "isCardInDatabaseHandler" to match the regular expression ^[a-z_][a-z0-9_]*$.(¨ı‘úÿÿÿÿ
-qpython:S117""ZRename this local variable "reqParams" to match the regular expression ^[_a-z][a-z0-9_]*$.(ë€ø”
-Hpython:S5806>"+Rename this variable; it shadows a builtin.(÷†¤ñûÿÿÿÿ
+xpython:S1542"]Rename function "isCardInDatabaseHandler" to match the regular expression ^[a-z_][a-z0-9_]*$.(¨ı‘úÿÿÿÿ
+opython:S117"ZRename this local variable "reqParams" to match the regular expression ^[_a-z][a-z0-9_]*$.(ë€ø”
+Fpython:S5806"+Rename this variable; it shadows a builtin.(÷†¤ñûÿÿÿÿ
+qpython:S1542"VRename function "isCardInDatabase" to match the regular expression ^[a-z_][a-z0-9_]*$.(ã¾äíùÿÿÿÿ
+fpython:S1192"KDefine a constant instead of duplicating this literal 'text/plain' 4 times.(ÇĞŸÂıÿÿÿÿ

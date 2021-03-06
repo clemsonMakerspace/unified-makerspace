@@ -37,10 +37,20 @@
   <router-outlet></router-outlet>
 </div>
 
-<footer class="w-100 container-fluid" style="opacity:30%; margin-top: -400px; z-index: -1000; position: relative"
+<div class="w-100 container-fluid" style="opacity:30%; margin-top: -400px; z-index: -1000; position: relative"
         id="gear-art">
   <img src="assets/footer-1.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[0]}">
   <img src="assets/footer-2.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[1]}">
   <img src="assets/footer-3.svg" alt="footer" [ngStyle]="{'transform': layerTransforms[2]}">
+</div>
+<footer class="bg-primary">
+  <div class="row no-gutters d-flex justify-content-center py-6">
+    <div class="col-8 text-white text-center">
+      Made with <3 by the 2021 AWS Capstone Team.
+    </div>
+    <div class="col-8 text-white text-center">
+      Need assistance? Contact Us.
+    </div>
+  </div>
 </footer>
 

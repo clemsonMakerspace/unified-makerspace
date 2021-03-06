@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tasks" href="tasks.html" /><link rel="prev" title="The MakerSpace Developer’s Documentation" href="index.html" />
 
     <meta name="generator" content="sphinx-3.2.1, furo 2021.02.21.beta25"/>
-        <title>Auth - The Unified MakerSpace documentation</title>
+        <title>Authentication - The Unified MakerSpace documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=33d2fc4f3f180ec1ffc6524e273e21d7d58cbe49">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
@@ -108,8 +108,9 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Auth</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machines.html">Machines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visitors.html">Visitors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
@@ -126,22 +127,27 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="auth">
-<h1>Auth<a class="headerlink" href="#auth" title="Permalink to this headline">¶</a></h1>
-<p>This is the API for authentication</p>
-<span class="target" id="module-auth"></span><p>auth.py</p>
+        <div class="section" id="module-auth">
+<span id="authentication"></span><h1>Authentication<a class="headerlink" href="#module-auth" title="Permalink to this headline">¶</a></h1>
+<p>To access most of the MakerSpace data, an account with sufficient permissions
+is needed. The API provides functionality to create, edit, and delete accounts.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Managers</em> can not be created directly, instead they must be promoted
+by an existing account.</p>
+</div>
 <dl class="py function">
 <dt id="auth.create_user">
-<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">password</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">role</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.create_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">password</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.create_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new user in the Cognito Pool.</p>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
-<col style="width: 47%"/>
-<col style="width: 53%"/>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
-<td><p>/api/users/create</p></td>
+<td><p>/api/users</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Request Type</strong></p></td>
 <td><p>POST</p></td>
@@ -156,17 +162,17 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>email</strong> (<em>str</em><em>, </em><em>required</em>) – The email of the user.</p></li>
 <li><p><strong>password</strong> (<em>str</em><em>, </em><em>required</em>) – The raw password of the user.</p></li>
-<li><p><strong>role</strong> (<em>str</em><em>, </em><em>required</em>) – Specified role of the user.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>UserCreationSuccess</strong> (<em>Response</em>)</p></li>
-<li><p><em>code</em> – 200</p></li>
-<li><p><em>message</em> – The user has been successfully created.</p></li>
-<li><p><strong>EmailInUse</strong> (<em>Response</em>)</p></li>
-<li><p><em>code</em> – 400</p></li>
-<li><p><em>message</em> – This email is already being used.</p></li>
+<li><p><em>UserCreationSuccess</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Response Message</p></li>
+<li><p><strong>auth_token</strong> (<em>str</em>) – The authentication token of the newly created user.</p></li>
+<li><p><em>EmailInUse</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Response Message</p></li>
 </ul>
 </p>
 </dd>
@@ -174,19 +180,19 @@
 </dd></dl>
 <dl class="py function">
 <dt id="auth.delete_user">
-<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.delete_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">user_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.delete_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a user specified by their email.</p>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
-<col style="width: 47%"/>
-<col style="width: 53%"/>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
-<td><p>/api/users/delete</p></td>
+<td><p>/api/users</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Request Type</strong></p></td>
-<td><p>POST</p></td>
+<td><p>DELETE</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Access</strong></p></td>
 <td><p>MANAGER</p></td>
@@ -196,18 +202,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>email</strong> (<em>str</em><em>, </em><em>required</em>) – The email of the user.</p></li>
 <li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>user_id</strong> (<em>str</em><em>, </em><em>required</em>) – The id of the user.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>SuccessfulDelete</strong> (<em>Response</em>)</p></li>
-<li><p><em>code</em> – 200</p></li>
-<li><p><em>message</em> – Success</p></li>
-<li><p><strong>FailedDelete</strong> (<em>Response</em>)</p></li>
-<li><p><em>code</em> – 404</p></li>
-<li><p><em>message</em> – Unauthorized.</p></li>
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Response Message</p></li>
+<li><p><em>InsufficientPermissions</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Response Message</p></li>
 </ul>
 </p>
 </dd>
@@ -240,9 +246,47 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>Success</strong> (<em>Response</em>)</p></li>
-<li><p><em>code</em> – 200</p></li>
-<li><p><strong>users</strong> (<em>[models.User]</em>)</p></li>
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
+<li><p><strong>users</strong> (<em>[models.User]</em>) – List of returned users.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="auth.update_permissions">
+<code class="sig-prename descclassname">auth.</code><code class="sig-name descname">update_permissions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">user_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">user</span><span class="p">:</span> <span class="n"><a class="reference internal" href="models.html#models.User" title="models.User">models.User</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.update_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all the users with their permissions.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 57%"/>
+<col style="width: 43%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Endpoint</strong></p></td>
+<td><p>/api/users</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Request Type</strong></p></td>
+<td><p>PATCH</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access</strong></p></td>
+<td><p>MANAGER</p></td>
+</tr>
+</tbody>
+</table></div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_token</strong> (<em>str</em><em>, </em><em>required</em>) – Token to verify user credentials.</p></li>
+<li><p><strong>user_id</strong> (<em>str</em><em>, </em><em>required</em>) – The id of the user to update permissions for.</p></li>
+<li><p><strong>user</strong> – The new user object with changed permissions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Success</em></p></li>
+<li><p><strong>code</strong> (<em>int</em>) – Return Code</p></li>
 </ul>
 </p>
 </dd>
