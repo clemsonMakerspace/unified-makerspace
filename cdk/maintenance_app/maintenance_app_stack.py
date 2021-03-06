@@ -605,33 +605,36 @@ class MaintenanceAppStack(core.Stack):
 
         # /tasks
         tasks = um_api.root.addResource('tasks')
-        #
-        tasks.addMethod(httpMethod='GET')
+        # ViewUpcomingTasks
+        tasks.addMethod('GET',ViewUpcomingTasksIntegration)
         # CreateTask
-        tasks.addMethod(httpMethod='POST')
+        tasks.addMethod('POST',CreateTaskIntegration)
 
         # /tasks/{task_id}
         task = tasks.addResource('{task_id}')
         # ViewTask
-        task.addMethod(httpMethod='GET')
+        task.addMethod('GET',ViewTaskIntegration)
         # DeleteTask
-        task.addMethod(httpMethod='DELETE')
+        task.addMethod('DELETE',DeleteTaskIntegration)
         # EditTask
-        task.addMethod(httpMethod='PUT')
+        task.addMethod('PUT',EditTaskIntegration)
         # CompleteTask
-        task.addMethod(httpMethod='POST')
+        task.addMethod('POST',CompleteTaskIntegration)
 
         # /machines
         machines = um_api.root.addResource('machines')
         #
-        machines.addMethod(httpMethod='GET')
-        machines.addMethod(httpMethod='POST')
+        machines.addMethod('GET')
+        # AddMachine
+        machines.addMethod('POST',addMachineIntegration)
 
         # /machines/{machine_id}
         machine = machines.addResource('{machine_id}')
-        machine.addMethod(httpMethod='GET')
-        machine.addMethod(httpMethod='DELETE')
-        machine.addMethod(httpMethod='PUT')
+        # ViewMachineUpcomingTasks
+        machine.addMethod('GET',ViewMachineUpcomingTasksIntegration)
+        machine.addMethod('DELETE')
+        # EditMachineName
+        machine.addMethod('PUT',editMachineNameIntegration)
 
 
     #----------------Background Functions----------------
