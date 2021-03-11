@@ -153,6 +153,8 @@ class MaintenanceAppStack(core.Stack):
             handler='view_machine_types.viewMachineTypesHandler',
         )
 
+        viewMachineTypesIntegration = apigw.LambdaIntegration(viewMachineTypes)
+
         #view machine types api
         apigw.LambdaRestApi(
             self, 'ViewMachineTypesAPI',
@@ -170,6 +172,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
             handler='view_machine_by_types.viewMachineByTypesHandler',
         )
+
+        viewMachineByTypesIntegration = apigw.LambdaIntegration(viewMachineByTypes)
 
         #View Machine By Type Api
         apigw.LambdaRestApi(
@@ -189,6 +193,8 @@ class MaintenanceAppStack(core.Stack):
             handler='view_machine.viewMachineHandler',
         )
 
+        viewMachineIntegration = apigw.LambdaIntegration(viewMachine)
+
         #View Machine Api
         apigw.LambdaRestApi(
             self, 'ViewMachineAPI',
@@ -205,6 +211,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
             handler='view_machine_upcoming_task.ViewMachineUpcomingTasksHandler',
         )
+
+        ViewMachineUpcomingTasksIntegration = apigw.LambdaIntegration(ViewMachineUpcomingTasks)
 
         #View Machine Upcoming Api
         apigw.LambdaRestApi(
@@ -226,6 +234,8 @@ class MaintenanceAppStack(core.Stack):
             handler='ViewParentsByMachine.ViewParentsByMachineHandler',
         )
 
+        ViewParentsByMachineIntegration = apigw.LambdaIntegration(ViewParentsByMachine)
+
         #View Parents By Machine Api
         apigw.LambdaRestApi(
             self, 'ViewParentsByMachineAPI',
@@ -243,6 +253,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
             handler='add_machine.addMachineHandler',
         )
+
+        addMachineIntegration = apigw.LambdaIntegration(addMachine)
 
         #Add machine api
         apigw.LambdaRestApi(
@@ -262,6 +274,8 @@ class MaintenanceAppStack(core.Stack):
             handler='add_machine_type.addMachineTypeHandler',
         )
 
+        addMachineTypeIntegration = apigw.LambdaIntegration(addMachineType)
+
         #Add Machine Type Api
         apigw.LambdaRestApi(
             self, 'AddMachineTypeAPI',
@@ -279,6 +293,8 @@ class MaintenanceAppStack(core.Stack):
             handler='edit_machine_name.editMachineNameHandler',
         )
 
+        editMachineNameIntegration = apigw.LambdaIntegration(editMachineName)
+
         #Edit Machine Api
         apigw.LambdaRestApi(
             self, 'EditMachineNameAPI',
@@ -295,6 +311,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
             handler='delete_machine.deleteMachineHandler',
         )
+
+        deleteMachineIntegration = apigw.LambdaIntegration(deleteMachine)
 
         #Delete Machine Api
         apigw.LambdaRestApi(
@@ -317,6 +335,8 @@ class MaintenanceAppStack(core.Stack):
             handler='delete_machine_type.deleteMachineTypeHandler',
         )
 
+        deleteMachineTypeIntegration = apigw.LambdaIntegration(deleteMachineType)
+
         #Delete Machine Type Api
         apigw.LambdaRestApi(
             self, 'DeleteMachineTypeAPI',
@@ -336,6 +356,8 @@ class MaintenanceAppStack(core.Stack):
             handler='ViewTask.ViewTaskHandler',
         )
 
+        ViewTaskIntegration = apigw.LambdaIntegration(ViewTask)
+
         #View Task Api
         apigw.LambdaRestApi(
             self, 'ViewTaskApi',
@@ -353,6 +375,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
             handler='CreateTask.CreateTaskHandler',
         )
+
+        CreateTaskIntegration = apigw.LambdaIntegration(CreateTask)
 
         #Create Task Api
         apigw.LambdaRestApi(
@@ -374,6 +398,8 @@ class MaintenanceAppStack(core.Stack):
             timeout=core.Duration.seconds(30)
         )
 
+        EditTaskIntegration = apigw.LambdaIntegration(EditTask)
+
         #Edit Task Api
         apigw.LambdaRestApi(
             self, 'EditTaskApi',
@@ -394,6 +420,8 @@ class MaintenanceAppStack(core.Stack):
             handler='ViewUpcomingTasks.ViewUpcomingTasksHandler'
         )
 
+        ViewUpcomingTasksIntegration = apigw.LambdaIntegration(ViewUpcomingTasks)
+
         #View Upcoming Tasks API
         apigw.LambdaRestApi(
             self, 'ViewUpcomingTasksApi',
@@ -411,6 +439,8 @@ class MaintenanceAppStack(core.Stack):
             handler='DeleteTask.DeleteTaskHandler',
             timeout=core.Duration.seconds(30)
         )
+
+        DeleteTaskIntegration = apigw.LambdaIntegration(DeleteTask)
 
         #Delete Task Api
         apigw.LambdaRestApi(
@@ -433,6 +463,8 @@ class MaintenanceAppStack(core.Stack):
             timeout=core.Duration.seconds(10)
         )
 
+        CompleteTaskIntegration = apigw.LambdaIntegration(CompleteTask)
+
         #Complete Task Api
         apigw.LambdaRestApi(
             self, 'CompleteTaskApi',
@@ -443,7 +475,10 @@ class MaintenanceAppStack(core.Stack):
         ChildTable.grant_full_access(CompleteTask)
 
     #------------------Reporting Functions/API------------------
-        
+
+
+
+
         # View Machine History Function
         ViewMachineHistory = _lambda.Function(
             self, 'ViewMachineHistory',
@@ -561,6 +596,72 @@ class MaintenanceAppStack(core.Stack):
             self, 'ViewReportEmailApi',
             handler=ViewReportEmail
         )
+
+
+    #----------------Master API--------------------------
+        um_api = apigw.LambdaRestApi(self,'Master API',
+                                     handler = addMachine,
+                                     proxy = False)
+        # /
+        um_api.root.add_method('ANY')
+
+        # /tasks
+        tasks = um_api.root.add_resource('tasks')
+        # ViewUpcomingTasks
+        tasks.add_method('GET',ViewUpcomingTasksIntegration)
+        # CreateTask
+        tasks.add_method('POST',CreateTaskIntegration)
+
+        # /tasks/{task_id}
+        task = tasks.add_resource('{task_id}')
+        # ViewTask
+        task.add_method('GET',ViewTaskIntegration)
+        # DeleteTask
+        task.add_method('DELETE',DeleteTaskIntegration)
+        # EditTask
+        task.add_method('PUT',EditTaskIntegration)
+        # CompleteTask
+        task.add_method('POST',CompleteTaskIntegration)
+
+        # /machines
+        machines = um_api.root.add_resource('machines')
+        #
+        machines.add_method('GET')
+        # AddMachine
+        machines.add_method('POST',addMachineIntegration)
+
+        # /machines/{machine_id}
+        machine = machines.add_resource('{machine_id}')
+        # ViewMachineUpcomingTasks
+        machine.add_method('GET',ViewMachineUpcomingTasksIntegration)
+        machine.add_method('DELETE')
+        # EditMachineName
+        machine.add_method('PUT',editMachineNameIntegration)
+
+
+        #/auth
+        auth = um_api.root.add_resource('auth')
+
+        # create_user
+        #auth.add_method('POST',...)
+
+        # delete_user
+        #auth.add_method('DELETE',...)
+
+        # get_users
+        #auth.add_method('GET',...)
+
+        # update_permissions
+        #auth.add_method('PATCH',...)
+
+
+        #/visitors
+        visitors = um_api.root.add_resource('visitors')
+
+        # get_visitors
+        #visitors.add_method('GET',...)
+
+
 
     #----------------Background Functions----------------
 
