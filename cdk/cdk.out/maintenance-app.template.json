@@ -1,5 +1,143 @@
 {
   "Resources": {
+    "ParentTasks313BBE00": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "Parent_Id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Parent_Id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "Parent_Tasks"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Parent_Tasks/Resource"
+      }
+    },
+    "ChildTasks1C9A13A3": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "Due_Date",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "Parent_Id",
+            "KeyType": "RANGE"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Due_Date",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "Parent_Id",
+            "AttributeType": "S"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "Parent_Index",
+            "KeySchema": [
+              {
+                "AttributeName": "Parent_Id",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "Due_Date",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "Child_Tasks"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Child_Tasks/Resource"
+      }
+    },
+    "MachinesE2FBD357": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "Machine_Id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Machine_Id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "Machines"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Machines/Resource"
+      }
+    },
+    "MachineTypes45E80762": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "Machine_Type",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Machine_Type",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "Machine_Types"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Machine_Types/Resource"
+      }
+    },
     "MakerspaceUser6EEDD717": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -410,23 +548,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -439,23 +563,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -482,7 +592,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -495,7 +605,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -508,7 +618,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -533,7 +643,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewMachineTypes/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -948,23 +1058,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -977,23 +1073,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -1020,7 +1102,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1033,7 +1115,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -1046,7 +1128,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -1071,7 +1153,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewMachineByTypes/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -1486,23 +1568,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -1529,7 +1597,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1542,7 +1610,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -1555,7 +1623,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -1580,7 +1648,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewMachine/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -1995,23 +2063,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -2024,27 +2078,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -2053,23 +2104,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -2125,7 +2162,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -2138,7 +2175,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -2151,7 +2188,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -2176,7 +2213,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewMachineUpcomingTasks/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -2591,23 +2628,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -2620,23 +2643,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -2663,7 +2672,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -2676,7 +2685,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -2689,7 +2698,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -2714,7 +2723,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewParentsByMachine/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -3129,23 +3138,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -3158,23 +3153,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -3201,7 +3182,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -3214,7 +3195,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -3227,7 +3208,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -3252,7 +3233,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/AddMachine/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -3667,23 +3648,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -3710,7 +3677,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -3723,7 +3690,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -3736,7 +3703,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -3761,7 +3728,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/AddMachineType/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -4176,23 +4143,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -4219,7 +4172,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -4232,7 +4185,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -4245,7 +4198,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -4270,7 +4223,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/EditMachineName/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -4685,23 +4638,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -4714,23 +4653,35 @@
               "Effect": "Allow",
               "Resource": [
                 {
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition"
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
                       },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
+                      "/index/*"
                     ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -4743,52 +4694,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
-                  ]
-                },
-                {
-                  "Ref": "AWS::NoValue"
-                }
-              ]
-            },
-            {
-              "Action": "dynamodb:*",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -4844,7 +4752,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -4857,7 +4765,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -4870,7 +4778,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -4895,7 +4803,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/DeleteMachine/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -5310,23 +5218,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machine_Types"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachineTypes45E80762",
+                    "Arn"
                   ]
                 },
                 {
@@ -5353,7 +5247,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663"
+            "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -5366,7 +5260,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -5379,7 +5273,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4"
+                          "Ref": "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C"
                         }
                       ]
                     }
@@ -5404,7 +5298,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/DeleteMachineType/Resource",
-        "aws:asset:path": "asset.b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f",
+        "aws:asset:path": "asset.c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517",
         "aws:asset:property": "Code"
       }
     },
@@ -5819,27 +5713,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -5848,23 +5739,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -5891,7 +5768,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -5904,7 +5781,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -5917,7 +5794,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -5942,7 +5819,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewTask/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -6357,23 +6234,35 @@
               "Effect": "Allow",
               "Resource": [
                 {
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition"
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
                       },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
+                      "/index/*"
                     ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -6386,52 +6275,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
-                  ]
-                },
-                {
-                  "Ref": "AWS::NoValue"
-                }
-              ]
-            },
-            {
-              "Action": "dynamodb:*",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -6458,7 +6304,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -6471,7 +6317,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -6484,7 +6330,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -6509,7 +6355,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/CreateTask/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -6924,27 +6770,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -6982,23 +6825,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -7011,23 +6840,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -7054,7 +6869,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -7067,7 +6882,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -7080,7 +6895,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -7106,7 +6921,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/EditTask/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -7521,27 +7336,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             }
@@ -7564,7 +7376,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -7577,7 +7389,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -7590,7 +7402,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -7615,7 +7427,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewUpcomingTasks/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -8030,27 +7842,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -8088,23 +7897,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -8117,23 +7912,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -8160,7 +7941,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -8173,7 +7954,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -8186,7 +7967,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -8212,7 +7993,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/DeleteTask/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -8627,27 +8408,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             }
@@ -8670,7 +8448,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -8683,7 +8461,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -8696,7 +8474,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -8722,7 +8500,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/CompleteTask/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -9137,27 +8915,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -9166,23 +8941,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -9238,7 +8999,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -9251,7 +9012,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -9264,7 +9025,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -9290,7 +9051,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewMachineHistory/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -9705,27 +9466,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -9763,23 +9521,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -9806,7 +9550,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -9819,7 +9563,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -9832,7 +9576,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -9858,7 +9602,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewHistory/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -10278,27 +10022,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -10307,23 +10048,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -10379,7 +10106,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -10392,7 +10119,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -10405,7 +10132,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -10438,7 +10165,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ExportHistory/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -10858,27 +10585,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -10887,23 +10611,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Machines"
-                    ]
+                  "Fn::GetAtt": [
+                    "MachinesE2FBD357",
+                    "Arn"
                   ]
                 },
                 {
@@ -10959,7 +10669,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -10972,7 +10682,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -10985,7 +10695,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -11018,7 +10728,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ExportMachineHistory/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -11452,7 +11162,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -11465,7 +11175,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -11478,7 +11188,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -11511,7 +11221,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/UpdateReportEmail/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -11945,7 +11655,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -11958,7 +11668,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -11971,7 +11681,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -12004,7 +11714,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/ViewReportEmail/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
         "aws:asset:property": "Code"
       }
     },
@@ -12375,6 +12085,1742 @@
         "aws:cdk:path": "maintenance-app/ViewReportEmailApi/Default/ANY/Resource"
       }
     },
+    "MasterAPID05F9001": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "Master API"
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Resource"
+      }
+    },
+    "MasterAPICloudWatchRoleCE798AA2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/CloudWatchRole/Resource"
+      }
+    },
+    "MasterAPIAccount2E53533D": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "MasterAPICloudWatchRoleCE798AA2",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MasterAPID05F9001"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Account"
+      }
+    },
+    "MasterAPIDeployment2FB7D2D37fca631deb602cb0b18ca2d8e699cad8": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MasterAPIANY26979A1E",
+        "MasterAPIauth2B856C8A",
+        "MasterAPImachinesmachineidDELETE79826CBD",
+        "MasterAPImachinesmachineidGET30E55C00",
+        "MasterAPImachinesmachineidPUTDCCE14E5",
+        "MasterAPImachinesmachineid9F4E8624",
+        "MasterAPImachinesGET2AB94B84",
+        "MasterAPImachinesPOST29DE82F7",
+        "MasterAPImachines6F593767",
+        "MasterAPItaskstaskidDELETE53A32FB2",
+        "MasterAPItaskstaskidGETB99BE22B",
+        "MasterAPItaskstaskidPOST85BE6C9E",
+        "MasterAPItaskstaskidPUT2CA0578C",
+        "MasterAPItaskstaskidD30D1391",
+        "MasterAPItasksGETC411453F",
+        "MasterAPItasksPOSTF56D2B7D",
+        "MasterAPItasksEAA13ABA",
+        "MasterAPIvisitorsE5B2FF79"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Deployment/Resource"
+      }
+    },
+    "MasterAPIDeploymentStageprod7FA4DBD0": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "DeploymentId": {
+          "Ref": "MasterAPIDeployment2FB7D2D37fca631deb602cb0b18ca2d8e699cad8"
+        },
+        "StageName": "prod"
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/DeploymentStage.prod/Resource"
+      }
+    },
+    "MasterAPIANYApiPermissionmaintenanceappMasterAPI9798C8D5ANYF6365ECE": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/ANY/ApiPermission.maintenanceappMasterAPI9798C8D5.ANY.."
+      }
+    },
+    "MasterAPIANYApiPermissionTestmaintenanceappMasterAPI9798C8D5ANY3283A541": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/ANY/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.ANY.."
+      }
+    },
+    "MasterAPIANY26979A1E": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "MasterAPID05F9001",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "AddMachine3CCC914D",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/ANY/Resource"
+      }
+    },
+    "MasterAPItasksEAA13ABA": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MasterAPID05F9001",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "tasks",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/Resource"
+      }
+    },
+    "MasterAPItasksGETApiPermissionmaintenanceappMasterAPI9798C8D5GETtasksAC14E376": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewUpcomingTasks1C2D7398",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/GET/tasks"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/GET/ApiPermission.maintenanceappMasterAPI9798C8D5.GET..tasks"
+      }
+    },
+    "MasterAPItasksGETApiPermissionTestmaintenanceappMasterAPI9798C8D5GETtasksA5856415": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewUpcomingTasks1C2D7398",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/GET/tasks"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/GET/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.GET..tasks"
+      }
+    },
+    "MasterAPItasksGETC411453F": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "MasterAPItasksEAA13ABA"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewUpcomingTasks1C2D7398",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/GET/Resource"
+      }
+    },
+    "MasterAPItasksPOSTApiPermissionmaintenanceappMasterAPI9798C8D5POSTtasks22E23FE8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateTask0C1E0090",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/POST/tasks"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/POST/ApiPermission.maintenanceappMasterAPI9798C8D5.POST..tasks"
+      }
+    },
+    "MasterAPItasksPOSTApiPermissionTestmaintenanceappMasterAPI9798C8D5POSTtasks9DF7E095": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateTask0C1E0090",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/POST/tasks"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/POST/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.POST..tasks"
+      }
+    },
+    "MasterAPItasksPOSTF56D2B7D": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "MasterAPItasksEAA13ABA"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "CreateTask0C1E0090",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/POST/Resource"
+      }
+    },
+    "MasterAPItaskstaskidD30D1391": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "MasterAPItasksEAA13ABA"
+        },
+        "PathPart": "{task_id}",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/Resource"
+      }
+    },
+    "MasterAPItaskstaskidGETApiPermissionmaintenanceappMasterAPI9798C8D5GETtaskstaskidE22B4FD3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewTask4A52D87B",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/GET/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/GET/ApiPermission.maintenanceappMasterAPI9798C8D5.GET..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidGETApiPermissionTestmaintenanceappMasterAPI9798C8D5GETtaskstaskidC0BC523B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewTask4A52D87B",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/GET/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/GET/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.GET..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidGETB99BE22B": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "MasterAPItaskstaskidD30D1391"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewTask4A52D87B",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/GET/Resource"
+      }
+    },
+    "MasterAPItaskstaskidDELETEApiPermissionmaintenanceappMasterAPI9798C8D5DELETEtaskstaskidFB4606D3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DeleteTask5D496BA3",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/DELETE/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/DELETE/ApiPermission.maintenanceappMasterAPI9798C8D5.DELETE..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidDELETEApiPermissionTestmaintenanceappMasterAPI9798C8D5DELETEtaskstaskidF842BB9A": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DeleteTask5D496BA3",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/DELETE/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/DELETE/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.DELETE..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidDELETE53A32FB2": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "DELETE",
+        "ResourceId": {
+          "Ref": "MasterAPItaskstaskidD30D1391"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "DeleteTask5D496BA3",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/DELETE/Resource"
+      }
+    },
+    "MasterAPItaskstaskidPUTApiPermissionmaintenanceappMasterAPI9798C8D5PUTtaskstaskidDE6856CF": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EditTask7A6478CA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/PUT/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/PUT/ApiPermission.maintenanceappMasterAPI9798C8D5.PUT..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidPUTApiPermissionTestmaintenanceappMasterAPI9798C8D5PUTtaskstaskid209BCAD7": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EditTask7A6478CA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/PUT/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/PUT/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.PUT..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidPUT2CA0578C": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "MasterAPItaskstaskidD30D1391"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "EditTask7A6478CA",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/PUT/Resource"
+      }
+    },
+    "MasterAPItaskstaskidPOSTApiPermissionmaintenanceappMasterAPI9798C8D5POSTtaskstaskidB15DA294": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CompleteTaskA86B19A7",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/POST/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/POST/ApiPermission.maintenanceappMasterAPI9798C8D5.POST..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidPOSTApiPermissionTestmaintenanceappMasterAPI9798C8D5POSTtaskstaskid9E1DE9C7": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CompleteTaskA86B19A7",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/POST/tasks/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/POST/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.POST..tasks.{task_id}"
+      }
+    },
+    "MasterAPItaskstaskidPOST85BE6C9E": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "MasterAPItaskstaskidD30D1391"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "CompleteTaskA86B19A7",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/tasks/{task_id}/POST/Resource"
+      }
+    },
+    "MasterAPImachines6F593767": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MasterAPID05F9001",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "machines",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/Resource"
+      }
+    },
+    "MasterAPImachinesGETApiPermissionmaintenanceappMasterAPI9798C8D5GETmachines87CCB6D2": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/GET/machines"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/GET/ApiPermission.maintenanceappMasterAPI9798C8D5.GET..machines"
+      }
+    },
+    "MasterAPImachinesGETApiPermissionTestmaintenanceappMasterAPI9798C8D5GETmachinesA6C5CE45": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/GET/machines"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/GET/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.GET..machines"
+      }
+    },
+    "MasterAPImachinesGET2AB94B84": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "MasterAPImachines6F593767"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "AddMachine3CCC914D",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/GET/Resource"
+      }
+    },
+    "MasterAPImachinesPOSTApiPermissionmaintenanceappMasterAPI9798C8D5POSTmachinesFC69056C": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/POST/machines"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/POST/ApiPermission.maintenanceappMasterAPI9798C8D5.POST..machines"
+      }
+    },
+    "MasterAPImachinesPOSTApiPermissionTestmaintenanceappMasterAPI9798C8D5POSTmachinesBEA0DF6A": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/POST/machines"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/POST/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.POST..machines"
+      }
+    },
+    "MasterAPImachinesPOST29DE82F7": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "MasterAPImachines6F593767"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "AddMachine3CCC914D",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/POST/Resource"
+      }
+    },
+    "MasterAPImachinesmachineid9F4E8624": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "MasterAPImachines6F593767"
+        },
+        "PathPart": "{machine_id}",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/Resource"
+      }
+    },
+    "MasterAPImachinesmachineidGETApiPermissionmaintenanceappMasterAPI9798C8D5GETmachinesmachineidCFA47575": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewMachineUpcomingTasks31DF9BC3",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/GET/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/GET/ApiPermission.maintenanceappMasterAPI9798C8D5.GET..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidGETApiPermissionTestmaintenanceappMasterAPI9798C8D5GETmachinesmachineidFB27EA76": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewMachineUpcomingTasks31DF9BC3",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/GET/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/GET/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.GET..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidGET30E55C00": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "MasterAPImachinesmachineid9F4E8624"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewMachineUpcomingTasks31DF9BC3",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/GET/Resource"
+      }
+    },
+    "MasterAPImachinesmachineidDELETEApiPermissionmaintenanceappMasterAPI9798C8D5DELETEmachinesmachineid16FB478F": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/DELETE/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/DELETE/ApiPermission.maintenanceappMasterAPI9798C8D5.DELETE..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidDELETEApiPermissionTestmaintenanceappMasterAPI9798C8D5DELETEmachinesmachineid387D7C88": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AddMachine3CCC914D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/DELETE/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/DELETE/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.DELETE..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidDELETE79826CBD": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "DELETE",
+        "ResourceId": {
+          "Ref": "MasterAPImachinesmachineid9F4E8624"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "AddMachine3CCC914D",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/DELETE/Resource"
+      }
+    },
+    "MasterAPImachinesmachineidPUTApiPermissionmaintenanceappMasterAPI9798C8D5PUTmachinesmachineid9D8261A9": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EditMachineName7D173CCE",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/",
+              {
+                "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
+              },
+              "/PUT/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/PUT/ApiPermission.maintenanceappMasterAPI9798C8D5.PUT..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidPUTApiPermissionTestmaintenanceappMasterAPI9798C8D5PUTmachinesmachineid8405B81A": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EditMachineName7D173CCE",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MasterAPID05F9001"
+              },
+              "/test-invoke-stage/PUT/machines/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/PUT/ApiPermission.Test.maintenanceappMasterAPI9798C8D5.PUT..machines.{machine_id}"
+      }
+    },
+    "MasterAPImachinesmachineidPUTDCCE14E5": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "MasterAPImachinesmachineid9F4E8624"
+        },
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "EditMachineName7D173CCE",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/machines/{machine_id}/PUT/Resource"
+      }
+    },
+    "MasterAPIauth2B856C8A": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MasterAPID05F9001",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "auth",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/auth/Resource"
+      }
+    },
+    "MasterAPIvisitorsE5B2FF79": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MasterAPID05F9001",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "visitors",
+        "RestApiId": {
+          "Ref": "MasterAPID05F9001"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/Master API/Default/visitors/Resource"
+      }
+    },
     "MaintainTasksServiceRole88A8D863": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -12419,23 +13865,9 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Parent_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ParentTasks313BBE00",
+                    "Arn"
                   ]
                 },
                 {
@@ -12448,27 +13880,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -12520,7 +13949,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E"
+            "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -12533,7 +13962,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -12546,7 +13975,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A"
+                          "Ref": "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2"
                         }
                       ]
                     }
@@ -12571,7 +14000,7 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/MaintainTasks/Resource",
-        "aws:asset:path": "asset.d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e",
+        "aws:asset:path": "asset.dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9",
         "aws:asset:property": "Code"
       }
     },
@@ -12624,27 +14053,24 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/Child_Tasks"
-                    ]
+                  "Fn::GetAtt": [
+                    "ChildTasks1C9A13A3",
+                    "Arn"
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ChildTasks1C9A13A3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             }
@@ -12667,7 +14093,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA"
+            "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655"
           },
           "S3Key": {
             "Fn::Join": [
@@ -12680,7 +14106,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -12693,7 +14119,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F"
+                          "Ref": "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA"
                         }
                       ]
                     }
@@ -12726,14 +14152,479 @@
       ],
       "Metadata": {
         "aws:cdk:path": "maintenance-app/NotifyLead/Resource",
-        "aws:asset:path": "asset.39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e",
+        "aws:asset:path": "asset.688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10",
+        "aws:asset:property": "Code"
+      }
+    },
+    "createUserServiceRoleB9D8AADE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/createUser/ServiceRole/Resource"
+      }
+    },
+    "createUserC6ED88E6": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "CreateUser.CreateUserHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "createUserServiceRoleB9D8AADE",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "createUserServiceRoleB9D8AADE"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/createUser/Resource",
+        "aws:asset:path": "asset.b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18",
+        "aws:asset:property": "Code"
+      }
+    },
+    "getMajorsServiceRole441C6BA1": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/getMajors/ServiceRole/Resource"
+      }
+    },
+    "getMajorsD0C3F2B4": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "getMajors.getStudentInfoHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "getMajorsServiceRole441C6BA1",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "getMajorsServiceRole441C6BA1"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/getMajors/Resource",
+        "aws:asset:path": "asset.b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18",
+        "aws:asset:property": "Code"
+      }
+    },
+    "getStudentInfoServiceRoleD062AE79": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/getStudentInfo/ServiceRole/Resource"
+      }
+    },
+    "getStudentInfoA37DC87A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "getStudentInfo.getStudentInfoHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "getStudentInfoServiceRoleD062AE79",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "getStudentInfoServiceRoleD062AE79"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/getStudentInfo/Resource",
+        "aws:asset:path": "asset.b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18",
+        "aws:asset:property": "Code"
+      }
+    },
+    "insertNewStudentServiceRole8CFC77E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/insertNewStudent/ServiceRole/Resource"
+      }
+    },
+    "insertNewStudent174B4885": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "insertNewStudent.insertNewStudentHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "insertNewStudentServiceRole8CFC77E5",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "insertNewStudentServiceRole8CFC77E5"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/insertNewStudent/Resource",
+        "aws:asset:path": "asset.b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18",
+        "aws:asset:property": "Code"
+      }
+    },
+    "isCardInDatabaseServiceRole24BE899C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/isCardInDatabase/ServiceRole/Resource"
+      }
+    },
+    "isCardInDatabaseDC6C0F45": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "isCardInDatabase.isCardInDatabaseHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "isCardInDatabaseServiceRole24BE899C",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "isCardInDatabaseServiceRole24BE899C"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "maintenance-app/isCardInDatabase/Resource",
+        "aws:asset:path": "asset.b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18",
         "aws:asset:property": "Code"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Modules": "aws-cdk=1.89.0,@aws-cdk/assets=1.75.0,@aws-cdk/aws-apigateway=1.75.0,@aws-cdk/aws-apigatewayv2=1.75.0,@aws-cdk/aws-applicationautoscaling=1.75.0,@aws-cdk/aws-autoscaling=1.75.0,@aws-cdk/aws-autoscaling-common=1.75.0,@aws-cdk/aws-autoscaling-hooktargets=1.75.0,@aws-cdk/aws-batch=1.75.0,@aws-cdk/aws-certificatemanager=1.75.0,@aws-cdk/aws-cloudformation=1.75.0,@aws-cdk/aws-cloudfront=1.75.0,@aws-cdk/aws-cloudwatch=1.75.0,@aws-cdk/aws-codebuild=1.75.0,@aws-cdk/aws-codecommit=1.75.0,@aws-cdk/aws-codeguruprofiler=1.75.0,@aws-cdk/aws-codepipeline=1.75.0,@aws-cdk/aws-cognito=1.75.0,@aws-cdk/aws-dynamodb=1.75.0,@aws-cdk/aws-ec2=1.75.0,@aws-cdk/aws-ecr=1.75.0,@aws-cdk/aws-ecr-assets=1.75.0,@aws-cdk/aws-ecs=1.75.0,@aws-cdk/aws-efs=1.75.0,@aws-cdk/aws-elasticloadbalancing=1.75.0,@aws-cdk/aws-elasticloadbalancingv2=1.75.0,@aws-cdk/aws-events=1.75.0,@aws-cdk/aws-events-targets=1.75.0,@aws-cdk/aws-iam=1.75.0,@aws-cdk/aws-kinesis=1.75.0,@aws-cdk/aws-kinesisfirehose=1.75.0,@aws-cdk/aws-kms=1.75.0,@aws-cdk/aws-lambda=1.75.0,@aws-cdk/aws-logs=1.75.0,@aws-cdk/aws-route53=1.75.0,@aws-cdk/aws-route53-targets=1.75.0,@aws-cdk/aws-s3=1.75.0,@aws-cdk/aws-s3-assets=1.75.0,@aws-cdk/aws-s3-deployment=1.75.0,@aws-cdk/aws-sam=1.75.0,@aws-cdk/aws-secretsmanager=1.75.0,@aws-cdk/aws-servicediscovery=1.75.0,@aws-cdk/aws-sns=1.75.0,@aws-cdk/aws-sns-subscriptions=1.75.0,@aws-cdk/aws-sqs=1.75.0,@aws-cdk/aws-ssm=1.75.0,@aws-cdk/aws-stepfunctions=1.75.0,@aws-cdk/cloud-assembly-schema=1.75.0,@aws-cdk/core=1.75.0,@aws-cdk/custom-resources=1.75.0,@aws-cdk/cx-api=1.75.0,@aws-cdk/region-info=1.75.0,jsii-runtime=Python/3.8.3"
+        "Modules": "aws-cdk=1.92.0,@aws-cdk/assets=1.75.0,@aws-cdk/aws-apigateway=1.75.0,@aws-cdk/aws-apigatewayv2=1.75.0,@aws-cdk/aws-applicationautoscaling=1.75.0,@aws-cdk/aws-autoscaling=1.75.0,@aws-cdk/aws-autoscaling-common=1.75.0,@aws-cdk/aws-autoscaling-hooktargets=1.75.0,@aws-cdk/aws-batch=1.75.0,@aws-cdk/aws-certificatemanager=1.75.0,@aws-cdk/aws-cloudformation=1.75.0,@aws-cdk/aws-cloudfront=1.75.0,@aws-cdk/aws-cloudwatch=1.75.0,@aws-cdk/aws-codebuild=1.75.0,@aws-cdk/aws-codecommit=1.75.0,@aws-cdk/aws-codeguruprofiler=1.75.0,@aws-cdk/aws-codepipeline=1.75.0,@aws-cdk/aws-cognito=1.75.0,@aws-cdk/aws-dynamodb=1.75.0,@aws-cdk/aws-ec2=1.75.0,@aws-cdk/aws-ecr=1.75.0,@aws-cdk/aws-ecr-assets=1.75.0,@aws-cdk/aws-ecs=1.75.0,@aws-cdk/aws-efs=1.75.0,@aws-cdk/aws-elasticloadbalancing=1.75.0,@aws-cdk/aws-elasticloadbalancingv2=1.75.0,@aws-cdk/aws-events=1.75.0,@aws-cdk/aws-events-targets=1.75.0,@aws-cdk/aws-iam=1.75.0,@aws-cdk/aws-kinesis=1.75.0,@aws-cdk/aws-kinesisfirehose=1.75.0,@aws-cdk/aws-kms=1.75.0,@aws-cdk/aws-lambda=1.75.0,@aws-cdk/aws-logs=1.75.0,@aws-cdk/aws-route53=1.75.0,@aws-cdk/aws-route53-targets=1.75.0,@aws-cdk/aws-s3=1.75.0,@aws-cdk/aws-s3-assets=1.75.0,@aws-cdk/aws-s3-deployment=1.75.0,@aws-cdk/aws-sam=1.75.0,@aws-cdk/aws-secretsmanager=1.75.0,@aws-cdk/aws-servicediscovery=1.75.0,@aws-cdk/aws-sns=1.75.0,@aws-cdk/aws-sns-subscriptions=1.75.0,@aws-cdk/aws-sqs=1.75.0,@aws-cdk/aws-ssm=1.75.0,@aws-cdk/aws-stepfunctions=1.75.0,@aws-cdk/cloud-assembly-schema=1.75.0,@aws-cdk/core=1.75.0,@aws-cdk/custom-resources=1.75.0,@aws-cdk/cx-api=1.75.0,@aws-cdk/region-info=1.75.0,jsii-runtime=Python/3.6.9"
       },
       "Metadata": {
         "aws:cdk:path": "maintenance-app/CDKMetadata/Default"
@@ -12766,41 +14657,53 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"d2fd2aa76debd58f8bbb61326ef53d08d135a85ea8f5ec6441e29e7d518ee196\""
     },
-    "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3Bucket85B69663": {
+    "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3Bucket5FEB21D0": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f\""
+      "Description": "S3 bucket for asset \"c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517\""
     },
-    "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fS3VersionKey3E1D49B4": {
+    "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517S3VersionKeyB920D68C": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f\""
+      "Description": "S3 key for asset version \"c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517\""
     },
-    "AssetParametersb6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30fArtifactHashDEE68879": {
+    "AssetParametersc09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517ArtifactHash22A52CEE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b6b7ae2c7e8b33b7fa748519e47462c54db0581b1fa0476c38d381135cabe30f\""
+      "Description": "Artifact hash for asset \"c09618e31402fa99b9da7d8f4744f70a3102adc27817aa7b098a7a69e474b517\""
     },
-    "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3BucketD2E0B47E": {
+    "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3BucketEE21B1C2": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e\""
+      "Description": "S3 bucket for asset \"dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9\""
     },
-    "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eS3VersionKeyA9144D8A": {
+    "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9S3VersionKey227C4DE2": {
       "Type": "String",
-      "Description": "S3 key for asset version \"d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e\""
+      "Description": "S3 key for asset version \"dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9\""
     },
-    "AssetParametersd6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75eArtifactHash1496542F": {
+    "AssetParametersdd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9ArtifactHashA77B01E1": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"d6a24bbd232c86e36d4399743d7f83a69f731bd3aa32cf217757ef2a45c9a75e\""
+      "Description": "Artifact hash for asset \"dd0f95d526c1d0b9c2ef03b896ad25978c373c76571fbca8344ba26ab0c3d9a9\""
     },
-    "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3Bucket81F2FCBA": {
+    "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3BucketEC373655": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e\""
+      "Description": "S3 bucket for asset \"688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10\""
     },
-    "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eS3VersionKey63AA7C1F": {
+    "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10S3VersionKey41471DDA": {
       "Type": "String",
-      "Description": "S3 key for asset version \"39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e\""
+      "Description": "S3 key for asset version \"688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10\""
     },
-    "AssetParameters39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022eArtifactHashFB0DFCA7": {
+    "AssetParameters688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10ArtifactHashE760DB68": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"39986efc9965dd6c6f0136e6dc50d82e5a23a00d3e7a82b9e5fcaf52c458022e\""
+      "Description": "Artifact hash for asset \"688de2ff0233e4a75a737e9e7420c85b172436a576096b0603a5993e15811e10\""
+    },
+    "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3Bucket965E6130": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18\""
+    },
+    "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18S3VersionKeyC737420D": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18\""
+    },
+    "AssetParametersb4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18ArtifactHash5276483E": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b4df58052793bf616f56e014e04cf4eff72195e95a5faa67e2eaf4d27b1b7d18\""
     }
   },
   "Outputs": {
@@ -13370,6 +15273,32 @@
             "/",
             {
               "Ref": "ViewReportEmailApiDeploymentStageprod017F8AA4"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "MasterAPIEndpointCB674C1C": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MasterAPID05F9001"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "MasterAPIDeploymentStageprod7FA4DBD0"
             },
             "/"
           ]

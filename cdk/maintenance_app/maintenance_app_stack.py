@@ -599,42 +599,68 @@ class MaintenanceAppStack(core.Stack):
 
 
     #----------------Master API--------------------------
-        um_api = apigw.LambdaRestApi()
+        um_api = apigw.LambdaRestApi(self,'Master API',
+                                     handler = addMachine,
+                                     proxy = False)
         # /
-        um_api.root.addMethod(httpMethod='ANY')
+        um_api.root.add_method('ANY')
 
         # /tasks
-        tasks = um_api.root.addResource('tasks')
+        tasks = um_api.root.add_resource('tasks')
         # ViewUpcomingTasks
-        tasks.addMethod('GET',ViewUpcomingTasksIntegration)
+        tasks.add_method('GET',ViewUpcomingTasksIntegration)
         # CreateTask
-        tasks.addMethod('POST',CreateTaskIntegration)
+        tasks.add_method('POST',CreateTaskIntegration)
 
         # /tasks/{task_id}
-        task = tasks.addResource('{task_id}')
+        task = tasks.add_resource('{task_id}')
         # ViewTask
-        task.addMethod('GET',ViewTaskIntegration)
+        task.add_method('GET',ViewTaskIntegration)
         # DeleteTask
-        task.addMethod('DELETE',DeleteTaskIntegration)
+        task.add_method('DELETE',DeleteTaskIntegration)
         # EditTask
-        task.addMethod('PUT',EditTaskIntegration)
+        task.add_method('PUT',EditTaskIntegration)
         # CompleteTask
-        task.addMethod('POST',CompleteTaskIntegration)
+        task.add_method('POST',CompleteTaskIntegration)
 
         # /machines
-        machines = um_api.root.addResource('machines')
+        machines = um_api.root.add_resource('machines')
         #
-        machines.addMethod('GET')
+        machines.add_method('GET')
         # AddMachine
-        machines.addMethod('POST',addMachineIntegration)
+        machines.add_method('POST',addMachineIntegration)
 
         # /machines/{machine_id}
-        machine = machines.addResource('{machine_id}')
+        machine = machines.add_resource('{machine_id}')
         # ViewMachineUpcomingTasks
-        machine.addMethod('GET',ViewMachineUpcomingTasksIntegration)
-        machine.addMethod('DELETE')
+        machine.add_method('GET',ViewMachineUpcomingTasksIntegration)
+        machine.add_method('DELETE')
         # EditMachineName
-        machine.addMethod('PUT',editMachineNameIntegration)
+        machine.add_method('PUT',editMachineNameIntegration)
+
+
+        #/auth
+        auth = um_api.root.add_resource('auth')
+
+        # create_user
+        #auth.add_method('POST',...)
+
+        # delete_user
+        #auth.add_method('DELETE',...)
+
+        # get_users
+        #auth.add_method('GET',...)
+
+        # update_permissions
+        #auth.add_method('PATCH',...)
+
+
+        #/visitors
+        visitors = um_api.root.add_resource('visitors')
+
+        # get_visitors
+        #visitors.add_method('GET',...)
+
 
 
     #----------------Background Functions----------------
