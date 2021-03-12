@@ -1,83 +1,115 @@
-import flask
-import json
 import requests
+import models
+import json
 
-app = flask.Flask('__main__')
-
-def get_users():
-    pass
-
-@app.route('/users/')
-def create_user(email: str, password: str, role: str):
+def create_user(email: str, password: str):
     """
     Creates a new user in the Cognito Pool.
-
     ================   ============
-    **Endpoint**        /api/users/create
+    **Endpoint**        /api/users
     **Request Type**    POST
     **Access**          ALL
     ================   ============
-
-
     Parameters
     -----------
     email : str, required
         The email of the user.
     password : str, required
         The raw password of the user.
-    role : str, required
-        Specified role of the user.
-
     Returns
     --------
-    UserCreationSuccess : Response
-    code
-       200
-    message
-        The user has been successfully created.
-
-    EmailInUse : Response
-    code
-       400
-    message
-        This email is already being used.
+    UserCreationSuccess
+    code: int
+        Return Code
+    message: str
+        Response Message
+    auth_token: str
+        The authentication token of the newly created user.
+    EmailInUse
+    code: int
+        Return Code
+    message: str
+        Response Message
     """
 
-    payload = {'username':email,'password':password,'role':role,'email':email, 'first': 'my', 'last': 'name'}
+    payload = {'username':email,'password':password,'email':email, 'first': 'my', 'last': 'name'}
     response = requests.put("https://muq6dxolc9.execute-api.us-east-1.amazonaws.com/prod/CreateUser", data = json.dumps(payload))
+
+    return response.json()
+
+def delete_user(auth_token: str, user_id: str):
+    """
+    Deletes a user specified by their email.
+    ================   ============
+    **Endpoint**        /api/users
+    **Request Type**    DELETE
+    **Access**          MANAGER
+    ================   ============
+    Parameters
+    -----------
+    auth_token : str, required
+        Token to verify user credentials.
+    user_id : str, required
+        The id of the user.
+    Returns
+    --------
+    Success
+    code: int
+        Return Code
+    message: str
+        Response Message
+    InsufficientPermissions
+    code: int
+        Return Code
+    message: str
+        Response Message
+    """
+    payload = {'username':user_id, 'auth_token':auth_token}
+    response = requests.delete("https://6reu9k3vt9.execute-api.us-east-1.amazonaws.com/prod/RemoveUser", data = json.dumps(payload))
     
     return response.json()
 
-
-def delete_user(email: str, auth_token: str):
+def get_users(auth_token: str):
     """
-    Deletes a user specified by their email.
-
+    Gets all the users with their permissions.
     ================   ============
-    **Endpoint**        /api/users/delete
-    **Request Type**    POST
+    **Endpoint**        /api/users
+    **Request Type**    GET
     **Access**          MANAGER
     ================   ============
-
     Parameters
     -----------
-    email : str, required
-        The email of the user.
     auth_token : str, required
         Token to verify user credentials.
-
     Returns
     --------
-    SuccessfulDelete : Response
-    code
-       200
-    message
-        Success
+    Success
+    code: int
+        Return Code
+    users: [models.User]
+        List of returned users.
+    """
 
-    FailedDelete : Response
-    code
-       404
-    message
-        Unauthorized.
 
+def update_permissions(auth_token: str, user_id: str, user: models.User):
+    """
+    Gets all the users with their permissions.
+    ================   ============
+    **Endpoint**        /api/users
+    **Request Type**    PATCH
+    **Access**          MANAGER
+    ================   ============
+    Parameters
+    -----------
+    auth_token : str, required
+        Token to verify user credentials.
+    user_id: str, required
+        The id of the user to update permissions for.
+    user:
+        The new user object with changed permissions.
+    Returns
+    --------
+    Success
+    code: int
+        Return Code
     """
