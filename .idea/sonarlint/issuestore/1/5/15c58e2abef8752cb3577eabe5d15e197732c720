@@ -1,0 +1,6 @@
+
+xpython:S1542"]Rename function "isCardInDatabaseHandler" to match the regular expression ^[a-z_][a-z0-9_]*$.(¨ı‘úÿÿÿÿ
+opython:S117"ZRename this local variable "reqParams" to match the regular expression ^[_a-z][a-z0-9_]*$.(ë€ø”
+Fpython:S5806"+Rename this variable; it shadows a builtin.(÷†¤ñûÿÿÿÿ
+qpython:S1542"VRename function "isCardInDatabase" to match the regular expression ^[a-z_][a-z0-9_]*$.(ã¾äíùÿÿÿÿ
+fpython:S1192"KDefine a constant instead of duplicating this literal 'text/plain' 4 times.(ÇĞŸÂıÿÿÿÿ

@@ -2,5 +2,5 @@
 Tasks
 ======
 
-Todo
------
+.. automodule:: tasks
+   :members:
