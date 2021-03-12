@@ -597,72 +597,6 @@ class MaintenanceAppStack(core.Stack):
             handler=ViewReportEmail
         )
 
-
-    #----------------Master API--------------------------
-        um_api = apigw.LambdaRestApi(self,'Master API',
-                                     handler = addMachine,
-                                     proxy = False)
-        # /
-        um_api.root.add_method('ANY')
-
-        # /tasks
-        tasks = um_api.root.add_resource('tasks')
-        # ViewUpcomingTasks
-        tasks.add_method('GET',ViewUpcomingTasksIntegration)
-        # CreateTask
-        tasks.add_method('POST',CreateTaskIntegration)
-
-        # /tasks/{task_id}
-        task = tasks.add_resource('{task_id}')
-        # ViewTask
-        task.add_method('GET',ViewTaskIntegration)
-        # DeleteTask
-        task.add_method('DELETE',DeleteTaskIntegration)
-        # EditTask
-        task.add_method('PUT',EditTaskIntegration)
-        # CompleteTask
-        task.add_method('POST',CompleteTaskIntegration)
-
-        # /machines
-        machines = um_api.root.add_resource('machines')
-        #
-        machines.add_method('GET')
-        # AddMachine
-        machines.add_method('POST',addMachineIntegration)
-
-        # /machines/{machine_id}
-        machine = machines.add_resource('{machine_id}')
-        # ViewMachineUpcomingTasks
-        machine.add_method('GET',ViewMachineUpcomingTasksIntegration)
-        machine.add_method('DELETE')
-        # EditMachineName
-        machine.add_method('PUT',editMachineNameIntegration)
-
-
-        #/auth
-        auth = um_api.root.add_resource('auth')
-
-        # create_user
-        #auth.add_method('POST',...)
-
-        # delete_user
-        #auth.add_method('DELETE',...)
-
-        # get_users
-        #auth.add_method('GET',...)
-
-        # update_permissions
-        #auth.add_method('PATCH',...)
-
-
-        #/visitors
-        visitors = um_api.root.add_resource('visitors')
-
-        # get_visitors
-        #visitors.add_method('GET',...)
-
-
-
     #----------------Background Functions----------------
 
         #Maintain Tasks Function
@@ -713,30 +647,55 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
             handler='CreateUser.CreateUserHandler',
-        )    
+        )
+
+        #Add integration for auth API Gateway
+        createUserIntegration = apigw.LambdaIntegration(createUser)
+
+        #deleteUser
+        #View machine types function
+        deleteUser = _lambda.Function(
+            self, 'deleteUser',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='DeleteUser.DeleteUserHandler',
+        )
+
+        #Add integration for auth API Gateway
+        deleteUserIntegration = apigw.LambdaIntegration(deleteUser)
+
         #getMajors
         getMajor = _lambda.Function(
             self, 'getMajors',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
             handler='getMajors.getStudentInfoHandler',
-        )    
+        )
+
         #getStudentInfo
         getStudentInfo = _lambda.Function(
             self, 'getStudentInfo',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
             handler='getStudentInfo.getStudentInfoHandler',
-        )    
+        )
+
         #getTotals
-        
+        getTotals = _lambda.Function(
+            self, 'getTotals',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            handler='getTotals.getTotalsHandler',
+        )
+
         #insertNewStudent
         insertNewStudent = _lambda.Function(
             self, 'insertNewStudent',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
             handler='insertNewStudent.insertNewStudentHandler',
-        )    
+        )
+
         #isCardInDatabase
         isCardInDatabase = _lambda.Function(
             self, 'isCardInDatabase',
@@ -747,3 +706,81 @@ class MaintenanceAppStack(core.Stack):
 
         #Lambda@Edge authenticator
 
+#----------------Master API--------------------------
+        um_api = apigw.LambdaRestApi(self,'Master API',
+                                     handler = addMachine,
+                                     proxy = False)
+        # /
+        um_api.root.add_method('ANY')
+
+        # /tasks
+        tasks = um_api.root.add_resource('tasks')
+
+        #TODO: Ask about 
+            # viewUpcoming vs view and Task API Documentation (only one GET on there)
+            # resolveTask vs deleteTask
+            # update_task PATCH request type
+
+
+        # ViewUpcomingTasks
+        tasks.add_method('GET',ViewUpcomingTasksIntegration)
+        # CreateTask
+        tasks.add_method('POST',CreateTaskIntegration)
+        # /tasks/{task_id}
+        task = tasks.add_resource('{task_id}')
+        # ViewTask
+        task.add_method('GET',ViewTaskIntegration)
+        # DeleteTask
+        task.add_method('DELETE',DeleteTaskIntegration)
+        # EditTask
+        task.add_method('PUT',EditTaskIntegration)
+        # CompleteTask
+        task.add_method('POST',CompleteTaskIntegration)
+
+        
+        # /machines
+        machines = um_api.root.add_resource('machines')
+
+        #TODO: Ask about 
+            # API documentation only has get_machines_status
+            # View machine types?
+
+        machines.add_method('GET')
+        # AddMachine
+        machines.add_method('POST',addMachineIntegration)
+        # /machines/{machine_id}
+        machine = machines.add_resource('{machine_id}')
+        # ViewMachineUpcomingTasks
+        machine.add_method('GET',ViewMachineUpcomingTasksIntegration)
+        # DeleteMachine
+        machine.add_method('DELETE',deleteMachineIntegration)
+        # EditMachineName
+        machine.add_method('PUT',editMachineNameIntegration)
+
+
+        #/auth
+        auth = um_api.root.add_resource('auth')
+
+        #TODO: Ask about 
+            # get_users GET request 
+            # update_permissions PATCH request
+
+        # create_user
+        auth.add_method('POST',createUserIntegration)
+        #TODO Add resource for email/password
+        # delete_user
+        auth.add_method('DELETE',deleteUserIntegration)
+        # get_users
+        #auth.add_method('GET',...)
+        # update_permissions
+        #auth.add_method('PATCH',...)
+
+
+        #/visitors
+        visitors = um_api.root.add_resource('visitors')
+
+        #TODO: Ask about 
+            # get_vistors GET request 
+
+        # get_visitors
+        #visitors.add_method('GET',...)

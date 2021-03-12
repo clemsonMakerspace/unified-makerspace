@@ -1,7 +1,4 @@
-
-# Welcome to your CDK Python project!
-
-This is a blank project for Python development with CDK.
+# Welcome to the Unified Makerspace Project
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -37,11 +34,29 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
+You must now ensure that you are signed into AWS CLI:
+
+Instructions for configuring AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
+
+Sign in instructions for AWS Educate accounts:
+- Navigate to awseducate.com and sign in
+- Go to "My Classrooms" and select go to classroom for the class' account you wish to deploy to
+- Select "Account Details" and "Show" next to AWS CLI
+- Copy and paste the block code that is shown into ~/.aws/credentials
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 $ cdk synth
 ```
+
+If the synth is successful, you can then deploy to the AWS account you are currently signed into
+
+```
+$ cdk deploy
+```
+
+If you are updating an existing CloudFormation Stack, you will be met with a changelog which you can then review and hit "y" to approve
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
