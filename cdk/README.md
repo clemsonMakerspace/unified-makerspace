@@ -36,7 +36,8 @@ $ pip install -r requirements.txt
 
 You must now ensure that you are signed into AWS CLI:
 
-Instructions for configuring AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
+Instructions for configuring AWS CLI: 
+- https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
 
 Sign in instructions for AWS Educate accounts:
 - Navigate to awseducate.com and sign in
