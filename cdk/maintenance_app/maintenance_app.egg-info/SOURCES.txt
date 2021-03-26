@@ -1,7 +1,0 @@
-README.md
-setup.py
-maintenance_app/maintenance_app.egg-info/PKG-INFO
-maintenance_app/maintenance_app.egg-info/SOURCES.txt
-maintenance_app/maintenance_app.egg-info/dependency_links.txt
-maintenance_app/maintenance_app.egg-info/requires.txt
-maintenance_app/maintenance_app.egg-info/top_level.txt

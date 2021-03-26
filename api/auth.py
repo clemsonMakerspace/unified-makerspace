@@ -1,6 +1,4 @@
-import requests
 import models
-import json
 
 def create_user(email: str, password: str):
     """
@@ -21,21 +19,14 @@ def create_user(email: str, password: str):
     UserCreationSuccess
     code: int
         Return Code
-    message: str
-        Response Message
-    auth_token: str
-        The authentication token of the newly created user.
+    user: models.User
+        The newly created user.
     EmailInUse
     code: int
         Return Code
     message: str
         Response Message
     """
-
-    payload = {'username':email,'password':password,'email':email, 'first': 'my', 'last': 'name'}
-    response = requests.put("https://muq6dxolc9.execute-api.us-east-1.amazonaws.com/prod/CreateUser", data = json.dumps(payload))
-
-    return response.json()
 
 def delete_user(auth_token: str, user_id: str):
     """
@@ -64,10 +55,6 @@ def delete_user(auth_token: str, user_id: str):
     message: str
         Response Message
     """
-    payload = {'username':user_id, 'auth_token':auth_token}
-    response = requests.delete("https://6reu9k3vt9.execute-api.us-east-1.amazonaws.com/prod/RemoveUser", data = json.dumps(payload))
-    
-    return response.json()
 
 def get_users(auth_token: str):
     """

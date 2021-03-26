@@ -1,6 +1,0 @@
-
-hpython:S1192!"KDefine a constant instead of duplicating this literal 'text/plain' 4 times.(ÇÐŸÂýÿÿÿÿ
-lpython:S1542	"TRename function "getStudentInfo" to match the regular expression ^[a-z_][a-z0-9_]*$.(þ¾ñ¹
-qpython:S117"ZRename this local variable "reqParams" to match the regular expression ^[_a-z][a-z0-9_]*$.(¾¬µß
-xpython:S1542"[Rename function "getStudentInfoHandler" to match the regular expression ^[a-z_][a-z0-9_]*$.(øèŸ¥ýÿÿÿÿ
-Cpython:S58067"+Rename this variable; it shadows a builtin.(ÊŠ°•
