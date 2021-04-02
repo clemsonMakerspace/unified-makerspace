@@ -51,10 +51,11 @@ export class LoginComponent implements OnInit {
 
   login() {
     // todo check for success
-    this.auth.login();
+    this.auth.login(this.loginForm.get('username').value, this.loginForm.get('password').value);
     this.router.navigate(['dashboard']).then()
   }
 
+  // todo make sure forms are valid prior
   registerSuccess = false;
   register() {
     this.auth.register();

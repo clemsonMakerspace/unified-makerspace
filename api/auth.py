@@ -1,6 +1,4 @@
-import requests
 import models
-import json
 
 def create_user(email: str, password: str):
     """
@@ -21,21 +19,14 @@ def create_user(email: str, password: str):
     UserCreationSuccess
     code: int
         Return Code
-    message: str
-        Response Message
-    auth_token: str
-        The authentication token of the newly created user.
+    user: models.User
+        The newly created user.
     EmailInUse
     code: int
         Return Codecd 
     message: str
         Response Message
     """
-
-    payload = {'username':email,'password':password,'email':email, 'first': 'my', 'last': 'name'}
-    response = requests.put("https://muq6dxolc9.execute-api.us-east-1.amazonaws.com/prod/CreateUser", data = json.dumps(payload))
-
-    return response.json()
 
 def delete_user(auth_token: str, user_id: str):
     """
@@ -64,10 +55,6 @@ def delete_user(auth_token: str, user_id: str):
     message: str
         Response Message
     """
-    payload = {'username':user_id, 'auth_token':auth_token}
-    response = requests.delete("https://6reu9k3vt9.execute-api.us-east-1.amazonaws.com/prod/RemoveUser", data = json.dumps(payload))
-    
-    return response.json()
 
 def get_users(auth_token: str):
     """
@@ -89,20 +76,6 @@ def get_users(auth_token: str):
     users: [models.User]
         List of returned users.
     """
-    payload = {'token':auth_token}
-    response = requests.get("https://07lqyols29.execute-api.us-east-1.amazonaws.com/prod", data = json.dumps(payload))
-    print(response)
-    all_users = []
-    #Based on data, create model.User objects
-    for dic in response['users']:
-        tempUser = models.User()
-        tempUser.name = dic['name']
-        tempUser.user_id = dic['id']
-        tempUser.assigned_tasks = dic['tasks']
-        tempUser.permissions = dic['perm']
-        all_users.append(tempUser)
-
-    return all_users
 
 
 def update_permissions(auth_token: str, user_id: str, user: models.User):
@@ -127,8 +100,3 @@ def update_permissions(auth_token: str, user_id: str, user: models.User):
     code: int
         Return Code
     """
-
-    payload = {'token':auth_token, 'username':user_id, 'new_perm':user.permissions}
-    response = requests.delete("https://hlvnfsu3jh.execute-api.us-east-1.amazonaws.com/prod", data = json.dumps(payload))
-    
-    return response.json()

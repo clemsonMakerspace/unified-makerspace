@@ -1,5 +1,5 @@
 The MakerSpace Developer's Documentation
-==================================================
+=========================================
 
 Introduction
 -------------
@@ -19,6 +19,7 @@ Contents
    machines
    visitors
    models
+   example
 
 
 
