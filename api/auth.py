@@ -89,6 +89,20 @@ def get_users(auth_token: str):
     users: [models.User]
         List of returned users.
     """
+    payload = {'token':auth_token}
+    response = requests.get("https://07lqyols29.execute-api.us-east-1.amazonaws.com/prod", data = json.dumps(payload))
+    print(response)
+    all_users = []
+    #Based on data, create model.User objects
+    for dic in response['users']:
+        tempUser = models.User()
+        tempUser.name = dic['name']
+        tempUser.user_id = dic['id']
+        tempUser.assigned_tasks = dic['tasks']
+        tempUser.permissions = dic['perm']
+        all_users.append(tempUser)
+
+    return all_users
 
 
 def update_permissions(auth_token: str, user_id: str, user: models.User):
@@ -113,3 +127,7 @@ def update_permissions(auth_token: str, user_id: str, user: models.User):
     code: int
         Return Code
     """
+
+    payload = {'token':auth_token, 'username':user_id, 'new_perm':user.permissions}
+    response = requests.delete("https://hlvnfsu3jh.execute-api.us-east-1.amazonaws.com/prod", data = json.dumps(payload))
+
