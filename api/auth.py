@@ -27,7 +27,7 @@ def create_user(email: str, password: str):
         The authentication token of the newly created user.
     EmailInUse
     code: int
-        Return Code
+        Return Codecd 
     message: str
         Response Message
     """
@@ -130,4 +130,5 @@ def update_permissions(auth_token: str, user_id: str, user: models.User):
 
     payload = {'token':auth_token, 'username':user_id, 'new_perm':user.permissions}
     response = requests.delete("https://hlvnfsu3jh.execute-api.us-east-1.amazonaws.com/prod", data = json.dumps(payload))
-
+    
+    return response.json()
