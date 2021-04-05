@@ -71,7 +71,7 @@ def create_user(email: str, password: str, name: str):
         New authentication token.
     EmailInUse
     code: int
-        Return Code
+        Return Codecd 
     message: str
         Response Message
     """
