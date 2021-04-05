@@ -7,7 +7,7 @@ Dates should be encoded in ISO 8601.
 from attr import dataclass
 
 
-@dataclass()
+@dataclass
 class Task:
     """
     Represents a task object. `status` must be either "Completed", "In-Progress",
@@ -22,7 +22,7 @@ class Task:
     status: str
 
 
-@dataclass()
+@dataclass
 class Permission:
     """
     Represents a set of rules regarding a certain resource.
@@ -33,19 +33,19 @@ class Permission:
     can_delete: bool
 
 
-@dataclass()
+@dataclass
 class User:
     """
     Represents a registered user of the MakerSpace.
     """
+    user_id: str
     first_name: str
     last_name: str
-    user_id: str
     assigned_tasks: [Task]
     permissions: [Permission]
 
 
-@dataclass()
+@dataclass
 class Visitor:
     """
     Represents a visitor to the MakerSpace.

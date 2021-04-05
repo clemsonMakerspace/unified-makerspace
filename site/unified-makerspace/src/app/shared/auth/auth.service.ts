@@ -1,16 +1,20 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from "../api.service";
-import {Observable} from "rxjs";
+import {ApiService} from '../api.service';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {User} from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  userLoggedIn = false;
+  user: BehaviorSubject<User>;
+
   constructor(private api: ApiService) {
   }
 
-  userLoggedIn = false;
+
 
 
   // todo implement this method
@@ -24,4 +28,9 @@ export class AuthService {
   register() {
     this.userLoggedIn = true;
   }
+
+
+
+  // todo implement
+  logout() {}
 }

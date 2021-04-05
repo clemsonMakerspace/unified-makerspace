@@ -32,10 +32,16 @@ export class ApiService {
   }
 
 
+  apiEndpoint() {
+
+  }
+
+
   /*
     Authentication
    */
 
+  @this.apiEndpoint()
   createUser(email: string, password: string) {
     let [url, method] = this.endpoints['createUser'];
     return this.http.request<User>(method, url, {
@@ -58,7 +64,8 @@ export class ApiService {
 
 
   getUsers() {
-
+    let [url, method] = this.endpoints['getUsers'];
+    return this.http.request(method, url);
   }
 
 
@@ -94,7 +101,13 @@ export class ApiService {
 
   // todo not implemented
   login(username: string, password: string) {
-    return Observable;
+    let [url, method] = this.endpoints['createUser'];
+    return this.http.request<User>(method, url, {
+      body: {
+        'email': username,
+        'password': password
+      }
+    });
   }
 
 
