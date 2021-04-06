@@ -21,8 +21,13 @@ export class TasksComponent implements OnInit {
   // todo should tasks update in real time?
   // todo errors if not able to fetch certain data
 
-  // todo add date to tasks...
+  // todo add date to tasks...?
   // todo fix a bunch of shit.
+
+  // todo get maintainer by id
+
+  // todo create task not consistent with target date...
+  // todo remove extra task parameters...
 
   ngOnInit(): void {
     this.getTasks();
@@ -39,12 +44,16 @@ export class TasksComponent implements OnInit {
 
 
   // todo implement
-  addTask() {
-
+  // todo move to modal...?
+  createTask() {
+    // this.api.createTask({
+    //   ''
+    // });
   }
 
-  deleteTask() {
-
+  // todo get id...
+  resolveTask() {
+    this.api.resolveTask();
   }
 
   clearTasks(): void {

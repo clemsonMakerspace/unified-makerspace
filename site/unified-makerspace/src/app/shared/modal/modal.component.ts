@@ -16,12 +16,12 @@ export class ModalComponent implements OnInit {
   // todo make this dynamic
   tags = [];
 
-  contactForm: FormGroup;
+  taskForm: FormGroup;
 
   constructor(public modal: ModalService) {}
 
   parseTags() {
-    this.tags = this.contactForm.get('tags').value.trim().split(',');
+    this.tags = this.taskForm.get('tags').value.trim().split(',');
   }
 
   ngOnInit(): void {
@@ -33,8 +33,10 @@ export class ModalComponent implements OnInit {
     });
 
     // todo only for testing
+    // todo change contact form
+    // todo validation of parameters
 
-    this.contactForm = new FormGroup({
+    this.taskForm = new FormGroup({
       task_name: new FormControl('', Validators.required),
       tags: new FormControl('3D Printer, Urgent', Validators.required),
       people: new FormControl('', [Validators.required]),
@@ -54,15 +56,15 @@ export class ModalComponent implements OnInit {
   // todo use real api
 
   onSubmit(): void {
-    if (this.contactForm.valid) {
+    if (this.taskForm.valid) {
       this.formSubmitted = true;
-      this.formLoading = true;
+      this.formLoading = true; // todo stop loading eventually lmao
     }
   }
 
   showErrorFor(field: string): boolean {
     return (
-      this.contactForm.get(field).invalid && this.contactForm.get(field).touched
+      this.taskForm.get(field).invalid && this.taskForm.get(field).touched
     );
   }
 }

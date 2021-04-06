@@ -75,7 +75,7 @@ def create_user(email: str, password: str, first_name: str, last_name: str, hard
         New authentication token.
     EmailInUse
     code: int
-        Return Codecd 
+        Return Code
     message: str
         Response Message
     """
@@ -88,7 +88,7 @@ def delete_user(auth_token: str, user_id: str):
     ================   ============
     **Endpoint**        /api/users
     **Request Type**    DELETE
-    **Access**          MANAGER
+    **Access**          MAINTAINER
     ================   ============
 
     Parameters
@@ -113,28 +113,34 @@ def delete_user(auth_token: str, user_id: str):
     """
 
 
-def get_users(auth_token: str):
+def get_users(auth_token: str, user_ids: [str]):
     """
-    Gets all the users with their permissions.
+    Gets all the users with their permissions. If called
+    by maintainer, only retrieve names, otherwise get
+    all information.
 
     ================   ============
     **Endpoint**        /api/users
     **Request Type**    GET
-    **Access**          MANAGER
+    **Access**          MAINTAINER
     ================   ============
 
     Parameters
     -----------
     auth_token : str, required
         Token to verify user credentials.
+    user_ids: [str], optional
+        If specified, get only data for users
+        specified by user_id.
 
     Returns
     --------
     Success
     code: int
         Return Code
-    users: [models.User]
-        List of returned users.
+    users: [models.User] | [str]
+        List of returned users or names.Must be in same
+        order of request.
     """
 
 
@@ -145,7 +151,7 @@ def update_user(auth_token: str, user_id: str, user: models.User):
     ================   ============
     **Endpoint**        /api/users
     **Request Type**    PATCH
-    **Access**          MANAGER
+    **Access**          MAINTAINER
     ================   ============
 
     Parameters

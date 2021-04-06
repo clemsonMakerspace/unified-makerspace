@@ -35,7 +35,7 @@ def get_tasks(auth_token: str):
 
 def create_task(auth_token: str, task: models.Task):
     """
-    Creates a task.
+    Creates a new task.`task` may not have `status` or `task_id`.
 
     ================   ============
     **Endpoint**        /api/tasks

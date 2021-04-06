@@ -7,12 +7,15 @@ Dates should be encoded in ISO 8601.
 from attr import dataclass
 
 
+# todo should assigned to be an id?
+# todo get person by user id
+
 @dataclass
 class Task:
     """
     Represents a task object. `status` must be either "Completed", "In-Progress",
-    or "Not Started". `assigned_to` is the user_id of the user to who the task
-    is assigned to.
+    or "Not Started". `task_name` is a brief description of the task. `assigned_to`
+    is the user_id of the user to who the task is assigned to.
     """
 
     task_id: str

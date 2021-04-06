@@ -19,7 +19,7 @@
           <div class="">
             <form class="card-body" *ngIf="!formSubmitted">
               <h1 class="card-title display-4">Add Task</h1>
-              <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
                 <div class="row">
                   <div class="col-6">
                     <div class="form-group">
@@ -119,7 +119,7 @@
 
                     <div
                       class=""
-                      *ngIf="contactForm.get('people').value == 'new'"
+                      *ngIf="taskForm.get('people').value == 'new'"
                     >
                       <label for="new-person" class="text-secondary"
                         >Name</label

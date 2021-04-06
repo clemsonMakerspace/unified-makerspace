@@ -5,20 +5,20 @@ import { environment } from '../../environments/environment';
 import { User, Task } from './models';
 
 let endpoints = {
-  // authentication
+  /* authentication */
   createUser: ['/api/users', 'POST'],
+  login: ['/api/users', 'POST'],
   deleteUser: ['/api/users', 'DELETE'],
   getUsers: ['/api/users', 'GET'],
   updateUser: ['/api/users', 'PATCH'],
-  login: ['/api/users', 'POST'],
-  // tasks
+  /* tasks */
   getTasks: ['/api/tasks', 'GET'],
   createTask: ['/api/tasks', 'POST'],
   resolveTask: ['/api/tasks', 'DELETE'],
   updateTask: ['/api/tasks', 'PATCH'],
-  // machines
+  /* machines */
   getMachinesStatus: ['/api/machines', 'GET'],
-  // visitors
+  /* visitors */
   getVisitors: ['/api/visitors', 'GET'],
 
   // todo add the rest...
@@ -46,9 +46,7 @@ function endpoint(
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  /*
-    Authentication
-   */
+  /** Authentication **/
 
   @endpoint
   login(args: any): any | Observable<User> {
@@ -63,37 +61,41 @@ export class ApiService {
 
   @endpoint
   deleteUser(args: any) {
-    // let [url, method] = this.endpoints['deleteUser'];
-    // return this.http.request(method, url, {
-    //   body: {
-    //     'user_id': user_id,
-    //   }
-    // });
-  }
-
-  //
-  // getUsers() {
-  //   let [url, method] = this.endpoints['getUsers'];
-  //   return this.http.request(method, url);
-  // }
-  //
-
-  updatePermissions(user_id: string, user) {}
-
-  /*
-  Tasks
-   */
-
-  createTask(task) {
-    return this.http.get('endpoint');
-  }
-
-  @endpoint
-  getTasks(args: any): Observable<[Task]> {
     return args;
   }
 
-  resolveTask(task_id: string) {}
 
+  @endpoint
+  getUsers(args: any) {
+    return args;
+  }
+
+
+  updatePermissions(user_id: string, user) {}
+
+  /** Tasks **/
+
+  @endpoint
+  createTask(args: any): any | Observable<Response> {
+    args['task_id'] = 'null';
+    args['status'] = 'null';
+    return args;
+  }
+
+  @endpoint
+  getTasks(args: any): any | Observable<[Task]> {
+    return args;
+  }
+
+  @endpoint
+  resolveTask(args: {"task_id": string}): any | Observable<Response> {
+    return args;
+  }
+
+
+  // todo does this exist
+  @endpoint
   updateTask(task) {}
+
+  // todo figure out a way to synchronize documentation with models here
 }
