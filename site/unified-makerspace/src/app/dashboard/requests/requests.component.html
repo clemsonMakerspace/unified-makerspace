@@ -4,11 +4,11 @@
     <div class="mb-3" *ngFor="let request of requests">
       <div class="card bg-dark">
         <div class="card-header d-flex justify-content-between">
-          <h6 class="text-secondary">{{request.name}}</h6>
-          <h6 class="text-secondary">{{request.date}}</h6>
+          <h6 class="text-secondary">{{ request.name }}</h6>
+          <h6 class="text-secondary">{{ request.date }}</h6>
         </div>
         <div class="card-body text-light p-0 d-flex justify-content-between">
-          <h5>"{{request.request}}"</h5>
+          <h5>"{{ request.request }}"</h5>
           <div class="">
             <button class="btn btn-secondary mr-3">Assign</button>
             <button class="btn btn-success">

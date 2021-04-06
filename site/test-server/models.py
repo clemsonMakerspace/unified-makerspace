@@ -7,6 +7,9 @@ Dates should be encoded in ISO 8601.
 from attr import dataclass
 
 
+# todo should assigned to be an id?
+# todo get person by user id
+
 @dataclass
 class Task:
     """
@@ -16,9 +19,10 @@ class Task:
     """
 
     task_id: str
-    tags: [str]
+    task_name: str
     description: str
     assigned_to: str
+    tags: [str]
     status: str
 
 

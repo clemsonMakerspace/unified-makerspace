@@ -1,14 +1,23 @@
 <div id="tasks" class="card bg-primary">
   <div class="card-body">
-
     <div id="task-top" class="row no-gutters mb-3">
       <h1 class="card-title text-light col-12 col-md-8">Current Tasks</h1>
       <div class="text-white col-4">
         <div id="task-buttons" class="d-flex justify-content-between">
-          <button id="add-task-button" class="btn btn-secondary" type="button" (click)="modal.open()">
+          <button
+            id="add-task-button"
+            class="btn btn-secondary"
+            type="button"
+            (click)="modal.open()"
+          >
             <h3 class="bi bi-plus-circle"></h3>
           </button>
-          <button id="clear-completed-button" class="btn btn-secondary ml-2" type="button" (click)="clearTasks()">
+          <button
+            id="clear-completed-button"
+            class="btn btn-secondary ml-2"
+            type="button"
+            (click)="clearTasks()"
+          >
             <h3 class="bi bi-trash2-fill"></h3>
           </button>
           <button class="btn btn-secondary ml-2" (click)="exportTaskData()">
@@ -31,24 +40,33 @@
     </div>
 
     <div id="task-data">
-      <div class="rounded bg-dark p-2 text-light my-2" *ngFor="let task of tasks">
-        <div class="card-body p-2" (mouseenter)="task.show = true" (mouseleave)="task.show = false">
+      <div
+        class="rounded bg-dark p-2 text-light my-2"
+        *ngFor="let task of tasks"
+      >
+        <div
+          class="card-body p-2"
+          (mouseenter)="task.show = true"
+          (mouseleave)="task.show = false"
+        >
           <div class="row text-center">
-            <h6 class="col-4 mb-0">{{task.task}}</h6>
-            <h4 class="col-4 mb-0">{{task.person}}</h4>
-            <h5 class="col-4 mb-0 p-0" [ngClass]="{'text-success': task.status == 'Completed'}">
-              {{task.status}}
+            <h6 class="col-4 mb-0">{{ task.task_name }}</h6>
+            <h4 class="col-4 mb-0">{{ task.person }}</h4>
+            <h5
+              class="col-4 mb-0 p-0"
+              [ngClass]="{ 'text-success': task.status == 'Completed' }"
+            >
+              {{ task.status }}
             </h5>
           </div>
           <div id="task-expanded" class="pl-4 mt-3" *ngIf="task.show">
-            <hr class="text-white">
+            <hr class="text-white" />
             <h6 class="text-muted">Date assigned: N/A</h6>
             <h6 class="text-muted">Target date: N/A</h6>
-            <h6 class="text-muted">Task description: N/A</h6>
+            <h6 class="text-muted">Task description: {{task.description}}</h6>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>

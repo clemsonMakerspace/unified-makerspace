@@ -4,12 +4,14 @@
     <div class="card-body">
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Users</h1>
-        <a class="text-secondary h2 d-block" routerLink="/users">Add or remove users</a>
+        <a class="text-secondary h2 d-block" routerLink="/users"
+          >Add or remove users</a
+        >
       </div>
 
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Account</h1>
-        <h2 class="text-secondary">Sign Out</h2>
+        <a class="text-secondary h2" (click)="auth.logout()">Sign Out</a>
         <h2 class="text-secondary">Export All Data</h2>
         <h2 class="text-secondary">Change Password</h2>
         <h2 class="text-danger">Delete Account</h2>
@@ -17,6 +19,3 @@
     </div>
   </div>
 </div>
-
-
-

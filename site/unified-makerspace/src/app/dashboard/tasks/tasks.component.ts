@@ -1,63 +1,89 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalService} from '../../shared/modal.service';
+import {ApiService} from '../../shared/api.service';
+import { Task } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.scss']
+  styleUrls: ['./tasks.component.scss'],
 })
 export class TasksComponent implements OnInit {
-
-  constructor(public modal: ModalService) {
+  constructor(public modal: ModalService, private api: ApiService) {
   }
 
-  tasks = [{
-    task: 'Replace 3D-Printer Cartridge',
-    person: 'Ellie',
-    status: 'Completed',
-  },
-    {
-      task: 'Install new CNC-Router',
-      person: 'Beck',
-      status: 'In-Progress'
-    },
-    {
-      task: 'Update the Sign-in System',
-      person: 'Peach',
-      status: 'Not Started'
-    }
-  ];
+  tasks: Task[];
 
+  // todo scroll to see more tasks...
+  // todo get names from ids...
+  // todo ask mason to update based on new task description
+
+  // todo should tasks update in real time?
+  // todo errors if not able to fetch certain data
+
+  // todo add date to tasks...
+  // todo fix a bunch of shit.
 
   ngOnInit(): void {
+    this.getTasks();
+  }
+
+
+  // todo convert tasks to usable format by getting person from user
+  getTasks() {
+    this.api.getTasks([]).subscribe((res) => {
+      this.tasks = res['tasks'];
+      console.log(this.tasks); // todo remove later...
+    })
+  }
+
+
+  // todo implement
+  addTask() {
+
+  }
+
+  deleteTask() {
+
   }
 
   clearTasks(): void {
-    this.tasks = this.tasks.filter((task) =>
-      task.status !== 'Completed'
-    );
-
+    this.tasks = this.tasks.filter((task) => task.status !== 'Completed');
   }
 
-  exportTaskData(){
-    let rowDelimiter = '\n'
-    let columnDelimiter = ','
-    let formattedData = 'data:text/csv;charset=utf-8,'
+
+  exportTaskData() {
+    let rowDelimiter = '\n';
+    let columnDelimiter = ',';
+    let formattedData = 'data:text/csv;charset=utf-8,';
 
     //setup header of csv as Task, Person, Status
-    formattedData += "Task" + columnDelimiter + "Person" + columnDelimiter + "Status" + rowDelimiter
+    formattedData +=
+      'Task' +
+      columnDelimiter +
+      'Person' +
+      columnDelimiter +
+      'Status' +
+      rowDelimiter;
 
     //loop through tasks and add data to csv
-    this.tasks.forEach(function (item, index) {
-      formattedData += item.task + columnDelimiter + item.person + columnDelimiter + item.status + rowDelimiter
+    this.tasks.forEach(function(item, index) {
+      formattedData +=
+        item.task_name +
+        columnDelimiter +
+        item.assigned_to +
+        columnDelimiter +
+        item.status +
+        rowDelimiter;
     });
 
     //Download data as a csv
     let encodedUri = encodeURI(formattedData);
-    var link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Tasks.csv")
-    document.body.appendChild(link)
-    link.click()
+    var link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'Tasks.csv');
+    document.body.appendChild(link);
+    link.click();
   }
+
 }

@@ -2,7 +2,6 @@
   <div class="card-body">
     <h1 class="card-title text-light">Status</h1>
     <ngx-charts-heat-map
-
       class="text-white"
       [view]="[graph.offsetWidth - 80, 300]"
       [results]="machines"
@@ -13,10 +12,9 @@
       [yAxisLabel]="'Machines'"
       [xAxisLabel]="'Past 24 hours'"
       [tooltipText]="tooltip"
-      [scheme]="{'domain':['#dc3545','#ffc107', '#28a745']}"
+      [scheme]="{ domain: ['#dc3545', '#ffc107', '#28a745'] }"
       style="fill: white"
     >
     </ngx-charts-heat-map>
   </div>
 </div>
-

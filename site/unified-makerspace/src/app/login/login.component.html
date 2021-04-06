@@ -1,85 +1,139 @@
 <div class="center row h-100 w-100 no-gutters">
   <div class="card bg-primary col-xl-6 col-lg-8 col-12">
-
-
-<!--Login Form-->
+    <!--Login Form-->
     <div class="card-body" *ngIf="formType == 'login'">
       <h1 class="card-title text-light">Login</h1>
       <form [formGroup]="loginForm" (ngSubmit)="login()">
-
-        <div class="form-group text-light"><label for="username">
-          Username
-        </label><input type="text" class="form-control" id="username" formControlName="username"></div>
+        <div class="form-group text-light">
+          <label for="username"> Username </label
+          ><input
+            type="text"
+            class="form-control"
+            id="username"
+            formControlName="username"
+          />
+        </div>
 
         <div class="form-group text-light mb-4">
-          <label for="password">
-          Password</label>
-          <input type="password" class="form-control" id="password" formControlName="password">
+          <label for="password"> Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+          />
 
           <a class="text-muted h6 mt-1">Forgot password?</a>
         </div>
 
-        <button class="btn py-3 btn-secondary w-100 mb-2" type="submit" [ngClass]="{'disabled': registerForm.invalid}">
+        <button
+          class="btn py-3 btn-secondary w-100 mb-2"
+          type="submit"
+          [ngClass]="{ disabled: registerForm.invalid }"
+        >
           Login
         </button>
-        <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{errorMessage}}</small>
-        <a class="text-muted mt-3 d-block" (click)="switchMode()">Need an account?</a>
+        <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{
+          errorMessage
+        }}</small>
+        <a class="text-muted mt-3 d-block" (click)="switchMode()"
+          >Need an account?</a
+        >
       </form>
     </div>
 
-<!--Register Form-->
+    <!--Register Form-->
     <div class="card-body" *ngIf="formType == 'register' && !success">
       <h1 class="card-title text-light">Register</h1>
       <form [formGroup]="registerForm" (ngSubmit)="register()">
-
-        <div class="form-group text-light"><label for="new-username">
-          Email
-        </label>
-          <input type="text" class="form-control" id="new-username" formControlName="username" #username>
-          <small class="warning-label" *ngIf="registerForm.get('username').dirty && !username.value">
+        <div class="form-group text-light">
+          <label for="new-username"> Email </label>
+          <input
+            type="text"
+            class="form-control"
+            id="new-username"
+            formControlName="username"
+            #username
+          />
+          <small
+            class="warning-label"
+            *ngIf="registerForm.get('username').dirty && !username.value"
+          >
             Required field.
           </small>
         </div>
 
-
         <div class="form-group text-light mb-3">
-          <label for="new-password">
-            Password</label>
-          <input type="password" class="form-control" id="new-password" formControlName="password" #password>
-          <small class="warning-label" *ngIf="registerForm.get('password').dirty && !password.value">
+          <label for="new-password"> Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="new-password"
+            formControlName="password"
+            #password
+          />
+          <small
+            class="warning-label"
+            *ngIf="registerForm.get('password').dirty && !password.value"
+          >
             Required field.
           </small>
         </div>
 
         <div class="form-group text-light mb-4">
-          <label for="confirm-password">
-            Confirm Password</label>
-          <input type="password" class="form-control" id="confirm-password" formControlName="confirmPassword" #newPassword>
-          <small class="warning-label"
-                 *ngIf="newPassword.value && (password.value != newPassword.value)">
+          <label for="confirm-password"> Confirm Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="confirm-password"
+            formControlName="confirmPassword"
+            #newPassword
+          />
+          <small
+            class="warning-label"
+            *ngIf="newPassword.value && password.value != newPassword.value"
+          >
             Passwords do not match!
           </small>
-          <small class="warning-label" *ngIf="registerForm.get('confirmPassword').dirty && !newPassword.value">
+          <small
+            class="warning-label"
+            *ngIf="
+              registerForm.get('confirmPassword').dirty && !newPassword.value
+            "
+          >
             Required field.
           </small>
         </div>
 
-        <button class="btn py-3 btn-secondary w-100 mb-2" type="submit" [ngClass]="{'disabled': registerForm.invalid}">
+        <button
+          class="btn py-3 btn-secondary w-100 mb-2"
+          type="submit"
+          [ngClass]="{ disabled: registerForm.invalid }"
+        >
           Register
         </button>
-        <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{errorMessage}}</small>
-        <a class="text-muted mt-3 d-block" (click)="switchMode()">Have an account?</a>
+        <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{
+          errorMessage
+        }}</small>
+        <a class="text-muted mt-3 d-block" (click)="switchMode()"
+          >Have an account?</a
+        >
       </form>
     </div>
 
-<!--Successful Registration-->
+    <!--Successful Registration-->
     <div class="card-body" *ngIf="success">
       <h1 class="card-title text-light">Success!</h1>
-      <h2 class="card-title text-secondary">Check your email to confirm your account.</h2>
-      <h4 class="text-light">If you can't find it, try checking your spam. The email was sent to
-      <span class="a font-weight-bold">{{this.registerForm.get('username').value}}</span>.
+      <h2 class="card-title text-secondary">
+        Check your email to confirm your account.
+      </h2>
+      <h4 class="text-light">
+        If you can't find it, try checking your spam. The email was sent to
+        <span class="a font-weight-bold">{{
+          this.registerForm.get("username").value
+        }}</span
+        >.
       </h4>
     </div>
-
   </div>
 </div>

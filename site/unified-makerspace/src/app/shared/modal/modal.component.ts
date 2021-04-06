@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../modal.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ModalService } from '../modal.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-modal',
@@ -8,27 +8,21 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent implements OnInit {
-
   initialScrollPos = window.scrollY;
 
   formSubmitted = false;
   formLoading = false;
   errMessage = '';
   // todo make this dynamic
-  tags = []
+  tags = [];
 
   contactForm: FormGroup;
 
-
-  constructor(public modal: ModalService) {
-  }
-
+  constructor(public modal: ModalService) {}
 
   parseTags() {
     this.tags = this.contactForm.get('tags').value.trim().split(',');
   }
-
-
 
   ngOnInit(): void {
     document.body.style.top = String(-1 * this.initialScrollPos) + 'px';
@@ -41,15 +35,13 @@ export class ModalComponent implements OnInit {
     // todo only for testing
 
     this.contactForm = new FormGroup({
-      task: new FormControl('', Validators.required),
+      task_name: new FormControl('', Validators.required),
       tags: new FormControl('3D Printer, Urgent', Validators.required),
       people: new FormControl('', [Validators.required]),
       description: new FormControl('', Validators.required),
     });
 
-
     this.parseTags();
-
   }
 
   closeModal(): void {
@@ -73,5 +65,4 @@ export class ModalComponent implements OnInit {
       this.contactForm.get(field).invalid && this.contactForm.get(field).touched
     );
   }
-
 }

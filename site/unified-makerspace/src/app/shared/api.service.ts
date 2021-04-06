@@ -1,46 +1,49 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from "rxjs";
-import {environment} from '../../environments/environment';
-import {User} from "./models";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { User, Task } from './models';
 
 let endpoints = {
   // authentication
-  'createUser': ['/api/users', 'POST'],
-  'deleteUser': ['/api/users', 'DELETE'],
-  'getUsers': ['/api/users', 'GET'],
-  'updateUser': ['/api/users', 'PATCH'],
-  'login': ['/api/users', 'POST'],
+  createUser: ['/api/users', 'POST'],
+  deleteUser: ['/api/users', 'DELETE'],
+  getUsers: ['/api/users', 'GET'],
+  updateUser: ['/api/users', 'PATCH'],
+  login: ['/api/users', 'POST'],
   // tasks
-  'createTask': ['/api/tasks', 'POST'],
-  'resolveTask': ['/api/tasks', 'DELETE'],
-  'updateTask': ['/api/tasks', 'PATCH'],
+  getTasks: ['/api/tasks', 'GET'],
+  createTask: ['/api/tasks', 'POST'],
+  resolveTask: ['/api/tasks', 'DELETE'],
+  updateTask: ['/api/tasks', 'PATCH'],
   // machines
-  'getMachinesStatus': ['/api/machines', 'GET'],
+  getMachinesStatus: ['/api/machines', 'GET'],
   // visitors
-  'getVisitors': ['/api/visitors', 'GET']
+  getVisitors: ['/api/visitors', 'GET'],
 
   // todo add the rest...
   // todo add "requests" in the future
-}
+};
 
-function endpoint(target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+function endpoint(
+  target: Object,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
   let [url, method] = endpoints[propertyKey];
-  console.log(environment.server + url) // todo remove
+  console.log(environment.server + url); // todo remove
   let func = descriptor.value;
-  descriptor.value = function(args): any {
+  descriptor.value = function (args): any {
     let body = func(args);
-    console.log(body) // todo remove
+    console.log(body); // todo remove
     return this.http.request(method, environment.server + url, body);
   };
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-
   constructor(private http: HttpClient) {}
 
   /*
@@ -48,7 +51,7 @@ export class ApiService {
    */
 
   @endpoint
-  login(args: any): any | Observable<User>{
+  login(args: any): any | Observable<User> {
     return args;
   }
 
@@ -56,7 +59,6 @@ export class ApiService {
   createUser(args: any): any | Observable<User> {
     // todo modify response?
     return args;
-
   }
 
   @endpoint
@@ -76,37 +78,22 @@ export class ApiService {
   // }
   //
 
-  updatePermissions(user_id: string, user) {
-
-  }
-
+  updatePermissions(user_id: string, user) {}
 
   /*
   Tasks
    */
 
   createTask(task) {
-
-
-    return this.http.get('endpoint')
-
+    return this.http.get('endpoint');
   }
 
-
-  getTasks() {
-
+  @endpoint
+  getTasks(args: any): Observable<[Task]> {
+    return args;
   }
 
-  resolveTask(task_id: string) {
+  resolveTask(task_id: string) {}
 
-  }
-
-  updateTask(task) {
-
-  }
-
-
-
-
-
+  updateTask(task) {}
 }

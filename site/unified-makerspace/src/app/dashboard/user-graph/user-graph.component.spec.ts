@@ -8,9 +8,8 @@ describe('UserGraphComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserGraphComponent ]
-    })
-    .compileComponents();
+      declarations: [UserGraphComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

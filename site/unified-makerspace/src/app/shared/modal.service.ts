@@ -1,12 +1,11 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModalService {
-  constructor() {
-  }
+  constructor() {}
 
   modalStatus = new BehaviorSubject({
     open: false,
@@ -23,7 +22,4 @@ export class ModalService {
       open: true,
     });
   }
-
-
-
 }

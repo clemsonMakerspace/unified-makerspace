@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 
-from models import User
+from models import User, Task
+import yaml
 
 app = Flask('__name__')
 CORS(app)
@@ -9,13 +10,30 @@ CORS(app)
 
 # todo add auth tokens
 # todo implement
+# todo update documentation with task_name
+# todo refactor files
+# todo load user
 
-
+# todo make this a dict...?
 test_user = User(first_name='Joe', last_name='Goldberg',
                  user_id="342543", assigned_tasks=[],
                  permissions=[])
 
 test_users = [test_user]
+
+# load data
+
+test_data = "test_data.yaml"
+
+
+tasks = []
+with open(test_data) as f:
+    data = yaml.safe_load(f)
+    for task in data["tasks"]:
+        # todo kind of redundant, but for type checking
+        tasks.append(Task(**task).__dict__)
+
+
 
 
 
@@ -43,4 +61,10 @@ def get_users():
 @app.route('/api/users', methods=['PATCH'])
 def update_user():
     pass
+
+# tasks
+@app.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    return dict(code=200, tasks=tasks)
+
 

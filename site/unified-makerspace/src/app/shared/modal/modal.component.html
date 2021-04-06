@@ -1,4 +1,13 @@
-<div class="position-fixed vw-100 vh-100" style="top:0; left: 0; z-index:1000; overflow-y: scroll; background-color:rgba(0, 0, 0, .6)">
+<div
+  class="position-fixed vw-100 vh-100"
+  style="
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow-y: scroll;
+    background-color: rgba(0, 0, 0, 0.6);
+  "
+>
   <div class="container pt-5">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-8">
@@ -14,66 +23,135 @@
                 <div class="row">
                   <div class="col-6">
                     <div class="form-group">
-                      <label for="task" class="text-secondary font-weight-bold">Task Name</label>
-                      <input type="text" id="task" class="form-control" formControlName="task">
-                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('task')">This field is required.</small>
+                      <label for="task" class="text-secondary font-weight-bold"
+                        >Task Name</label
+                      >
+                      <input
+                        type="text"
+                        id="task"
+                        class="form-control"
+                        formControlName="task"
+                      />
+                      <small
+                        class="text-danger font-weight-bold"
+                        *ngIf="showErrorFor('task')"
+                        >This field is required.</small
+                      >
                     </div>
 
                     <div class="form-group">
-                      <label for="description" class="text-secondary font-weight-bold">Description</label>
-                      <textarea id="description" class="form-control" rows="5" formControlName="description"></textarea>
-                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('description')">You need to add a description</small>
+                      <label
+                        for="description"
+                        class="text-secondary font-weight-bold"
+                        >Description</label
+                      >
+                      <textarea
+                        id="description"
+                        class="form-control"
+                        rows="5"
+                        formControlName="description"
+                      ></textarea>
+                      <small
+                        class="text-danger font-weight-bold"
+                        *ngIf="showErrorFor('description')"
+                        >You need to add a description</small
+                      >
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="form-group">
-                      <label for="Tags" class="text-secondary font-weight-bold">Tags</label>
-                      <input type="text" id="Tags" class="form-control" formControlName="tags" (ngModelChange)="parseTags()">
-                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('tags')">This field is required.</small>
-                      <small class="text-muted">Enter tags separated by commas.</small>
+                      <label for="Tags" class="text-secondary font-weight-bold"
+                        >Tags</label
+                      >
+                      <input
+                        type="text"
+                        id="Tags"
+                        class="form-control"
+                        formControlName="tags"
+                        (ngModelChange)="parseTags()"
+                      />
+                      <small
+                        class="text-danger font-weight-bold"
+                        *ngIf="showErrorFor('tags')"
+                        >This field is required.</small
+                      >
+                      <small class="text-muted"
+                        >Enter tags separated by commas.</small
+                      >
                       <h5 *ngIf="tags">
-                        <span class="badge badge-secondary mr-2" *ngFor="let tag of tags">{{tag}}</span>
+                        <span
+                          class="badge badge-secondary mr-2"
+                          *ngFor="let tag of tags"
+                          >{{ tag }}</span
+                        >
                       </h5>
                     </div>
 
-
                     <div class="form-group">
-                      <label for="people" class="text-secondary font-weight-bold">People</label>
-                      <select name="" id="people" class="form-control" style="padding: 5px 20px" formControlName="people">
+                      <label
+                        for="people"
+                        class="text-secondary font-weight-bold"
+                        >People</label
+                      >
+                      <select
+                        name=""
+                        id="people"
+                        class="form-control"
+                        style="padding: 5px 20px"
+                        formControlName="people"
+                      >
                         <option selected value="volvo">Joe</option>
                         <option value="saab">Ellie</option>
                         <option value="mercedes">Peach</option>
-                        <option value="new" class="text-secondary font-weight-bold">Add Person</option>
+                        <option
+                          value="new"
+                          class="text-secondary font-weight-bold"
+                        >
+                          Add Person
+                        </option>
                       </select>
-                      <small class="text-danger font-weight-bold" *ngIf="showErrorFor('people')">You need to add at least one person</small>
+                      <small
+                        class="text-danger font-weight-bold"
+                        *ngIf="showErrorFor('people')"
+                        >You need to add at least one person</small
+                      >
                     </div>
 
-                    <div class="" *ngIf="contactForm.get('people').value == 'new'">
-                      <label for="new-person" class="text-secondary">Name</label>
-                      <input type="text" class="form-control" id="new-person">
+                    <div
+                      class=""
+                      *ngIf="contactForm.get('people').value == 'new'"
+                    >
+                      <label for="new-person" class="text-secondary"
+                        >Name</label
+                      >
+                      <input type="text" class="form-control" id="new-person" />
                     </div>
-
                   </div>
-
                 </div>
 
-
-
                 <div class="text-right pt-3">
-                  <button class="btn btn-secondary py-2 px-4" type="submit">Create Task</button>
+                  <button class="btn btn-secondary py-2 px-4" type="submit">
+                    Create Task
+                  </button>
                 </div>
               </form>
             </form>
             <div class="h-center card-body pb-5" *ngIf="formSubmitted">
               <div *ngIf="!formLoading && errMessage">
-                <h2 class="text-danger font-weight-bold">Sorry, there was an error.</h2>
-                <h6>{{errMessage}}</h6>
+                <h2 class="text-danger font-weight-bold">
+                  Sorry, there was an error.
+                </h2>
+                <h6>{{ errMessage }}</h6>
               </div>
-              <h2 *ngIf="!formLoading && !errMessage" class="font-weight-bold">Successfully added task.</h2>
-              <i class="bi-bounding-box spinner d-inline-block mr-3 display-1"  *ngIf="formLoading"></i>
+              <h2 *ngIf="!formLoading && !errMessage" class="font-weight-bold">
+                Successfully added task.
+              </h2>
+              <i
+                class="bi-bounding-box spinner d-inline-block mr-3 display-1"
+                *ngIf="formLoading"
+              ></i>
             </div>
           </div>
-
         </div>
       </div>
     </div>
