@@ -41,6 +41,7 @@ class User:
     first_name: str
     last_name: str
     user_id: str
+    hardware_id: str
     assigned_tasks: [Task]
     permissions: [Permission]
 

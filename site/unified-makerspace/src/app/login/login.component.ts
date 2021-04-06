@@ -16,9 +16,9 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
 
 
-
-  // can either be login or register
-  formType = 'login';
+  formType = 'login'; // either 'login' or 'register'
+  errorMessage: string;
+  success = false;
 
 
   ngOnInit(): void {
@@ -35,32 +35,85 @@ export class LoginComponent implements OnInit {
     this.registerForm = new FormGroup({
       'username': new FormControl('joe@makerspace.com', Validators.required),
       'password': new FormControl('password', Validators.required),
-      'confirmPassword': new FormControl('', Validators.required)
+      'confirmPassword': new FormControl('password', Validators.required)
     })
 
 
   }
 
-
   // todo change url instead?
   switchMode() {
     this.router.navigate([this.formType == 'login' ? 'register' : 'login'])
       .then()
-
   }
+
+
+  // todo show loading indicators....
 
   login() {
     // todo check for success
-    this.auth.login(this.loginForm.get('username').value, this.loginForm.get('password').value);
-    this.router.navigate(['dashboard']).then()
+
+    this.errorMessage = ""
+    let username = this.loginForm.get('username').value;
+    let password = this.loginForm.get('password').value;
+
+    if (this.loginForm.valid) {
+      this.auth.login(username, password).subscribe((res)=> {
+        try {
+          console.log(res); // todo remove
+          this.auth.user.next(res['user']); // todo body?
+          this.success = true;
+          this.router.navigate(['dashboard']).then()
+        } catch (e) {
+
+          console.log(e);
+          this.errorMessage = "Sorry, we're having issue with the server.";
+        }
+      }, (err) => {
+        console.log(err); // todo remove
+        // todo handle incorrect password
+        // todo handle email in use
+        this.errorMessage = "Sorry, we're having trouble logging you in.";
+      })
+    }
   }
 
-  // todo make sure forms are valid prior
-  registerSuccess = false;
+
+  // todo add first name
+  // todo add last name
+  // todo add hardware id + information on how to find it
+  // todo pass in information to register
   register() {
-    this.auth.register();
-    this.registerSuccess = true;
+
+    let getValue = (field: string) => this.registerForm.get('username').value;
+
+    this.errorMessage = ""
+    if (this.registerForm.valid) {
+      this.auth.register(
+        getValue('username'),
+        getValue('password'),
+        'hardware_id', // todo fix
+        'joe', // todo fix
+        'goldberg' // todo fix
+
+      ).subscribe((res)=> {
+        try {
+          this.success = true;
+          console.log(res); // todo remove
+        } catch (e) {
+          console.log(e); // todo remove
+          this.errorMessage = "Sorry, we're having issue with the server.";
+        }
+
+      }, (err) => {
+        console.log(err); // todo remove
+        this.errorMessage = "Sorry, we're having trouble creating your account.";
+      })
+    }
+
     // todo send confirmation email
+    // todo on confirmation page, tell user to login after confirming
+    // todo contact us page?
   }
 
 

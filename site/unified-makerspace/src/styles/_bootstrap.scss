@@ -71,3 +71,11 @@ textarea {
 //  background-color: #34373e;
 //  @extend .
 //}
+
+
+// todo move to separate place?
+
+.warning-label {
+  @extend .font-weight-bold;
+  @extend .text-danger;
+}

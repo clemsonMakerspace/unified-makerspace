@@ -1,5 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ModalService} from '../shared/modal.service';
+import {AuthService} from '../shared/auth/auth.service';
 
 
 
@@ -10,7 +11,7 @@ import {ModalService} from '../shared/modal.service';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(public modal: ModalService) { }
+  constructor(public modal: ModalService, public auth: AuthService) { }
 
   ngOnInit(): void {}
 

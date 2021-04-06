@@ -8,29 +8,50 @@ import {User} from '../models';
 })
 export class AuthService {
 
+
+  // todo change to function in the future.
   userLoggedIn = false;
-  user: BehaviorSubject<User>;
+  user = new BehaviorSubject<User>(null);
 
   constructor(private api: ApiService) {
   }
 
 
+  // todo create user object and then pass that in
 
 
   // todo implement this method
-  login(username: string, password: string): Observable<any> {
-    this.userLoggedIn = true;
-    return this.api.login(username, password);
+  login(username: string, password: string): Observable<Response> {
+    // this.userLoggedIn = true; // todo necessary?
+    return this.api.login({
+      'email': username,
+      'password': password
+    });
   }
 
 
   // todo implement this method
-  register() {
-    this.userLoggedIn = true;
+  register(
+    email: string,
+    password: string, hardwareId: string,
+    firstName: string, lastName: string,
+  ): Observable<Response> {
+    // this.userLoggedIn = true; // todo necessary?
+    return this.api.createUser({
+      'email': email,
+      'password': password,
+      'hardware_id': hardwareId,
+      'first_name': firstName,
+      'last_name': lastName
+    });
   }
 
 
+  // todo get cookie information automatically
 
   // todo implement
-  logout() {}
+  logout() {
+    this.user.next(null);
+    // todo remove cookie information
+  }
 }

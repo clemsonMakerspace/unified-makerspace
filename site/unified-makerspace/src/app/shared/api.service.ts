@@ -4,70 +4,77 @@ import {Observable} from "rxjs";
 import {environment} from '../../environments/environment';
 import {User} from "./models";
 
+let endpoints = {
+  // authentication
+  'createUser': ['/api/users', 'POST'],
+  'deleteUser': ['/api/users', 'DELETE'],
+  'getUsers': ['/api/users', 'GET'],
+  'updateUser': ['/api/users', 'PATCH'],
+  'login': ['/api/users', 'POST'],
+  // tasks
+  'createTask': ['/api/tasks', 'POST'],
+  'resolveTask': ['/api/tasks', 'DELETE'],
+  'updateTask': ['/api/tasks', 'PATCH'],
+  // machines
+  'getMachinesStatus': ['/api/machines', 'GET'],
+  // visitors
+  'getVisitors': ['/api/visitors', 'GET']
+
+  // todo add the rest...
+  // todo add "requests" in the future
+}
+
+function endpoint(target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+  let [url, method] = endpoints[propertyKey];
+  console.log(environment.server + url) // todo remove
+  let func = descriptor.value;
+  descriptor.value = function(args): any {
+    let body = func(args);
+    console.log(body) // todo remove
+    return this.http.request(method, environment.server + url, body);
+  };
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  server = environment.server;
   constructor(private http: HttpClient) {}
-
-  endpoints = {
-    // authentication
-    'createUser': ['/api/users', 'POST'],
-    'deleteUser': ['/api/users', 'DELETE'],
-    'getUsers': ['/api/users', 'GET'],
-    'updatePermissions': ['/api/users', 'PATCH'],
-    // tasks
-    'createTask': ['/api/tasks', 'POST'],
-    'resolveTask': ['/api/tasks', 'DELETE'],
-    'updateTask': ['/api/tasks', 'PATCH'],
-    // machines
-    'getMachinesStatus': ['/api/machines', 'GET'],
-    // visitors
-    'getVisitors': ['/api/visitors', 'GET']
-
-    // todo add the rest...
-    // todo add "requests" in the future
-  }
-
-
-  apiEndpoint() {
-
-  }
-
 
   /*
     Authentication
    */
 
-  @this.apiEndpoint()
-  createUser(email: string, password: string) {
-    let [url, method] = this.endpoints['createUser'];
-    return this.http.request<User>(method, url, {
-      body: {
-        'email': email,
-        'password': password
-      }
-    });
+  @endpoint
+  login(args: any): any | Observable<User>{
+    return args;
   }
 
+  @endpoint
+  createUser(args: any): any | Observable<User> {
+    // todo modify response?
+    return args;
 
-  deleteUser(user_id: string) {
-    let [url, method] = this.endpoints['deleteUser'];
-    return this.http.request(method, url, {
-      body: {
-        'user_id': user_id,
-      }
-    });
   }
 
-
-  getUsers() {
-    let [url, method] = this.endpoints['getUsers'];
-    return this.http.request(method, url);
+  @endpoint
+  deleteUser(args: any) {
+    // let [url, method] = this.endpoints['deleteUser'];
+    // return this.http.request(method, url, {
+    //   body: {
+    //     'user_id': user_id,
+    //   }
+    // });
   }
 
+  //
+  // getUsers() {
+  //   let [url, method] = this.endpoints['getUsers'];
+  //   return this.http.request(method, url);
+  // }
+  //
 
   updatePermissions(user_id: string, user) {
 
@@ -99,16 +106,7 @@ export class ApiService {
   }
 
 
-  // todo not implemented
-  login(username: string, password: string) {
-    let [url, method] = this.endpoints['createUser'];
-    return this.http.request<User>(method, url, {
-      body: {
-        'email': username,
-        'password': password
-      }
-    });
-  }
+
 
 
 }

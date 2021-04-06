@@ -13,8 +13,10 @@ export interface Task {
 
 
 export interface User {
-  name: string;
+  first_name: string;
+  last_name: string;
   user_id: string;
+  hardware_id: string;
   assigned_tasks: [Task];
 }
 
