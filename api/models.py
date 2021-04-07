@@ -22,6 +22,8 @@ class Task:
     task_name: str
     description: str
     assigned_to: str
+    creation_date: int
+    completion_date: int
     tags: [str]
     status: str
 
@@ -40,7 +42,8 @@ class Permission:
 @dataclass
 class User:
     """
-    Represents a registered user of the MakerSpace.
+    Represents a registered user of the MakerSpace. Users are
+    those who will be using the dashboard (not visitors).
     """
     user_id: str
     first_name: str
@@ -49,10 +52,12 @@ class User:
     permissions: [Permission]
 
 
+# todo fix this - no date visited and is_new?
 @dataclass
 class Visitor:
     """
-    Represents a visitor to the MakerSpace.
+    Represents a visitor to the MakerSpace. `visitor_information`
+    includes first name, last name, and major.
     """
     visit_id: str
     visitor_information: dict
@@ -69,3 +74,13 @@ class Request:
     requester_name: str
     description: str
     request_id: str
+
+
+@dataclass()
+class Machine:
+    """
+    Represents a machine. `machine_state` can be either "1" (Working) or
+    "O" (Not Working).
+    """
+    machine_name: str
+    machine_state: int

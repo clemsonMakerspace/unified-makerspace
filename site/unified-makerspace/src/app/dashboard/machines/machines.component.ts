@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {ApiService} from '../../shared/api.service';
+import get = Reflect.get;
 
 @Component({
   selector: 'app-machines',
@@ -6,10 +8,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./machines.component.scss'],
 })
 export class MachinesComponent implements OnInit {
-  constructor() {}
+  constructor(private api: ApiService) {}
+
+  // todo move modal to inside tasks...
 
   machines = [];
 
+  // todo what is this for?
   stateMap = {
     '1': 'Working',
     '.5': 'Being Used',
@@ -17,38 +22,41 @@ export class MachinesComponent implements OnInit {
     '0': 'Not Working',
   };
 
+
+  // todo in the future add support for more times
+  // todo fix links on the first page
+  // todo check for permissions for showing stuff
+
   ngOnInit(): void {
-    this.createFakeData();
-    console.log(this.stateMap);
+    this.getMachines();
   }
 
-  createFakeData() {
-    let types = [
-      '3D Printer',
-      'Chainsaw',
-      'Wire Cutter',
-      'Screwdriver',
-      'Hammer',
-      'Rocket Fuel',
-    ];
-    let values = [1, 1, 1, 1, 1, 1, 1, 0.5, 0, 0.25];
+  // todo handle when machine can't be loading
+  // todo front page
 
-    for (let i = 0; i < 24; i++) {
-      this.machines.push({
-        name: i.toString(),
-        series: types.map((t) => ({
-          name: t,
-          value: values[Math.floor(Math.random() * values.length)],
-        })),
-      });
-    }
+  getMachines() {
+    let startDate = Date.now();
+    let endDate = Date.now();
+    this.api.getMachinesStatus({
+      'start_date': startDate,
+      'end_date': endDate
+    }).subscribe((res)=> {
+      // todo handle errors and stuff
+      this.machines = res.machines;
+    })
+
   }
+
+
+  // todo create function to convert from received data
+  // todo why is this not working
+
 
   tooltip(data) {
     if (!this.stateMap) {
       return '';
     }
-    console.log(data);
+    console.log(data); // todo remove
     return (
       data.label +
       ' ' +

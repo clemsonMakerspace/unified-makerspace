@@ -74,8 +74,10 @@ export class ApiService {
   }
 
 
+
+  // todo users in user fields.
   @endpoint
-  getUsers(args: any) {
+  getUsers(args: any): any | Observable<{users: [User]}> {
     return args;
   }
 
@@ -90,7 +92,7 @@ export class ApiService {
   }
 
   @endpoint
-  getTasks(args: any): any | Observable<[Task]> {
+  getTasks(args: any): any | Observable<{tasks: [Task]}> {
     return args;
   }
 
@@ -100,6 +102,7 @@ export class ApiService {
   }
 
 
+  // todo what's the point of this
   @endpoint
   updateTask(args: any): any | Observable<Response> {
     return args;

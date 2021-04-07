@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalService} from '../../shared/modal.service';
 import {ApiService} from '../../shared/api.service';
-import { Task } from 'src/app/shared/models';
+import {Task, User} from 'src/app/shared/models';
 
 @Component({
   selector: 'app-tasks',
@@ -13,42 +13,48 @@ export class TasksComponent implements OnInit {
   }
 
   tasks: Task[];
+  users: User[];
 
   // todo scroll to see more tasks...
-  // todo get names from ids...
   // todo ask mason to update based on new task description
 
-  // todo should tasks update in real time?
+
+  // todo handle other fields
   // todo errors if not able to fetch certain data
 
   // todo add date to tasks...? backend shit
-  // todo fix a bunch of shit.
-
-  // todo get maintainer by id
 
   // todo create task not consistent with target date...
   // todo remove extra task parameters...
 
+  // todo fix resolve tasks
+
+
+
   ngOnInit(): void {
-    this.getTasks();
+    // todo handle error
+    // todo if no users, then no tasks
+    this.api.getUsers([]).subscribe((res) => {
+      this.users = res['users'];
+      this.getTasks();
+    });
   }
 
-
-  // todo convert tasks to usable format by getting person from user
 
   /* updates `tasks` array with new tasks */
   getTasks() {
     this.api.getTasks([]).subscribe((res) => {
       this.tasks = res['tasks'];
-      console.log(this.tasks); // todo remove later...
-    })
+      this.tasks.forEach(((task, i) => {
+        for (let user of this.users) {
+          if (user.user_id == task.assigned_to) {
+            this.tasks[i].assigned_to = user.first_name;
+            // todo last name?
+          }
+        }
+      }));
+    });
   }
-
-
-
-
-  // todo manual way to resolve tasks?
-
 
 
   clearTasks(): void {
@@ -61,12 +67,11 @@ export class TasksComponent implements OnInit {
     this.api.resolveTask({
       'task_id': taskId
     }).subscribe((res) => {
-        this.getTasks();
-    })
+      this.getTasks();
+    });
   }
 
   // todo handle error
-
 
   /* export task data to csv */
   exportTaskData() {

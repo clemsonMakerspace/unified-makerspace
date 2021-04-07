@@ -139,7 +139,7 @@ def get_users(auth_token: str, user_ids: [str]):
     code: int
         Return Code
     users: [models.User] | [str]
-        List of returned users or names.Must be in same
+        List of returned users or names. Must be in same
         order of request.
     """
 

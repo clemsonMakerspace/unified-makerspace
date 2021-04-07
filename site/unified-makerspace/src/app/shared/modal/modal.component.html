@@ -98,11 +98,9 @@
                         id="people"
                         class="form-control"
                         style="padding: 5px 20px"
-                        formControlName="people"
+                        formControlName="person"
                       >
-                        <option selected value="volvo">Joe</option>
-                        <option value="saab">Ellie</option>
-                        <option value="mercedes">Peach</option>
+                        <option *ngFor="let person of persons" value="person">{{person}}</option>
                         <option
                           value="new"
                           class="text-secondary font-weight-bold"
@@ -112,7 +110,7 @@
                       </select>
                       <small
                         class="text-danger font-weight-bold"
-                        *ngIf="showError('person')"
+                        *ngIf="showError('newPerson')"
                       >You need to add at least one person</small
                       >
                     </div>
