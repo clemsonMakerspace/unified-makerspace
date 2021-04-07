@@ -24,18 +24,18 @@
                   <div class="col-6">
                     <div class="form-group">
                       <label for="task" class="text-secondary font-weight-bold"
-                        >Task Name</label
+                      >Task Name</label
                       >
                       <input
                         type="text"
                         id="task"
                         class="form-control"
-                        formControlName="task"
+                        formControlName="taskName"
                       />
                       <small
                         class="text-danger font-weight-bold"
-                        *ngIf="showErrorFor('task')"
-                        >This field is required.</small
+                        *ngIf="showError('taskName')"
+                      >Please enter a task name.</small
                       >
                     </div>
 
@@ -43,7 +43,7 @@
                       <label
                         for="description"
                         class="text-secondary font-weight-bold"
-                        >Description</label
+                      >Description</label
                       >
                       <textarea
                         id="description"
@@ -53,36 +53,36 @@
                       ></textarea>
                       <small
                         class="text-danger font-weight-bold"
-                        *ngIf="showErrorFor('description')"
-                        >You need to add a description</small
+                        *ngIf="showError('description')"
+                      >{{showError('description')}}</small
                       >
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="form-group">
                       <label for="Tags" class="text-secondary font-weight-bold"
-                        >Tags</label
+                      >Tags</label
                       >
                       <input
                         type="text"
                         id="Tags"
                         class="form-control"
                         formControlName="tags"
-                        (ngModelChange)="parseTags()"
+                        (ngModelChange)="tags = parseTags()"
                       />
                       <small
                         class="text-danger font-weight-bold"
-                        *ngIf="showErrorFor('tags')"
-                        >This field is required.</small
+                        *ngIf="showError('tags')"
+                      >{{showError('tags')}}</small
                       >
-                      <small class="text-muted"
-                        >Enter tags separated by commas.</small
+                      <h6 class="p text-muted font-weight-bold"
+                      >Enter tags separated by commas. The first tag should be the machine name.</h6
                       >
                       <h5 *ngIf="tags">
                         <span
                           class="badge badge-secondary mr-2"
                           *ngFor="let tag of tags"
-                          >{{ tag }}</span
+                        >{{ tag }}</span
                         >
                       </h5>
                     </div>
@@ -91,7 +91,7 @@
                       <label
                         for="people"
                         class="text-secondary font-weight-bold"
-                        >People</label
+                      >People</label
                       >
                       <select
                         name=""
@@ -112,19 +112,24 @@
                       </select>
                       <small
                         class="text-danger font-weight-bold"
-                        *ngIf="showErrorFor('people')"
-                        >You need to add at least one person</small
+                        *ngIf="showError('person')"
+                      >You need to add at least one person</small
                       >
                     </div>
 
                     <div
                       class=""
-                      *ngIf="taskForm.get('people').value == 'new'"
+                      *ngIf="taskForm.get('person').value == 'new'"
                     >
                       <label for="new-person" class="text-secondary"
-                        >Name</label
+                      >Name</label
                       >
-                      <input type="text" class="form-control" id="new-person" />
+                      <input type="text" class="form-control" id="new-person" formControlName="newPerson"/>
+                      <small
+                        class="text-danger font-weight-bold"
+                        *ngIf="showError('newPerson')"
+                      >This field cannot be empty.</small
+                      >
                     </div>
                   </div>
                 </div>

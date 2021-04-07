@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../modal.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {ApiService} from '../api.service';
 
 @Component({
   selector: 'app-modal',
@@ -18,10 +19,10 @@ export class ModalComponent implements OnInit {
 
   taskForm: FormGroup;
 
-  constructor(public modal: ModalService) {}
+  constructor(public modal: ModalService, private api: ApiService) {}
 
   parseTags() {
-    this.tags = this.taskForm.get('tags').value.trim().split(',');
+    return this.taskForm.get('tags').value.trim().split(',');
   }
 
   ngOnInit(): void {
@@ -38,36 +39,47 @@ export class ModalComponent implements OnInit {
     // todo machines
 
     this.taskForm = new FormGroup({
-      task_name: new FormControl('', Validators.required),
+      taskName: new FormControl('', Validators.required),
       description: new FormControl('', Validators.required),
       tags: new FormControl('3D Printer, Urgent', Validators.required),
-      people: new FormControl('', [Validators.required]),
+      person: new FormControl('', [Validators.required]),
+      newPerson: new FormControl('')
     });
 
-    this.parseTags();
+    this.tags = this.parseTags();
   }
 
-  closeModal(): void {
-    document.body.classList.remove('frozen');
-    document.documentElement.style.scrollBehavior = 'auto';
-    window.scrollTo(0, this.initialScrollPos);
-    document.documentElement.style.scrollBehavior = 'smooth';
-  }
+  // todo get a list of maintainers
+
+  // todo implement
+  // todo move to modal...?
 
   // todo use real api
+  // todo add date of completion
+  // todo put some gear icon?
+
 
   onSubmit(): void {
+    let getValue = (field: string) => this.taskForm.get(field).value;
+
+
+    // todo show message?
+    // todo handle error
+    this.formSubmitted = true;
+    this.formLoading = true; // todo stop loading eventually lmao
     if (this.taskForm.valid) {
-      this.formSubmitted = true;
-      this.formLoading = true; // todo stop loading eventually lmao
+      this.api.createTask({
+        'person': getValue('person') == 'new' ? getValue('newPerson') : getValue('person'),
+        'task_name': getValue('taskName'),
+        'description': getValue('description'),
+        'tags': this.tags,
+
+      }).subscribe((res)=> {
+        this.formLoading = false;
+      });
     }
   }
 
-  showErrorFor(field: string): boolean {
-    return (
-      this.taskForm.get(field).invalid && this.taskForm.get(field).touched
-    );
-  }
 
   showError(field: string) {
     let f = this.taskForm.get(field);
@@ -81,5 +93,12 @@ export class ModalComponent implements OnInit {
       }
     }
     return error;
+  }
+
+  closeModal(): void {
+    document.body.classList.remove('frozen');
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, this.initialScrollPos);
+    document.documentElement.style.scrollBehavior = 'smooth';
   }
 }

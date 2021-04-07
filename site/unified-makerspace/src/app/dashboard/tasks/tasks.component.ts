@@ -21,7 +21,7 @@ export class TasksComponent implements OnInit {
   // todo should tasks update in real time?
   // todo errors if not able to fetch certain data
 
-  // todo add date to tasks...?
+  // todo add date to tasks...? backend shit
   // todo fix a bunch of shit.
 
   // todo get maintainer by id
@@ -45,13 +45,6 @@ export class TasksComponent implements OnInit {
   }
 
 
-  // todo implement
-  // todo move to modal...?
-  createTask() {
-    // this.api.createTask({
-    //   ''
-    // });
-  }
 
 
   // todo manual way to resolve tasks?

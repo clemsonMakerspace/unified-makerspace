@@ -2,15 +2,17 @@ import {Injectable} from '@angular/core';
 import {ApiService} from '../api.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {User} from '../models';
-import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // todo change to function in the future.
+
+
   user = new BehaviorSubject<User>(null);
+
+
 
   constructor(private api: ApiService, private router: Router) {
     // todo load user from lacal storage
@@ -22,6 +24,7 @@ export class AuthService {
     }
   }
 
+
   isUserLoggedIn() {
     return this.user.getValue() != null;
   }
@@ -30,7 +33,8 @@ export class AuthService {
 
   // todo implement this method
   // todo intercept subscription
-  // todo and add to localstorage
+  // todo add auth token
+
   login(username: string, password: string): Observable<Response> {
     return this.api.login({
       email: username,
