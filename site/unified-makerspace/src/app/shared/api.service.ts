@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { User, Task } from './models';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '../../environments/environment';
+import {Task, User} from './models';
 
+
+/* relative endpoints */
 let endpoints = {
   /* authentication */
-  createUser: ['/api/users', 'POST'],
+  createUser: ['/api/users', 'PUT'],
   login: ['/api/users', 'POST'],
   deleteUser: ['/api/users', 'DELETE'],
   getUsers: ['/api/users', 'GET'],
@@ -22,7 +24,6 @@ let endpoints = {
   getVisitors: ['/api/visitors', 'GET'],
 
   // todo add the rest...
-  // todo add "requests" in the future
 };
 
 function endpoint(
@@ -33,18 +34,26 @@ function endpoint(
   let [url, method] = endpoints[propertyKey];
   console.log(environment.server + url); // todo remove
   let func = descriptor.value;
-  descriptor.value = function (args): any {
+  descriptor.value = function(args): any {
     let body = func(args);
     console.log(body); // todo remove
     return this.http.request(method, environment.server + url, body);
   };
 }
 
+
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
+
+  /*
+   Below are the endpoints
+   # todo explain
+
+   */
 
   /** Authentication **/
 
@@ -71,8 +80,6 @@ export class ApiService {
   }
 
 
-  updatePermissions(user_id: string, user) {}
-
   /** Tasks **/
 
   @endpoint
@@ -88,14 +95,25 @@ export class ApiService {
   }
 
   @endpoint
-  resolveTask(args: {"task_id": string}): any | Observable<Response> {
+  resolveTask(args: { 'task_id': string }): any | Observable<Response> {
     return args;
   }
 
 
-  // todo does this exist
   @endpoint
-  updateTask(task) {}
+  updateTask(args: any): any | Observable<Response> {
+    return args;
+  }
+
+
+  /** machines **/
+  @endpoint
+  getMachinesStatus(args: any): any | Observable<Response> {
+    return args;
+  }
+
+
+
 
   // todo figure out a way to synchronize documentation with models here
 }

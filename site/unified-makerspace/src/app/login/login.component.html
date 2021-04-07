@@ -5,13 +5,13 @@
       <h1 class="card-title text-light">Login</h1>
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <div class="form-group text-light">
-          <label for="username"> Username </label
+          <label for="email"> Email </label
           ><input
-            type="text"
-            class="form-control"
-            id="username"
-            formControlName="username"
-          />
+          type="text"
+          class="form-control"
+          id="email"
+          formControlName="email"
+        />
         </div>
 
         <div class="form-group text-light mb-4">
@@ -35,9 +35,9 @@
         </button>
         <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{
           errorMessage
-        }}</small>
+          }}</small>
         <a class="text-muted mt-3 d-block" (click)="switchMode()"
-          >Need an account?</a
+        >Need an account?</a
         >
       </form>
     </div>
@@ -46,20 +46,44 @@
     <div class="card-body" *ngIf="formType == 'register' && !success">
       <h1 class="card-title text-light">Register</h1>
       <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+
+        <div class="row">
+          <div class="form-group text-light col-6">
+            <label for="name">Name</label>
+              <input id="name" type="text" name="name" class="form-control" formControlName="name">
+            <small
+              class="warning-label"
+              *ngIf="showError('name')">
+              {{showError('name')}}
+            </small>
+          </div>
+          <div class="form-group text-light col-6">
+            <label for="major">Major</label>
+            <input id="major" type="text" name="major" class="form-control" formControlName="major">
+            <small
+              class="warning-label"
+              *ngIf="showError('major')">
+              {{showError('major')}}
+            </small>
+          </div>
+
+        </div>
+
+
         <div class="form-group text-light">
-          <label for="new-username"> Email </label>
+          <label for="new-email"> Email </label>
           <input
             type="text"
             class="form-control"
-            id="new-username"
-            formControlName="username"
-            #username
+            id="new-email"
+            formControlName="email"
+            #email
           />
           <small
             class="warning-label"
-            *ngIf="registerForm.get('username').dirty && !username.value"
-          >
-            Required field.
+            *ngIf="showError('email')">
+            {{showError('email')}}
           </small>
         </div>
 
@@ -74,7 +98,7 @@
           />
           <small
             class="warning-label"
-            *ngIf="registerForm.get('password').dirty && !password.value"
+            *ngIf="showError('password')"
           >
             Required field.
           </small>
@@ -91,17 +115,15 @@
           />
           <small
             class="warning-label"
-            *ngIf="newPassword.value && password.value != newPassword.value"
+            *ngIf="!showError('confirmPassword') && password.value != newPassword.value"
           >
             Passwords do not match!
           </small>
           <small
             class="warning-label"
-            *ngIf="
-              registerForm.get('confirmPassword').dirty && !newPassword.value
-            "
+            *ngIf="showError('confirmPassword')"
           >
-            Required field.
+            {{showError('password')}}
           </small>
         </div>
 
@@ -114,9 +136,9 @@
         </button>
         <small class="text-warning font-weight-bold" *ngIf="errorMessage">{{
           errorMessage
-        }}</small>
+          }}</small>
         <a class="text-muted mt-3 d-block" (click)="switchMode()"
-          >Have an account?</a
+        >Have an account?</a
         >
       </form>
     </div>
@@ -130,8 +152,8 @@
       <h4 class="text-light">
         If you can't find it, try checking your spam. The email was sent to
         <span class="a font-weight-bold">{{
-          this.registerForm.get("username").value
-        }}</span
+          this.registerForm.get("email").value
+          }}</span
         >.
       </h4>
     </div>

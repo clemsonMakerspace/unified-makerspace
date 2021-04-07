@@ -11,10 +11,10 @@
 
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Account</h1>
-        <a class="text-secondary h2" (click)="auth.logout()">Sign Out</a>
-        <h2 class="text-secondary">Export All Data</h2>
-        <h2 class="text-secondary">Change Password</h2>
-        <h2 class="text-danger">Delete Account</h2>
+        <a class="text-secondary h2 d-block" (click)="auth.logout()">Sign Out</a>
+<!--        <h2 class="text-secondary">Export All Data</h2>-->
+        <a class="text-secondary h2 d-block">Change Password</a>
+        <a class="text-danger h2 d-block" (click)="deleteUser()">Delete Account</a>
       </div>
     </div>
   </div>

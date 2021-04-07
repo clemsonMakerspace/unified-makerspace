@@ -33,14 +33,15 @@ export class ModalComponent implements OnInit {
     });
 
     // todo only for testing
-    // todo change contact form
     // todo validation of parameters
+
+    // todo machines
 
     this.taskForm = new FormGroup({
       task_name: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
       tags: new FormControl('3D Printer, Urgent', Validators.required),
       people: new FormControl('', [Validators.required]),
-      description: new FormControl('', Validators.required),
     });
 
     this.parseTags();
@@ -66,5 +67,19 @@ export class ModalComponent implements OnInit {
     return (
       this.taskForm.get(field).invalid && this.taskForm.get(field).touched
     );
+  }
+
+  showError(field: string) {
+    let f = this.taskForm.get(field);
+    let error = ""
+    if (f.dirty) {
+      if (f.invalid) {
+        error = field + " is not valid."
+      }
+      if (f.value == '') {
+        error = field + " is required."
+      }
+    }
+    return error;
   }
 }

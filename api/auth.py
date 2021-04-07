@@ -175,3 +175,7 @@ def update_user(auth_token: str, user_id: str, user: models.User):
     message: str
         Response Message
     """
+
+
+# todo add change_password
+# todo confirmation code lambda

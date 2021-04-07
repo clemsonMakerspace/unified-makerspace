@@ -35,6 +35,8 @@ export class TasksComponent implements OnInit {
 
 
   // todo convert tasks to usable format by getting person from user
+
+  /* updates `tasks` array with new tasks */
   getTasks() {
     this.api.getTasks([]).subscribe((res) => {
       this.tasks = res['tasks'];
@@ -51,16 +53,29 @@ export class TasksComponent implements OnInit {
     // });
   }
 
-  // todo get id...
-  resolveTask() {
-    this.api.resolveTask();
-  }
+
+  // todo manual way to resolve tasks?
+
+
 
   clearTasks(): void {
-    this.tasks = this.tasks.filter((task) => task.status !== 'Completed');
+    for (let task of this.tasks.filter((task) => task.status == 'Completed')) {
+      this.resolveTask(task.task_id);
+    }
   }
 
+  resolveTask(taskId: string) {
+    this.api.resolveTask({
+      'task_id': taskId
+    }).subscribe((res) => {
+        this.getTasks();
+    })
+  }
 
+  // todo handle error
+
+
+  /* export task data to csv */
   exportTaskData() {
     let rowDelimiter = '\n';
     let columnDelimiter = ',';

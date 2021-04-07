@@ -23,17 +23,35 @@ export class LoginComponent implements OnInit {
     // todo get params
     this.formType = this.router.url.split('/')[1];
 
-    // todo only for testing
+    // todo only for testing - remove when done
     this.loginForm = new FormGroup({
-      username: new FormControl('joe@makerspace.com', Validators.required),
+      email: new FormControl('joe@makerspace.com', Validators.required),
       password: new FormControl('password', Validators.required),
     });
 
+    let nameRegex = "[a-zA-Z]+\ [a-zA-Z]+";
     this.registerForm = new FormGroup({
-      username: new FormControl('joe@makerspace.com', Validators.required),
+      name: new FormControl('joe goldberg', [Validators.required, Validators.pattern(nameRegex)]),
+      major: new FormControl('literature', [Validators.required]),
+      email: new FormControl('joe@makerspace.com', [Validators.required, Validators.email]),
       password: new FormControl('password', Validators.required),
       confirmPassword: new FormControl('password', Validators.required),
     });
+  }
+
+
+  showError(field: string) {
+    let f = this.registerForm.get(field);
+    let error = ""
+    if (f.dirty) {
+      if (f.invalid) {
+        error = field + " is not valid."
+      }
+      if (f.value == '') {
+        error = field + " is required."
+      }
+    }
+    return error;
   }
 
   // todo change url instead?
@@ -43,6 +61,8 @@ export class LoginComponent implements OnInit {
       .then();
   }
 
+  // todo better password strength
+
   // todo show loading indicators....
 
   login() {
@@ -51,11 +71,11 @@ export class LoginComponent implements OnInit {
 
     // todo move stuff to api service
     this.errorMessage = '';
-    let username = this.loginForm.get('username').value;
+    let email = this.loginForm.get('email').value;
     let password = this.loginForm.get('password').value;
 
     if (this.loginForm.valid) {
-      this.auth.login(username, password).subscribe(
+      this.auth.login(email, password).subscribe(
         (res) => {
           try {
             console.log(res); // todo remove
@@ -79,22 +99,22 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // todo add first name
-  // todo add last name
   // todo add hardware id + information on how to find it
   // todo pass in information to register
+  // todo capitalize shit
   register() {
-    let getValue = (field: string) => this.registerForm.get('username').value;
+    let getValue = (field: string) => this.registerForm.get(field).value;
+    let name = getValue('name').split(' ')
 
     this.errorMessage = '';
     if (this.registerForm.valid) {
       this.auth
         .register(
-          getValue('username'),
+          getValue('email'),
           getValue('password'),
           'hardware_id', // todo fix
-          'joe', // todo fix
-          'goldberg' // todo fix
+          name[0],
+          name[1]
         )
         .subscribe(
           (res) => {
@@ -117,5 +137,6 @@ export class LoginComponent implements OnInit {
     // todo send confirmation email
     // todo on confirmation page, tell user to login after confirming
     // todo contact us page?
+    // todo page to enter confirmation code
   }
 }

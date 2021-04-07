@@ -1,11 +1,14 @@
-from flask import Flask
+import yaml
+from flask import Flask, session, request
 from flask_cors import CORS
 
 from models import User, Task
-import yaml
+
+
 
 app = Flask('__name__')
 CORS(app)
+app.config['SECRET_KEY'] = "testing"
 
 
 # todo add auth tokens
@@ -24,19 +27,14 @@ test_users = [test_user]
 # load data
 
 test_data = "test_data.yaml"
-
-
-tasks = []
-with open(test_data) as f:
-    data = yaml.safe_load(f)
-    for task in data["tasks"]:
-        # todo kind of redundant, but for type checking
-        tasks.append(Task(**task).__dict__)
+def fetch_tasks():
+    with open(test_data) as f:
+        data = yaml.safe_load(f)
+        return [Task(**task).__dict__ for task in data["tasks"]]
 
 
 
-
-
+# todo return auth token
 @app.route('/api/users', methods=['POST'])
 def login():
     return dict(code=200, user=test_user.__dict__)
@@ -49,7 +47,7 @@ def create_user():
 
 @app.route('/api/users', methods=['DELETE'])
 def delete_user():
-    return dict(code=200, message="User has been successfully deleted." )
+    return dict(code=200, message="User has been successfully deleted.")
 
 
 @app.route('/api/users', methods=['GET'])
@@ -62,9 +60,29 @@ def get_users():
 def update_user():
     pass
 
+
 # tasks
+
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
-    return dict(code=200, tasks=tasks)
+    if not 'tasks' in session:
+        session['tasks'] = fetch_tasks()
+        session.modified = True
+    return dict(code=200, tasks=session['tasks'])
 
 
+@app.route('/api/tasks', methods=['POST'])
+def create_task():
+    pass
+
+
+@app.route('/api/tasks', methods=['DELETE'])
+def resolve_task():
+    tasks = session['tasks']
+    # list(filter(lambda t: t.task_id == request.json['task_id'], tasks))
+    return dict(code=200)
+
+
+@app.route('/api/tasks', methods=['UPDATE'])
+def update_task():
+    pass
