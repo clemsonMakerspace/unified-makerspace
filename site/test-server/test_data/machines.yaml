@@ -1,0 +1,698 @@
+[
+  {
+    "name":"1",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"2",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.5
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"3",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":0
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0
+      }
+    ]
+  },
+  {
+    "name":"4",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.5
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0.25
+      },
+      {
+        "name":"Hammer",
+        "value":0.5
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"5",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0.5
+      }
+    ]
+  },
+  {
+    "name":"6",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.5
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0.25
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"7",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":0
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"8",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0.5
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":0.25
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"9",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.5
+      },
+      {
+        "name":"Wire Cutter",
+        "value":0.5
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"10",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.5
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"11",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0
+      },
+      {
+        "name":"Hammer",
+        "value":0
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0
+      }
+    ]
+  },
+  {
+    "name":"12",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0.5
+      }
+    ]
+  },
+  {
+    "name":"13",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"14",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":0.25
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"15",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":0.5
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0.25
+      }
+    ]
+  },
+  {
+    "name":"16",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"17",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"18",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0.25
+      },
+      {
+        "name":"Wire Cutter",
+        "value":0
+      },
+      {
+        "name":"Screwdriver",
+        "value":0.25
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0.25
+      }
+    ]
+  },
+  {
+    "name":"19",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":0.5
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0.5
+      }
+    ]
+  },
+  {
+    "name":"20",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":0
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0.5
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"21",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0.25
+      },
+      {
+        "name":"Chainsaw",
+        "value":0
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":0
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0
+      }
+    ]
+  },
+  {
+    "name":"22",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":1
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":0.25
+      },
+      {
+        "name":"Hammer",
+        "value":0.5
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":0
+      }
+    ]
+  },
+  {
+    "name":"23",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0.25
+      },
+      {
+        "name":"Chainsaw",
+        "value":1
+      },
+      {
+        "name":"Wire Cutter",
+        "value":0.5
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  },
+  {
+    "name":"24",
+    "series":[
+      {
+        "name":"3D Printer",
+        "value":0.25
+      },
+      {
+        "name":"Chainsaw",
+        "value":0
+      },
+      {
+        "name":"Wire Cutter",
+        "value":1
+      },
+      {
+        "name":"Screwdriver",
+        "value":1
+      },
+      {
+        "name":"Hammer",
+        "value":1
+      },
+      {
+        "name":"Rocket Fuel",
+        "value":1
+      }
+    ]
+  }
+]
