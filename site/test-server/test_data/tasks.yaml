@@ -1,35 +1,34 @@
 tasks: [
   {
-    task_id: "2342",
+    task_id: "2",
     task_name: 'Replace 3D-Printer Cartridge',
-    tags: [],
-    creation_date: 5034590345,
-    completion_date: 4503403534,
+    tags: ["3D Printer" , "Priority 1"],
+    date_created: 5034590345,
+    date_resolved: 4503403534,
     description: "N/A",
     assigned_to: '213',
     status: 'Completed',
   },
   {
-    task_id: "9942",
+    task_id: "1",
     task_name: 'Install new CNC-Router',
     tags: [],
-    creation_date: 5034590345,
-    completion_date: 4503403534,
+    date_created: 5034590345,
+    date_resolved: 4503403534,
     description: "N/A",
     assigned_to: 'Beck',
     status: 'In-Progress',
   },
   {
-    task_id: "1342",
+    task_id: "3",
     task_name: 'Update the Sign-in System',
-    tags: [],
-    creation_date: 5034590345,
-    completion_date: 4503403534,
+    tags: ["*", "Priority 2"],
+    date_created: 5034590345,
+    date_resolved: 4503403534,
     description: "N/A",
     assigned_to: 'Peach',
     status: 'Not Started',
   }
 ]
 
-# todo add user
 # todo task has another field?

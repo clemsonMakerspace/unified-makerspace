@@ -1,0 +1,25 @@
+users: [
+
+  {
+    user_id: "1",
+    first_name: "Joe",
+    last_name: "Goldberg",
+    assigned_tasks: [ ],
+    permissions: [ ]
+  },
+  {
+    user_id: "2",
+    first_name: "Guinevere",
+    last_name: "Beck",
+    assigned_tasks: [ ],
+    permissions: [ ]
+  },
+  {
+    user_id: "3",
+    first_name: "Peach",
+    last_name: "Salinger",
+    assigned_tasks: [ ],
+    permissions: [ ]
+  }
+
+]

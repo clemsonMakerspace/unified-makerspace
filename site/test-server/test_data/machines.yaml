@@ -1,4 +1,6 @@
-[
+# todo refactor
+
+machines: [
   {
     "name":"1",
     "series":[

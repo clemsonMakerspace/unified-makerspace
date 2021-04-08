@@ -35,7 +35,7 @@ def get_tasks(auth_token: str):
 
 def create_task(auth_token: str, task: models.Task):
     """
-    Creates a new task.`task` may not have `status` or `task_id`.
+    Creates a new task.`task` may not have valid `status` or `task_id`.
 
     ================   ============
     **Endpoint**        /api/tasks
@@ -89,6 +89,7 @@ def resolve_task(auth_token: str, task_id: str):
     Success
     code: int
         Return Code
+    message: str
     """
 
 
@@ -114,4 +115,5 @@ def update_task(auth_token: str, task: models.Task):
     Success
     code: int
         Return Code
+    message: str
     """

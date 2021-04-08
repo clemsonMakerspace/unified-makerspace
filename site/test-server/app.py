@@ -1,49 +1,83 @@
+"""
+app.py
+
+Simple example server for the MakerSpace
+website.
+
+Note
+-----
+For development, the default test server is
+'http://localhost:4000'. This can be configured
+in Angular's `environment` settings.
+
+"""
+import os
+import sys
+
 import yaml
 from flask import Flask, session, request
 from flask_cors import CORS
-import sys
 
+# add path to enable importing
 sys.path.append("../../api")
-from models import User, Task
 
+from models import User, Task, Visitor, Machine, Permission
 
-
-app = Flask('__name__')
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "TEST_KEY"
 CORS(app)
-app.config['SECRET_KEY'] = "testing"
 
 
 # todo add auth tokens
-# todo implement
-# todo update documentation with task_name
 # todo refactor files
-# todo load user
-
-# todo make this a dict...?
-test_user = User(first_name='Joe', last_name='Goldberg',
-                 user_id="213", assigned_tasks=[],
-                 permissions=[]).__dict__
-
-test_users = [test_user]
+# todo put this in example server
 
 # load data
 
-def fetch_tasks():
-    with open('./test_data/tasks.yaml') as f:
-        data = yaml.safe_load(f)
-        return [Task(**task).__dict__ for task in data["tasks"]]
+def fetch(resource: str, data_path = './test_data') -> [dict]:
+    """
+    Load test data for `resource`. Data is instantiated as
+    classes to ensure type safety.
+    """
 
+    # string to model mappings
+    models = dict(tasks=Task, users=User, permissions=Permission,
+                  visitors=Visitor, machines=Machine)
+
+    # invalid resource
+    if resource not in models:
+        return []
+
+    # load from file
+    path = os.path.join(data_path, f"{resource}.yaml")
+    with open(path) as f:
+        objs = []
+        for obj in yaml.safe_load(f)[resource]:
+            valid_obj = (models[resource])(**obj)
+            objs.append(valid_obj.__dict__)
+
+    return objs
+
+
+# load users on start
+# todo session?
+users = fetch('users')
+auth_token = -1
+
+"""
+Endpoints
+"""
 
 
 # todo return auth token
 @app.route('/api/users', methods=['POST'])
 def login():
-    return dict(code=200, user=test_user)
+    return dict(code=200, user=users[0], auth_token=auth_token)
 
 
 @app.route('/api/users', methods=['PUT'])
 def create_user():
-    return dict(code=200, user=test_user)
+    return dict(code=200, user=users[0])
 
 
 @app.route('/api/users', methods=['DELETE'])
@@ -53,48 +87,61 @@ def delete_user():
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
-    return dict(code=200, users=test_users)
+    return dict(code=200, users=users)
 
 
 # todo implement
 @app.route('/api/users', methods=['PATCH'])
 def update_user():
-    pass
+    for i, user in enumerate(session["users"]):
+        if request.json.user_id == user.user_id:
+            session['users'][i] = User(**request.json)
+    return dict(code=200, message="User has been updated.")
 
 
 # tasks
-
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     if not 'tasks' in session:
-        session['tasks'] = fetch_tasks()
+        session['tasks'] = fetch('tasks')
         session.modified = True
     return dict(code=200, tasks=session['tasks'])
 
 
+# todo implement
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
     pass
 
 
+# todo fix
 @app.route('/api/tasks', methods=['DELETE'])
 def resolve_task():
     tasks = session['tasks']
     # list(filter(lambda t: t.task_id == request.json['task_id'], tasks))
+    return dict(code=200, message="Task Resolved.")
+
+
+# todo implement
+# todo return something else?
+@app.route('/api/tasks', methods=['UPDATE'])
+def update_task():
+    for i, task in enumerate(session['tasks']):
+        if request.json.task_id == task.task_id:
+            session['tasks'][i] = Task(**request.json)
     return dict(code=200)
 
 
-@app.route('/api/tasks', methods=['UPDATE'])
-def update_task():
-    pass
-
-
 # machines
-# todo validate with machiense
-# todo put this in example server
-
+# todo is not right
 @app.route('/api/machines', methods=['GET'])
 def get_machines_status():
-    with open('test_data/machines.yaml') as f:
-        machines = yaml.load(f)
-    return dict(code=200, machines=machines)
+    return dict(code=200, machines=[])
+
+
+# visitors
+@app.route('/api/visitors', methods=['GET'])
+def get_visitors():
+    return dict(code=200, visitors=fetch('visitors'))
+
+# todo add main clause

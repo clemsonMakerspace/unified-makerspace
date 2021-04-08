@@ -1,0 +1,15 @@
+visitors : [
+  {
+    visit_id: 1,
+    is_new: True,
+    date_visited: 234234,
+    user_info: {
+        major: "Computer Science",
+        first_name: "Love",
+        last_name: "Quinn"
+    }
+  }
+
+]
+
+# todo add more?

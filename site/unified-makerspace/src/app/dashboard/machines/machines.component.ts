@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../shared/api.service';
-import get = Reflect.get;
 
 @Component({
   selector: 'app-machines',
