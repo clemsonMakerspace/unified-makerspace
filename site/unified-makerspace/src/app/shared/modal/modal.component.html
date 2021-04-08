@@ -76,13 +76,17 @@
                       >{{showError('tags')}}</small
                       >
                       <h6 class="p text-muted font-weight-bold"
-                      >Enter tags separated by commas. The first tag should be the machine name.</h6
+                      >Enter tags separated by commas. The first tag should be the machine name or "*"
+                        if not associated with any particular machine.</h6
                       >
                       <h5 *ngIf="tags">
                         <span
-                          class="badge badge-secondary mr-2"
-                          *ngFor="let tag of tags"
-                        >{{ tag }}</span
+                          class="badge mr-2"
+                          *ngFor="let tag of tags; let i=index;"
+                          [ngClass]="{
+                          'badge-success': i == 0,
+                          'badge-secondary': i != 0}"
+                        >{{ tag == '*' ? 'No Machine' : tag}}</span
                         >
                       </h5>
                     </div>

@@ -20,6 +20,11 @@ class Task:
     is the user_id of the user to who the task is assigned to. `tags` are a list of
     strings associated with the task (e.g. metadata). The first tag is the machine name
     or '*' if the task is not associated with any particular machine.
+
+    Note
+    -----
+    Tags are not case-sensitive.
+
     """
 
     task_id: str

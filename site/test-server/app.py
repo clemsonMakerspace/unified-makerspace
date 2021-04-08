@@ -34,7 +34,7 @@ CORS(app)
 
 # load data
 
-def fetch(resource: str, data_path = './test_data') -> [dict]:
+def fetch(resource: str, data_path='./test_data') -> [dict]:
     """
     Load test data for `resource`. Data is instantiated as
     classes to ensure type safety.
@@ -140,6 +140,7 @@ def get_machines_status():
 
 
 # visitors
+# todo not right
 @app.route('/api/visitors', methods=['GET'])
 def get_visitors():
     return dict(code=200, visitors=fetch('visitors'))

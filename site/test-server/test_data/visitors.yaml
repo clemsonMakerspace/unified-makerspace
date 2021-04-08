@@ -8,6 +8,16 @@ visitors : [
         first_name: "Love",
         last_name: "Quinn"
     }
+  },
+  {
+    visit_id: 2,
+    is_new: False,
+    date_visited: 234234,
+    user_info: {
+      major: "Chemistry",
+      first_name: "Delilah",
+      last_name: "Alves"
+    }
   }
 
 ]
