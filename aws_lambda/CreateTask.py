@@ -7,14 +7,19 @@ import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
+from api.models import Task
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
-Parent_Table = dynamodb.Table('Parent_Tasks')
-Child_Table = dynamodb.Table('Child_Tasks')
-Machine_Table = dynamodb.Table('Machines')
+
+# DEPRECATED: TO REMOVE
+#Parent_Table = dynamodb.Table('Parent_Tasks')
+#Child_Table = dynamodb.Table('Child_Tasks')
+#Machine_Table = dynamodb.Table('Machines')
+
+Tasks = dynamodb.Table('Tasks')
 
 
 # Function for Calculating Due Dates for Children
@@ -34,78 +39,44 @@ def CalculateNextDate(start, freq, add):
     return startDateTime.strftime('%Y%m%d')
 
 
-def CreateTask(params):
+def CreateTask(json):
+
+    new_task = Task()
+
     # Parameters
-    taskName = params['TaskName']
-    description = params['Description']
-    frequency = params['Frequency']
-    machineId = params['MachineId']
-    machineName = params['MachineName']
-    time = params['CompletionTime']
-    startDate = params['StartDate']
+    new_task.task_id = json.task_id
+    new_task.task_name = json.task_name
+    new_task.decsription = json.description
+    new_task.assigned_to = json.assigned_to
+    new_task.creation_date = json.creation_date
+    new_task.completion_date = json.completion_date
+    new_task.tags = json.tags
+    new_task.status = json.status
+
+
+
 
     # Generate unique parent id
     parentId = str(uuid.uuid4())
 
-    # Create Parent Task Object
-    Parent_Table.put_item(
-        Item={
-            'Parent_Id': parentId,
-            'Machine_Id': machineId,
-            'Name': taskName,
-            'Description': description,
-            'Frequency': frequency,
-            'Active': 1,
-            'Start_Date': startDate,
-            'Completion_Time': time,
-        }
+
+    # Put new task into the tasks database
+    Tasks.put_item(
+        Item = json.dumps(new_task)
     )
-
-    # Add Parent Task to Machine Tasks List
-    Machine_Table.update_item(
-        Key={
-            'Machine_Id': machineId,
-        },
-        UpdateExpression="ADD Tasks :newTask",
-        ExpressionAttributeValues={
-            ':newTask': {parentId}
-        },
-    )
-
-    # Create Child Instances from Start Date
-    for i in range(0, 10):
-        # Calculate Due Date for each child instance
-        nextDue = CalculateNextDate(startDate, frequency, i)
-
-        # Add Child Instance to DB
-        Child_Table.put_item(
-            Item={
-                'Parent_Id': parentId,
-                'Due_Date': nextDue,
-                'Due_Time': time,
-                'Machine_Name': machineName,
-                'Frequency': frequency,
-                'Task_Name': taskName,
-                'Completed': 0,
-                'Late': 0,
-                'Completed_By': '',
-                'Completed_DateTime': '',
-                'Active': 1
-            }
-        )
 
     return parentId
 
 
 def CreateTaskHandler(event, context):
-    reqParams = ['TaskName', 'Description', 'Frequency', 'MachineId',
+    reqHeaders = ['TaskName', 'Description', 'Frequency', 'MachineId',
                  'MachineName', 'CompletionTime', 'StartDate']
 
-    # Get Query Params
-    paramVals = event["queryStringParameters"]
+    # Get request body data
+    data = json.loads(event.body)
 
     # Return client error if no string params
-    if (paramVals is None):
+    if (data is None):
         return {
             'statusCode': 400,
             'headers': {
@@ -117,8 +88,8 @@ def CreateTaskHandler(event, context):
         }
 
     # Check for each parameter we need
-    for name in reqParams:
-        if (name not in paramVals):
+    for name in reqHeaders:
+        if (name not in data):
             return {
                 'statusCode': 400,
                 'headers': {
@@ -131,7 +102,7 @@ def CreateTaskHandler(event, context):
 
     try:
         # Call function
-        result = CreateTask(paramVals)
+        result = CreateTask(data)
 
         # Send Response
         return {
