@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-from api.models import Task
+#from api.models import Task
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -22,40 +22,26 @@ dynamodb = boto3.resource('dynamodb')
 Tasks = dynamodb.Table('Tasks')
 
 
-# Function for Calculating Due Dates for Children
-def CalculateNextDate(start, freq, add):
-    # Convert start date to DateTime
-    startDateTime = datetime.strptime(str(start), '%Y%m%d')
+def ResolveTask(data):
 
-    # Add offset for each frequency category
-    if freq == 'Daily':
-        startDateTime += timedelta(days=add)
-    elif freq == 'Weekly':
-        startDateTime += timedelta(weeks=add)
-    elif freq == 'Monthly':
-        startDateTime += relativedelta(months=add)
+    body = json.loads(data["body"])
+    task_id = body["task_id"]
 
-    # Return NextDate as String
-    return startDateTime.strftime('%Y%m%d')
-
-
-def CreateTask(data):
-    new_task = data["body"]
-
-    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["date_created"], new_task["date_completed"], new_task["tags"], new_task["task_status"])
-
-
-    # Put new task into the tasks eventbase
-    Tasks.put_item(
-        Item = new_task.__dict__
+    response = Tasks.update_item(
+        Key = {
+            'task_id': task_id
+        },
+        UpdateExpression="set task_status=:s",
+        ExpressionAttributeValues={
+            ':s': 'Completed'
+        },
+        ReturnValues="UPDATED_NEW"
     )
+    return response
 
-    return 1
 
-
-def CreateTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
+def ResolveTaskHandler(event, context):
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completion', 'tags',
                   'task_status']
 
     # Return client error if no string params
@@ -72,7 +58,7 @@ def CreateTaskHandler(event, context):
 
     try:
         # Call function
-        result = CreateTask(event)
+        result = ResolveTask(event)
 
         # Send Response
         return {
