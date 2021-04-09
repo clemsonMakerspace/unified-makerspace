@@ -62,7 +62,7 @@ Beck’s friends constantly tell her about how amazing the MakerSpace is, so she
 Contents
 =========
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 5
    :caption: Contents:
 
    admin
