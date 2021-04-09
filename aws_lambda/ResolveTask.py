@@ -23,7 +23,7 @@ Tasks = dynamodb.Table('Tasks')
 
 
 def ResolveTask(data):
-    print(data)
+
     body = json.loads(data["body"])
     task_id = body["task_id"]
 
