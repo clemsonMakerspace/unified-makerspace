@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../modal.service';
+import {ModalService} from '../../../shared/modal.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {ApiService} from '../api.service';
+import {ApiService} from '../../../shared/api.service';
 
 @Component({
   selector: 'app-modal',
@@ -11,12 +11,14 @@ import {ApiService} from '../api.service';
 export class ModalComponent implements OnInit {
   initialScrollPos = window.scrollY;
 
+  errMessage = '';
   formSubmitted = false;
   formLoading = false;
-  errMessage = '';
 
   tags = [];
-  persons = []; // todo change this later
+  users = [];
+
+  // todo add comments
 
   taskForm: FormGroup;
 
@@ -24,13 +26,16 @@ export class ModalComponent implements OnInit {
   }
 
   parseTags() {
-    return this.taskForm.get('tags').value.trim().split(',');
+    return this.taskForm.get('tags').value.toLowerCase().trim().split(',');
   }
 
   ngOnInit(): void {
 
-    // todo add comments
+
+
     document.body.style.top = String(-1 * this.initialScrollPos) + 'px';
+
+    /* subscribe to modal changes */
     this.modal.modalStatus.subscribe((value) => {
       if (!value.open) {
         this.closeModal();
@@ -38,8 +43,9 @@ export class ModalComponent implements OnInit {
     });
 
 
+    /* get list of users for dropdown */
     this.api.getUsers([]).subscribe((result) => {
-      this.persons = result.users.map((user) => user.first_name)
+      this.users = result.users.map((user) => user.first_name)
     })
 
     // todo validation of parameters
@@ -52,30 +58,30 @@ export class ModalComponent implements OnInit {
       newPerson: new FormControl('') // todo fix this...!
     });
 
+
+    console.log(this.tags);
+
+
   }
 
-  // todo get a list of maintainers
 
   // todo implement
-  // todo move to modal...?
-
   // todo use real api
-  // todo add date to complete by
-
-  // todo change spinner to cogwheel
 
 
   onSubmit(): void {
     let getValue = (field: string) => this.taskForm.get(field).value;
 
 
+
     // todo show message?
     // todo handle error
     // todo fields missing error
 
+    this.formSubmitted = true;
+
     if (this.taskForm.valid) {
-      this.formSubmitted = true;
-      this.formLoading = true; // todo stop loading eventually lmao
+      this.formLoading = true;
       this.api.createTask({
         'person': getValue('person') == 'new' ? getValue('newPerson') : getValue('person'),
         'task_name': getValue('taskName'),
@@ -95,7 +101,7 @@ export class ModalComponent implements OnInit {
   showError(field: string) {
     let f = this.taskForm.get(field);
     let error = '';
-    if (f.dirty) {
+    if (f.dirty || this.formSubmitted) {
       if (f.invalid) {
         error = field + ' is not valid.';
       }
@@ -106,6 +112,14 @@ export class ModalComponent implements OnInit {
     return error;
   }
 
+
+  showCompletion() {
+    return this.formSubmitted && this.taskForm.valid;
+  }
+
+
+
+  /* called by html code to close modal box */
   closeModal(): void {
     document.body.classList.remove('frozen');
     document.documentElement.style.scrollBehavior = 'auto';

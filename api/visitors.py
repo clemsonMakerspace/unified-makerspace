@@ -4,15 +4,43 @@ from all walks of life. The API enables the staff to see
 who exactly is visiting the MakerSpace, if they are a new
 member, and when.
 """
+from models import Visitor
 
 
-def get_visitors(auth_token: str, start_date: str, end_date: str):
+def create_visitor(auth_token: str, visitor: Visitor, hardware_id: str):
+    """
+    Creates a new visitor.
+
+    ================   ============
+    **Endpoint**        /api/visitors
+    **Request Type**    PUT
+    **Access**          ALL
+    ================   ============
+
+    Parameters
+    ----------
+    auth_token : str, required
+        Token to verify user credentials.
+    visitor : Visitor
+        Visitor information.
+    hardware_id : str, required
+        Unique hardware id of the user's TigerCard.
+
+    Returns
+    -------
+    Success
+    code : str
+        Return code.
+    message: str
+    """
+
+def get_visitors(auth_token: str, start_date: int, end_date: int):
     """
     Gets all MakerSpace visitors within a given timeframe.
 
     ================   ============
     **Endpoint**        /api/visitors
-    **Request Type**    GET
+    **Request Type**    POST
     **Access**          MANAGER
     ================   ============
 

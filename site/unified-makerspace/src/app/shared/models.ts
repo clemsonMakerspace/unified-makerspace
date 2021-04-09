@@ -9,7 +9,11 @@ export interface Task {
   task_id: string;
   description: string;
   assigned_to: string;
-  status: string;
+  date_created: number;
+  date_resolved: number;
+  status: number;
+  state?: string;
+  show?: boolean;
 }
 
 export interface User {

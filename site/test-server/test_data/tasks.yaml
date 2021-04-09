@@ -7,17 +7,17 @@ tasks: [
     date_resolved: 4503403534,
     description: "N/A",
     assigned_to: '1',
-    status: 'Completed',
+    status: 2,
   },
   {
     task_id: "1",
     task_name: 'Install new CNC-Router',
-    tags: [],
+    tags: ["CNC-Router"],
     date_created: 5034590345,
     date_resolved: 4503403534,
     description: "N/A",
     assigned_to: '2',
-    status: 'In-Progress',
+    status: 1,
   },
   {
     task_id: "3",
@@ -27,8 +27,6 @@ tasks: [
     date_resolved: 4503403534,
     description: "N/A",
     assigned_to: '3',
-    status: 'Not Started',
+    status: 0,
   }
 ]
-
-# todo task has another field?

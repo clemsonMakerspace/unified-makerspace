@@ -12,53 +12,53 @@ export class TasksComponent implements OnInit {
   constructor(public modal: ModalService, private api: ApiService) {
   }
 
+  // todo add contact link
+
   tasks: Task[];
   users: User[];
-
-  // todo scroll to see more tasks...
-  // todo ask mason to update based on new task description
-
-
-  // todo handle other fields
-  // todo errors if not able to fetch certain data
-
-  // todo add date to tasks...? backend shit
-
-  // todo create task not consistent with target date...
-  // todo remove extra task parameters...
-
-  // todo fix resolve tasks
-
-
+  errorMessage: string;
 
   ngOnInit(): void {
-    // todo handle error
-    // todo if no users, then no tasks
+    this.getUsers();
+  }
+
+
+  /* gets users and then tasks */
+  getUsers() {
     this.api.getUsers([]).subscribe((res) => {
       this.users = res['users'];
       this.getTasks();
-    });
+    }, (err) => this.handleError(err));
   }
 
+
+  /* type to status mappings */
+  status_map = {
+    0: 'Not Completed',
+    1: 'In-Progress',
+    2: 'Completed'
+  };
 
   /* updates `tasks` array with new tasks */
   getTasks() {
     this.api.getTasks([]).subscribe((res) => {
       this.tasks = res['tasks'];
       this.tasks.forEach(((task, i) => {
-        for (let user of this.users) {
-          if (user.user_id == task.assigned_to) {
-            this.tasks[i].assigned_to = user.first_name;
-            // todo last name?
+          for (let user of this.users) {
+            if (user.user_id == task.assigned_to) {
+              this.tasks[i].assigned_to = user.first_name;
+            }
+          }
+          for (let task of this.tasks) {
+            task.state = this.status_map[task.status];
           }
         }
-      }));
-    });
+      ));
+    }, (err) => this.handleError(err));
   }
 
-
   clearTasks(): void {
-    for (let task of this.tasks.filter((task) => task.status == 'Completed')) {
+    for (let task of this.tasks.filter((task) => task.state == 'Completed')) {
       this.resolveTask(task.task_id);
     }
   }
@@ -68,10 +68,13 @@ export class TasksComponent implements OnInit {
       'task_id': taskId
     }).subscribe((res) => {
       this.getTasks();
-    });
+    }, (err) => this.handleError(err));
   }
 
-  // todo handle error
+
+  handleError(err: Error) {
+    this.errorMessage = err.message;
+  }
 
   /* export task data to csv */
   exportTaskData() {

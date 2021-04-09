@@ -8,10 +8,6 @@ January 1st, 1970).
 from attr import dataclass
 
 
-# todo should assigned to be an id?
-# todo get person by user id
-# todo is task status ne
-
 @dataclass
 class Task:
     """
@@ -38,14 +34,29 @@ class Task:
 
 
 @dataclass
-class Permission:
+class Resource:
     """
-    Represents a set of rules regarding a certain resource.
+    Represents a resource. Currently valid resource names are
+    "tasks", "visitors", "machines", and "administrative".
     """
     resource_id: str
+    resource_name: str
     can_read: bool
-    can_write: bool
     can_delete: bool
+    can_write: bool
+
+
+@dataclass
+class Permission:
+    """
+    Represents rules regarding resources. Each user is associated
+    with zero or more permissions, which specify access control for
+    one or more resources. If a user does not have a certain
+    permission, access is denied.
+    """
+    policy_id: str
+    policy_name: str
+    access: [Resource]
 
 
 @dataclass
@@ -62,17 +73,28 @@ class User:
     permissions: [Permission]
 
 
-# todo fix this - no date visited and is_new?
 @dataclass
 class Visitor:
     """
-    Represents a visitor to the MakerSpace. `visitor_information`
-    includes first name, last name, and major.
+    Represents a visitor to the MakerSpace. `is_new` is True,
+    when the user is created, and is changed to False after a visit.
+    """
+    visitor_id: str
+    first_name: str
+    last_name: str
+    major: str
+    is_new: bool
+    degree_type: str
+
+
+@dataclass
+class Visit:
+    """
+    Represents a visit to the MakerSpace.
     """
     visit_id: str
     date_visited: str
-    is_new: bool
-    visitor_info: dict
+    visitor_id: str
 
 
 @dataclass

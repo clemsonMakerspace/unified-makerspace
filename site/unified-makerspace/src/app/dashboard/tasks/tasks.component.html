@@ -39,7 +39,15 @@
       </div>
     </div>
 
-    <div id="task-data" style="overflow-y: auto; height: 300px">
+    <div class="card card-dark" *ngIf="errorMessage">
+      <h3 class="text-warning">Sorry, there's been an error.</h3>
+      <h6>Please <span class="a font-weight" style="text-decoration: underline">contact</span> the MakerSpace team. </h6>
+      <h6 class="text-warning">
+        Details: {{errorMessage}}
+      </h6>
+    </div>
+
+    <div id="task-data" style="overflow-y: auto; height: 300px" *ngIf="!errorMessage">
       <div
         class="rounded bg-dark p-2 text-light my-2"
         *ngFor="let task of tasks"
@@ -54,15 +62,14 @@
             <h4 class="col-4 mb-0">{{ task.assigned_to }}</h4>
             <h5
               class="col-4 mb-0 p-0"
-              [ngClass]="{ 'text-success': task.status == 'Completed' }"
+              [ngClass]="{ 'text-success': task.state == 'Completed' }"
             >
-              {{ task.status }}
+              {{ task.state }}
             </h5>
           </div>
           <div id="task-expanded" class="pl-4 mt-3" *ngIf="task.show">
             <hr class="text-white" />
-            <h6 class="text-muted">Date assigned: N/A</h6>
-            <h6 class="text-muted">Target date: N/A</h6>
+            <h6 class="text-muted">Date created: {{task.date_created}}</h6>
             <h6 class="text-muted">Task description: {{task.description}}</h6>
           </div>
         </div>

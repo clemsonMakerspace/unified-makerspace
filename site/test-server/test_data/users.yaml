@@ -4,22 +4,22 @@ users: [
     user_id: "1",
     first_name: "Joe",
     last_name: "Goldberg",
-    assigned_tasks: [ ],
-    permissions: [ ]
+    assigned_tasks: [ "2", "1" ],
+    permissions: [ "3" ]
   },
   {
     user_id: "2",
     first_name: "Guinevere",
     last_name: "Beck",
-    assigned_tasks: [ ],
-    permissions: [ ]
+    assigned_tasks: [ "3" ],
+    permissions: [ "3" ]
   },
   {
     user_id: "3",
     first_name: "Peach",
     last_name: "Salinger",
     assigned_tasks: [ ],
-    permissions: [ ]
+    permissions: [ "1" ]
   }
 
 ]

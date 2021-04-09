@@ -17,7 +17,7 @@
           </div>
 
           <div class="">
-            <form class="card-body" *ngIf="!formSubmitted">
+            <form class="card-body" *ngIf="!showCompletion()">
               <h1 class="card-title display-4">Add Task</h1>
               <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
                 <div class="row">
@@ -66,7 +66,7 @@
                       <input
                         type="text"
                         id="Tags"
-                        class="form-control"
+                        class="form-control mb-2"
                         formControlName="tags"
                         (ngModelChange)="tags = parseTags()"
                       />
@@ -75,7 +75,7 @@
                         *ngIf="showError('tags')"
                       >{{showError('tags')}}</small
                       >
-                      <h6 class="p text-muted font-weight-bold"
+                      <h6 *ngIf="tags.length == 0" class="p text-muted font-weight-bold"
                       >Enter tags separated by commas. The first tag should be the machine name or "*"
                         if not associated with any particular machine.</h6
                       >
@@ -93,18 +93,18 @@
 
                     <div class="form-group">
                       <label
-                        for="people"
+                        for="users"
                         class="text-secondary font-weight-bold"
                       >People</label
                       >
                       <select
                         name=""
-                        id="people"
+                        id="users"
                         class="form-control"
                         style="padding: 5px 20px"
                         formControlName="person"
                       >
-                        <option *ngFor="let person of persons" value="person">{{person}}</option>
+                        <option *ngFor="let user of users" value="person">{{user}}</option>
                         <option
                           value="new"
                           class="text-secondary font-weight-bold"
@@ -143,21 +143,27 @@
                 </div>
               </form>
             </form>
-            <div class="h-center card-body pb-5" *ngIf="formSubmitted">
-              <div *ngIf="!formLoading && errMessage">
-                <h2 class="text-danger font-weight-bold">
-                  Sorry, there was an error.
+
+
+            <div class="h-center card-body pb-5" *ngIf="showCompletion()">
+              <div *ngIf="!formLoading">
+                <div *ngIf="errMessage">
+                  <h2 class="text-danger font-weight-bold">
+                    Sorry, there was an error.
+                  </h2>
+                  <h6>{{ errMessage }}</h6>
+                </div>
+                <h2 *ngIf="!errMessage" class="font-weight-bold">
+                  Successfully added task.
                 </h2>
-                <h6>{{ errMessage }}</h6>
               </div>
-              <h2 *ngIf="!formLoading && !errMessage" class="font-weight-bold">
-                Successfully added task.
-              </h2>
               <i
-                class="bi-bounding-box spinner d-inline-block mr-3 display-1"
+                class="bi-gear-fill spinner d-inline-block mr-3 display-1 text-secondary"
                 *ngIf="formLoading"
               ></i>
             </div>
+
+
           </div>
         </div>
       </div>

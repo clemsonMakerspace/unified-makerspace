@@ -9,7 +9,7 @@ def get_machines_status(auth_token: str, start_time: int, end_time: int):
 
     ================   ============
     **Endpoint**        /api/machines
-    **Request Type**    GET
+    **Request Type**    POST
     **Access**          ANY, MANAGER
     ================   ============
 
@@ -19,7 +19,7 @@ def get_machines_status(auth_token: str, start_time: int, end_time: int):
         Token to verify user credentials.
     start_time: int, required
         The start date (inclusive) of the time frame.
-    end_time: str, optional
+    end_time: int, optional
         The end date (inclusive) of the time frame. If not specified,
         all requests until *now* are fetched.
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../shared/auth/auth.service';
 import { Router } from '@angular/router';
-import {stringify} from '@angular/compiler/src/util';
+import * as majors from './majors.json';
 
 @Component({
   selector: 'app-login',
@@ -17,11 +17,16 @@ export class LoginComponent implements OnInit {
 
   formType = 'login'; // either 'login' or 'register'
   errorMessage: string;
+  formSubmitted: boolean;
   success = false;
+  majors = []
 
   ngOnInit(): void {
+
     // todo get params
     this.formType = this.router.url.split('/')[1];
+    this.majors = majors['default'];
+
 
     // todo only for testing - remove when done
     this.loginForm = new FormGroup({
@@ -29,6 +34,10 @@ export class LoginComponent implements OnInit {
       password: new FormControl('password', Validators.required),
     });
 
+
+    // todo validate majors
+
+    // todo testing
     let nameRegex = "[a-zA-Z]+\ [a-zA-Z]+";
     this.registerForm = new FormGroup({
       name: new FormControl('joe goldberg', [Validators.required, Validators.pattern(nameRegex)]),
@@ -36,6 +45,7 @@ export class LoginComponent implements OnInit {
       email: new FormControl('joe@makerspace.com', [Validators.required, Validators.email]),
       password: new FormControl('password', Validators.required),
       confirmPassword: new FormControl('password', Validators.required),
+      isUser: new FormControl('')
     });
   }
 
@@ -43,7 +53,7 @@ export class LoginComponent implements OnInit {
   showError(field: string) {
     let f = this.registerForm.get(field);
     let error = ""
-    if (f.dirty) {
+    if (f.dirty || this.formSubmitted) {
       if (f.invalid) {
         error = field + " is not valid."
       }
@@ -53,6 +63,7 @@ export class LoginComponent implements OnInit {
     }
     return error;
   }
+
 
   // todo change url instead?
   switchMode() {
@@ -90,7 +101,6 @@ export class LoginComponent implements OnInit {
           }
         },
         (err) => {
-          console.log(err); // todo remove
           // todo handle incorrect password
           // todo handle email in use
           this.errorMessage = "Sorry, we're having trouble logging you in.";
@@ -102,7 +112,10 @@ export class LoginComponent implements OnInit {
   // todo add hardware id + information on how to find it
   // todo pass in information to register
   // todo capitalize shit
+
+
   register() {
+    this.formSubmitted = true;
     let getValue = (field: string) => this.registerForm.get(field).value;
     let name = getValue('name').split(' ')
 
@@ -120,14 +133,11 @@ export class LoginComponent implements OnInit {
           (res) => {
             try {
               this.success = true;
-              console.log(res); // todo remove
             } catch (e) {
-              console.log(e); // todo remove
               this.errorMessage = "Sorry, we're having issue with the server.";
             }
           },
           (err) => {
-            console.log(err); // todo remove
             this.errorMessage =
               "Sorry, we're having trouble creating your account.";
           }
@@ -139,4 +149,13 @@ export class LoginComponent implements OnInit {
     // todo contact us page?
     // todo page to enter confirmation code
   }
+
+
+  // todo implement
+  handleError(err) {
+
+  }
+
+
+
 }

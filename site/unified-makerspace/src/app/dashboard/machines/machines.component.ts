@@ -51,6 +51,7 @@ export class MachinesComponent implements OnInit {
   // todo why is this not working
 
 
+
   tooltip(data) {
     if (!this.stateMap) {
       return '';

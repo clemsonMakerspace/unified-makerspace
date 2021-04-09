@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TasksComponent } from './dashboard/tasks/tasks.component';
-import { ModalComponent } from './shared/modal/modal.component';
+import { ModalComponent } from './dashboard/tasks/modal/modal.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { UsersComponent } from './users/users.component';

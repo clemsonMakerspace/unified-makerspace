@@ -19,6 +19,10 @@ Visitors
 ---------
 .. literalinclude:: ../../../site/test-server/test_data/visitors.yaml
 
+Permissions
+-------------
+.. literalinclude:: ../../../site/test-server/test_data/permissions.yaml
+
 
 Implementation
 ==================

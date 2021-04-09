@@ -18,19 +18,18 @@ import yaml
 from flask import Flask, session, request
 from flask_cors import CORS
 
-# add path to enable importing
+# to enable importing of distant module
 sys.path.append("../../api")
-
 from models import User, Task, Visitor, Machine, Permission
+# todo spread this out?
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "TEST_KEY"
 CORS(app)
 
 
-# todo add auth tokens
-# todo refactor files
-# todo put this in example server
+# todo add auth tokens (?)
+# todo dict within a dict
 
 # load data
 
@@ -62,7 +61,7 @@ def fetch(resource: str, data_path='./test_data') -> [dict]:
 # load users on start
 # todo session?
 users = fetch('users')
-auth_token = -1
+auth_token = "TEST_TOKEN"
 
 """
 Endpoints
@@ -99,6 +98,8 @@ def update_user():
     return dict(code=200, message="User has been updated.")
 
 
+# todo get tasks for user...
+
 # tasks
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
@@ -123,13 +124,13 @@ def resolve_task():
 
 
 # todo implement
-# todo return something else?
+# todo also implement on front-end
 @app.route('/api/tasks', methods=['UPDATE'])
 def update_task():
     for i, task in enumerate(session['tasks']):
         if request.json.task_id == task.task_id:
             session['tasks'][i] = Task(**request.json)
-    return dict(code=200)
+    return dict(code=200, message="Tasks updated.")
 
 
 # machines
@@ -140,7 +141,6 @@ def get_machines_status():
 
 
 # visitors
-# todo not right
 @app.route('/api/visitors', methods=['GET'])
 def get_visitors():
     return dict(code=200, visitors=fetch('visitors'))
