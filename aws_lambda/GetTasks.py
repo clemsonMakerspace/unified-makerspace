@@ -30,8 +30,9 @@ def GetTasks(data):
 
 
 def GetTasksHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'creation_date', 'completion_date', 'tags',
-                  'status']
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
+                  'task_status']
+
 
     # Return client error if no string params
     if (event is None):

@@ -43,7 +43,7 @@ def CreateTask(data):
     new_task = data["body"]
 
     new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["creation_date"], new_task["completion_date"], new_task["tags"], new_task["status"])
+                    new_task["date_created"], new_task["date_completed"], new_task["tags"], new_task["task_status"])
 
 
     # Put new task into the tasks eventbase
@@ -55,8 +55,8 @@ def CreateTask(data):
 
 
 def CreateTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'creation_date', 'completion_date', 'tags',
-                  'status']
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
+                  'task_status']
 
     # Return client error if no string params
     if (event is None):
