@@ -24,7 +24,7 @@ Tasks = dynamodb.Table('Tasks')
 
 
 # Function for Calculating Due Dates for Children
-def GetTasks(data):
+def GetTasks():
     tasks = Tasks.scan()
     return tasks["Items"]
 
@@ -48,8 +48,7 @@ def GetTasksHandler(event, context):
 
     try:
         # Call function
-        result = list(GetTasks(event))
-        print(json.dumps(result, cls=DecimalEncoder))
+        result = list(GetTasks())
 
         # Send Response
         return {
