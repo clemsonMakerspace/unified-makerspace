@@ -15,9 +15,9 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 
 # DEPRECATED: TO REMOVE
-#Parent_Table = dynamodb.Table('Parent_Tasks')
-#Child_Table = dynamodb.Table('Child_Tasks')
-#Machine_Table = dynamodb.Table('Machines')
+# Parent_Table = dynamodb.Table('Parent_Tasks')
+# Child_Table = dynamodb.Table('Child_Tasks')
+# Machine_Table = dynamodb.Table('Machines')
 
 Tasks = dynamodb.Table('Tasks')
 
@@ -39,44 +39,27 @@ def CalculateNextDate(start, freq, add):
     return startDateTime.strftime('%Y%m%d')
 
 
-def CreateTask(json):
+def CreateTask(data):
+    new_task = data["body"]
 
-    new_task = Task()
-
-    # Parameters
-    new_task.task_id = json.task_id
-    new_task.task_name = json.task_name
-    new_task.decsription = json.description
-    new_task.assigned_to = json.assigned_to
-    new_task.creation_date = json.creation_date
-    new_task.completion_date = json.completion_date
-    new_task.tags = json.tags
-    new_task.status = json.status
+    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
+                    new_task["creation_date"], new_task["completion_date"], new_task["tags"], new_task["status"])
 
 
-
-
-    # Generate unique parent id
-    parentId = str(uuid.uuid4())
-
-
-    # Put new task into the tasks database
+    # Put new task into the tasks eventbase
     Tasks.put_item(
-        Item = json.dumps(new_task)
+        Item = new_task.__dict__
     )
 
-    return parentId
+    return 1
 
 
 def CreateTaskHandler(event, context):
-    reqHeaders = ['TaskName', 'Description', 'Frequency', 'MachineId',
-                 'MachineName', 'CompletionTime', 'StartDate']
-
-    # Get request body data
-    data = json.loads(event.body)
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'creation_date', 'completion_date', 'tags',
+                  'status']
 
     # Return client error if no string params
-    if (data is None):
+    if (event is None):
         return {
             'statusCode': 400,
             'headers': {
@@ -87,22 +70,9 @@ def CreateTaskHandler(event, context):
             })
         }
 
-    # Check for each parameter we need
-    for name in reqHeaders:
-        if (name not in data):
-            return {
-                'statusCode': 400,
-                'headers': {
-                    'Content-Type': 'text/plain'
-                },
-                'body': json.dumps({
-                    'Message': 'Failed to provide parameter: ' + name
-                })
-            }
-
     try:
         # Call function
-        result = CreateTask(data)
+        result = CreateTask(event)
 
         # Send Response
         return {
