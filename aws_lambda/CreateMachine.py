@@ -7,8 +7,7 @@ import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-from api.models import Task
-from aws_lambda.CreateMachine import *
+from api.models import Machine
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -16,39 +15,27 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 
 # DEPRECATED: TO REMOVE
-# Parent_Table = dynamodb.Table('Parent_Tasks')
-# Child_Table = dynamodb.Table('Child_Tasks')
+# Parent_Table = dynamodb.Table('Parent_Machines')
+# Child_Table = dynamodb.Table('Child_Machines')
 # Machine_Table = dynamodb.Table('Machines')
 
-Tasks = dynamodb.Table('Tasks')
 Machines = dynamodb.Table('Machines')
 
 
-def CreateTask(data):
-    new_task = json.loads(data["body"])
+def CreateMachine(machine_name,machine_status):
 
-    machine_name = (new_task["tags"])[0]
+    new_machine = Machine(machine_name,machine_status)
 
-    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["date_created"], new_task["date_completed"], new_task["tags"], new_task["task_status"])
 
-    machines = Machines.scan()
-    machines_list = machines["Items"]
-
-    if machine_name not in machines_list and machine_name != "*":
-        CreateMachine(machine_name, "0")
-
-    # Put new task into the tasks eventbase
-    Tasks.put_item(
-        Item=new_task.__dict__
+    # Put new task into the Machines eventbase
+    Machines.put_item(
+        Item = new_machine.__dict__
     )
 
     return 1
 
 
-def CreateTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
-                  'task_status']
+def CreateMachineHandler(event, context):
 
     # Return client error if no string params
     if (event is None):
@@ -64,7 +51,7 @@ def CreateTaskHandler(event, context):
 
     try:
         # Call function
-        result = CreateTask(event)
+        result = CreateMachine(event)
 
         # Send Response
         return {
