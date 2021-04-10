@@ -1,5 +1,6 @@
 <div class="center row h-100 w-100 no-gutters">
   <div class="card bg-primary col-xl-6 col-lg-8 col-12">
+
     <!--Login Form-->
     <div class="card-body" *ngIf="formType == 'login'">
       <h1 class="card-title text-light">Login</h1>
@@ -21,6 +22,7 @@
             class="form-control"
             id="password"
             formControlName="password"
+            required
           />
 
           <a class="text-muted h6 mt-1">Forgot password?</a>
@@ -43,36 +45,19 @@
     </div>
 
     <!--Register Form-->
-    <div class="card-body" *ngIf="formType == 'register' && !success">
+    <div class="card-body" *ngIf="formType == 'register' && !success && !showVisitorForm">
       <h1 class="card-title text-light">Register</h1>
       <form [formGroup]="registerForm" (ngSubmit)="register()">
 
 
-        <div class="row">
-          <div class="form-group text-light col-6">
-            <label for="name">Name</label>
-              <input id="name" type="text" name="name" class="form-control" formControlName="name">
-            <small
-              class="warning-label"
-              *ngIf="showError('name')">
-              {{showError('name')}}
-            </small>
-          </div>
-          <div class="form-group text-light col-6">
-            <label for="major">Major</label>
-            <input id="major" name="major" type="text" list="majors" class="form-control" formControlName="major">
-
-
-            <datalist id="majors">
-              <option class="form-control" value="{{major}}" *ngFor="let major of majors">{{major}}</option>
-            </datalist>
-            <small
-              class="warning-label"
-              *ngIf="showError('major')">
-              {{showError('major')}}
-            </small>
-          </div>
-
+        <div class="form-group text-light">
+          <label for="name">Name</label>
+          <input id="name" type="text" name="name" class="form-control" formControlName="name" required>
+          <small
+            class="warning-label"
+            *ngIf="showError('name')">
+            {{showError('name')}}
+          </small>
         </div>
 
 
@@ -83,7 +68,7 @@
             class="form-control"
             id="new-email"
             formControlName="email"
-            #email
+            required
           />
           <small
             class="warning-label"
@@ -99,6 +84,7 @@
             class="form-control"
             id="new-password"
             formControlName="password"
+            required
             #password
           />
           <small
@@ -116,6 +102,7 @@
             class="form-control"
             id="confirm-password"
             formControlName="confirmPassword"
+            required
             #newPassword
           />
           <small
@@ -128,19 +115,38 @@
             class="warning-label"
             *ngIf="showError('confirmPassword')"
           >
-            {{showError('password')}}
+            {{showError('confirmPassword')}}
+          </small>
+        </div>
+
+        <div [ngClass]="{'d-none': !registerMode}"
+             class="form-group text-light mb-4" >
+          <label for="user-token" class="font-weight-bold">Token
+          <span class="pl-2 bi bi-question-circle"></span></label>
+          <input
+            type="text"
+            class="form-control border-secondary border"
+            id="user-token"
+            formControlName="userToken"
+
+          />
+          <small
+            class="warning-label"
+            *ngIf="showError('userToken')"
+          >
+            Token is required. Contact your administrator for assistance.
           </small>
         </div>
 
         <div class="form-check text-light mb-3">
-          <input id="is-user-or-visitor" type="checkbox" class="form-check-input" formControlName="isUser">
+          <input id="is-user-or-visitor" type="checkbox" class="form-check-input"
+                 formControlName="isUser" [(ngModel)]="registerMode">
           <label for="is-user-or-visitor" class="form-check-label">I work at the MakerSpace.</label>
         </div>
 
         <button
           class="btn py-3 btn-secondary w-100 mb-2"
           type="submit"
-          [ngClass]="{ disabled: registerForm.invalid }"
         >
           Register
         </button>
@@ -150,6 +156,55 @@
         <a class="text-muted mt-3 d-block" (click)="switchMode()"
         >Have an account?</a
         >
+      </form>
+    </div>
+
+
+<!--     Visitor Form-->
+    <div class="card-body" *ngIf="showVisitorForm">
+      <form [formGroup]="visitorForm">
+        <div class="row">
+          <div class="form-group text-light col-6">
+            <label for="major">Major</label>
+            <input id="major" name="major" type="text"
+                   list="majors" class="form-control"
+                   formControlName="major">
+
+            <datalist id="majors">
+              <option class="form-control" value="{{major}}"
+                      *ngFor="let major of majors">{{major}}</option>
+            </datalist>
+            <small
+              class="warning-label"
+              *ngIf="showError('major')">
+              {{showError('major')}}
+            </small>
+          </div>
+
+          <div class="form-group text-light col-6">
+            <label for="degree">Degree</label>
+            <input id="degree" type="text" class="form-control"
+                   formControlName="degree">
+            <small
+              class="warning-label"
+              *ngIf="showError('degree')">
+              {{showError('degree')}}
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group text-light">
+          <label for="hardware-id">Hardware ID
+          <span class="pl-2 bi-question-circle"></span></label>
+          <input id="hardware-id" type="text" class="form-control"
+                 formControlName="hardwareId">
+          <small
+            class="warning-label"
+            *ngIf="showError('hardwareId')">
+            {{showError('hardwareId')}}
+          </small>
+        </div>
+
       </form>
     </div>
 

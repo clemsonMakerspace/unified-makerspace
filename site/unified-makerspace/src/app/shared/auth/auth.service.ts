@@ -42,24 +42,39 @@ export class AuthService {
     });
   }
 
-  register(email: string, password: string,
-           hardwareId: string, firstName: string,
-           lastName: string): Observable<Response> {
-    return this.api.createUser({
-      email: email,
-      password: password,
-      hardware_id: hardwareId,
-      first_name: firstName,
-      last_name: lastName,
-    });
-  }
-
   // todo add token expiry...
   logout() {
     this.user.next(null);
     localStorage.removeItem('User');
     this.router.navigate(['/']).then();
+  }
 
+  // todo intercept responses
 
+  createUser(email: string, password: string,
+             userToken: string, firstName: string,
+             lastName: string): Observable<Response> {
+    return this.api.createUser({
+      email: email,
+      password: password,
+      first_name: firstName,
+      last_name: lastName,
+      user_token: userToken
+    });
+  }
+
+  createVisitor(email: string, password: string,
+                firstName: string, lastName: string,
+                major: string, degree: string,
+                hardwareId: string) {
+    return this.api.createVisitor({
+      email: email,
+      password: password,
+      first_name: firstName,
+      last_name: lastName,
+      major: major,
+      degree: degree,
+      hardware_id: hardwareId
+    })
   }
 }

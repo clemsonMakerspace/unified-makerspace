@@ -4,6 +4,15 @@
     <div class="card-body">
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Users</h1>
+        <a class="text-secondary h2 d-block" (click)="generateUserToken()"
+        >Generate User Token</a
+        >
+        <label for="user-token" class="d-none"></label>
+        <input *ngIf="userToken"
+          id="user-token" type="text"
+               class="form-control mb-2"
+               style="width:400px"
+               disabled value="{{userToken}}">
         <a class="text-secondary h2 d-block" routerLink="/users"
           >Add or remove users</a
         >
@@ -19,3 +28,11 @@
     </div>
   </div>
 </div>
+
+
+<ng-template #userTokenModal>
+  <div class="card-body">
+    <p>hello world</p>
+
+  </div>
+</ng-template>

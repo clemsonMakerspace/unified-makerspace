@@ -1,8 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import { AuthService } from '../shared/auth/auth.service';
 import { Router } from '@angular/router';
 import * as majors from './majors.json';
+import get = Reflect.get;
+
+
+export function UserValidator(control: AbstractControl)
+  : any | null {
+  return   (!!control.get('isUser').value == !!control.get('userToken').value) ? null : {'error': true};
+}
+
+
+// todo remove later
+export function getFormValidationErrors(form: FormGroup) {
+
+  const result = [];
+  Object.keys(form.controls).forEach(key => {
+
+    const controlErrors: ValidationErrors = form.get(key).errors;
+    if (controlErrors) {
+      Object.keys(controlErrors).forEach(keyError => {
+        result.push({
+          'control': key,
+          'error': keyError,
+          'value': controlErrors[keyError]
+        });
+      });
+    }
+  });
+
+  return result;
+}
 
 @Component({
   selector: 'app-login',
@@ -10,16 +39,23 @@ import * as majors from './majors.json';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService,
+              private router: Router,
+              private fb: FormBuilder) {}
 
   loginForm: FormGroup;
   registerForm: FormGroup;
+  visitorForm: FormGroup;
 
   formType = 'login'; // either 'login' or 'register'
   errorMessage: string;
   formSubmitted: boolean;
   success = false;
   majors = []
+
+
+  registerMode = 0;
+  showVisitorForm = false;
 
   ngOnInit(): void {
 
@@ -41,24 +77,30 @@ export class LoginComponent implements OnInit {
     let nameRegex = "[a-zA-Z]+\ [a-zA-Z]+";
     this.registerForm = new FormGroup({
       name: new FormControl('joe goldberg', [Validators.required, Validators.pattern(nameRegex)]),
-      major: new FormControl('literature', [Validators.required]),
       email: new FormControl('joe@makerspace.com', [Validators.required, Validators.email]),
       password: new FormControl('password', Validators.required),
       confirmPassword: new FormControl('password', Validators.required),
-      isUser: new FormControl('')
-    });
-  }
+      isUser: new FormControl(''),
+      userToken: new FormControl(''),
+    }, UserValidator);
 
+
+    this.visitorForm = this.fb.group({
+      major: ['', Validators.required],
+      degree: ['', Validators.required],
+      hardwareId: ['', Validators.required]
+    })
+  }
 
   showError(field: string) {
     let f = this.registerForm.get(field);
-    let error = ""
-    if (f.dirty || this.formSubmitted) {
+    let error = "";
+    if (f.touched || this.formSubmitted) {
       if (f.invalid) {
         error = field + " is not valid."
-      }
-      if (f.value == '') {
-        error = field + " is required."
+        if (f.value == '') {
+          error = field + " is required."
+        }
       }
     }
     return error;
@@ -109,45 +151,65 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // todo add hardware id + information on how to find it
-  // todo pass in information to register
   // todo capitalize shit
 
 
+  // [ngClass]="{'disabled': registerForm.invalid}"
+
   register() {
     this.formSubmitted = true;
+    this.errorMessage = '';
     let getValue = (field: string) => this.registerForm.get(field).value;
     let name = getValue('name').split(' ')
+    let email = getValue('email');
+    let password = getValue('password');
 
-    this.errorMessage = '';
-    if (this.registerForm.valid) {
-      this.auth
-        .register(
-          getValue('email'),
-          getValue('password'),
-          'hardware_id', // todo fix
+      if (this.registerForm.valid) {
+      if (getValue('isUser')) {
+        this.createUser(
+          email,
+          password,
           name[0],
-          name[1]
-        )
-        .subscribe(
-          (res) => {
-            try {
-              this.success = true;
-            } catch (e) {
-              this.errorMessage = "Sorry, we're having issue with the server.";
-            }
-          },
-          (err) => {
-            this.errorMessage =
-              "Sorry, we're having trouble creating your account.";
-          }
+          name[1],
+          getValue('userToken')
         );
+      } else {
+        this.showVisitorForm = true;
+      }
     }
 
     // todo send confirmation email
     // todo on confirmation page, tell user to login after confirming
     // todo contact us page?
     // todo page to enter confirmation code
+  }
+
+
+
+  // todo implement
+
+  createUser(email, password, firstName, lastName, userToken) {
+    this.auth
+      .createUser(
+        email,
+        password,
+        firstName,
+        lastName,
+        userToken
+      )
+      .subscribe(
+        (res) => {
+          try {
+            this.success = true;
+          } catch (e) {
+            this.errorMessage = "Sorry, we're having issue with the server.";
+          }
+        },
+        (err) => {
+          this.errorMessage =
+            "Sorry, we're having trouble creating your account.";
+        }
+      )
   }
 
 

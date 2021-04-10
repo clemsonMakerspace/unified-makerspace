@@ -18,6 +18,7 @@ import { UsersComponent } from './users/users.component';
 import { RequestsComponent } from './dashboard/requests/requests.component';
 import { UserGraphComponent } from './dashboard/user-graph/user-graph.component';
 import { MachinesComponent } from './dashboard/machines/machines.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -57,6 +58,7 @@ let routes: Routes = [
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

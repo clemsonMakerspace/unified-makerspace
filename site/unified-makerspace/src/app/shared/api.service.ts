@@ -7,9 +7,12 @@ import {Task, User} from './models';
 
 /* relative endpoints */
 let endpoints = {
-  /* authentication */
+  /* auth */
+  generateUserToken: ['/api/auth', 'POST'],
+  /* users */
   createUser: ['/api/users', 'PUT'],
   login: ['/api/users', 'POST'],
+  changePassword: ['/api/users', 'POST'],
   deleteUser: ['/api/users', 'DELETE'],
   getUsers: ['/api/users', 'GET'],
   updateUser: ['/api/users', 'PATCH'],
@@ -19,11 +22,10 @@ let endpoints = {
   resolveTask: ['/api/tasks', 'DELETE'],
   updateTask: ['/api/tasks', 'PATCH'],
   /* machines */
-  getMachinesStatus: ['/api/machines', 'GET'],
+  getMachinesStatus: ['/api/machines', 'POST'],
   /* visitors */
-  getVisitors: ['/api/visitors', 'GET'],
-
-  // todo add the rest...
+  createVisitor: ['/api/visitors', 'PUT'],
+  getVisitors: ['/api/visitors', 'POST'],
 };
 
 function endpoint(
@@ -32,11 +34,9 @@ function endpoint(
   descriptor: PropertyDescriptor
 ) {
   let [url, method] = endpoints[propertyKey];
-  console.log(environment.server + url); // todo remove
   let func = descriptor.value;
   descriptor.value = function(args): any {
     let body = func(args);
-    console.log(body); // todo remove
     return this.http.request(method, environment.server + url, body);
   };
 }
@@ -115,6 +115,11 @@ export class ApiService {
     return args;
   }
 
+
+  @endpoint
+  createVisitor(args: any): any | Observable<Response> {
+    return args;
+  }
 
 
 
