@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../shared/api.service';
 
 @Component({
@@ -7,11 +7,13 @@ import {ApiService} from '../../shared/api.service';
   styleUrls: ['./machines.component.scss'],
 })
 export class MachinesComponent implements OnInit {
-  constructor(private api: ApiService) {}
-
-  // todo move modal to inside tasks...
+  constructor(private api: ApiService) {
+  }
 
   machines = [];
+  startTime: number;
+  endTime: number;
+  intervalFormat: string;
 
   // todo what is this for?
   stateMap = {
@@ -22,16 +24,20 @@ export class MachinesComponent implements OnInit {
   };
 
 
-  // todo in the future add support for more times
   // todo fix links on the first page
   // todo check for permissions for showing stuff
 
   ngOnInit(): void {
+    // todo change
+    this.startTime = new Date(2021, 2, 1).getTime();
+    this.endTime = Date.now();
     this.getMachines();
   }
 
   // todo handle when machine can't be loading
   // todo front page
+
+
 
   getMachines() {
     let startDate = Date.now();
@@ -39,17 +45,62 @@ export class MachinesComponent implements OnInit {
     this.api.getMachinesStatus({
       'start_date': startDate,
       'end_date': endDate
-    }).subscribe((res)=> {
+    }).subscribe((res) => {
       // todo handle errors and stuff
-      this.machines = res.machines;
-    })
+      this.machines = this.convertData(
+        res.machines, this.startTime,
+        this.endTime);
+    });
+  }
 
+  /* converts response to usable data */
+  convertData(data, startTime: number, endTime: number) {
+
+    let interval = endTime - startTime;
+    let type = 'hours'
+    let stepSize = 1000 * 60 * 60; // an hour
+    let cutoff = 48; // max units
+
+    // find the best step size for interval
+    let hours = interval / stepSize;
+    if (hours > cutoff) {
+      stepSize *= 24; // one day
+      type = 'days'
+      if (hours > Math.pow(cutoff, 2)) {
+        stepSize *= 7; // one week
+        type = 'weeks'
+      }
+    }
+
+    let steps = Math.floor(interval / stepSize);
+    this.intervalFormat = `${steps} ${type}`;
+
+    let ret = []; // return data
+    let t = startTime;
+    for (let i = 0; i < steps; i++) {
+      let series = [];
+      t += stepSize;
+      for (const [key, value] of (<any> Object).entries(data)) {
+        let state = 0;
+        for (let v of (value as any)) {
+          if (t >= v[0] && t <= v[1]) {
+            state = 1; // todo add optimization.
+            break;
+          }
+          if (t >= v[1]) {
+            break;
+          }
+        }
+        series.push({'name': key, 'value': state});
+      }
+      ret.push({'name': i + 1, 'series': series});
+    }
+
+    return ret;
   }
 
 
-  // todo create function to convert from received data
   // todo why is this not working
-
 
 
   tooltip(data) {

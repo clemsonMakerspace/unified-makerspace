@@ -1,0 +1,28 @@
+visitors: [
+  {
+    visitor_id: "1",
+    major: "Computer Science",
+    first_name: "Love",
+    last_name: "Quinn"
+  },
+  {
+    visitor_id: "2",
+    major: "Chemistry",
+    first_name: "Delilah",
+    last_name: "Alves"
+
+  },
+  {
+    visitor_id: "3",
+    major: "Literature",
+    first_name: "Candace",
+    last_name: "Stone"
+  },
+  {
+    visitor_id: "3",
+    major: "Chemistry",
+    first_name: "Delilah",
+    last_name: "Alves"
+  }
+
+]

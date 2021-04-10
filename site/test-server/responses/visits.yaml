@@ -1,0 +1,14 @@
+visits : [
+  {
+    visit_id: "1"
+    visitor_id: "2"
+    date_visited: 234923432
+    first_visit: True
+  },
+  {
+    visit_id: "2"
+      visitor_id: "2"
+      date_visited: 2342343
+      first_visit: False
+  }
+]

@@ -59,5 +59,5 @@ def get_visitors(auth_token: str, start_date: int, end_date: int):
     Success
     code: int
         Return Code
-    visitors: [model.Visitor]
+    visitors: [model.Visit]
     """

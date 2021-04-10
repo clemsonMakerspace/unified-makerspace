@@ -33,7 +33,7 @@ CORS(app)
 
 # load data
 
-def fetch(resource: str, data_path='./test_data') -> [dict]:
+def fetch(resource: str, data_path='./data') -> [dict]:
     """
     Load test data for `resource`. Data is instantiated as
     classes to ensure type safety.

@@ -9,8 +9,12 @@ Introduction
 -------------
 This is the documentation for the MakerSpace API. It is divided into sections
 based on functionality. Each page documents for each endpoint, the endpoint url,
-the permissions, the parameters, and a brief description. The `models` page
+the required permissions to access, the parameters, and a brief description. The `models` page
 has specifications for all the objects that will be exchanged by the api.
+
+.. note::
+    All dates should be encoded in epoch time (seconds since the start of
+    January 1st, 1970).
 
 Terminology
 ------------

@@ -1,6 +1,8 @@
 
 machines = []
 
+
+
 function createFakeData() {
     let types = [
         '3D Printer',

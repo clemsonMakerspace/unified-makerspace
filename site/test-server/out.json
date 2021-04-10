@@ -1,0 +1,422 @@
+[
+  {
+    "name": 1,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 2,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 3,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 4,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 5,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 6,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 7,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 8,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 9,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 10,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 11,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 12,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 13,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 14,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 15,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 16,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 17,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 18,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 19,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "name": 20,
+    "series": [
+      {
+        "name": "Screwdriver",
+        "value": 0
+      },
+      {
+        "name": "Hammer",
+        "value": 0
+      },
+      {
+        "name": "Chain Saw",
+        "value": 0
+      },
+      {
+        "name": "Rocket Fuel",
+        "value": 0
+      }
+    ]
+  }
+]

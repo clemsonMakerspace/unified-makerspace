@@ -1,8 +1,6 @@
 """
 These are the various objects, or "models" that the api uses. Each class
 should be represented as a javascript object, with the parameters as keys.
-Dates should be encoded in epoch time (milliseconds since the start of
-January 1st, 1970).
 """
 
 from attr import dataclass
@@ -76,25 +74,26 @@ class User:
 @dataclass
 class Visitor:
     """
-    Represents a visitor to the MakerSpace. `is_new` is True,
-    when the user is created, and is changed to False after a visit.
+    Represents a visitor to the MakerSpace.
     """
     visitor_id: str
     first_name: str
     last_name: str
     major: str
-    is_new: bool
     degree_type: str
+
 
 
 @dataclass
 class Visit:
     """
-    Represents a visit to the MakerSpace.
+    Represents a visit to the MakerSpace, and whether
+    it is the first visit.
     """
     visit_id: str
-    date_visited: str
     visitor_id: str
+    date_visited: int
+    first_visit: bool
 
 
 @dataclass
@@ -113,6 +112,10 @@ class Machine:
     """
     Represents a machine. `machine_state` can be either "1" (Working) or
     "O" (Not Working).
+
+    Note:
+    ------
+    Depending on the implementation, this amy not be needed.
     """
     machine_name: str
     machine_state: int
