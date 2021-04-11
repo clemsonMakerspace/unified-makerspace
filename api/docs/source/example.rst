@@ -34,7 +34,7 @@ Example Responses
 
 `getVisitors()`
 ----------------
-.. literalinclude:: ../../../site/test-server/responses/machines.yaml
+.. literalinclude:: ../../../site/test-server/responses/visits.yaml
 
 
 Implementation

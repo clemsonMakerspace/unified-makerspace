@@ -25,3 +25,30 @@ def generate_user_token(auth_token: str):
         N-digit token used to create a user.
 
     """
+
+
+
+def reset_password(email: str):
+    """
+    Sends a password reset email.
+
+    ================   ============
+    **Endpoint**        /api/admin
+    **Request Type**    PATCH
+    **Access**          ANY
+    ================   ============
+
+    Parameters
+    ----------
+    email: str, required
+        The email of the user to reset the
+        password for.
+
+    Returns
+    -------
+    Success
+    code : int
+        Return code.
+    message: str
+
+    """

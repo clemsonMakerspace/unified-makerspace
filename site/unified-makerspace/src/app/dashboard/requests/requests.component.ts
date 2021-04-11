@@ -12,12 +12,12 @@ export class RequestsComponent implements OnInit {
 
   requests = [
     {
-      name: 'Will',
+      firstName: 'Will',
       request: '3D printer ink is out.',
       date: 'Today',
     },
     {
-      name: 'Blythe',
+      firstName: 'Blythe',
       request: 'The wrenches are difficult to find.',
       date: 'Two weeks ago',
     },

@@ -91,9 +91,9 @@ export class MachinesComponent implements OnInit {
             break;
           }
         }
-        series.push({'name': key, 'value': state});
+        series.push({'firstName': key, 'value': state});
       }
-      ret.push({'name': i + 1, 'series': series});
+      ret.push({'firstName': i + 1, 'series': series});
     }
 
     return ret;

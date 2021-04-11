@@ -14,43 +14,43 @@ export class UserGraphComponent implements OnInit, OnDestroy {
 
   data = [
     {
-      name: 'All Users',
+      firstName: 'All Users',
       series: [
         {
-          name: 'Today',
+          firstName: 'Today',
           value: 2,
         },
         {
-          name: 'Yesterday',
+          firstName: 'Yesterday',
           value: 7,
         },
         {
-          name: 'Wednesday',
+          firstName: 'Wednesday',
           value: 4,
         },
         {
-          name: 'Tuesday',
+          firstName: 'Tuesday',
           value: 9,
         },
       ],
     },
     {
-      name: 'New Users',
+      firstName: 'New Users',
       series: [
         {
-          name: 'Today',
+          firstName: 'Today',
           value: 1,
         },
         {
-          name: 'Yesterday',
+          firstName: 'Yesterday',
           value: 3,
         },
         {
-          name: 'Wednesday',
+          firstName: 'Wednesday',
           value: 2,
         },
         {
-          name: 'Tuesday',
+          firstName: 'Tuesday',
           value: 4,
         },
       ],
@@ -66,7 +66,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     //setup header of csv as All Users, New Users, Day
     formattedData += 'Day' + columnDelimiter;
     this.data.forEach(function (item, index) {
-      formattedData += item.name + columnDelimiter;
+      formattedData += item.firstName + columnDelimiter;
     });
     formattedData = formattedData.slice(0, -1) + rowDelimiter; //replace last comma with newline
 
@@ -74,7 +74,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     //for each day listed in the series, record data
     this.data[0].series.forEach(function (item, index) {
       formattedData +=
-        item.name +
+        item.firstName +
         columnDelimiter +
         item.value +
         columnDelimiter +

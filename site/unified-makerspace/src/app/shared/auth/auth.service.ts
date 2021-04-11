@@ -4,18 +4,39 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {User} from '../models';
 import {Router} from '@angular/router';
 
+export function inStorage(prop: string) {
+  return {
+    get: () => JSON.parse(sessionStorage.getItem(prop)),
+    set: (s) => {
+      sessionStorage.setItem(prop, JSON.stringify(s))
+    }
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-
   user = new BehaviorSubject<User>(null);
 
+  public newUserInfo // overridden
+  public regState // overridden
+
+  // todo create localObject...
+  constructor(private api: ApiService,
+              private router: Router) {
+
+    Object.defineProperty(this, 'newUserInfo', inStorage('newUserInfo'));
+    Object.defineProperty(this, 'regState', inStorage('regState'));
 
 
-  constructor(private api: ApiService, private router: Router) {
-    // todo load user from lacal storage
+    // default state is register
+    if (!this.regState) {
+      this.regState = 'register';
+    }
+
+    // get user from localStorage (if any)
     if (this.user.getValue() == null) {
       let user = localStorage.getItem('User');
       if (user != null) {
@@ -35,11 +56,8 @@ export class AuthService {
   // todo intercept subscription
   // todo add auth token
 
-  login(username: string, password: string): Observable<Response> {
-    return this.api.login({
-      email: username,
-      password: password,
-    });
+  login(args): Observable<Response> {
+    return this.api.login(args);
   }
 
   // todo add token expiry...
@@ -51,30 +69,9 @@ export class AuthService {
 
   // todo intercept responses
 
-  createUser(email: string, password: string,
-             userToken: string, firstName: string,
-             lastName: string): Observable<Response> {
-    return this.api.createUser({
-      email: email,
-      password: password,
-      first_name: firstName,
-      last_name: lastName,
-      user_token: userToken
-    });
+  createUser(args: any): Observable<Response> {
+    // todo modify responose
+    return this.api.createUser(args);
   }
 
-  createVisitor(email: string, password: string,
-                firstName: string, lastName: string,
-                major: string, degree: string,
-                hardwareId: string) {
-    return this.api.createVisitor({
-      email: email,
-      password: password,
-      first_name: firstName,
-      last_name: lastName,
-      major: major,
-      degree: degree,
-      hardware_id: hardwareId
-    })
-  }
 }

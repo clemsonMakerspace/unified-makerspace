@@ -37,6 +37,7 @@ function endpoint(
   let func = descriptor.value;
   descriptor.value = function(args): any {
     let body = func(args);
+    console.log(body) // todo for testing
     return this.http.request(method, environment.server + url, body);
   };
 }
@@ -64,8 +65,13 @@ export class ApiService {
 
   @endpoint
   createUser(args: any): any | Observable<User> {
-    // todo modify response?
-    return args;
+    return {
+      email: args['email'],
+      password: args['password'],
+      first_name: args['firstName'],
+      last_name: args['lastName'],
+      user_token: args['userToken']
+    }
   }
 
   @endpoint
@@ -116,8 +122,25 @@ export class ApiService {
   }
 
 
+  /** visitors **/
   @endpoint
   createVisitor(args: any): any | Observable<Response> {
+    return {
+      visitor: {
+        email: args['email'],
+        password: args['password'],
+        first_name: args['firstName'],
+        last_name: args['lastName'],
+        major: args['major'],
+        degree: args['degree'],
+      },
+      hardware_id: args['hardwareId']
+    };
+  }
+
+
+  @endpoint
+  getVisitors(args: any) : any | Observable<Response> {
     return args;
   }
 
