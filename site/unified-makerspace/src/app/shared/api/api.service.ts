@@ -1,14 +1,20 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from '../../environments/environment';
-import {Task, User} from './models';
+import {environment} from '../../../environments/environment';
+import {Task, User} from '../models';
 
+
+
+// todo figure out a way to synchronize
+//  documentation with models here ?
 
 /* relative endpoints */
+
 let endpoints = {
   /* auth */
   generateUserToken: ['/api/auth', 'POST'],
+  resetPassword: ['/api/auth', 'PATCH'],
   /* users */
   createUser: ['/api/users', 'PUT'],
   login: ['/api/users', 'POST'],
@@ -28,6 +34,8 @@ let endpoints = {
   getVisitors: ['/api/visitors', 'POST'],
 };
 
+
+
 function endpoint(
   target: Object,
   propertyKey: string,
@@ -37,8 +45,9 @@ function endpoint(
   let func = descriptor.value;
   descriptor.value = function(args): any {
     let body = func(args);
-    console.log(body) // todo for testing
-    return this.http.request(method, environment.server + url, body);
+    console.log(body); // todo for testing
+    return this.http.request(method,
+      environment.server + url, body);
   };
 }
 
@@ -50,13 +59,20 @@ export class ApiService {
   constructor(private http: HttpClient) {
   }
 
-  /*
-   Below are the endpoints
-   # todo explain
 
-   */
+  /** Auth **/
 
-  /** Authentication **/
+  generateUserToken(args: any): any | Observable<User> {
+    return args;
+  }
+
+  resetPassword(args: any): any | Observable<User>  {
+    return args;
+  }
+
+
+
+  /** Users **/
 
   @endpoint
   login(args: any): any | Observable<User> {
@@ -71,7 +87,7 @@ export class ApiService {
       first_name: args['firstName'],
       last_name: args['lastName'],
       user_token: args['userToken']
-    }
+    };
   }
 
   @endpoint
@@ -80,10 +96,14 @@ export class ApiService {
   }
 
 
-
   // todo users in user fields.
   @endpoint
-  getUsers(args: any): any | Observable<{users: [User]}> {
+  getUsers(args: any): any | Observable<{ users: [User] }> {
+    return args;
+  }
+
+  @endpoint
+  changePassword(args: any) : any | Observable<Response> {
     return args;
   }
 
@@ -98,7 +118,7 @@ export class ApiService {
   }
 
   @endpoint
-  getTasks(args: any): any | Observable<{tasks: [Task]}> {
+  getTasks(args: any): any | Observable<{ tasks: [Task] }> {
     return args;
   }
 
@@ -140,11 +160,9 @@ export class ApiService {
 
 
   @endpoint
-  getVisitors(args: any) : any | Observable<Response> {
+  getVisitors(args: any): any | Observable<Response> {
     return args;
   }
 
 
-
-  // todo figure out a way to synchronize documentation with models here
 }

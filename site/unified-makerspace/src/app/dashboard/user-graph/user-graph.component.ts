@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserModule } from '@angular/platform-browser';
+import {ApiService} from '../../shared/api/api.service';
+import {Visit} from '../../shared/models';
 
 @Component({
   selector: 'app-user-graph',
@@ -8,56 +10,43 @@ import { BrowserModule } from '@angular/platform-browser';
   styleUrls: ['./user-graph.component.scss'],
 })
 export class UserGraphComponent implements OnInit, OnDestroy {
-  constructor() {}
+  constructor(
+    private api: ApiService
+  ) {}
 
-  ngOnInit(): void {}
+  // todo handle error better?
 
-  data = [
-    {
-      firstName: 'All Users',
-      series: [
-        {
-          firstName: 'Today',
-          value: 2,
-        },
-        {
-          firstName: 'Yesterday',
-          value: 7,
-        },
-        {
-          firstName: 'Wednesday',
-          value: 4,
-        },
-        {
-          firstName: 'Tuesday',
-          value: 9,
-        },
-      ],
-    },
-    {
-      firstName: 'New Users',
-      series: [
-        {
-          firstName: 'Today',
-          value: 1,
-        },
-        {
-          firstName: 'Yesterday',
-          value: 3,
-        },
-        {
-          firstName: 'Wednesday',
-          value: 2,
-        },
-        {
-          firstName: 'Tuesday',
-          value: 4,
-        },
-      ],
-    },
-  ];
 
-  // exporting users data to csv file
+  errorMessage: string;
+  startTime: number;
+  endTime: number;
+  interval: number; // todo keep?
+
+  visits: any;
+
+  ngOnInit(): void {
+
+    this.getVisits();
+  }
+
+  /* gets all visits in a certain period */
+  getVisits() {
+    this.api.getVisitors({
+      start_date: this.startTime,
+      end_date: this.endTime
+    }).subscribe((res) => {
+      this.visits = this.convertData(res.visitors);
+    }, (err) => {
+      this.errorMessage = err.message;
+    });
+  }
+
+
+  convertData(data: Visit[]) {
+    // todo implement
+  }
+
+  /* exports users data to csv file */
   exportUserData() {
     let rowDelimiter = '\n';
     let columnDelimiter = ',';
@@ -65,14 +54,14 @@ export class UserGraphComponent implements OnInit, OnDestroy {
 
     //setup header of csv as All Users, New Users, Day
     formattedData += 'Day' + columnDelimiter;
-    this.data.forEach(function (item, index) {
+    this.visits.forEach(function (item, index) {
       formattedData += item.firstName + columnDelimiter;
     });
     formattedData = formattedData.slice(0, -1) + rowDelimiter; //replace last comma with newline
 
-    let temp = this.data[1];
+    let temp = this.visits[1];
     //for each day listed in the series, record data
-    this.data[0].series.forEach(function (item, index) {
+    this.visits[0].series.forEach(function (item, index) {
       formattedData +=
         item.firstName +
         columnDelimiter +
@@ -92,7 +81,11 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     link.click();
   }
 
+  // todo fix later
+
+  /* remove csv link on leaving page */
   ngOnDestroy() {
-    // document.getElementById("csv-dl").remove()
+    let csv = document.getElementById("csv-dl")
+      if (csv){csv.remove()}
   }
 }

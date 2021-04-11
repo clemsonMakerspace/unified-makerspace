@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalService} from '../../../shared/modal.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {ApiService} from '../../../shared/api.service';
+import {ApiService} from '../../../shared/api/api.service';
 
 @Component({
   selector: 'app-modal',

@@ -1,13 +1,20 @@
 <app-modal *ngIf="modal.modalStatus.getValue().open == true"></app-modal>
 
 <div class="w-100">
-  <h1 class="text-white font-weight-bold display-3 mb-4">
+
+  <h1 id="welcome-text" *ngIf="auth.isUserLoggedIn()"
+      class="text-white font-weight-bold display-3 mb-4">
     Welcome back,
     <span class="text-secondary">
       {{ auth.user.getValue().first_name }}
     </span>
   </h1>
-  <div class="row d-flex align-content-stretch">
+
+
+<!--  todo use authguard?-->
+<div #content *ngIf="auth.isUserLoggedIn()">
+  <!--Users-->
+  <div id="tasks-card" class="row d-flex align-content-stretch">
     <div class="card-wrapper col-xl-7 col-12">
       <app-tasks></app-tasks>
     </div>
@@ -16,16 +23,13 @@
     </div>
   </div>
 
-  <!--  Requests are future functionality -->
-  <!--  <div class="row">-->
-  <!--    <div class="card-wrapper col-12">-->
-  <!--      <app-requests></app-requests>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <div class="row">
+  <!--Machines-->
+  <div id="machines-card" class="row">
     <div class="card-wrapper col-12">
       <app-machines></app-machines>
     </div>
   </div>
+</div>
+
+
 </div>

@@ -8,10 +8,18 @@
         </button>
       </div>
     </div>
-    <div class="w-100 bg-secondary h-100">
+    <div class="card card-dark" *ngIf="errorMessage">
+      <h3 class="text-warning">Sorry, there's been an error.</h3>
+      <h6>Please <span class="a font-weight" style="text-decoration: underline">contact</span> the MakerSpace team. </h6>
+      <h6 class="text-warning">
+        Details: {{errorMessage}}
+      </h6>
+    </div>
+    <div class="w-100 bg-secondary h-100"
+    *ngIf="!errorMessage">
       <ngx-charts-line-chart
         [view]="[graph.offsetWidth - 80, 400]"
-        [results]="data"
+        [results]="visits"
         [xAxis]="true"
         [yAxis]="true"
         [showGridLines]="false"

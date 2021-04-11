@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../shared/api.service';
+import {ApiService} from '../../shared/api/api.service';
 
 @Component({
   selector: 'app-machines',
@@ -10,54 +10,45 @@ export class MachinesComponent implements OnInit {
   constructor(private api: ApiService) {
   }
 
+  // todo better err handling?
+  // todo fix links on the first page
+  // todo check for permissions for showing stuff
+  // todo add some sort of slider
+
+  errorMessage: string;
   machines = [];
   startTime: number;
   endTime: number;
   intervalFormat: string;
 
-  // todo what is this for?
-  stateMap = {
-    '1': 'Working',
-    '.5': 'Being Used',
-    '.25': 'Being Repaired',
-    '0': 'Not Working',
-  };
-
-
-  // todo fix links on the first page
-  // todo check for permissions for showing stuff
-
   ngOnInit(): void {
-    // todo change
+    // todo make this dynamic
     this.startTime = new Date(2021, 2, 1).getTime();
     this.endTime = Date.now();
     this.getMachines();
   }
 
-  // todo handle when machine can't be loading
-  // todo front page
 
-
-
+  /* gets data for all machines */
   getMachines() {
-    let startDate = Date.now();
-    let endDate = Date.now();
     this.api.getMachinesStatus({
-      'start_date': startDate,
-      'end_date': endDate
+      'start_date': this.startTime,
+      'end_date': this.endTime
     }).subscribe((res) => {
-      // todo handle errors and stuff
       this.machines = this.convertData(
         res.machines, this.startTime,
         this.endTime);
+    }, (err) => {
+      this.errorMessage = err.message;
     });
   }
+
 
   /* converts response to usable data */
   convertData(data, startTime: number, endTime: number) {
 
     let interval = endTime - startTime;
-    let type = 'hours'
+    let type = 'hours';
     let stepSize = 1000 * 60 * 60; // an hour
     let cutoff = 48; // max units
 
@@ -65,10 +56,10 @@ export class MachinesComponent implements OnInit {
     let hours = interval / stepSize;
     if (hours > cutoff) {
       stepSize *= 24; // one day
-      type = 'days'
+      type = 'days';
       if (hours > Math.pow(cutoff, 2)) {
         stepSize *= 7; // one week
-        type = 'weeks'
+        type = 'weeks';
       }
     }
 
@@ -102,16 +93,16 @@ export class MachinesComponent implements OnInit {
 
   // todo why is this not working
 
-
+  /* tooltip for squares */
   tooltip(data) {
-    if (!this.stateMap) {
-      return '';
-    }
     console.log(data); // todo remove
     return (
       data.label +
       ' ' +
-      this.stateMap[data.data.toString()] +
+      {
+        '1': 'Working',
+        '0': 'Not Working',
+      }[data.visits.toString()] +
       ' at hour ' +
       data.series
     );

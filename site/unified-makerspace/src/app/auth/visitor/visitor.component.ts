@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import * as majors from './majors.json';
 import {AuthService} from '../../shared/auth/auth.service';
-import {ApiService} from '../../shared/api.service';
+import {ApiService} from '../../shared/api/api.service';
 import {showError} from '../../shared/funcs';
 
 /* validates that item is in list */
