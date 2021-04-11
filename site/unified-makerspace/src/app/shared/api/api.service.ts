@@ -13,8 +13,8 @@ import {Task, User} from '../models';
 
 let endpoints = {
   /* auth */
-  generateUserToken: ['/api/auth', 'POST'],
-  resetPassword: ['/api/auth', 'PATCH'],
+  generateUserToken: ['/api/admin', 'POST'],
+  resetPassword: ['/api/admin', 'PATCH'],
   /* users */
   createUser: ['/api/users', 'PUT'],
   login: ['/api/users', 'POST'],
@@ -60,7 +60,7 @@ export class ApiService {
   }
 
 
-  /** Auth **/
+  /** Admin **/
 
   @endpoint
   generateUserToken(args: any): any | Observable<Response> {

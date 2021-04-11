@@ -29,7 +29,7 @@ export class RegisterComponent implements OnInit {
     'lastName': 'goldberg',
     'email': 'joe@makerspace.com',
     'password': 'password',
-    'confirmPassword': 'password',
+    'newPassword': 'password',
     'isUser': false,
     'userToken': ''
   };
@@ -58,7 +58,7 @@ export class RegisterComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
+      newPassword: ['', Validators.required],
       isUser: [''],
       userToken: ['']
     }, UserValidator);

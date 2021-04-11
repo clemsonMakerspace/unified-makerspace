@@ -1,5 +1,5 @@
-<div id="tasks" class="card bg-primary">
-  <div class="card-body">
+<div id="tasks" class="card bg-primary h-100">
+  <div class="card-body h-100">
     <div id="task-top" class="row no-gutters mb-3">
       <h1 class="card-title text-light col-12 col-md-8">Current Tasks</h1>
       <div class="text-white col-4">
@@ -47,7 +47,7 @@
       </h6>
     </div>
 
-    <div id="task-data" style="overflow-y: auto; height: 300px" *ngIf="!errorMessage">
+    <div id="task-data h-100" style="overflow-y: auto; height: 300px" *ngIf="!errorMessage">
       <div
         class="rounded bg-dark p-2 text-light my-2"
         *ngFor="let task of tasks"

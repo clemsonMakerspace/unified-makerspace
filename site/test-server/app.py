@@ -77,6 +77,11 @@ auth_token = "TEST_TOKEN"
 Endpoints
 """
 
+# admin
+@app.route('/api/admin', methods=['POST'])
+def generate_user_token():
+    return dict(code=200, user_token="RANDOMTOKEN")
+
 
 # todo return auth token
 @app.route('/api/users', methods=['POST'])

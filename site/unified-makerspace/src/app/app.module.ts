@@ -22,6 +22,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { VisitorComponent } from './auth/visitor/visitor.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
+import { ChangePasswordComponent } from './profile/change-password/change-password.component';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -55,6 +56,7 @@ let routes: Routes = [
     VisitorComponent,
     RegisterComponent,
     LoginComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     BrowserModule,
