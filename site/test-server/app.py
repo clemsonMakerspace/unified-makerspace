@@ -24,8 +24,8 @@ from models import User, Task, Visitor, Machine, Permission
 # todo spread this out?
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "TEST_KEY"
 CORS(app)
+app.config['SECRET_KEY'] = "TEST_KEY"
 
 
 # todo add auth tokens (?)
@@ -135,13 +135,16 @@ def update_task():
 
 # machines
 # todo is not right
-@app.route('/api/machines', methods=['GET'])
+@app.route('/api/machines', methods=['POST'])
 def get_machines_status():
-    return dict(code=200, machines=[])
+    with open('responses/machines.yaml') as f:
+        data = yaml.load(f)
+    return dict(code=200, machines=data)
 
 
+# todo return visitors
 # visitors
-@app.route('/api/visitors', methods=['GET'])
+@app.route('/api/visitors', methods=['POST'])
 def get_visitors():
     return dict(code=200, visitors=fetch('visitors'))
 

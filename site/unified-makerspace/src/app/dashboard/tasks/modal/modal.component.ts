@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../../../shared/modal.service';
+import {ModalService} from '../../../shared/modal/modal.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../../../shared/api/api.service';
 

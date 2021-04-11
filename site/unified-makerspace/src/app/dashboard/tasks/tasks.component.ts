@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../../shared/modal.service';
+import {ModalService} from '../../shared/modal/modal.service';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
 

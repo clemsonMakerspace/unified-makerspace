@@ -13,31 +13,71 @@ export class MachinesComponent implements OnInit {
   // todo better err handling?
   // todo fix links on the first page
   // todo check for permissions for showing stuff
-  // todo add some sort of slider
+
+  // todo change length automatically based on screen size
 
   errorMessage: string;
   machines = [];
   startTime: number;
   endTime: number;
   intervalFormat: string;
+  intervalLength = 'hours';
 
   ngOnInit(): void {
-    // todo make this dynamic
-    this.startTime = new Date(2021, 2, 1).getTime();
+    // default start time is 24 hours ago
+    let dt = new Date()
+    dt.setHours(dt.getHours() - 24);
+    this.startTime = dt.getTime();
+
+    // end time is always now
     this.endTime = Date.now();
-    this.getMachines();
+    this.getMachines(this.startTime, this.endTime);
+  }
+
+  /* send request after 500 ms of inactivity */
+  onSliderChange(value: number) {
+    setTimeout(() => {
+      if (value == this.startTime) {
+        this.getMachines(this.toTime(value), this.endTime);
+      }
+    }, 500)
+  }
+
+  /* slider interpolator */
+  /*
+    quadratic curve fitting
+    y = 364.8263 - 8.458279*x + 0.04823032*x^2
+    ┌────────┬──────────────┐
+    │ slider │ value (days) │
+    ├────────┼──────────────┤
+    │      0 │          365 │
+    │     60 │           30 │
+    │     70 │            7 │
+    │     80 │            1 │
+    │    100 │            0 │
+    └────────┴──────────────┘
+   */
+
+  toTime(value: number):number {
+    let v = (102 - value)/24;
+    if (value < 80) {
+      v = 364.8263 - 8.4582 * value + 0.04823 * Math.pow(value, 2);
+    }
+    let d = new Date();
+    d.setHours(d.getHours() - v*24);
+    return d.getTime();
   }
 
 
+
   /* gets data for all machines */
-  getMachines() {
+  getMachines(startTime: number, endTime: number) {
     this.api.getMachinesStatus({
-      'start_date': this.startTime,
-      'end_date': this.endTime
+      'start_date': startTime,
+      'end_date': endTime
     }).subscribe((res) => {
       this.machines = this.convertData(
-        res.machines, this.startTime,
-        this.endTime);
+        res.machines['machines'], startTime, endTime);
     }, (err) => {
       this.errorMessage = err.message;
     });
@@ -57,14 +97,25 @@ export class MachinesComponent implements OnInit {
     if (hours > cutoff) {
       stepSize *= 24; // one day
       type = 'days';
-      if (hours > Math.pow(cutoff, 2)) {
+      if (hours > 48*24) {
         stepSize *= 7; // one week
         type = 'weeks';
       }
     }
 
     let steps = Math.floor(interval / stepSize);
+
+    // terminate if greater than year
+    // to prevent browser from crashing
+    if (steps > 52) {
+      console.log('Excess range. Not calculating.', steps);
+      return this.machines;
+    }
+
+
+    // set global variables
     this.intervalFormat = `${steps} ${type}`;
+    this.intervalLength = type;
 
     let ret = []; // return data
     let t = startTime;
@@ -72,38 +123,35 @@ export class MachinesComponent implements OnInit {
       let series = [];
       t += stepSize;
       for (const [key, value] of (<any> Object).entries(data)) {
-        let state = 0;
+        let state = 1;
         for (let v of (value as any)) {
           if (t >= v[0] && t <= v[1]) {
-            state = 1; // todo add optimization.
+            state = 0; // todo add optimization?
             break;
           }
           if (t >= v[1]) {
             break;
           }
         }
-        series.push({'firstName': key, 'value': state});
+        series.push({'name': key, 'value': state});
       }
-      ret.push({'firstName': i + 1, 'series': series});
+      ret.push({'name': i + 1, 'series': series});
     }
 
     return ret;
   }
 
 
-  // todo why is this not working
-
   /* tooltip for squares */
   tooltip(data) {
-    console.log(data); // todo remove
     return (
       data.label +
       ' ' +
       {
-        '1': 'Working',
-        '0': 'Not Working',
-      }[data.visits.toString()] +
-      ' at hour ' +
+        '1': 'was working',
+        '0': 'was not working',
+      }[data.data.toString()] +
+      ' at ' + this.intervalLength + ' ' +
       data.series
     );
   }

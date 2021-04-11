@@ -24,5 +24,7 @@
       style="fill: white"
     >
     </ngx-charts-heat-map>
+    <label for="time-range">Time</label>
+      <input id="time-range" type="range" class="form-control-range" [(ngModel)]="startTime" (ngModelChange)="onSliderChange($event)">
   </div>
 </div>
