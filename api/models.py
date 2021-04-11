@@ -80,7 +80,7 @@ class Visitor:
     first_name: str
     last_name: str
     major: str
-    degree_type: str
+    degree: str
 
 
 

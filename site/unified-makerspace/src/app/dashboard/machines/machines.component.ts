@@ -60,7 +60,7 @@ export class MachinesComponent implements OnInit {
 
   toTime(value: number):number {
     let v = (102 - value)/24;
-    if (value < 80) {
+    if (value < 75) {
       v = 364.8263 - 8.4582 * value + 0.04823 * Math.pow(value, 2);
     }
     let d = new Date();
@@ -90,14 +90,13 @@ export class MachinesComponent implements OnInit {
     let interval = endTime - startTime;
     let type = 'hours';
     let stepSize = 1000 * 60 * 60; // an hour
-    let cutoff = 48; // max units
 
     // find the best step size for interval
     let hours = interval / stepSize;
-    if (hours > cutoff) {
+    if (hours > 24) {
       stepSize *= 24; // one day
       type = 'days';
-      if (hours > 48*24) {
+      if (hours > 30*24) {
         stepSize *= 7; // one week
         type = 'weeks';
       }

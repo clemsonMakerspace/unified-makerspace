@@ -66,6 +66,11 @@ def resolve_task(auth_token: str, task_id: str):
     """
     Resolves or completes a task.
 
+    Notes
+    -----
+    This does **not** delete the task from the database. It
+    only marks it as *resolved*.
+
     ================   ============
     **Endpoint**        /api/tasks
     **Request Type**    DELETE
@@ -79,10 +84,6 @@ def resolve_task(auth_token: str, task_id: str):
     task_id: str, required
         The id of the task to be deleted.
 
-    Notes
-    -----
-    This does **not** delete the task. Resolved tasks
-    are still stored in the database.
 
     Returns
     -------
