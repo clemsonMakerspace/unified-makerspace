@@ -1,35 +1,46 @@
-import json
+# FROM MAKERSPACE MANAGER LAMBDA APPLICATION
+
+
 import boto3
+import json
+import uuid
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from boto3.dynamodb.conditions import Key
+from api.models import User
 
-clientID = "20nnrq12vp19a99c58g2r0b0og" 
+# Get the service resource.
+dynamodb = boto3.resource('dynamodb')
 
-def CreateUserHandler(event, context):
-    try:
-        username = event['username']
-        password = event["password"]
-        cardID = event['cardID']
-        email = event['email']
-        first_name = event["first"]
-        last_name = event["last"]
-    except:
-        return {
-                'statusCode': 401,
-                'body': json.dumps({
-                    'Message' : 'Error loading data. '
-                 })
-        }
-        
-    #AWS resources
-    client = boto3.client('cognito-idp')
-    
-    db = boto3.resource('dynamodb')
-    table = db.Table('MakerspaceUser')
-    
+# Get Table Objects
+
+# DEPRECATED: TO REMOVE
+# Parent_Table = dynamodb.Table('Parent_Tasks')
+# Child_Table = dynamodb.Table('Child_Tasks')
+# Machine_Table = dynamodb.Table('Machines')
+
+Users = dynamodb.Table('Users')
+
+# Cognito Client
+client = boto3.client('cognito-idp')
+
+
+def CreateUser(data):
+    new_user = json.loads(data["body"])
+
+    new_user = User(new_user["first_name"], new_user["last_name"], new_user["email"], new_user["password"],
+                    new_user["user_token"])
+
+    # Put new task into the tasks eventbase
+    Users.put_item(
+        Item=new_user.__dict__
+    )
+
     custom_attributes = [
-        {'Name' : 'email', 'Value': email},
-        {'Name' : 'custom:firstname', 'Value': first_name}, 
-        {'Name' : 'custom:lastname', 'Value': last_name}
-        ]
+        {'Name': 'email', 'Value': new_user.email},
+        {'Name': 'custom:firstname', 'Value': new_user.first_name},
+        {'Name': 'custom:lastname', 'Value': new_user.last_name}
+    ]
 
     try:
         #Create new user in cognito pool
@@ -45,17 +56,51 @@ def CreateUserHandler(event, context):
                 'code': 402,
                 'message' : e
         }
-    
-    #Get token for new user
+
+    # Get token for new user
     auth_token = response['UserSub']
-   
-    #Store user data in databse
-    new_user = {'PK':auth_token, 'SK':"Profile", 'AccessLevel':"student", 'Email':email, 'First_Name':first_name, 'Last_Name':last_name, 'cardID':cardID}
-    table.put_item(Item=new_user)
-    
+
     return {
-            'code': 200,
-            'message': 'The user has been successfully created. ',
-             'auth_token':auth_token
+        'code': 200,
+        'message': 'The user has been successfully created. ',
+        'auth_token': auth_token
     }
-        
+
+
+def CreateUserHandler(event, context):
+
+    # Return client error if no string params
+    if (event is None):
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Content-Type': 'text/plain'
+            },
+            'body': json.dumps({
+                'Message': 'Failed to provide query string parameters.'
+            })
+        }
+
+    try:
+        # Call function
+        result = CreateUser(event)
+
+        # Send Response
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'text/plain'
+            },
+            'body': json.dumps(result)
+        }
+    except Exception as e:
+        # Return exception with response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'text/plain'
+            },
+            'body': json.dumps({
+                'Message': str(e)
+            })
+        }
