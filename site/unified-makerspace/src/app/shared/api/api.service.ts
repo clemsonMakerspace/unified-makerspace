@@ -62,11 +62,13 @@ export class ApiService {
 
   /** Auth **/
 
-  generateUserToken(args: any): any | Observable<User> {
+  @endpoint
+  generateUserToken(args: any): any | Observable<Response> {
     return args;
   }
 
-  resetPassword(args: any): any | Observable<User>  {
+  @endpoint
+  resetPassword(args: any): any | Observable<Response>  {
     return args;
   }
 

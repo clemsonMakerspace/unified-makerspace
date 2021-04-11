@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit {
   }
 
   generateUserToken() {
-    this.api.generateUserToken(null)
+    this.api.generateUserToken({})
       .subscribe((res) => this.userToken = res.user_token, () => {
         // todo handle error
       });

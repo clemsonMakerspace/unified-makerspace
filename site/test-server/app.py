@@ -152,6 +152,6 @@ def get_machines_status():
 # visitors
 @app.route('/api/visitors', methods=['POST'])
 def get_visitors():
-    return dict(code=200, visitors=fetch_response('visits'))
+    return dict(code=200, visitors=fetch_data('visits'))
 
 # todo add main clause

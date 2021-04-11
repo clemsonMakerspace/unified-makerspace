@@ -12,6 +12,10 @@ def get_machines_status(auth_token: str, start_time: int, end_time: int):
     If accessed with a public *auth_token*, returns only non-sensitive
     machine information.
 
+    .. deprecated:: 5.9.1
+         Key is now `statuses` instead of `machines`.
+
+
     ================   ============
     **Endpoint**        /api/machines
     **Request Type**    POST
@@ -28,8 +32,7 @@ def get_machines_status(auth_token: str, start_time: int, end_time: int):
         The end date (inclusive) of the time frame. If not specified,
         all requests until *now* are fetched.
 
-    .. deprecated:: 5.9.1
-         Key is now `statuses` instead of `machines`.
+
 
 
     Returns

@@ -15,35 +15,77 @@ export class UserGraphComponent implements OnInit, OnDestroy {
   ) {}
 
   // todo handle error better?
-
+  // todo add slider
 
   errorMessage: string;
   startTime: number;
   endTime: number;
-  interval: number; // todo keep?
 
   visits: any;
 
   ngOnInit(): void {
+    // default start time is 7 days ago
+    let dt = new Date()
+    dt.setHours(dt.getDate() - 7);
+    this.startTime = dt.getTime();
 
-    this.getVisits();
+    // end time is always now
+    this.endTime = Date.now();
+    this.getVisits(this.startTime, this.endTime);
   }
 
   /* gets all visits in a certain period */
-  getVisits() {
+  getVisits(startTime: number, endTime: number) {
     this.api.getVisitors({
-      start_date: this.startTime,
-      end_date: this.endTime
+      start_date: startTime,
+      end_date: endTime
     }).subscribe((res) => {
-      this.visits = this.convertData(res.visitors);
+      let data = res['visits'];
+      if (!data) { // for backward compatibility
+        data = res['visitors'];
+      }
+      this.visits = this.convertData(data, startTime, endTime);
     }, (err) => {
       this.errorMessage = err.message;
     });
   }
 
 
-  convertData(data: Visit[]) {
-    // todo implement
+  /* converts response to usable data */
+  convertData(data: Visit[], startTime: number, endTime: number) {
+
+    let interval = endTime - startTime;
+    let type = 'days';
+    let stepSize = 1000 * 60 * 60 * 24; // a day
+    let steps = Math.floor(interval / stepSize);
+
+    let ret = [{
+      name: 'All Users',
+      series: []
+    }, {
+      name: 'New Users',
+      series: []
+    }
+    ]; // return data
+    let t = startTime;
+    for (let i = 0; i < steps; i++) {
+      let series = [];
+      t += stepSize;
+      let count = {
+        'new': 0,
+        'all': 0,
+      }
+      for (const visit of (data as any)) {
+        let d = visit.date_visited;
+        if (t[0] >= d && d <= t[1]) {
+          count[d.is_new ? 'new' : 'all']++;
+        }
+      }
+      ret[0].series.push({'name': i, 'value': count['all']});
+      ret[1].series.push({'name': i, 'value': count['new']});
+    }
+
+    return ret;
   }
 
   /* exports users data to csv file */
@@ -80,8 +122,6 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     document.body.appendChild(link);
     link.click();
   }
-
-  // todo fix later
 
   /* remove csv link on leaving page */
   ngOnDestroy() {

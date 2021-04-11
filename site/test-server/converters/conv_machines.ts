@@ -4,7 +4,7 @@
  */
 
 const fs = require('fs')
-let f = fs.readFileSync('./responses/machines.yaml', 'utf8');
+let f = fs.readFileSync('../responses/machines.yaml', 'utf8');
 let d = JSON.parse(f)['machines'];
 
 
