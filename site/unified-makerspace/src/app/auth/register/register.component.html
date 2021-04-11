@@ -82,8 +82,11 @@
 
     <div [ngClass]="{'d-none': !isUser}"
          class="form-group text-light mb-4">
-      <label for="user-token" class="font-weight-bold">Token
-        <span class="pl-2 bi bi-question-circle"></span></label>
+      <label for="user-token" class="font-weight-bold"
+             ngbTooltip="Your administrator should be able
+        to create a token for you from their profile page." >Token
+        <span class="pl-2 bi bi-question-circle"></span>
+      </label>
       <input
         type="text"
         class="form-control border-secondary border"

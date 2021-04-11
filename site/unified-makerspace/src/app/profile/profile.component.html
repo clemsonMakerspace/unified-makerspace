@@ -1,28 +1,49 @@
+<ng-template #userTokenModal>
+  <div class="card card-dark">
+    <div class="card-body ">
+      <h1 class="card-title">User Token</h1>
+      <p class="font-weight-bold text-secondary">This token will enable
+      a user to sign up with maintainer permissions. Only give
+      it to the selected individual.</p>
+      <div class="">
+        <label for="user-token" class="d-none"></label>
+        <input *ngIf="userToken"
+               id="user-token" type="text"
+               class="form-control mb-2"
+               style="width:400px"
+               disabled value="{{userToken}}">
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #changePasswordModal>
+  <h1>test</h1>
+  <app-change-password></app-change-password>
+</ng-template>
+
+
 <div class="w-100">
   <h1 class="text-white font-weight-bold display-3 mb-4">Profile Settings</h1>
   <div class="card bg-primary">
     <div class="card-body">
+      <!--Manage Users-->
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Users</h1>
         <a class="text-secondary h2 d-block" (click)="generateUserToken()"
         >Generate User Token</a
         >
-        <label for="user-token" class="d-none"></label>
-        <input *ngIf="userToken"
-          id="user-token" type="text"
-               class="form-control mb-2"
-               style="width:400px"
-               disabled value="{{userToken}}">
+
         <a class="text-secondary h2 d-block" routerLink="/users"
-          >Add or remove users</a
+        >Add or remove users</a
         >
       </div>
-
+      <!--Manage Account-->
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Account</h1>
         <a class="text-secondary h2 d-block" (click)="auth.logout()">Sign Out</a>
-<!--        <h2 class="text-secondary">Export All Data</h2>-->
-        <a class="text-secondary h2 d-block">Change Password</a>
+        <!--        <h2 class="text-secondary">Export All Data</h2>-->
+        <a class="text-secondary h2 d-block" (click)="open(changePasswordModal)">Change Password</a>
         <a class="text-danger h2 d-block" (click)="deleteUser()">Delete Account</a>
       </div>
     </div>
@@ -30,9 +51,4 @@
 </div>
 
 
-<ng-template #userTokenModal>
-  <div class="card-body">
-    <p>hello world</p>
 
-  </div>
-</ng-template>

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from '../shared/auth/auth.service';
 import {ApiService} from '../shared/api/api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -15,19 +15,28 @@ export class ProfileComponent implements OnInit {
               private modal: NgbModal) {
   }
 
-  // todo add change password
-  // todo remove account management page?
-  // todo delete / edit machines
-  // todo create modals for all of these
+  @ViewChild('userTokenModal')
+  userTokenModal
+
+    // todo add change password
+    // todo remove account management page?
+    // todo delete / edit machines
+    // todo create modals for all of these
 
   userToken: string;
 
   ngOnInit(): void {
   }
 
+  open(content) {
+    this.modal.open(content);
+  }
+
   generateUserToken() {
+    this.modal.open(this.userTokenModal)
     this.api.generateUserToken({})
-      .subscribe((res) => this.userToken = res.user_token, () => {
+      .subscribe((res) => this.userToken = res.user_token,
+        () => {
         // todo handle error
       });
 

@@ -41,7 +41,7 @@ def login(email: str, password: str):
     """
 
 
-def change_password(auth_token: str, email: str,
+def change_password(auth_token: str, user_id: str,
                     password: str, new_password: str):
     """
 
@@ -64,8 +64,8 @@ def change_password(auth_token: str, email: str,
     -----------
     auth_token : str, required
         Token to verify user credentials.
-    email : str, required
-        The email of the user.
+    user_id : str, required
+        The user_id of the user.
     password : str, required
         The password of the user.
     new_password: str, required
