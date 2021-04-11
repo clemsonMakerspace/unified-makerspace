@@ -9,6 +9,9 @@ from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
 from api.models import User
 
+clientID = "20nnrq12vp19a99c58g2r0b0og"
+
+
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
@@ -27,24 +30,24 @@ client = boto3.client('cognito-idp')
 
 def CreateUser(data):
     new_user = json.loads(data["body"])
-
-    new_user = User(new_user["first_name"], new_user["last_name"], new_user["email"], new_user["password"],
-                    new_user["user_token"])
+    print(new_user)
+    new_user_obj = User(new_user["user_token"], new_user["first_name"], new_user["last_name"],[],[])
 
     # Put new task into the tasks eventbase
     Users.put_item(
-        Item=new_user.__dict__
+        Item=new_user_obj.__dict__
     )
 
     custom_attributes = [
-        {'Name': 'email', 'Value': new_user.email},
-        {'Name': 'custom:firstname', 'Value': new_user.first_name},
-        {'Name': 'custom:lastname', 'Value': new_user.last_name}
+        {'Name': 'email', 'Value': new_user["email"]},
+        {'Name': 'custom:firstname', 'Value': new_user["first_name"]},
+        {'Name': 'custom:lastname', 'Value': new_user["last_name"]}
     ]
 
     try:
         #Create new user in cognito pool
-        response = client.sign_up(ClientId=clientID, Username=username, Password=password, UserAttributes=custom_attributes)
+        response = client.sign_up(ClientId=clientID, Username=new_user["email"], Password=new_user["password"], UserAttributes=custom_attributes)
+        print(response)
     except client.exceptions.UsernameExistsException as e:
         #Return error if email is already in use
         return {
@@ -59,6 +62,7 @@ def CreateUser(data):
 
     # Get token for new user
     auth_token = response['UserSub']
+    print(auth_token)
 
     return {
         'code': 200,
