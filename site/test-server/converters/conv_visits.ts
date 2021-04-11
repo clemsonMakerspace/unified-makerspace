@@ -12,7 +12,6 @@ let d = JSON.parse(f)['visits'];
 function convertData(data: [], startTime: number, endTime: number) {
 
     let interval = endTime - startTime;
-    let type = 'days';
     let stepSize = 1000 * 60 * 60 * 24; // a day
     let steps = Math.floor(interval / stepSize);
 

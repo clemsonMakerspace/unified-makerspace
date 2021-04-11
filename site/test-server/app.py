@@ -63,7 +63,7 @@ def fetch_response(resource: str, data_path= './responses'):
     """
     path = os.path.join(data_path, f"{resource}.yaml")
     with open(path) as f:
-        data = yaml.load(f)
+        data = yaml.safe_load(f)
     return data
 
 
@@ -146,12 +146,16 @@ def update_task():
 # machines
 @app.route('/api/machines', methods=['POST'])
 def get_machines_status():
-    return dict(code=200, machines=fetch_response('machines'))
+    return dict(code=200, machines=fetch_response('machines')['machines'])
 
 
 # visitors
 @app.route('/api/visitors', methods=['POST'])
 def get_visitors():
     return dict(code=200, visitors=fetch_data('visits'))
+
+@app.route('/api/visitors', methods=['PUT'])
+def create_visitor():
+    return dict(code=200)
 
 # todo add main clause

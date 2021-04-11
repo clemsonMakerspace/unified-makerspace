@@ -15,7 +15,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
   ) {}
 
   // todo handle error better?
-  // todo add slider
+  // todo slider labels...?
 
   errorMessage: string;
   startTime: number;
@@ -26,13 +26,26 @@ export class UserGraphComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // default start time is 7 days ago
     let dt = new Date()
-    dt.setHours(dt.getDate() - 7);
+    dt.setDate(dt.getDate() - 7);
     this.startTime = dt.getTime();
 
     // end time is always now
     this.endTime = Date.now();
     this.getVisits(this.startTime, this.endTime);
+    this.startTime = -7;
   }
+
+
+  onSliderChange(value: number) {
+    setTimeout(() => {
+      if (value == this.startTime) {
+        let d = new Date();
+        d.setDate(d.getDate() + value);
+        this.getVisits(d.getTime(), this.endTime);
+      }
+    }, 500)
+  }
+
 
   /* gets all visits in a certain period */
   getVisits(startTime: number, endTime: number) {
@@ -41,7 +54,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
       end_date: endTime
     }).subscribe((res) => {
       let data = res['visits'];
-      if (!data) { // for backward compatibility
+      if (data === undefined) { // for backward compatibility
         data = res['visitors'];
       }
       this.visits = this.convertData(data, startTime, endTime);
@@ -55,7 +68,6 @@ export class UserGraphComponent implements OnInit, OnDestroy {
   convertData(data: Visit[], startTime: number, endTime: number) {
 
     let interval = endTime - startTime;
-    let type = 'days';
     let stepSize = 1000 * 60 * 60 * 24; // a day
     let steps = Math.floor(interval / stepSize);
 
