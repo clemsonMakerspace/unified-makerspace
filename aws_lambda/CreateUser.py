@@ -16,12 +16,6 @@ clientID = "20nnrq12vp19a99c58g2r0b0og"
 dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
-
-# DEPRECATED: TO REMOVE
-# Parent_Table = dynamodb.Table('Parent_Tasks')
-# Child_Table = dynamodb.Table('Child_Tasks')
-# Machine_Table = dynamodb.Table('Machines')
-
 Users = dynamodb.Table('Users')
 
 # Cognito Client
