@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserModule } from '@angular/platform-browser';
+import {ApiService} from '../../shared/api/api.service';
+import {Visit} from '../../shared/models';
 
 @Component({
   selector: 'app-user-graph',
@@ -8,56 +10,97 @@ import { BrowserModule } from '@angular/platform-browser';
   styleUrls: ['./user-graph.component.scss'],
 })
 export class UserGraphComponent implements OnInit, OnDestroy {
-  constructor() {}
+  constructor(
+    private api: ApiService
+  ) {}
 
-  ngOnInit(): void {}
+  // todo handle error better?
+  // todo slider labels...?
 
-  data = [
-    {
+  errorMessage: string;
+  startTime: number;
+  endTime: number;
+
+  visits: any;
+
+  ngOnInit(): void {
+    // default start time is 7 days ago
+    let dt = new Date()
+    dt.setDate(dt.getDate() - 7);
+    this.startTime = dt.getTime();
+
+    // end time is always now
+    this.endTime = Date.now();
+    this.getVisits(this.startTime, this.endTime);
+    this.startTime = -7;
+  }
+
+
+  onSliderChange(value: number) {
+    setTimeout(() => {
+      if (value == this.startTime) {
+        let d = new Date();
+        d.setDate(d.getDate() + value);
+        this.getVisits(d.getTime(), this.endTime);
+      }
+    }, 500)
+  }
+
+
+  /* gets all visits in a certain period */
+  getVisits(startTime: number, endTime: number) {
+    this.api.getVisitors({
+      start_date: startTime,
+      end_date: endTime
+    }).subscribe((res) => {
+      let data = res['visits'];
+      if (data === undefined) { // for backward compatibility
+        data = res['visitors'];
+      }
+      this.visits = this.convertData(data, startTime, endTime);
+    }, (err) => {
+      this.errorMessage = err.message;
+    });
+  }
+
+
+  /* converts response to usable data */
+  convertData(data: Visit[], startTime: number, endTime: number) {
+
+    let interval = endTime - startTime;
+    let stepSize = 1000 * 60 * 60 * 24; // a day
+    let steps = Math.floor(interval / stepSize);
+
+    let ret = [{
       name: 'All Users',
-      series: [
-        {
-          name: 'Today',
-          value: 2,
-        },
-        {
-          name: 'Yesterday',
-          value: 7,
-        },
-        {
-          name: 'Wednesday',
-          value: 4,
-        },
-        {
-          name: 'Tuesday',
-          value: 9,
-        },
-      ],
-    },
-    {
+      series: []
+    }, {
       name: 'New Users',
-      series: [
-        {
-          name: 'Today',
-          value: 1,
-        },
-        {
-          name: 'Yesterday',
-          value: 3,
-        },
-        {
-          name: 'Wednesday',
-          value: 2,
-        },
-        {
-          name: 'Tuesday',
-          value: 4,
-        },
-      ],
-    },
-  ];
+      series: []
+    }
+    ]; // return data
+    let t = startTime;
+    for (let i = 0; i < steps; i++) {
+      let series = [];
+      t += stepSize;
+      let count = {
+        'new': 0,
+        'all': 0,
+      }
+      for (const visit of (data as any)) {
+        let d = visit.date_visited;
+        if (t[0] >= d && d <= t[1]) {
+          count[d.is_new ? 'new' : 'all']++;
+        }
+      }
+      ret[0].series.push({'name': i, 'value': count['all']});
+      ret[1].series.push({'name': i, 'value': count['new']});
+    }
 
-  // exporting users data to csv file
+    return ret;
+  }
+
+  /* exports users data to csv file */
   exportUserData() {
     let rowDelimiter = '\n';
     let columnDelimiter = ',';
@@ -65,16 +108,16 @@ export class UserGraphComponent implements OnInit, OnDestroy {
 
     //setup header of csv as All Users, New Users, Day
     formattedData += 'Day' + columnDelimiter;
-    this.data.forEach(function (item, index) {
-      formattedData += item.name + columnDelimiter;
+    this.visits.forEach(function (item, index) {
+      formattedData += item.firstName + columnDelimiter;
     });
     formattedData = formattedData.slice(0, -1) + rowDelimiter; //replace last comma with newline
 
-    let temp = this.data[1];
+    let temp = this.visits[1];
     //for each day listed in the series, record data
-    this.data[0].series.forEach(function (item, index) {
+    this.visits[0].series.forEach(function (item, index) {
       formattedData +=
-        item.name +
+        item.firstName +
         columnDelimiter +
         item.value +
         columnDelimiter +
@@ -92,7 +135,9 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     link.click();
   }
 
+  /* remove csv link on leaving page */
   ngOnDestroy() {
-    // document.getElementById("csv-dl").remove()
+    let csv = document.getElementById("csv-dl")
+      if (csv){csv.remove()}
   }
 }

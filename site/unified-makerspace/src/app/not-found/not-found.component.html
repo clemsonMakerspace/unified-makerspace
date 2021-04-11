@@ -1,10 +1,22 @@
-<div class="w-100">
-  <h1 class="text-white font-weight-bold display-3 mb-4">
-    Woah there, this page does not exist!
-  </h1>
+<div class="">
   <div class="card bg-primary">
-    <div class="card-body">
-      <h1 class="card-title text-light">Go back home?</h1>
+    <div class="card-body text-left">
+      <h1 class="card-title text-light">
+        Woah there.<br>
+      </h1>
+      <p class="text-white">We can't find this page. Below are possible reasons.</p>
+      <ul class="text-white">
+        <li>The link or bookmark that took you here is outdated
+        </li>
+        <li>The page has moved to a different address
+        </li>
+        <li>The web address is typed incorrectly</li>
+      </ul>
+
+      <p class="text-white">Try re-typing the link or <a
+        (click)="router.navigate(['/'])"
+        class="text-secondary">take me home</a>.</p>
+
     </div>
   </div>
 </div>

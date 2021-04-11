@@ -17,6 +17,10 @@ Tasks
 
 Visitors
 ---------
+.. literalinclude:: ../../../site/test-server/data/visits.yaml
+
+Visitors
+---------
 .. literalinclude:: ../../../site/test-server/data/visitors.yaml
 
 Permissions
@@ -29,11 +33,6 @@ Example Responses
 
 `getMachinesStatus()`
 -----------------------
-.. literalinclude:: ../../../site/test-server/responses/machines.yaml
-
-
-`getVisitors()`
-----------------
 .. literalinclude:: ../../../site/test-server/responses/machines.yaml
 
 

@@ -54,6 +54,10 @@ def get_visitors(auth_token: str, start_date: int, end_date: int):
         The end date (inclusive) of the time frame. If not specified,
         "today" is assumed.
 
+    Note
+    -----
+    Endpoint returns type `visits`, not `visitors`.
+
     Returns
     -------
     Success

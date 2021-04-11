@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
+import { AuthComponent } from './auth/auth.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TasksComponent } from './dashboard/tasks/tasks.component';
 import { ModalComponent } from './dashboard/tasks/modal/modal.component';
@@ -19,6 +19,9 @@ import { RequestsComponent } from './dashboard/requests/requests.component';
 import { UserGraphComponent } from './dashboard/user-graph/user-graph.component';
 import { MachinesComponent } from './dashboard/machines/machines.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { VisitorComponent } from './auth/visitor/visitor.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { LoginComponent } from './auth/login/login.component';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -27,8 +30,8 @@ let routes: Routes = [
   //   ]}, // todo remove
 
   { path: '', component: RootComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: LoginComponent },
+  { path: 'login', component: AuthComponent },
+  { path: 'register', component: AuthComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'users', component: UsersComponent },
@@ -38,7 +41,7 @@ let routes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
+    AuthComponent,
     DashboardComponent,
     TasksComponent,
     ModalComponent,
@@ -49,6 +52,9 @@ let routes: Routes = [
     RequestsComponent,
     UserGraphComponent,
     MachinesComponent,
+    VisitorComponent,
+    RegisterComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

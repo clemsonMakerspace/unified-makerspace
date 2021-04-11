@@ -20,28 +20,27 @@ from flask_cors import CORS
 
 # to enable importing of distant module
 sys.path.append("../../api")
-from models import User, Task, Visitor, Machine, Permission
+from models import User, Task, Visitor, Machine, Permission, Visit
+
 # todo spread this out?
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "TEST_KEY"
 CORS(app)
+app.config['SECRET_KEY'] = "TEST_KEY"
 
 
 # todo add auth tokens (?)
 # todo dict within a dict
 
-# load data
-
-def fetch(resource: str, data_path='./data') -> [dict]:
+def fetch_data(resource: str, data_path='./data') -> [dict]:
     """
     Load test data for `resource`. Data is instantiated as
-    classes to ensure type safety.
+    classes to ensure type safety. Simulates database.
     """
 
     # string to model mappings
     models = dict(tasks=Task, users=User, permissions=Permission,
-                  visitors=Visitor, machines=Machine)
+                  visitors=Visitor, visits=Visit, machines=Machine)
 
     # invalid resource
     if resource not in models:
@@ -58,9 +57,20 @@ def fetch(resource: str, data_path='./data') -> [dict]:
     return objs
 
 
+def fetch_response(resource: str, data_path= './responses'):
+    """
+    Gets pre-calculated responses.
+    """
+    path = os.path.join(data_path, f"{resource}.yaml")
+    with open(path) as f:
+        data = yaml.safe_load(f)
+    return data
+
+
+
 # load users on start
 # todo session?
-users = fetch('users')
+users = fetch_data('users')
 auth_token = "TEST_TOKEN"
 
 """
@@ -98,13 +108,13 @@ def update_user():
     return dict(code=200, message="User has been updated.")
 
 
-# todo get tasks for user...
+# todo get tasks for user...?
 
 # tasks
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     if not 'tasks' in session:
-        session['tasks'] = fetch('tasks')
+        session['tasks'] = fetch_data('tasks')
         session.modified = True
     return dict(code=200, tasks=session['tasks'])
 
@@ -134,15 +144,18 @@ def update_task():
 
 
 # machines
-# todo is not right
-@app.route('/api/machines', methods=['GET'])
+@app.route('/api/machines', methods=['POST'])
 def get_machines_status():
-    return dict(code=200, machines=[])
+    return dict(code=200, machines=fetch_response('machines')['machines'])
 
 
 # visitors
-@app.route('/api/visitors', methods=['GET'])
+@app.route('/api/visitors', methods=['POST'])
 def get_visitors():
-    return dict(code=200, visitors=fetch('visitors'))
+    return dict(code=200, visitors=fetch_data('visits'))
+
+@app.route('/api/visitors', methods=['PUT'])
+def create_visitor():
+    return dict(code=200)
 
 # todo add main clause

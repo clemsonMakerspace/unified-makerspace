@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ModalService } from '../shared/modal.service';
+import { ModalService } from '../shared/modal/modal.service';
 import { AuthService } from '../shared/auth/auth.service';
 
 @Component({

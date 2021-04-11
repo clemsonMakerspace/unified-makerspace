@@ -1,0 +1,72 @@
+<!-- Visitor Form-->
+<div class="card-header">
+<!--  todo fix-->
+  <i class="bi bi-arrow-left-circle-fill"
+  (click)="auth.regState = 'register'"></i>
+</div>
+<div class="card-body">
+  <h1 class="card-title text-light text-capitalize">Hello {{auth.newUserInfo['firstName']}}!</h1>
+  <h6 class="card-text mb-3">We just need a few more details.
+    This is the last step before you're off creating!</h6>
+"Sorry, we're having issues with the server."
+  <form [formGroup]="visitorForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="form-group text-light col-6">
+        <label for="major">Major</label>
+        <input id="major" name="major" type="text"
+               list="majors" class="form-control"
+               formControlName="major">
+
+        <datalist id="majors">
+          <option class="form-control" value="{{major}}"
+                  *ngFor="let major of majors">{{major}}</option>
+        </datalist>
+        <small
+          class="warning-label"
+          *ngIf="showError('major')">
+          {{showError('major')}}
+        </small>
+      </div>
+
+      <div class="form-group text-light col-6">
+        <label for="degree">Degree</label>
+        <input id="degree" type="text"
+               list="degrees"
+               class="form-control"
+               formControlName="degree">
+        <datalist id="degrees">
+          <option *ngFor="let degree of degrees"
+                  value="{{degree}}">{{degree}}</option>
+        </datalist>
+        <small
+          class="warning-label"
+          *ngIf="showError('degree')">
+          {{showError('degree')}}
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group text-light">
+      <label for="hardware-id">Hardware ID
+        <span class="pl-2 bi-question-circle"></span></label>
+      <input id="hardware-id" type="text" class="form-control"
+             formControlName="hardwareId">
+      <small
+        class="warning-label"
+        *ngIf="showError('hardwareId')">
+        {{showError('hardwareId')}}
+      </small>
+    </div>
+    <h6 class="font-weight-bold text-danger mb-3" *ngIf="visitorForm['error']">
+      {{visitorForm['error']}}
+    </h6>
+    <button
+      class="btn py-3 btn-secondary w-100 mb-2"
+      type="submit"
+    >
+      Register
+    </button>
+  </form>
+</div>
+
+

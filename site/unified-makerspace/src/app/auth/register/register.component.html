@@ -1,0 +1,142 @@
+<div class="card-body" *ngIf="state == 'register'">
+  <h1 class="card-title text-light">Register</h1>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="form-group text-light col-6">
+        <label for="firstName">First Name</label>
+        <input id="firstName" type="text" name="firstName" class="form-control" formControlName="firstName" required>
+        <small
+          class="warning-label"
+          *ngIf="showError('firstName')">
+          {{showError('firstName')}}
+        </small>
+      </div>
+      <div class="form-group text-light col-6">
+        <label for="lastName">Last Name</label>
+        <input id="lastName" type="text" name="lastName" class="form-control" formControlName="lastName" required>
+        <small
+          class="warning-label"
+          *ngIf="showError('lastName')">
+          {{showError('lastName')}}
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group text-light">
+      <label for="new-email"> Email </label>
+      <input
+        type="text"
+        class="form-control"
+        id="new-email"
+        formControlName="email"
+        required
+      />
+      <small
+        class="warning-label"
+        *ngIf="showError('email')">
+        {{showError('email')}}
+      </small>
+    </div>
+
+    <div class="form-group text-light mb-3">
+      <label for="new-password"> Password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="new-password"
+        formControlName="password"
+        required
+        #password
+      />
+      <small
+        class="warning-label"
+        *ngIf="showError('password')"
+      >
+        Required field.
+      </small>
+    </div>
+
+    <div class="form-group text-light mb-4">
+      <label for="confirm-password"> Confirm Password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="confirm-password"
+        formControlName="confirmPassword"
+        required
+        #newPassword
+      />
+      <small
+        class="warning-label"
+        *ngIf="!showError('confirmPassword') && password.value != newPassword.value"
+      >
+        Passwords do not match!
+      </small>
+      <small
+        class="warning-label"
+        *ngIf="showError('confirmPassword')"
+      >
+        {{showError('confirmPassword')}}
+      </small>
+    </div>
+
+    <div [ngClass]="{'d-none': !isUser}"
+         class="form-group text-light mb-4">
+      <label for="user-token" class="font-weight-bold">Token
+        <span class="pl-2 bi bi-question-circle"></span></label>
+      <input
+        type="text"
+        class="form-control border-secondary border"
+        id="user-token"
+        formControlName="userToken"
+
+      />
+      <small
+        class="warning-label"
+        *ngIf="showError('userToken')"
+      >
+        Token is required. Contact your administrator for assistance.
+      </small>
+    </div>
+
+    <div class="form-check text-light mb-3">
+      <input id="is-user-or-visitor" type="checkbox" class="form-check-input"
+             formControlName="isUser">
+      <label for="is-user-or-visitor" class="form-check-label">I work at the MakerSpace.</label>
+    </div>
+    <h6 class="font-weight-bold text-danger mb-3" *ngIf="registerForm['error']">
+      {{registerForm['error']}}
+    </h6>
+    <button
+      class="btn py-3 btn-secondary w-100 mb-2"
+      type="submit"
+    >
+      Register
+    </button>
+    <a class="text-muted mt-3 d-block"
+       (click)="router.navigate(['../login'])"
+    >Have an account?</a
+    >
+  </form>
+</div>
+
+
+<!--Visitor-->
+<app-visitor *ngIf="state == 'visitor'"></app-visitor>
+
+
+
+<!--Success-->
+<div class="card-body" *ngIf="state == 'success'">
+  <h1 class="card-title text-light">Success!</h1>
+  <h2 class="card-title text-secondary">
+    Check your email to confirm your account.
+  </h2>
+  <h4 class="text-light">
+    If you can't find it, try checking your spam. The email was sent to
+    <span class="a font-weight-bold">{{
+      this.registerForm.get("email").value
+      }}</span
+    >.
+  </h4>
+</div>

@@ -1,0 +1,19 @@
+{
+  "visits": [
+    {
+      "visit_id": "1",
+      "visitor_id": "2",
+      "date_visited": 234923432,
+      "first_visit": 1
+    },
+    {
+      "visit_id": "2",
+      "visitor_id": "2",
+      "date_visited": 2342343,
+      "first_visit": 0
+    }
+  ]
+}
+
+
+# todo visitors -> visits

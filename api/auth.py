@@ -47,6 +47,12 @@ def change_password(auth_token: str, email: str,
 
     Changes a user's password.
 
+    Note
+    ------
+    This function uses the same endpoint
+    as `login`. If `new_password` is specified,
+    then `change_password` is called.
+
     ================   ============
     **Endpoint**        /api/users
     **Request Type**    POST
@@ -64,12 +70,6 @@ def change_password(auth_token: str, email: str,
         The password of the user.
     new_password: str, required
         The new password of the user.
-
-    Note
-    ------
-    This function uses the same endpoint
-    as `login`. If `new_password` is specified,
-    then `change_password` is called.
 
 
     Returns
