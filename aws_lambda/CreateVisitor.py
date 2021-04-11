@@ -1,54 +1,57 @@
 # FROM MAKERSPACE MANAGER LAMBDA APPLICATION
-
-
 import boto3
 import json
 import uuid
+import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-from api.models import Task
-from aws_lambda.CreateMachine import *
+from api.models import Visitor, Visit
+
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
-
-# DEPRECATED: TO REMOVE
-# Parent_Table = dynamodb.Table('Parent_Tasks')
-# Child_Table = dynamodb.Table('Child_Tasks')
-# Machine_Table = dynamodb.Table('Machines')
-
-Tasks = dynamodb.Table('Tasks')
-Machines = dynamodb.Table('Machines')
+Visitors = dynamodb.Table("Visitors")
+Visits = dynamodb.Table("Visits")
 
 
-def CreateTask(data):
-    new_task = json.loads(data["body"])
+def CreateVisitor(data):
+    new_visitor = json.loads(data["body"])
 
-    machine_name = (new_task["tags"])[0]
+    new_visitor = Visitor(new_visitor["visitor_id"],new_visitor["first_name"],new_visitor["last_name"],
+                          new_visitor["major"],new_visitor["degree_type"])
 
-    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["date_created"], new_task["date_completed"], new_task["tags"], new_task["task_status"])
 
-    machines = Machines.scan()
-    machines_list = machines["Items"]
+    visits = Visits.scan()
+    visits_list = visits["Items"]
 
-    if machine_name not in machines_list and machine_name != "*":
-        CreateMachine(machine_name, "0")
+    new_visit = Visit
+
+    for visit in visits_list:
+
+        if visit["visitor_id"] == new_visitor.visitor_id:
+            new_visit = Visit(str(uuid.uuid4()),new_visitor.visitor_id,int(time.time()),"0")
+            break
+    else:
+        new_visit = Visit(str(uuid.uuid4()),new_visitor.visitor_id,int(time.time()),"1")
+
+    Visits.put_item(
+        Item = new_visit.__dict__
+    )
 
     # Put new task into the tasks eventbase
-    Tasks.put_item(
-        Item=new_task.__dict__
+    Visitors.put_item(
+        Item=new_visitor.__dict__
     )
+
+
 
     return 1
 
 
-def CreateTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
-                  'task_status']
+def CreateVisitorHandler(event, context):
 
     # Return client error if no string params
     if (event is None):
@@ -64,7 +67,7 @@ def CreateTaskHandler(event, context):
 
     try:
         # Call function
-        result = CreateTask(event)
+        result = CreateVisitor(event)
 
         # Send Response
         return {
