@@ -20,7 +20,6 @@ export class VisitorComponent implements OnInit {
 
   // todo update card text
   // todo do you want to leave this page
-  // todo degree validator
   // todo hardware id validation?
 
 
@@ -56,6 +55,7 @@ export class VisitorComponent implements OnInit {
 
 
   onSubmit() {
+
     this.visitorForm['submitted']  = true;
 
     if (this.visitorForm.valid) {
@@ -66,7 +66,6 @@ export class VisitorComponent implements OnInit {
         // clear sensitive data
         this.auth.newUserInfo = null;
         // todo show loading
-        // todo if success
         this.auth.regState = 'success'
       }, (err) => {
         // todo better error handling ?
