@@ -48,7 +48,7 @@ def CreateVisitor(data):
 
 
 
-    return 1
+    return 'Visitor ' + new_visitor.visitor_id + ' has been successfully created.'
 
 
 def CreateVisitorHandler(event, context):
