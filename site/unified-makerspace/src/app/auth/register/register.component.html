@@ -52,7 +52,7 @@
         class="warning-label"
         *ngIf="showError('password')"
       >
-        Required field.
+        {{showError('password')}}
       </small>
     </div>
 
@@ -129,15 +129,24 @@
 
 <!--Success-->
 <div class="card-body" *ngIf="state == 'success'">
-  <h1 class="card-title text-light">Success!</h1>
-  <h2 class="card-title text-secondary">
-    Check your email to confirm your account.
-  </h2>
-  <h4 class="text-light">
-    If you can't find it, try checking your spam. The email was sent to
-    <span class="a font-weight-bold">{{
-      this.registerForm.get("email").value
-      }}</span
-    >.
-  </h4>
+  <h1 class="card-title text-light">Gear up!</h1>
+  <h3 class="card-title text-secondary">Next steps:</h3>
+  <ol class="text-light" *ngIf="!isUser">
+    <li>Check <b>{{this.registerForm.get("email").value}}</b> for an account confirmation email.</li>
+    <li>When you arrive at the MakerSpace, make sure to scan your card.</li>
+    <li>Play safe! If you run into any problems in the space, reach out to a staff member.</li>
+  </ol>
+  <ol class="text-light" *ngIf="isUser">
+    <li>Check <b>{{this.registerForm.get("email").value}}</b> for an account confirmation email.</li>
+    <li>Login to your dashboard <a routerLink="/login" class="text-secondary">here</a>.</li>
+  </ol>
+
+<!--  <div class="card-footer">-->
+<!--    <h6 class="font-weight-bold text-secondary" style="opacity: 80%">How was your registration experience?</h6>-->
+<!--    <ul class="text-white list-unstyled">-->
+<!--      <li class="float-left bi-emoji-smile-fill mr-3"></li>-->
+<!--      <li class="float-left bi-emoji-frown-fill mr-3"></li>-->
+<!--    </ul>-->
+<!--  </div>-->
+
 </div>

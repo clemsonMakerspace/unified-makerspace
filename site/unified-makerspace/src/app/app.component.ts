@@ -1,11 +1,7 @@
-import {
-  Component,
-  DoCheck,
-  HostListener,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core';
-import { AuthService } from './shared/auth/auth.service';
+import {Component, HostListener,} from '@angular/core';
+import {AuthService} from './shared/auth/auth.service';
+import {environment} from '../environments/environment';
+
 
 @Component({
   selector: 'app-root',
@@ -13,10 +9,15 @@ import { AuthService } from './shared/auth/auth.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService) {
+  }
 
   title = 'The MakerSpace';
   layerTransforms = this.positionFooter();
+
+  get inProduction() {
+    return environment.production;
+  }
 
   @HostListener('window:scroll', ['$event'])
   onScroll(e) {

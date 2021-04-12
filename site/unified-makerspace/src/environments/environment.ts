@@ -4,7 +4,19 @@
 
 export const environment = {
   production: false,
-  server: 'http://localhost:4000'
+  server: 'http://localhost:4000',
+  user: {
+    'firstName': 'joe',
+    'lastName': 'goldberg',
+    'email': 'joe@makerspace.com',
+    'password': 'password',
+    'confirmPassword': 'password',
+    'isUser': false,
+    'userToken': '',
+    'major': 'Computer Science',
+    'degree': 'Phd',
+    'hardwareId': '902100'
+  }
 };
 
 /*

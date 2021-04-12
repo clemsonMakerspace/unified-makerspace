@@ -1,13 +1,22 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import * as majors from './majors.json';
 import {AuthService} from '../../shared/auth/auth.service';
 import {ApiService} from '../../shared/api/api.service';
-import {showError} from '../../shared/funcs';
+import {showError, useTestData} from '../../shared/funcs';
+import {environment} from '../../../environments/environment';
 
 /* validates that item is in list */
-export function ListValidator(list: string[]): ValidatorFn {
-  return (control: FormControl) => list.includes(control.value) ? null : {'error': true}
+function ListValidator(list: string[]): ValidatorFn {
+  return (control: FormControl) => list.includes(control.value) ? null : {'list': true}
+}
+
+// todo numeric?
+/* validates length and type of hardware id */
+function IdValidator(control : FormControl): null | ValidationErrors {
+  if (control.value.length != 6) {
+      return {'length': true}
+  }
 }
 
 @Component({
@@ -20,7 +29,6 @@ export class VisitorComponent implements OnInit {
 
   // todo update card text
   // todo do you want to leave this page
-  // todo hardware id validation?
 
 
   constructor(
@@ -36,22 +44,14 @@ export class VisitorComponent implements OnInit {
   active = 2;
 
   ngOnInit(): void {
-
     this.visitorForm = this.fb.group({
       major: ['', [Validators.required, ListValidator(this.majors)]],
       degree: ['', [Validators.required, ListValidator(this.degrees)]],
-      hardwareId: ['', Validators.required],
+      hardwareId: ['', [Validators.required, IdValidator]],
     });
 
     this.showError = showError(this.visitorForm);
-
-    // todo for testing
-    this.visitorForm.setValue({
-      'major': 'Computer Science',
-      'degree': 'Phd',
-      'hardwareId': 'XX89712'
-    })
-
+    useTestData(this.visitorForm);
   }
 
 

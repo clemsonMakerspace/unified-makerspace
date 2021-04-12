@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {AuthService} from '../../shared/auth/auth.service';
 import {Router} from '@angular/router';
-import {showError} from 'src/app/shared/funcs';
+import {showError, useTestData} from 'src/app/shared/funcs';
 
 
 /* ensures that userToken is entered if user */
-export function UserValidator(control: AbstractControl)
-  : any | null {
-  return (!!control.get('isUser').value == !!control.get('userToken').value) ? null : {'error': true};
+function UserValidator(control: AbstractControl)
+  : null | ValidationErrors {
+  return (!!control.get('isUser').value == !!control.get('userToken').value) ? null : {'token': true};
 }
 
 @Component({
@@ -24,15 +24,7 @@ export class RegisterComponent implements OnInit {
   }
 
   // todo put this in separate file?
-  testUser = {
-    'firstName': 'joe',
-    'lastName': 'goldberg',
-    'email': 'joe@makerspace.com',
-    'password': 'password',
-    'confirmPassword': 'password',
-    'isUser': false,
-    'userToken': ''
-  };
+
 
   registerForm: FormGroup;
   showError;
@@ -65,12 +57,11 @@ export class RegisterComponent implements OnInit {
 
 
     this.showError = showError(this.registerForm);
-    this.registerForm.setValue(this.testUser);
+    useTestData(this.registerForm);
 
   }
 
 
-  // todo add tool tips
   // todo userValidator not working?
   // todo stronger password (min length)
   // todo are you sure you want to leave this page?
@@ -90,10 +81,6 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-
-  // todo update success page
-  // todo on confirmation page, tell user to login after confirming
-  // todo contact us page?
 
   createUser(arg: any) {
     this.auth

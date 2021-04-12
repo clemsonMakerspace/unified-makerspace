@@ -1,12 +1,8 @@
 <!--Development Mode Warning-->
-<div class="bg-secondary text-dark text-center w-100 p-3">
+<div class="bg-secondary text-dark text-center w-100 p-3"
+ *ngIf="!inProduction">
   <h6>
     This site is in development mode. Do not use it on a production server.
-    <a
-      href="http://makerspace-documentation.s3-website-us-east-1.amazonaws.com/"
-      class="font-weight-bold"
-      >Looking for the documentation?</a
-    >
   </h6>
 </div>
 
@@ -40,8 +36,7 @@
   </div>
 </nav>
 
-<!--todo-->
-<!--<h1 class="bi bi-gear-fill position-absolute" style="font-size: 40rem; top: -100px; "></h1>-->
+
 
 <!--Main Content-->
 <div class="container py-6">
@@ -70,14 +65,10 @@
   />
 </div>
 
-<!--todo update footer? - something not working-->
 <footer class="bg-transparent">
   <div class="row no-gutters d-flex justify-content-center py-5">
     <div class="col-8 text-secondary text-center">
       The Clemson MakerSpace. All Rights Reserved.
-    </div>
-    <div class="col-8 text-white text-center">
-      Questions? Feel free to get in touch.
     </div>
   </div>
 </footer>
