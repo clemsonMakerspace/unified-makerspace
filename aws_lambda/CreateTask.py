@@ -30,7 +30,7 @@ def CreateTask(data):
     machine_name = (new_task["tags"])[0]
 
     new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["date_created"], new_task["date_resolved"], new_task["tags"], new_task["task_status"])
+                    new_task["date_created"], new_task["date_resolved"], new_task["tags"], new_task["status"])
 
     machines = Machines.scan()
     machines_list = machines["Items"]
@@ -39,8 +39,10 @@ def CreateTask(data):
         CreateMachine(machine_name, "0")
 
     # Put new task into the tasks eventbase
+    new_task = new_task.__dict__
+    new_task["task_status"] = new_task.pop("status")
     Tasks.put_item(
-        Item=new_task.__dict__
+        Item=new_task
     )
 
     return 1
