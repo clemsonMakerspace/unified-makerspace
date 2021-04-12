@@ -11,8 +11,7 @@
   </h1>
 
 
-  <!--  todo use authguard?-->
-  <div #content *ngIf="auth.isUserLoggedIn()">
+  <div *ngIf="auth.isUserLoggedIn()">
     <div id="tasks-card" class="row d-flex align-content-stretch">
       <!--Tasks-->
       <div class="card-wrapper col-xl-7 col-12">

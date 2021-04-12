@@ -51,7 +51,7 @@ export class VisitorComponent implements OnInit {
     });
 
     this.showError = showError(this.visitorForm);
-    useTestData(this.visitorForm);
+    useTestData(this.visitorForm, 'user');
   }
 
 

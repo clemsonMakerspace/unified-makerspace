@@ -18,10 +18,8 @@ export class ProfileComponent implements OnInit {
   @ViewChild('userTokenModal')
   userTokenModal
 
-    // todo add change password
     // todo remove account management page?
     // todo delete / edit machines
-    // todo create modals for all of these
 
   userToken: string;
 
@@ -39,17 +37,16 @@ export class ProfileComponent implements OnInit {
         () => {
         // todo handle error
       });
-
-  }
-
-  changePassword() {
-    this.api.changePassword(null).subscribe();
-    // todo implement
   }
 
 
+  // todo implement - create modal
   deleteUser() {
-    this.api.deleteUser({'user_id': this.auth.user.getValue().user_id});
+    this.api.deleteUser(
+      {'user_id': this.auth.user.getValue().user_id}
+      ).subscribe(() => {
+        // todo handle errors
+    })
   }
 
 

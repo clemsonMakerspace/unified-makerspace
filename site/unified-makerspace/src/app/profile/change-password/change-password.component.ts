@@ -11,8 +11,6 @@ import {AuthService} from '../../shared/auth/auth.service';
 })
 export class ChangePasswordComponent implements OnInit {
 
-  // todo add password validator
-
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
@@ -27,7 +25,7 @@ export class ChangePasswordComponent implements OnInit {
   ngOnInit(): void {
     this.changePassword = this.fb.group({
       password: ['', Validators.required],
-      newPassword: ['', Validators.required, Validators.minLength(6)]
+      newPassword: ['', [Validators.required, Validators.minLength(6)]]
     })
 
     this.showError = showError(this.changePassword);
@@ -35,15 +33,20 @@ export class ChangePasswordComponent implements OnInit {
 
 
   onSubmit() {
-    this.api.changePassword({
-      'password': this.changePassword.get('password'),
-      'new_password': this.changePassword.get('newPassword'),
-      'user_id': this.auth.user.getValue().user_id
-    }).subscribe(res => {
-      // todo this
-    }, err => {
-      // todo this
-    })
+
+    this.changePassword['submitted'] = true;
+
+    if (this.changePassword.valid) {
+      this.api.changePassword({
+        'password': this.changePassword.get('password').value,
+        'new_password': this.changePassword.get('newPassword').value,
+        'user_id': this.auth.user.getValue().user_id
+      }).subscribe(res => {
+        // todo this
+      }, err => {
+        // todo this
+      });
+    }
   }
 
 }

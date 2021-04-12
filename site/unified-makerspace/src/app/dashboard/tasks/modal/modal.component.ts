@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../../../shared/modal/modal.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../../../shared/api/api.service';
+import {showError, useTestData} from '../../../shared/funcs';
 
 @Component({
   selector: 'app-modal',
@@ -9,11 +9,15 @@ import {ApiService} from '../../../shared/api/api.service';
   styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent implements OnInit {
-  initialScrollPos = window.scrollY;
 
+  // todo modal close
   errMessage = '';
+  // todo remove these
+  // todo remove modal service
   formSubmitted = false;
   formLoading = false;
+
+  showError: any;
 
   tags = [];
   users = [];
@@ -22,25 +26,15 @@ export class ModalComponent implements OnInit {
 
   taskForm: FormGroup;
 
-  constructor(public modal: ModalService, private api: ApiService) {
-  }
-
-  parseTags() {
-    return this.taskForm.get('tags').value.toLowerCase().trim().split(',');
+  constructor(private api: ApiService,
+              private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
 
 
-
-    document.body.style.top = String(-1 * this.initialScrollPos) + 'px';
-
-    /* subscribe to modal changes */
-    this.modal.modalStatus.subscribe((value) => {
-      if (!value.open) {
-        this.closeModal();
-      }
-    });
+    // todo get list of machines?
+    // todo rename modal?
 
 
     /* get list of users for dropdown */
@@ -50,26 +44,35 @@ export class ModalComponent implements OnInit {
 
     // todo validation of parameters
 
-    this.taskForm = new FormGroup({
-      taskName: new FormControl('', Validators.required),
-      description: new FormControl('', Validators.required),
-      tags: new FormControl('', Validators.required),
-      person: new FormControl('', [Validators.required]),
-      newPerson: new FormControl('') // todo fix this...!
-    });
+
+    // todo should be able to create new person??
+
+    this.taskForm = this.fb.group({
+      taskName: ['', Validators.required],
+      description: [''], // todo use N/A or if...
+      tags: ['', Validators.required], // todo optional?
+      person: ['', Validators.required]
+    })
 
 
-    console.log(this.tags);
-
+    this.showError = showError(this.taskForm)
+    useTestData(this.taskForm, 'task');
+    this.tags = this.parseTags()
 
   }
 
+  parseTags(): string[] {
+    let tags  = this.taskForm.get('tags').value
+    return tags.toString().toLowerCase().trim().split(',');
+  }
+
+
 
   // todo implement
-  // todo use real api
 
 
   onSubmit(): void {
+
     let getValue = (field: string) => this.taskForm.get(field).value;
 
 
@@ -78,18 +81,21 @@ export class ModalComponent implements OnInit {
     // todo handle error
     // todo fields missing error
 
-    this.formSubmitted = true;
+
+
+    this.taskForm['submitted'] = true;
 
     if (this.taskForm.valid) {
+
       this.formLoading = true;
+
       this.api.createTask({
         'person': getValue('person') == 'new' ? getValue('newPerson') : getValue('person'),
         'task_name': getValue('taskName'),
         'description': getValue('description'),
         'tags': this.tags,
-
       }).subscribe((res) => {
-        this.formLoading = false;
+        this.formLoading = false; // todo remove
       }, (err) => {
         this.formLoading = false;
         this.errMessage = 'Sorry an error occurred!'; // todo read err message
@@ -98,32 +104,10 @@ export class ModalComponent implements OnInit {
   }
 
 
-  showError(field: string) {
-    let f = this.taskForm.get(field);
-    let error = '';
-    if (f.dirty || this.formSubmitted) {
-      if (f.invalid) {
-        error = field + ' is not valid.';
-      }
-      if (f.value == '') {
-        error = field + ' is required.';
-      }
-    }
-    return error;
-  }
-
-
+  // todo remove
   showCompletion() {
     return this.formSubmitted && this.taskForm.valid;
   }
 
 
-
-  /* called by html code to close modal box */
-  closeModal(): void {
-    document.body.classList.remove('frozen');
-    document.documentElement.style.scrollBehavior = 'auto';
-    window.scrollTo(0, this.initialScrollPos);
-    document.documentElement.style.scrollBehavior = 'smooth';
-  }
 }

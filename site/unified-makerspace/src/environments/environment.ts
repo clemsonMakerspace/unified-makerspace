@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   server: 'http://localhost:5000',
+
+  /* test data */
   user: {
     'firstName': 'joe',
     'lastName': 'goldberg',
@@ -16,6 +18,13 @@ export const environment = {
     'major': 'Computer Science',
     'degree': 'Phd',
     'hardwareId': '902100'
+  },
+
+  task : {
+    'taskName': 'Build glass box to store valuables',
+    'description': 'It should have a hatch for delivering food.',
+    'tags': ['*, High priority, Help wanted'],
+    'person': 'Joe'
   }
 };
 

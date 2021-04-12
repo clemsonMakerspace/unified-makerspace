@@ -48,18 +48,17 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.auth.login(this.loginForm.value).subscribe(
         (res) => {
-          try {
 
-
-            let user = res['user'];
-            this.auth.user.next(user); // todo body?
+          let user = res['user'];
+          if (user) {
+            this.auth.user.next(user);
             localStorage.setItem('User', JSON.stringify(user));
-
-
             this.router.navigate(['dashboard']).then();
-          } catch (e) {
+          } else {
             this.loginForm['error'] = 'Sorry, we\'re having issue with the server.';
           }
+
+
         },
         (err) => {
           // todo handle incorrect password

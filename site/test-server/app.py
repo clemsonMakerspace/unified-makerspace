@@ -17,6 +17,7 @@ import os
 import sys
 
 import dotenv
+from base64 import b64encode
 from flask import Flask, session, request
 from flask_cors import CORS
 
@@ -32,7 +33,7 @@ dotenv.load_dotenv()
 # flask configuration
 app = Flask(__name__)
 CORS(app)
-app.config['SECRET_KEY'] = os.urandom(16)
+app.config['SECRET_KEY'] = b64encode(os.urandom(16)).decode('utf-8')
 auth_token = app.config['SECRET_KEY']
 
 # load users before start
@@ -60,9 +61,10 @@ def reset_password():
 Users
 """
 
-@app.route('/api/users', methods=['POST'])
-def change_password():
-    return dict(code=200, message="Password changed successfully.")
+# todo fix conflicting routes
+# @app.route('/api/users', methods=['POST'])
+# def change_password():
+#     return dict(code=200, message="Password changed successfully.")
 
 
 @app.route('/api/users', methods=['PUT'])
