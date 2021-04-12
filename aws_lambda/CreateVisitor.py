@@ -21,7 +21,7 @@ def CreateVisitor(data):
     new_visitor = json.loads(data["body"])
 
     new_visitor = Visitor(new_visitor["visitor_id"],new_visitor["first_name"],new_visitor["last_name"],
-                          new_visitor["major"],new_visitor["degree_type"])
+                          new_visitor["major"],new_visitor["degree"])
 
 
     visits = Visits.scan()
