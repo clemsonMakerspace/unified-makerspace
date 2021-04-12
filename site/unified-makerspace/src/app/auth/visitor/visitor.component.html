@@ -1,3 +1,12 @@
+<ng-template #tigeronecards>
+  <div class="w-100">
+    <img src="/assets/tiger-one-cards/old-card.png"
+         class="d-inline-block"
+         alt="" style="width: 400px">
+
+  </div>
+</ng-template>
+
 <!-- Visitor Form-->
 <div class="card-header">
 <!--  todo fix-->
@@ -46,17 +55,42 @@
     </div>
 
     <div class="form-group text-light">
-      <label for="hardware-id">Hardware ID
+      <label for="hardware-id"
+             ngbTooltip="Your hardware id is a six digit code on the
+          back of your Tiger One Card."
+      >Hardware ID
         <span class="pl-2 bi-question-circle"></span></label>
-      <input id="hardware-id" type="text" class="form-control"
+      <input id="hardware-id" type="text" class="form-control mb-3"
              formControlName="hardwareId">
       <small
         class="warning-label"
         *ngIf="showError('hardwareId')">
         {{showError('hardwareId')}}
       </small>
+
     </div>
-    <h6 class="font-weight-bold text-danger mb-3" *ngIf="visitorForm['error']">
+
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active">
+      <li [ngbNavItem]="1">
+        <a ngbNavLink class="text-secondary">Old Card</a>
+        <ng-template ngbNavContent >
+          <img src="/assets/tiger-one-cards/old-card.png"
+               alt="" class="w-100" style="opacity:80%">
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <a ngbNavLink class="text-secondary"> New Card</a>
+        <ng-template ngbNavContent >
+          <img src="/assets/tiger-one-cards/new-card.png"
+               alt="" class="w-100" style="opacity:80%">
+        </ng-template>
+      </li>
+    </ul>
+
+    <div class="mb-3" [ngbNavOutlet]="nav"></div>
+
+    <h6 class="font-weight-bold text-danger mb-3"
+        *ngIf="visitorForm['error']">
       {{visitorForm['error']}}
     </h6>
     <button

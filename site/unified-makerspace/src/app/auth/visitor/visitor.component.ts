@@ -33,6 +33,7 @@ export class VisitorComponent implements OnInit {
   showError: any;
   majors = majors['default'];
   degrees = ['Phd', 'Masters', 'B.A', 'B.S'];
+  active = 2;
 
   ngOnInit(): void {
 

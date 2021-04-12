@@ -80,7 +80,7 @@ Endpoints
 # admin
 @app.route('/api/admin', methods=['POST'])
 def generate_user_token():
-    return dict(code=200, user_token="RANDOMTOKEN")
+    return dict(code=200, user_token="RANDOM_TOKEN")
 
 
 # todo return auth token

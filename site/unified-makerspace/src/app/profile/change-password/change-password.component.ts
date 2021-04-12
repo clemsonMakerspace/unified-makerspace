@@ -11,6 +11,8 @@ import {AuthService} from '../../shared/auth/auth.service';
 })
 export class ChangePasswordComponent implements OnInit {
 
+  // todo add password validator
+
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
