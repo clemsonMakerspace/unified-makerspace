@@ -11,6 +11,12 @@ function UserValidator(control: AbstractControl)
   return (!!control.get('isUser').value == !!control.get('userToken').value) ? null : {'token': true};
 }
 
+function ConfirmPasswordValidator(control: AbstractControl):
+  null | ValidationErrors {
+  return control.get('confirmPassword').value === control.get('password').value
+    ? null : {'confirmPassword': true};
+}
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -22,9 +28,6 @@ export class RegisterComponent implements OnInit {
               private auth: AuthService,
               public router: Router) {
   }
-
-  // todo put this in separate file?
-
 
   registerForm: FormGroup;
   showError;
@@ -50,10 +53,13 @@ export class RegisterComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
+      confirmPassword: ['', [Validators.required]],
       isUser: [''],
       userToken: ['']
-    }, UserValidator);
+    }, {
+      validators: [UserValidator,
+        ConfirmPasswordValidator]
+    });
 
 
     this.showError = showError(this.registerForm);
@@ -68,6 +74,7 @@ export class RegisterComponent implements OnInit {
   // todo min length -> error handling
 
   onSubmit() {
+    console.log(this.registerForm.errors);
     this.registerForm['submitted'] = true;
     this.registerForm['error'] = '';
     if (this.registerForm.valid) {

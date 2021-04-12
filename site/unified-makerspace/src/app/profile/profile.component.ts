@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
 
   generateUserToken() {
     this.modal.open(this.userTokenModal)
-    this.api.generateUserToken({})
+    this.api.generateUserToken()
       .subscribe((res) => this.userToken = res.user_token,
         () => {
         // todo handle error

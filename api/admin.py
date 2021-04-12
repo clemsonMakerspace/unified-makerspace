@@ -12,7 +12,7 @@ def generate_user_token(auth_token: str):
     ================   ============
 
     Parameters
-    ----------
+    -----------
     auth_token : str, required
         Token to verify user credentials.
 
@@ -39,7 +39,7 @@ def reset_password(email: str):
     ================   ============
 
     Parameters
-    ----------
+    -----------
     email: str, required
         The email of the user to reset the
         password for.

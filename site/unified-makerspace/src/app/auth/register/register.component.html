@@ -64,19 +64,11 @@
         id="confirm-password"
         formControlName="confirmPassword"
         required
-        #newPassword
       />
       <small
         class="warning-label"
-        *ngIf="!showError('confirmPassword') && password.value != newPassword.value"
-      >
-        Passwords do not match!
-      </small>
-      <small
-        class="warning-label"
-        *ngIf="showError('confirmPassword')"
-      >
-        {{showError('confirmPassword')}}
+        *ngIf="showError('confirmPassword', 'confirmPassword')">
+        {{showError('confirmPassword', 'confirmPassword')}}
       </small>
     </div>
 
@@ -96,9 +88,8 @@
       />
       <small
         class="warning-label"
-        *ngIf="showError('userToken')"
-      >
-        Token is required. Contact your administrator for assistance.
+        *ngIf="showError('userToken','token')">
+        {{showError('userToken','token')}}
       </small>
     </div>
 

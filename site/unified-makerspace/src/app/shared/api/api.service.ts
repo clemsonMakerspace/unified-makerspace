@@ -5,29 +5,29 @@ import {environment} from '../../../environments/environment';
 import {Task, User} from '../models';
 
 
-
 // todo figure out a way to synchronize
 //  documentation with models here ?
 
 /* relative endpoints */
 
 let endpoints = {
-  /* auth */
+  /* admin */
   generateUserToken: ['/api/admin', 'POST'],
   resetPassword: ['/api/admin', 'PATCH'],
   /* users */
-  createUser: ['/api/users', 'PUT'],
-  login: ['/api/users', 'POST'],
   changePassword: ['/api/users', 'POST'],
+  createUser: ['/api/users', 'PUT'],
   deleteUser: ['/api/users', 'DELETE'],
   getUsers: ['/api/users', 'GET'],
+  login: ['/api/users', 'POST'],
   updateUser: ['/api/users', 'PATCH'],
   /* tasks */
-  getTasks: ['/api/tasks', 'GET'],
   createTask: ['/api/tasks', 'POST'],
+  getTasks: ['/api/tasks', 'GET'],
   resolveTask: ['/api/tasks', 'DELETE'],
   updateTask: ['/api/tasks', 'PATCH'],
   /* machines */
+  deleteMachine: ['/api/machines', 'DELETE'],
   getMachinesStatus: ['/api/machines', 'POST'],
   /* visitors */
   createVisitor: ['/api/visitors', 'PUT'],
@@ -63,15 +63,14 @@ export class ApiService {
   /** Admin **/
 
   @endpoint
-  generateUserToken(args: any): any | Observable<Response> {
-    return args;
+  generateUserToken(): any | Observable<Response> {
+    return // no parameters
   }
 
   @endpoint
-  resetPassword(args: any): any | Observable<Response>  {
-    return args;
+  resetPassword(args: any): any | Observable<Response> {
+    return {email: args.email};
   }
-
 
 
   /** Users **/
@@ -105,7 +104,7 @@ export class ApiService {
   }
 
   @endpoint
-  changePassword(args: any) : any | Observable<Response> {
+  changePassword(args: any): any | Observable<Response> {
     return args;
   }
 

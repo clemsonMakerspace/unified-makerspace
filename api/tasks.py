@@ -18,7 +18,7 @@ def get_tasks(auth_token: str):
 
 
     Parameters
-    ----------
+    ------------
     auth_token : str, required
         Token to verify user credentials.
 

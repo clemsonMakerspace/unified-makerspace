@@ -2,96 +2,72 @@
 app.py
 
 Simple example server for the MakerSpace
-website.
+website. The purpose is two-fold: to provide
+mock data for the site and to test if requests
+are valid.
 
 Note
 -----
 For development, the default test server is
-'http://localhost:4000'. This can be configured
+'http://localhost:5000'. This can be configured
 in Angular's `environment` settings.
 
 """
 import os
 import sys
 
-import yaml
+import dotenv
 from flask import Flask, session, request
 from flask_cors import CORS
 
-# to enable importing of distant module
+from utils import fetch_data
+from utils import fetch_response
+
+# to enable importing of distant modules
 sys.path.append("../../api")
-from models import User, Task, Visitor, Machine, Permission, Visit
 
-# todo spread this out?
+# load environment vars
+dotenv.load_dotenv()
 
+# flask configuration
 app = Flask(__name__)
 CORS(app)
-app.config['SECRET_KEY'] = "TEST_KEY"
+app.config['SECRET_KEY'] = os.urandom(16)
+auth_token = app.config['SECRET_KEY']
 
-
-# todo add auth tokens (?)
-# todo dict within a dict
-
-def fetch_data(resource: str, data_path='./data') -> [dict]:
-    """
-    Load test data for `resource`. Data is instantiated as
-    classes to ensure type safety. Simulates database.
-    """
-
-    # string to model mappings
-    models = dict(tasks=Task, users=User, permissions=Permission,
-                  visitors=Visitor, visits=Visit, machines=Machine)
-
-    # invalid resource
-    if resource not in models:
-        return []
-
-    # load from file
-    path = os.path.join(data_path, f"{resource}.yaml")
-    with open(path) as f:
-        objs = []
-        for obj in yaml.safe_load(f)[resource]:
-            valid_obj = (models[resource])(**obj)
-            objs.append(valid_obj.__dict__)
-
-    return objs
-
-
-def fetch_response(resource: str, data_path= './responses'):
-    """
-    Gets pre-calculated responses.
-    """
-    path = os.path.join(data_path, f"{resource}.yaml")
-    with open(path) as f:
-        data = yaml.safe_load(f)
-    return data
-
-
-
-# load users on start
-# todo session?
+# load users before start
 users = fetch_data('users')
-auth_token = "TEST_TOKEN"
+
 
 """
-Endpoints
+Admin
 """
 
-# admin
+
+
 @app.route('/api/admin', methods=['POST'])
 def generate_user_token():
-    return dict(code=200, user_token="RANDOM_TOKEN")
+    # implemented
+    return dict(code=200, user_token=app.config['SECRET_KEY'])
 
 
-# todo return auth token
+
+@app.route('/api/admin', methods=['PATCH'])
+def reset_password():
+    return dict(code=200, message="Password reset email sent.")
+
+"""
+Users
+"""
+
 @app.route('/api/users', methods=['POST'])
-def login():
-    return dict(code=200, user=users[0], auth_token=auth_token)
+def change_password():
+    return dict(code=200, message="Password changed successfully.")
 
 
 @app.route('/api/users', methods=['PUT'])
 def create_user():
-    return dict(code=200, user=users[0])
+    return dict(code=200, user=users[0], auth_token=auth_token)
 
 
 @app.route('/api/users', methods=['DELETE'])
@@ -104,63 +80,66 @@ def get_users():
     return dict(code=200, users=users)
 
 
-# todo implement
+@app.route('/api/users', methods=['POST'])
+def login():
+    return dict(code=200, user=users[0], auth_token=auth_token)
+
+
 @app.route('/api/users', methods=['PATCH'])
 def update_user():
-    for i, user in enumerate(session["users"]):
-        if request.json.user_id == user.user_id:
-            session['users'][i] = User(**request.json)
     return dict(code=200, message="User has been updated.")
 
 
-# todo get tasks for user...?
+"""
+Tasks
+"""
 
-# tasks
-@app.route('/api/tasks', methods=['GET'])
-def get_tasks():
-    if not 'tasks' in session:
-        session['tasks'] = fetch_data('tasks')
-        session.modified = True
-    return dict(code=200, tasks=session['tasks'])
-
-
-# todo implement
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
-    pass
+    return dict(code=200, task_id="RANDOM_TASK_ID")
 
 
-# todo fix
+@app.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    return dict(code=200, tasks=fetch_data('tasks'))
+
+
 @app.route('/api/tasks', methods=['DELETE'])
 def resolve_task():
-    tasks = session['tasks']
-    # list(filter(lambda t: t.task_id == request.json['task_id'], tasks))
-    return dict(code=200, message="Task Resolved.")
+    return dict(code=200, message="Resolved task successfully.")
 
 
-# todo implement
-# todo also implement on front-end
 @app.route('/api/tasks', methods=['UPDATE'])
 def update_task():
-    for i, task in enumerate(session['tasks']):
-        if request.json.task_id == task.task_id:
-            session['tasks'][i] = Task(**request.json)
-    return dict(code=200, message="Tasks updated.")
+    return dict(code=200, message="Task updated successfully.")
 
 
-# machines
+"""
+Machines
+"""
+
+@app.route('/api/machines', methods=['DELETE'])
+def delete_machine():
+    return dict(code=200, message="Machine deleted successfully.")
+
+
 @app.route('/api/machines', methods=['POST'])
 def get_machines_status():
-    return dict(code=200, machines=fetch_response('machines')['machines'])
+    return dict(code=200, machines=fetch_response('machines'))
 
 
-# visitors
+"""
+Visitors
+"""
+
+@app.route('/api/visitors', methods=['PUT'])
+def create_visitor():
+    return dict(code=200, message="Visitor successfully created.")
+
+
 @app.route('/api/visitors', methods=['POST'])
 def get_visitors():
     return dict(code=200, visitors=fetch_data('visits'))
 
-@app.route('/api/visitors', methods=['PUT'])
-def create_visitor():
-    return dict(code=200)
 
-# todo add main clause
+
