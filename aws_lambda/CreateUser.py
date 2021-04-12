@@ -41,7 +41,7 @@ def CreateUser(data):
     try:
         #Create new user in cognito pool
         response = client.sign_up(ClientId=clientID, Username=new_user["email"], Password=new_user["password"], UserAttributes=custom_attributes)
-        print(response)
+
     except client.exceptions.UsernameExistsException as e:
         #Return error if email is already in use
         return {
@@ -55,13 +55,24 @@ def CreateUser(data):
         }
 
     # Get token for new user
-    auth_token = response['UserSub']
-    print(auth_token)
+    try:
 
+        auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
+                                             AuthParameters = {
+                                                 'USERNAME': new_user["email"],
+                                                 'PASSWORD': new_user["password"]
+                                         })
+    except Exception as e:
+        return {
+            'code': 402,
+            'message': e
+        }
+
+    print(auth_response)
     return {
         'code': 200,
         'message': 'The user has been successfully created. ',
-        'auth_token': auth_token
+        'auth_token': 1
     }
 
 
