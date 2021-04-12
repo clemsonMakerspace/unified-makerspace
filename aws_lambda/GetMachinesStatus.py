@@ -32,8 +32,8 @@ def processAvailability(machines, tasks, start_time, end_time):
         times = []
         for task in tasks:
             if (task["tags"])[0] == machine["machine_id"]:
-                if task["date_created"] >= start_time and task["date_completed"] <= end_time:
-                    times.append((task["date_created"],task["date_completed"]))
+                if task["date_created"] >= start_time and task["date_resolved"] <= end_time:
+                    times.append((task["date_created"],task["date_resolved"]))
         avail[machine["machine_id"]] = times
     return avail
 
