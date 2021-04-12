@@ -41,7 +41,7 @@ def ResolveTask(data):
 
 
 def ResolveTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completion', 'tags',
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_resolved', 'tags',
                   'task_status']
 
     # Return client error if no string params
