@@ -30,7 +30,7 @@ def GetTasks():
 
 
 def GetTasksHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completed', 'tags',
+    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_resolved', 'tags',
                   'task_status']
 
 
