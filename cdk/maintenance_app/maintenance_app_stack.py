@@ -4,11 +4,12 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_dynamodb as ddb,
     aws_s3 as s3,
+    aws_s3_deployment as s3deploy,
     aws_iam as iam,
     aws_events as events,
     aws_events_targets as targets,
     aws_s3_deployment as s3deploy,
-    aws_iot as iot
+    #aws_iot as iot
 )
 import boto3
 
@@ -100,9 +101,25 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket')
 
+        #TypeScript
+        # const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+        #     websiteIndexDocument: 'index.html',
+        #     publicReadAccess: true
+        # });
+
+        # new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+        #     sources: [s3deploy.Source.asset('./website-dist')],
+        #     destinationBucket: websiteBucket,
+        #     destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
+        # });
+        # s3deploy.BucketDeployment(
+        #     self, 'DeployWebsite', 
+        #     sources = s3deploy.Source.asset('maintenance_app/front-end'),
+        #     destinationBucket = FrontEndBucket
+        # )
+
         #TODO:
             #Subdomain/Make Public
-            #Add files
         
     #------------------Lambda Functions/API Integrations--------------------
 
@@ -235,8 +252,18 @@ class MaintenanceAppStack(core.Stack):
         usersTable.grant_full_access(DeleteUserLambda)
         #Add Lambda Integration for API
         DeleteUserLambdaIntegration = apigw.LambdaIntegration(DeleteUserLambda)
-    
 
+        #TODO: GetUser once added
+        # GetUsersLambda = _lambda.Function(
+        #     self, 'DeleteUser',
+        #     runtime=_lambda.Runtime.PYTHON_3_7,
+        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+        #     handler='GetUsers.GetUsersHandler',
+        # )
+        # #Granting Access to view users DynamoDB Table
+        # usersTable.grant_full_access(GetUsersLambda)
+        # #Add Lambda Integration for API
+        # GetUsersLambdaIntegration = apigw.LambdaIntegration(GetUsersLambda)
 
         ###------Visitor------###
 
@@ -276,10 +303,10 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='SignIn.SignInHandler',
         )
-        #TODO: Tables not currently in use
+        #NOTE: Lambda not currently up to date to use new tables
         #Granting Access to view users and loginInfo DynamoDB Table
-        # visitorsTable.grant_full_access(CreateVisitorLambda)
-        # visitsTable.grant_full_access(CreateVisitorLambda)
+        visitorsTable.grant_full_access(CreateVisitorLambda)
+        visitsTable.grant_full_access(CreateVisitorLambda)
         #Add Lambda Integration for API
         SignInLambdaIntegration = apigw.LambdaIntegration(SignInLambda)
 
@@ -291,10 +318,10 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='SignOut.SignOutHandler',
         )
-        #TODO: Tables not currently in use
+        #NOTE: Lambda not currently up to date to use new tables
         #Granting Access to ___ DynamoDB Tables
-        # visitorsTable.grant_full_access(CreateVisitorLambda)
-        # visitsTable.grant_full_access(CreateVisitorLambda)
+        visitorsTable.grant_full_access(CreateVisitorLambda)
+        visitsTable.grant_full_access(CreateVisitorLambda)
         #Add Lambda Integration for API
         SignOutLambdaIntegration = apigw.LambdaIntegration(SignOutLambda)
         
@@ -313,132 +340,83 @@ class MaintenanceAppStack(core.Stack):
         # #Add Lambda Integration for API
         # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
 
-
-        #NOTE: Lambda, integration, API, table access Example
-
-        # #add new machine type to db
-        # addMachineType = _lambda.Function(
-        #     self, 'AddMachineType',
-        #     runtime=_lambda.Runtime.PYTHON_3_7,
-        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-        #     handler='add_machine_type.addMachineTypeHandler',
-        # )
-
-        # addMachineTypeIntegration = apigw.LambdaIntegration(addMachineType)
-
-        # #Add Machine Type Api
-        # apigw.LambdaRestApi(
-        #     self, 'AddMachineTypeAPI',
-        #     handler=addMachineType
-        # )
-
-        # #Grant access to add machine types
-        # MachineTypesTable.grant_full_access(addMachineType)
-
-        #NOTE: Export to S3 Bucket Example
-
-        # #Export History Function
-        # ExportHistory = _lambda.Function(
-        #     self, 'ExportHistory',
-        #     runtime=_lambda.Runtime.PYTHON_3_7,
-        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-        #     handler='ExportHistory.ExportHistoryHandler',
-        #     initial_policy=[S3Policy],
-        #     environment={'bucketName': ExportHistoryBucket.bucket_name},
-        #     timeout=core.Duration.seconds(30)
-        # )
-
 #----------------Master API--------------------------
-        um_api = apigw.LambdaRestApi(self,'Master API',
-                                     handler = addMachine,
-                                     proxy = False)
-        # /
+        #Create Master API
+        um_api = apigw.RestApi(self,'Master API')
+        # Add ANY 
         um_api.root.add_method('ANY')
 
-        # /tasks
-        tasks = um_api.root.add_resource('tasks')
-
-        #TODO: Ask about 
-            # viewUpcoming vs view and Task API Documentation (only one GET on there)
-            # resolveTask vs deleteTask
-            # update_task PATCH request type
 
 
-        # ViewUpcomingTasks
-        tasks.add_method('GET',ViewUpcomingTasksIntegration)
-        # CreateTask
-        tasks.add_method('POST',CreateTaskIntegration)
-        # /tasks/{task_id}
-        task = tasks.add_resource('{task_id}')
-        # ViewTask
-        task.add_method('GET',ViewTaskIntegration)
-        # DeleteTask
-        task.add_method('DELETE',DeleteTaskIntegration)
-        # EditTask
-        task.add_method('PUT',EditTaskIntegration)
-        # CompleteTask
-        task.add_method('POST',CompleteTaskIntegration)
+        # ###------Auth------###
+        # auth = um_api.root.add_resource('auth')
 
-        
-        # /machines
+        # ## TODO: Delete ##
+        # ## TODO: Put ##
+
+
+        ###------Machines------###
         machines = um_api.root.add_resource('machines')
 
-        #getMachineStatus
-        getMachineStatus = _lambda.Function(
-            self, 'getMachineStatus',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='GetMachineStatus.getMachineStatusHandler',
-        )
-
-        getMachineStatusIntegration = apigw.LambdaIntegration(deleteMachineType)
+        ## Delete ##
+        machines.add_method('DELETE', DeleteMachineLambdaIntegration)
+        ## Post ##
+        machines.add_method('POST', GetMachineStatusLambdaIntegration)
 
 
-        #/auth
-        auth = um_api.root.add_resource('auth')
+        ###------Tasks------###
+        tasks = um_api.root.add_resource('tasks')
 
-        #TODO: Ask about 
-            # get_users GET request 
-            # update_permissions PATCH request
+        ## Delete ##
+        tasks.add_method('DELETE', ResolveTaskLambdaIntegration)
+        ## Get ##
+        tasks.add_method('GET', GetTasksLambdaIntegration)
+        ## Patch ##
+        tasks.add_method('PATCH', UpdateTaskLambdaIntegration)
+        ## Post ##
+        tasks.add_method('POST', CreateTaskLambdaIntegration)
 
-        # create_user
-        auth.add_method('POST',createUserIntegration)
-        #TODO Add resource for email/password
-        # delete_user
-        auth.add_method('DELETE',deleteUserIntegration)
-        # get_users
-        #auth.add_method('GET',...)
-        # update_permissions
-        #auth.add_method('PATCH',...)
+        ###------Users------###
+        users = um_api.root.add_resource('users')
+
+        ## Delete ##
+        users.add_method('DELETE',DeleteUserLambdaIntegration)
+        ##TODO: Get ##
+        # users.add_method('GET',GetUsersLambdaIntegration)
+        ##TODO: Patch ##
+        # users.add_method('PATCH',UpdateUsersLambdaIntegration)
+        ##TODO: Post ##
+        # users.add_method('POST',LoginLambdaIntegration)
+        ## Put ##
+        users.add_method('PUT',CreateUserLambdaIntegration)
 
 
-        #/visitors
+        ###------Visitors------###
         visitors = um_api.root.add_resource('visitors')
 
-        #TODO: Ask about 
-            # get_vistors GET request 
+        ## Post ##
+        visitors.add_method('POST', GetVisitorsLambdaIntegration)
+        ## Put ##
+        visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
-        # get_visitors
-        #visitors.add_method('GET',...)
 
+# #----------------IoT--------------------------
+#         CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01", thing_name=self.stack_name)
+#         CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status="ACTIVE")
+#         CUmakeit_01_Policy = iot.CfnPolicy(self, "CUmakeit_01_Policy", policy_document=policy)
 
-#----------------IoT--------------------------
-        CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01", thing_name=self.stack_name)
-        CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status="ACTIVE")
-        CUmakeit_01_Policy = iot.CfnPolicy(self, "CUmakeit_01_Policy", policy_document=policy)
-
-        # Attach the Certificate to the Thing
-        iot.CfnThingPrincipalAttachment(self, "pi1CertificateAttachment", principal=pi1Cert.attr_arn, thing_name=raspberryPi1.ref)
+#         # Attach the Certificate to the Thing
+#         iot.CfnThingPrincipalAttachment(self, "pi1CertificateAttachment", principal=pi1Cert.attr_arn, thing_name=raspberryPi1.ref)
         
-        # Attach the Policy to the Certificate
-        iot.CfnPolicyPrincipalAttachment(self, "pi1PolicyAttachment", principal=pi1Cert.attr_arn, policy_name=pi1Policy.ref)
+#         # Attach the Policy to the Certificate
+#         iot.CfnPolicyPrincipalAttachment(self, "pi1PolicyAttachment", principal=pi1Cert.attr_arn, policy_name=pi1Policy.ref)
 
-        raspberryPi2 = iot.CfnThing(self, "raspberryPi2", thing_name=self.stack_name)
-        pi2Cert = iot.CfnCertificate(self, "pi2Certificate", certificate_signing_request=csr, status="ACTIVE")
-        pi2Policy = iot.CfnPolicy(self, "pi2Policy", policy_document=policy)
+#         raspberryPi2 = iot.CfnThing(self, "raspberryPi2", thing_name=self.stack_name)
+#         pi2Cert = iot.CfnCertificate(self, "pi2Certificate", certificate_signing_request=csr, status="ACTIVE")
+#         pi2Policy = iot.CfnPolicy(self, "pi2Policy", policy_document=policy)
 
-        # Attach the Certificate to the Thing
-        iot.CfnThingPrincipalAttachment(self, "pi2CertificateAttachment", principal=pi2Cert.attr_arn, thing_name=raspberryPi2.ref)
+#         # Attach the Certificate to the Thing
+#         iot.CfnThingPrincipalAttachment(self, "pi2CertificateAttachment", principal=pi2Cert.attr_arn, thing_name=raspberryPi2.ref)
         
-        # Attach the Policy to the Certificate
-        iot.CfnPolicyPrincipalAttachment(self, "pi2PolicyAttachment", principal=pi2Cert.attr_arn, policy_name=pi2Policy.ref)
+#         # Attach the Policy to the Certificate
+#         iot.CfnPolicyPrincipalAttachment(self, "pi2PolicyAttachment", principal=pi2Cert.attr_arn, policy_name=pi2Policy.ref)
