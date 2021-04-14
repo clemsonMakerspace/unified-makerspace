@@ -103,7 +103,7 @@ class MaintenanceAppStack(core.Stack):
             destination_bucket=FrontEndBucket,
             # destination_key_prefix="web/static"
         )
-
+        
         #TODO:
             #Subdomain
             #Add compiled build files for the website
@@ -322,40 +322,18 @@ class MaintenanceAppStack(core.Stack):
 
 #----------------Master API--------------------------
         #Create Master API and enable CORS on all methods
-        um_api = apigw.RestApi(self,'Master API')
-        # , 
-        #     default_Cors_Preflight_Options = apigw.CorsOptions(
-        #         allowOrigins = apigw.Cors.ALL_ORIGINS,
-        #         allowMethods = apigw.Cors.ALL_METHODS
-        #     )
-        # )
+        um_api = apigw.RestApi(self,'Master API',
+            default_cors_preflight_options = apigw.CorsOptions(
+                allow_origins = apigw.Cors.ALL_ORIGINS,
+                allow_methods = apigw.Cors.ALL_METHODS
+            )
+        )
+        
+        #NOTE: put s3 bucket and API Gateway on same domain?
+        #Need CORS policy for browser to trust API Gateway
+
         # Add ANY 
         um_api.root.add_method('ANY')
-
-        # um_api.add_cors_preflight(
-        #     allowOrigins = apigw.Cors.ALL_ORIGINS,
-        #     allowMethods = apigw.Cors.ALL_METHODS
-        # )
-        # #Enable CORS on all methods
-
-        # new apigateway.RestApi(this, 'api', {
-        #     defaultCorsPreflightOptions: {
-        #         allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        #         allowMethods: apigateway.Cors.ALL_METHODS
-        #     }
-        # })
-
-        # const bucket = new s3.Bucket(this, 'MyBucket', {
-        #     websiteRedirect: {
-        #         host: 'aws.amazon.com'
-        #     }
-        # })
-
-        # bucket = s3.Bucket(self, "MyBucket", 
-        #     website_redirect=s3.WebsiteRedirect (
-        #         host_name="aws.amazon.com"
-        #     )
-        # )
 
 
         # ###------Auth------###
