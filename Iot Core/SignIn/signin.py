@@ -336,7 +336,7 @@ def callLambda(cardID):
         response = requests.post(lambda_url, json = lambda_payload)
         cardInDBResult = True
         print("This should have worked "+ str(response.text))
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print(str(e))
 	print("this didn't work")
         cardInDBResult = False

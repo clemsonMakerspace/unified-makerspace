@@ -8,8 +8,9 @@ describe('ProfileComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ProfileComponent],
-    }).compileComponents();
+      declarations: [ ProfileComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,4 +22,29 @@ describe('ProfileComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should return `Profile Settings`', () => {
+    fixture = TestBed.createComponent(ProfileComponent);
+    component = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
+    let compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('h1').textContent).toContain('Profile Settings');
+  });
+
+  it('should return `Delete Account`', () => {
+    fixture = TestBed.createComponent(ProfileComponent);
+    component = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
+    let compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('h2.text-danger').textContent).toContain('Delete Account');
+  });
+
+  it('should return `Add or Remove Users`', () => {
+    fixture = TestBed.createComponent(ProfileComponent);
+    component = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
+    let compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('a').textContent).toContain('Add or remove users');
+  });
+
 });
