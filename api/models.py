@@ -76,11 +76,13 @@ class Visitor:
     """
     Represents a visitor to the MakerSpace.
     """
-    visitor_id: str
+    hardware_id: str
+    college: str
+    degree_type: str
     first_name: str
     last_name: str
     major: str
-    degree: str
+    visitor_id: str
 
 
 
