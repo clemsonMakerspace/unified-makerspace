@@ -92,27 +92,21 @@ class MaintenanceAppStack(core.Stack):
     #-------------------S3 Buckets------------------------------
 
         #Create Public Front End S3 Bucket (will eventually not be public)
-        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket')
+        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
+            website_index_document= 'index.html',
+            # website_error_document= 'error.html',
+            public_read_access= True
+        )
 
-        #TypeScript
-        # const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
-        #     websiteIndexDocument: 'index.html',
-        #     publicReadAccess: true
-        # });
-
-        # new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-        #     sources: [s3deploy.Source.asset('./website-dist')],
-        #     destinationBucket: websiteBucket,
-        #     destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
-        # });
-        # s3deploy.BucketDeployment(
-        #     self, 'DeployWebsite', 
-        #     sources = s3deploy.Source.asset('maintenance_app/front-end'),
-        #     destinationBucket = FrontEndBucket
-        # )
+        s3deploy.BucketDeployment(self, 'DeployWebsite',
+            sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
+            destination_bucket=FrontEndBucket,
+            # destination_key_prefix="web/static"
+        )
 
         #TODO:
-            #Subdomain/Make Public
+            #Subdomain
+            #Add compiled build files for the website
         
     #------------------Lambda Functions/API Integrations--------------------
 
@@ -417,22 +411,56 @@ class MaintenanceAppStack(core.Stack):
 
 
 # #----------------IoT--------------------------
-#         CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01", thing_name=self.stack_name)
-#         CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status="ACTIVE")
-#         CUmakeit_01_Policy = iot.CfnPolicy(self, "CUmakeit_01_Policy", policy_document=policy)
+        ## Thing 1 ##
+        CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
+        # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_01_Policy = iot.CfnPolicy(self, "CUmakeit_01_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_01_Cert.attr_arn, policy_name=CUmakeit_01_Policy.ref)
 
-#         # Attach the Certificate to the Thing
-#         iot.CfnThingPrincipalAttachment(self, "pi1CertificateAttachment", principal=pi1Cert.attr_arn, thing_name=raspberryPi1.ref)
-        
-#         # Attach the Policy to the Certificate
-#         iot.CfnPolicyPrincipalAttachment(self, "pi1PolicyAttachment", principal=pi1Cert.attr_arn, policy_name=pi1Policy.ref)
+        ## Thing 2 ##
+        CUmakeit_02_Thing = iot.CfnThing(self, "CUmakeit_02")
+        # CUmakeit_02_Cert = iot.CfnCertificate(self, "CUmakeit_02_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_02_Policy = iot.CfnPolicy(self, "CUmakeit_02_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_02_Cert.attr_arn, thing_name=CUmakeit_02_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_02_Cert.attr_arn, policy_name=CUmakeit_02_Policy.ref)
 
-#         raspberryPi2 = iot.CfnThing(self, "raspberryPi2", thing_name=self.stack_name)
-#         pi2Cert = iot.CfnCertificate(self, "pi2Certificate", certificate_signing_request=csr, status="ACTIVE")
-#         pi2Policy = iot.CfnPolicy(self, "pi2Policy", policy_document=policy)
+        ## Thing 3 ##
+        CUmakeit_03_Thing = iot.CfnThing(self, "CUmakeit_03")
+        # CUmakeit_03_Cert = iot.CfnCertificate(self, "CUmakeit_03_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_03_Policy = iot.CfnPolicy(self, "CUmakeit_03_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_03_Cert.attr_arn, thing_name=CUmakeit_03_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_03_Cert.attr_arn, policy_name=CUmakeit_03_Policy.ref)
 
-#         # Attach the Certificate to the Thing
-#         iot.CfnThingPrincipalAttachment(self, "pi2CertificateAttachment", principal=pi2Cert.attr_arn, thing_name=raspberryPi2.ref)
-        
-#         # Attach the Policy to the Certificate
-#         iot.CfnPolicyPrincipalAttachment(self, "pi2PolicyAttachment", principal=pi2Cert.attr_arn, policy_name=pi2Policy.ref)
+        ## Thing 4 ##
+        CUmakeit_04_Thing = iot.CfnThing(self, "CUmakeit_04")
+        # CUmakeit_04_Cert = iot.CfnCertificate(self, "CUmakeit_04_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_04_Policy = iot.CfnPolicy(self, "CUmakeit_04_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_04_Cert.attr_arn, thing_name=CUmakeit_04_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_04_Cert.attr_arn, policy_name=CUmakeit_04_Policy.ref)
+
+        ## Thing 5 ##
+        CUmakeit_05_Thing = iot.CfnThing(self, "CUmakeit_05")
+        # CUmakeit_05_Cert = iot.CfnCertificate(self, "CUmakeit_05_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_05_Policy = iot.CfnPolicy(self, "CUmakeit_05_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_05_Cert.attr_arn, thing_name=CUmakeit_05_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_05_Cert.attr_arn, policy_name=CUmakeit_05_Policy.ref)
+
+        ## Thing 6 ##
+        CUmakeit_06_Thing = iot.CfnThing(self, "CUmakeit_06")
+        # CUmakeit_06_Cert = iot.CfnCertificate(self, "CUmakeit_06_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_06_Policy = iot.CfnPolicy(self, "CUmakeit_06_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_06_Cert.attr_arn, thing_name=CUmakeit_06_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_06_Cert.attr_arn, policy_name=CUmakeit_06_Policy.ref)
