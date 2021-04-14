@@ -93,9 +93,10 @@ class Visit:
     it is the first visit.
     """
     visit_id: str
-    visitor_id: str
-    date_visited: int
     first_visit: bool
+    sign_in_time: int
+    sign_out_time: int
+    visitor_id: str
 
 
 @dataclass
