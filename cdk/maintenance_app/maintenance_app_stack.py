@@ -9,7 +9,7 @@ from aws_cdk import (
     aws_events as events,
     aws_events_targets as targets,
     aws_s3_deployment as s3deploy,
-    #aws_iot as iot
+    aws_iot as iot
 )
 import boto3
 
@@ -91,13 +91,6 @@ class MaintenanceAppStack(core.Stack):
 
     #-------------------S3 Buckets------------------------------
 
-        # #Policy Statement for S3 bucket
-        # S3Policy = iam.PolicyStatement(
-        #     actions=['s3:*'],
-        #     effect=iam.Effect.ALLOW,
-        #     resources=['*']
-        # )
-
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket')
 
@@ -122,13 +115,6 @@ class MaintenanceAppStack(core.Stack):
             #Subdomain/Make Public
         
     #------------------Lambda Functions/API Integrations--------------------
-
-        #NOTE:
-        #Old Order:
-            # Create Lambda Function
-            # Create Integration
-            # Create APIGW
-            # Grant Access to tables
 
         ###------Machine------###
 
@@ -341,11 +327,41 @@ class MaintenanceAppStack(core.Stack):
         # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
 
 #----------------Master API--------------------------
-        #Create Master API
+        #Create Master API and enable CORS on all methods
         um_api = apigw.RestApi(self,'Master API')
+        # , 
+        #     default_Cors_Preflight_Options = apigw.CorsOptions(
+        #         allowOrigins = apigw.Cors.ALL_ORIGINS,
+        #         allowMethods = apigw.Cors.ALL_METHODS
+        #     )
+        # )
         # Add ANY 
         um_api.root.add_method('ANY')
 
+        # um_api.add_cors_preflight(
+        #     allowOrigins = apigw.Cors.ALL_ORIGINS,
+        #     allowMethods = apigw.Cors.ALL_METHODS
+        # )
+        # #Enable CORS on all methods
+
+        # new apigateway.RestApi(this, 'api', {
+        #     defaultCorsPreflightOptions: {
+        #         allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        #         allowMethods: apigateway.Cors.ALL_METHODS
+        #     }
+        # })
+
+        # const bucket = new s3.Bucket(this, 'MyBucket', {
+        #     websiteRedirect: {
+        #         host: 'aws.amazon.com'
+        #     }
+        # })
+
+        # bucket = s3.Bucket(self, "MyBucket", 
+        #     website_redirect=s3.WebsiteRedirect (
+        #         host_name="aws.amazon.com"
+        #     )
+        # )
 
 
         # ###------Auth------###
