@@ -28,16 +28,15 @@ def GetVisitors(body):
     visits = Visits.scan()
     visits_list = visits["Items"]
 
-    visitors_in_tf = []
+    visits_in_tf = []
 
     for visitor in visitors_list:
         for visit in visits_list:
             if visit["visitor_id"] == visitor["visitor_id"]:
                 if visit["date_visited"] >= start_time and visit["date_visited"] <= end_time:
-                    visitors_in_tf.append(visitor)
-                    break
+                    visits_in_tf.append(visit)
 
-    return visitors_in_tf
+    return visits_in_tf
 
 
 # calls getMachineById to get machine data
