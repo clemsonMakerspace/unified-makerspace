@@ -4,14 +4,16 @@ visitors: [
     major: "Computer Science",
     degree: "Masters",
     first_name: "Love",
-    last_name: "Quinn"
+    last_name: "Quinn",
+
   },
   {
     visitor_id: "2",
     major: "Chemistry",
     degree: "Phd",
     first_name: "Delilah",
-    last_name: "Alves"
+    last_name: "Alves",
+
 
   },
   {
@@ -19,14 +21,16 @@ visitors: [
     major: "Literature",
     degree: "B.S",
     first_name: "Candace",
-    last_name: "Stone"
+    last_name: "Stone",
+
   },
   {
     visitor_id: "3",
     major: "Chemistry",
     degree: "B.A",
     first_name: "Delilah",
-    last_name: "Alves"
+    last_name: "Alves",
+
   }
 
 ]

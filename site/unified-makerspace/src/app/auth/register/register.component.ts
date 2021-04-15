@@ -63,7 +63,7 @@ export class RegisterComponent implements OnInit {
 
 
     this.showError = showError(this.registerForm);
-    useTestData(this.registerForm);
+    useTestData(this.registerForm, 'user');
 
   }
 

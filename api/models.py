@@ -90,13 +90,15 @@ class Visitor:
 class Visit:
     """
     Represents a visit to the MakerSpace, and whether
-    it is the first visit.
+    it is the first visit. `date_visited` is equal to
+    `sign_in_time` and may be deprecated in the future.
     """
     visit_id: str
+    visitor_id:str
     first_visit: bool
+    date_visited: int
     sign_in_time: int
     sign_out_time: int
-    visitor_id: str
 
 
 @dataclass
@@ -122,3 +124,15 @@ class Machine:
     """
     machine_name: str
     machine_state: int
+
+
+@dataclass
+class Error:
+    """
+    General error class. `code` should be from 400 - 405. `error` should
+    be a short snake case description of the error. Message should be a
+    short message that can be displayed to the end user.
+    """
+    code: int
+    error: str
+    message: str

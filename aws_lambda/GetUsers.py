@@ -24,7 +24,7 @@ def GetUsersHandler(event, context):
         users_list = []
         for user in all_users['Items']:
             
-            new_user = User(user_id = user['user_id'], first_name = user['first_name'], last_name= user['last_name'], assigned_tasks=user['assigned_tasks'], permissions= user['permissions'])
+            new_user = User(user_id = user['user_id'], first_name = user['first_name'], last_name= user['last_name'], assigned_tasks=user['assigned_tasks'], permissions= user['user_permissions'])
             users_list.append(new_user)
         
         return {

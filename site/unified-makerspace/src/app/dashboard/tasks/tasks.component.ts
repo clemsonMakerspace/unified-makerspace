@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalService} from '../../shared/modal/modal.service';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-tasks',
@@ -9,27 +9,13 @@ import {Task, User} from 'src/app/shared/models';
   styleUrls: ['./tasks.component.scss'],
 })
 export class TasksComponent implements OnInit {
-  constructor(public modal: ModalService, private api: ApiService) {
-  }
 
-  // todo add contact link
+  constructor(private modal: NgbModal, private api: ApiService) {
+  }
 
   tasks: Task[];
   users: User[];
   errorMessage: string;
-
-  ngOnInit(): void {
-    this.getUsers();
-  }
-
-
-  /* gets users and then tasks */
-  getUsers() {
-    this.api.getUsers([]).subscribe((res) => {
-      this.users = res['users'];
-      this.getTasks();
-    }, (err) => this.handleError(err));
-  }
 
 
   /* type to status mappings */
@@ -38,6 +24,24 @@ export class TasksComponent implements OnInit {
     1: 'In-Progress',
     2: 'Completed'
   };
+
+  open(content) {
+    this.modal.open(content, {
+      size: 'lg'
+    });
+  }
+
+  ngOnInit(): void {
+    this.getUsers();
+  }
+
+  /* gets users and then tasks */
+  getUsers() {
+    this.api.getUsers([]).subscribe((res) => {
+      this.users = res['users'];
+      this.getTasks();
+    }, (err) => this.handleError(err));
+  }
 
   /* updates `tasks` array with new tasks */
   getTasks() {
@@ -56,6 +60,7 @@ export class TasksComponent implements OnInit {
       ));
     }, (err) => this.handleError(err));
   }
+
 
   clearTasks(): void {
     for (let task of this.tasks.filter((task) => task.state == 'Completed')) {

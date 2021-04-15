@@ -56,10 +56,10 @@ export function showError(form: FormGroup) {
 }
 
 
-export function useTestData(control: FormGroup) {
+export function useTestData(control: FormGroup, object: string) {
   if (!environment.production) {
     for (let [c, v] of Object.entries(control.controls)) {
-      v.setValue(environment.user[c]);
+      v.setValue(environment[object][c]);
     }
   }
 }

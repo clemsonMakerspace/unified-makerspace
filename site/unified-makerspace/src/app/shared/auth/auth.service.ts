@@ -8,10 +8,11 @@ export function inStorage(prop: string) {
   return {
     get: () => JSON.parse(sessionStorage.getItem(prop)),
     set: (s) => {
-      sessionStorage.setItem(prop, JSON.stringify(s))
+      sessionStorage.setItem(prop, JSON.stringify(s));
     }
-  }
+  };
 }
+
 
 @Injectable({
   providedIn: 'root',
@@ -20,10 +21,11 @@ export class AuthService {
 
   user = new BehaviorSubject<User>(null);
 
-  public newUserInfo // overridden
-  public regState // overridden
+  public newUserInfo; // overridden
+  public regState; // overridden
 
   // todo create localObject...
+
   constructor(private api: ApiService,
               private router: Router) {
 
@@ -31,12 +33,12 @@ export class AuthService {
     Object.defineProperty(this, 'regState', inStorage('regState'));
 
 
-    // default state is register
+    /* default state is 'register' */
     if (!this.regState) {
       this.regState = 'register';
     }
 
-    // get user from localStorage (if any)
+    /* get user from localStorage (if any) */
     if (this.user.getValue() == null) {
       let user = localStorage.getItem('User');
       if (user != null) {
@@ -46,6 +48,7 @@ export class AuthService {
   }
 
 
+  /* checks whether user is logged in */
   isUserLoggedIn() {
     return this.user.getValue() != null;
   }

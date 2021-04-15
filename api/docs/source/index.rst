@@ -63,6 +63,41 @@ Visitor
 Beck’s friends constantly tell her about how amazing the MakerSpace is, so she finally makes plans to visit it next week. Before going, she completes the Canvas tutorial, where she is prompted to create an account with the MakerSpace. She is redirected to the login page, where she enters her email address and creates a password. Completing the form, she is asked for a few more details on the next page, such as her name, major, degree type, and the hardware id of her TigerCard. She honestly enters this information and she is asked to validate her email address on the next page. Upon validating her email address, she finishes the authentication process and can now visit the MakerSpace.
 
 
+
+Design
+========
+
+
+Errors
+--------
+Errors can propagate to the backend in a few ways:
+
+* Client errors that bypass frontend validation (e.g. user attempts to sign up with an existing email)
+* Invalid requests made by the frontend,
+* Invalid requests made by an external client (e.g. a bad actor).
+
+Regardless of the intention of bad requests, the backend should handle them robustly and return a clear response. This documentation does not provide an exhaustive list of possible errors, as that would be very difficult and unwieldy.
+
+Instead, implementers are strongly encouraged to perform as many backend checks as possible (even those that duplicate frontend validation), and return semantically meaningful responses. Error responses should have a code, an error description, and message. See the `Models.Error` class for more information.
+
+Example Error
+~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    response_body = {
+        'code': 400,
+        'error': "EMAIL_IN_USE",
+        'message': 'There is already an account '
+                    'with this email address.'
+    }
+
+
+.. warning::
+
+    Do not provide sensitive information in error responses. The front-end may display messages exactly as provided.
+
+
 Contents
 =========
 .. toctree::
