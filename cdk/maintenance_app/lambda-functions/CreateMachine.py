@@ -1,57 +1,41 @@
 # FROM MAKERSPACE MANAGER LAMBDA APPLICATION
+
+
 import boto3
 import json
 import uuid
-import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-from api.models import Visitor, Visit
-
+from api.models import Machine
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
-Visitors = dynamodb.Table("Visitors")
-Visits = dynamodb.Table("Visits")
+
+# DEPRECATED: TO REMOVE
+# Parent_Table = dynamodb.Table('Parent_Machines')
+# Child_Table = dynamodb.Table('Child_Machines')
+# Machine_Table = dynamodb.Table('Machines')
+
+Machines = dynamodb.Table('Machines')
 
 
-def CreateVisitor(data):
-    new_visitor = json.loads(data["body"])
+def CreateMachine(machine_name,machine_status):
 
-    new_visitor = Visitor(new_visitor["hardware_id"],new_visitor["college"],new_visitor["degree_type"],new_visitor["first_name"],
-                          new_visitor["last_name"],new_visitor["major"],new_visitor["visitor_id"])
+    new_machine = Machine(machine_name,machine_status)
 
 
-    visits = Visits.scan()
-    visits_list = visits["Items"]
-
-    new_visit = Visit
-
-    for visit in visits_list:
-
-        if visit["visitor_id"] == new_visitor.visitor_id:
-            new_visit = Visit(str(uuid.uuid4()),"0",int(time.time()),0,new_visitor.visitor_id)
-            break
-    else:
-            new_visit = Visit(str(uuid.uuid4()), "1", int(time.time()), 0, new_visitor.visitor_id)
-
-    Visits.put_item(
-        Item = new_visit.__dict__
+    # Put new task into the Machines eventbase
+    Machines.put_item(
+        Item = new_machine.__dict__
     )
 
-    # Put new task into the tasks eventbase
-    Visitors.put_item(
-        Item=new_visitor.__dict__
-    )
+    return 1
 
 
-
-    return 'Visitor ' + new_visitor.visitor_id + ' has been successfully created.'
-
-
-def CreateVisitorHandler(event, context):
+def CreateMachineHandler(event, context):
 
     # Return client error if no string params
     if (event is None):
@@ -67,7 +51,7 @@ def CreateVisitorHandler(event, context):
 
     try:
         # Call function
-        result = CreateVisitor(event)
+        result = CreateMachine(event)
 
         # Send Response
         return {

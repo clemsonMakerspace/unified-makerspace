@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { RootComponent } from './root.component';
 
@@ -8,8 +8,9 @@ describe('RootComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [RootComponent],
-    }).compileComponents();
+      declarations: [ RootComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,4 +22,13 @@ describe('RootComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should return title', () => {
+    fixture = TestBed.createComponent(RootComponent);
+    component = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
+    let compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('h1').textContent).toContain('Welcome to the Clemson MakerSpace.');
+  });
+
 });

@@ -4,10 +4,12 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_dynamodb as ddb,
     aws_s3 as s3,
+    aws_s3_deployment as s3deploy,
     aws_iam as iam,
     aws_events as events,
     aws_events_targets as targets,
-    aws_s3_deployment as s3deploy
+    aws_s3_deployment as s3deploy,
+    aws_iot as iot
 )
 import boto3
 
@@ -18,769 +20,425 @@ class MaintenanceAppStack(core.Stack):
 
     #-------------------DynamoDB Tables-----------------------
 
+        #Tasks, Machines, Visitors, Visits, Users, Permissions
+
         #Get the client
         dynamodb_client = boto3.client('dynamodb')
 
         #Define Existing Tables
         existing_tables = dynamodb_client.list_tables()['TableNames']
-
-        #Parent Tasks Table Definition
-        ParentTable = None
         
-        #Create Parent Tasks Resource
-        if 'Parent_Tasks' not in existing_tables:
-            ParentTable = ddb.Table(
-                self, 'Parent_Tasks',
-                partition_key={'name': 'Parent_Id', 'type': ddb.AttributeType.STRING},
-                table_name='Parent_Tasks'
+        #Create Tasks Resource
+        if 'Tasks' not in existing_tables:
+            tasksTable = ddb.Table(
+                self, 'Tasks',
+                partition_key={'name': 'task_id', 'type': ddb.AttributeType.STRING},
+                table_name='Tasks'
             )
         #Find Parent Tasks Resource
         else:
-            ParentTable = ddb.Table.from_table_name(self, 'Parent_Tasks', 'Parent_Tasks')
+            tasksTable = ddb.Table.from_table_name(self, 'Tasks', 'Tasks')
 
-        #Child Tasks Table Definition
-        ChildTable = None
-
-        #Create Child Tasks resource
-        if 'Child_Tasks' not in existing_tables:
-            ChildTable = ddb.Table(
-                self, 'Child_Tasks',
-                table_name='Child_Tasks',
-                partition_key={'name': 'Due_Date', 'type': ddb.AttributeType.STRING},
-                sort_key={'name': 'Parent_Id', 'type': ddb.AttributeType.STRING}
-            )
-
-            ChildTable.add_global_secondary_index(
-                index_name='Parent_Index',
-                partition_key={'name': 'Parent_Id', 'type': ddb.AttributeType.STRING},
-                sort_key={'name': 'Due_Date', 'type': ddb.AttributeType.STRING}
-            )
-        #Find Child Tasks Resource
-        else:
-            ChildTable = ddb.Table.from_table_name(self, 'Child_Tasks', 'Child_Tasks')
-
-        #Machines Table Definition
-        MachineTable = None
 
         #Create Machines resource
         if 'Machines' not in existing_tables:
-            MachineTable = ddb.Table(
+            machinesTable = ddb.Table(
                 self, 'Machines',
-                partition_key={'name': 'Machine_Id', 'type': ddb.AttributeType.STRING},
+                partition_key={'name': 'machine_name', 'type': ddb.AttributeType.STRING},
                 table_name='Machines'
             )
         #Find Machines Resource
         else:
-            MachineTable = ddb.Table.from_table_name(self, 'Machines', 'Machines')
+            machinesTable = ddb.Table.from_table_name(self, 'Machines', 'Machines')
 
-        #Machine Types Table Definition
-        MachineTypesTable = None
 
-        #Create Machine Types resource
-        if 'Machine_Types' not in existing_tables:
-            MachineTypesTable = ddb.Table(
-                self, 'Machine_Types',
-                partition_key={'name': 'Machine_Type', 'type': ddb.AttributeType.STRING},
-                table_name='Machine_Types'
+        #Create Visitors resource
+        if 'Visitors' not in existing_tables:
+            visitorsTable = ddb.Table(
+                self, 'Visitors',
+                partition_key={'name': 'hardware_id', 'type': ddb.AttributeType.STRING},
+                table_name='Visitors'
             )
-        #Find Machine Types Resource
+        #Find Visitors Resource
         else:
-            MachineTypesTable = ddb.Table.from_table_name(self,
-                'Machine_Types', 'Machine_Types')
+            visitorsTable = ddb.Table.from_table_name(self,
+                'Visitors', 'Visitors')
 
-        ############# Sign-In System Tables #############
-
-        #Create Makerspace_User resource
-        if 'Makerspace_User' not in existing_tables:
-            MakerspaceUser = ddb.Table (
-                self, 'Makerspace_User',
-                partition_key={'name': 'StudentID', 'type': ddb.AttributeType.STRING},
-                sort_key={'name': 'SK', 'type': ddb.AttributeType.STRING},
-                table_name='Makerspace_User'
+        #Create Visits resource
+        if 'Visits' not in existing_tables:
+            visitsTable = ddb.Table (
+                self, 'Visits',
+                partition_key={'name': 'visit_id', 'type': ddb.AttributeType.STRING},
+                table_name='Visits'
             )
+        #Find Visits Resource
+        else:
+            visitsTable = ddb.Table.from_table_name(self,
+                'Visits', 'Visits')
+        
 
-        #Create User_LoginInfo resource
-        if 'User_Login_Info' not in existing_tables:
-            UserLoginInfo = ddb.Table (
-                self, 'User_Login_Info',
-                partition_key={'name': 'StudentID', 'type': ddb.AttributeType.STRING},
-                table_name='User_Login_Info'
+        #Create User resource
+        if 'Users' not in existing_tables:
+            usersTable = ddb.Table (
+                self, 'Users',
+                partition_key={'name': 'user_id', 'type': ddb.AttributeType.STRING},
+                table_name='Users'
             )
-
-    #-------------------Global Indexes----------------------------
-
-        #ParentIndex Definiton
-        ParentIndex = ddb.Table.from_table_name(self, 
-                'ParentIndex', 'Child_Tasks/index/Parent_Index')
+        #Find User Resource
+        else:
+            usersTable = ddb.Table.from_table_name(self,
+                'Users', 'Users')
 
     #-------------------S3 Buckets------------------------------
 
-        #Policy Statement for S3 bucket
-        S3Policy = iam.PolicyStatement(
-            actions=['s3:*'],
-            effect=iam.Effect.ALLOW,
-            resources=['*']
-        )
-
-        #Create Export History Bucket Resource
-        ExportHistoryBucket = s3.Bucket(self, 'ExportHistoryBucket',
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL)
-        
-        #Create Export Machine History Bucket Resource
-        ExportMachineHistoryBucket = s3.Bucket(self, 'ExportMachineHistoryBucket',
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL)
-        
-        #Create Notification Emails Bucket Resource
-        NotificationBucket = s3.Bucket(self, 'NotificationEmailsBucket',
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL)
-
-        #Default Emails Deployed to NotificationBucket
-        s3deploy.BucketDeployment(self, 'DefaultEmails',
-            sources=[s3deploy.Source.asset('./maintenance_app/default-emails')],
-            destination_bucket=NotificationBucket
-        )
-
         #Create Public Front End S3 Bucket (will eventually not be public)
-        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket')
+        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
+            website_index_document= 'index.html',
+            # website_error_document= 'error.html',
+            public_read_access= True
+        )
+
+        s3deploy.BucketDeployment(self, 'DeployWebsite',
+            sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
+            destination_bucket=FrontEndBucket,
+            # destination_key_prefix="web/static"
+        )
         
-    #------------------Machine Functions/API--------------------
+        #TODO:
+            #Subdomain
+            #Add compiled build files for the website
+        
+    #------------------Lambda Functions/API Integrations--------------------
 
-        #View machine types function
-        viewMachineTypes = _lambda.Function(
-            self, 'ViewMachineTypes',
+        ###------Machine------###
+
+        ## CreateMachine ##
+        CreateMachineLambda = _lambda.Function(
+            self, 'CreateMachine',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='view_machine_types.viewMachineTypesHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='CreateMachine.CreateMachineHandler',
         )
+        #Granting Access to view machines DynamoDB Table
+        machinesTable.grant_full_access(CreateMachineLambda)
+        #Add Lambda Integration for API
+        CreateMachineLambdaIntegration = apigw.LambdaIntegration(CreateMachineLambda)
+        
 
-        viewMachineTypesIntegration = apigw.LambdaIntegration(viewMachineTypes)
-
-        #view machine types api
-        apigw.LambdaRestApi(
-            self, 'ViewMachineTypesAPI',
-            handler=viewMachineTypes
-        )
-
-        #Granting Access to view machine types
-        MachineTypesTable.grant_full_access(viewMachineTypes)
-        MachineTable.grant_full_access(viewMachineTypes)
-
-        #view a machine by type given machine type
-        viewMachineByTypes = _lambda.Function(
-            self, 'ViewMachineByTypes',
+        ## GetMachineStatus ##
+        GetMachineStatusLambda = _lambda.Function(
+            self, 'GetMachineStatus',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='view_machine_by_types.viewMachineByTypesHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GetMachineStatus.GetMachineStatusHandler',
         )
+        #Granting Access to view machines DynamoDB Table
+        machinesTable.grant_full_access(GetMachineStatusLambda)
+        #Add Lambda Integration for API
+        GetMachineStatusLambdaIntegration = apigw.LambdaIntegration(GetMachineStatusLambda)
+        
 
-        viewMachineByTypesIntegration = apigw.LambdaIntegration(viewMachineByTypes)
-
-        #View Machine By Type Api
-        apigw.LambdaRestApi(
-            self, 'ViewMachineByTypesAPI',
-            handler=viewMachineByTypes
-        )
-
-        #Granting Access to view machine by types
-        MachineTypesTable.grant_full_access(viewMachineByTypes)
-        MachineTable.grant_full_access(viewMachineByTypes)
-
-        #view a machine given id
-        viewMachine = _lambda.Function(
-            self, 'ViewMachine',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='view_machine.viewMachineHandler',
-        )
-
-        viewMachineIntegration = apigw.LambdaIntegration(viewMachine)
-
-        #View Machine Api
-        apigw.LambdaRestApi(
-            self, 'ViewMachineAPI',
-            handler=viewMachine
-        )
-
-        #Granting Access to view Machine
-        MachineTable.grant_full_access(viewMachine)
-
-        #view upcoming tasks given id
-        ViewMachineUpcomingTasks = _lambda.Function(
-            self, 'ViewMachineUpcomingTasks',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='view_machine_upcoming_task.ViewMachineUpcomingTasksHandler',
-        )
-
-        ViewMachineUpcomingTasksIntegration = apigw.LambdaIntegration(ViewMachineUpcomingTasks)
-
-        #View Machine Upcoming Api
-        apigw.LambdaRestApi(
-            self, 'ViewMachineUpcomingTasksAPI',
-            handler=ViewMachineUpcomingTasks
-        )
-
-        #Granting Access to View Machine Upcoming
-        ParentTable.grant_full_access(ViewMachineUpcomingTasks)
-        ChildTable.grant_full_access(ViewMachineUpcomingTasks)
-        MachineTable.grant_full_access(ViewMachineUpcomingTasks)
-        ParentIndex.grant_full_access(ViewMachineUpcomingTasks)
-
-        #View Parents By Machine Functions
-        ViewParentsByMachine = _lambda.Function(
-            self, 'ViewParentsByMachine',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='ViewParentsByMachine.ViewParentsByMachineHandler',
-        )
-
-        ViewParentsByMachineIntegration = apigw.LambdaIntegration(ViewParentsByMachine)
-
-        #View Parents By Machine Api
-        apigw.LambdaRestApi(
-            self, 'ViewParentsByMachineAPI',
-            handler=ViewParentsByMachine
-        )
-
-        #Granting Access to View Parents By Machine
-        ParentTable.grant_full_access(ViewParentsByMachine)
-        MachineTable.grant_full_access(ViewParentsByMachine)
-
-        #add machine to db
-        addMachine = _lambda.Function(
-            self, 'AddMachine',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='add_machine.addMachineHandler',
-        )
-
-        addMachineIntegration = apigw.LambdaIntegration(addMachine)
-
-        #Add machine api
-        apigw.LambdaRestApi(
-            self, 'AddMachineAPI',
-            handler=addMachine
-        )
-
-        #Grant access to add machine
-        MachineTable.grant_full_access(addMachine)
-        MachineTypesTable.grant_full_access(addMachine)
-
-        #add new machine type to db
-        addMachineType = _lambda.Function(
-            self, 'AddMachineType',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='add_machine_type.addMachineTypeHandler',
-        )
-
-        addMachineTypeIntegration = apigw.LambdaIntegration(addMachineType)
-
-        #Add Machine Type Api
-        apigw.LambdaRestApi(
-            self, 'AddMachineTypeAPI',
-            handler=addMachineType
-        )
-
-        #Grant access to add machine types
-        MachineTypesTable.grant_full_access(addMachineType)
-
-        #edit machine name
-        editMachineName = _lambda.Function(
-            self, 'EditMachineName',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='edit_machine_name.editMachineNameHandler',
-        )
-
-        editMachineNameIntegration = apigw.LambdaIntegration(editMachineName)
-
-        #Edit Machine Api
-        apigw.LambdaRestApi(
-            self, 'EditMachineNameAPI',
-            handler=editMachineName
-        )
-
-        #Grant access to edit machine
-        MachineTable.grant_full_access(editMachineName)
-
-        #delete machine
-        deleteMachine = _lambda.Function(
+        ##DeleteMachine
+        DeleteMachineLambda = _lambda.Function(
             self, 'DeleteMachine',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='delete_machine.deleteMachineHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='DeleteMachine.DeleteMachineHandler',
         )
+        #Granting Access to view machines DynamoDB Table
+        machinesTable.grant_full_access(DeleteMachineLambda)
+        #Add Lambda Integration for API
+        DeleteMachineLambdaIntegration = apigw.LambdaIntegration(DeleteMachineLambda)
 
-        deleteMachineIntegration = apigw.LambdaIntegration(deleteMachine)
 
-        #Delete Machine Api
-        apigw.LambdaRestApi(
-            self, 'DeleteMachineAPI',
-            handler=deleteMachine
-        )
 
-        #Granting Access to Delete Machine 
-        ParentTable.grant_full_access(deleteMachine)
-        ChildTable.grant_full_access(deleteMachine)
-        MachineTable.grant_full_access(deleteMachine)
-        MachineTypesTable.grant_full_access(deleteMachine)
-        ParentIndex.grant_full_access(deleteMachine)
+        ###------Task------###
 
-        #delete machine type
-        deleteMachineType = _lambda.Function(
-            self, 'DeleteMachineType',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/machine'),
-            handler='delete_machine_type.deleteMachineTypeHandler',
-        )
-
-        deleteMachineTypeIntegration = apigw.LambdaIntegration(deleteMachineType)
-
-        #Delete Machine Type Api
-        apigw.LambdaRestApi(
-            self, 'DeleteMachineTypeAPI',
-            handler=deleteMachineType
-        )
-
-        #Granting Access to Delete Machine Type
-        MachineTypesTable.grant_full_access(deleteMachineType)
-
-    #------------------Task Functions/API---------------------
-
-        #View Task Function
-        ViewTask = _lambda.Function(
-            self, 'ViewTask',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='ViewTask.ViewTaskHandler',
-        )
-
-        ViewTaskIntegration = apigw.LambdaIntegration(ViewTask)
-
-        #View Task Api
-        apigw.LambdaRestApi(
-            self, 'ViewTaskApi',
-            handler=ViewTask
-        )
-
-        #Granting Access for View Task
-        ChildTable.grant_full_access(ViewTask)
-        ParentTable.grant_full_access(ViewTask)
-
-        #Create Task Function
-        CreateTask = _lambda.Function(
+        ## CreateTask ##
+        CreateTaskLambda = _lambda.Function(
             self, 'CreateTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateTask.CreateTaskHandler',
         )
+        #Granting Access to view tasks DynamoDB Table
+        tasksTable.grant_full_access(CreateTaskLambda)
+        #Add Lambda Integration for API
+        CreateTaskLambdaIntegration = apigw.LambdaIntegration(CreateTaskLambda)
 
-        CreateTaskIntegration = apigw.LambdaIntegration(CreateTask)
 
-        #Create Task Api
-        apigw.LambdaRestApi(
-            self, 'CreateTaskApi',
-            handler=CreateTask
-        )
-
-        #Granting Access for Create Task
-        ChildTable.grant_full_access(CreateTask)
-        ParentTable.grant_full_access(CreateTask)
-        MachineTable.grant_full_access(CreateTask)
-
-        #Edit Task Function
-        EditTask = _lambda.Function(
-            self, 'EditTask',
+        ## GetTasks ##
+        GetTasksLambda = _lambda.Function(
+            self, 'GetTasks',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='EditTask.EditTaskHandler',
-            timeout=core.Duration.seconds(30)
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GetTasks.GetTasksHandler',
         )
+        #Granting Access to view tasks DynamoDB Table
+        tasksTable.grant_full_access(GetTasksLambda)
+        #Add Lambda Integration for API
+        GetTasksLambdaIntegration = apigw.LambdaIntegration(GetTasksLambda)
 
-        EditTaskIntegration = apigw.LambdaIntegration(EditTask)
 
-        #Edit Task Api
-        apigw.LambdaRestApi(
-            self, 'EditTaskApi',
-            handler=EditTask
-        )
-
-        #Granting Access for Edit Task
-        ChildTable.grant_full_access(EditTask)
-        ParentIndex.grant_full_access(EditTask)
-        ParentTable.grant_full_access(EditTask)
-        MachineTable.grant_full_access(EditTask)
-
-        #View Upcoming Tasks Function
-        ViewUpcomingTasks = _lambda.Function(
-            self, 'ViewUpcomingTasks',
+        ## ResolveTask ##
+        ResolveTaskLambda = _lambda.Function(
+            self, 'ResolveTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='ViewUpcomingTasks.ViewUpcomingTasksHandler'
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='ResolveTask.ResolveTaskHandler',
         )
+        #Granting Access to view tasks DynamoDB Table
+        tasksTable.grant_full_access(ResolveTaskLambda)
+        #Add Lambda Integration for API
+        ResolveTaskLambdaIntegration = apigw.LambdaIntegration(ResolveTaskLambda)
 
-        ViewUpcomingTasksIntegration = apigw.LambdaIntegration(ViewUpcomingTasks)
 
-        #View Upcoming Tasks API
-        apigw.LambdaRestApi(
-            self, 'ViewUpcomingTasksApi',
-            handler=ViewUpcomingTasks
-        )
-
-        #Granting Access for View Upcoming Tasks
-        ChildTable.grant_full_access(ViewUpcomingTasks)
-
-        #Delete Task Function
-        DeleteTask = _lambda.Function(
-            self, 'DeleteTask',
+        ## UpdateTask ##
+        UpdateTaskLambda = _lambda.Function(
+            self, 'UpdateTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='DeleteTask.DeleteTaskHandler',
-            timeout=core.Duration.seconds(30)
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='UpdateTask.UpdateTaskHandler',
         )
+        #Granting Access to view tasks DynamoDB Table
+        tasksTable.grant_full_access(UpdateTaskLambda)
+        #Add Lambda Integration for API
+        UpdateTaskLambdaIntegration = apigw.LambdaIntegration(UpdateTaskLambda)
 
-        DeleteTaskIntegration = apigw.LambdaIntegration(DeleteTask)
 
-        #Delete Task Api
-        apigw.LambdaRestApi(
-            self, 'DeleteTaskApi',
-            handler=DeleteTask
-        )
+        ###------User------###
 
-        #Granting Access for Delete Task
-        ChildTable.grant_full_access(DeleteTask)
-        ParentIndex.grant_full_access(DeleteTask)
-        ParentTable.grant_full_access(DeleteTask)
-        MachineTable.grant_full_access(DeleteTask)
-
-        #Complete Task Function
-        CompleteTask = _lambda.Function(
-            self, 'CompleteTask',
+        ## CreateUser ##
+        CreateUserLambda = _lambda.Function(
+            self, 'CreateUser',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='CompleteTask.CompleteTaskHandler',
-            timeout=core.Duration.seconds(10)
-        )
-
-        CompleteTaskIntegration = apigw.LambdaIntegration(CompleteTask)
-
-        #Complete Task Api
-        apigw.LambdaRestApi(
-            self, 'CompleteTaskApi',
-            handler=CompleteTask
-        )
-
-        #Granting Access for Complete Task
-        ChildTable.grant_full_access(CompleteTask)
-
-    #------------------Reporting Functions/API------------------
-
-
-
-
-        # View Machine History Function
-        ViewMachineHistory = _lambda.Function(
-            self, 'ViewMachineHistory',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='ViewMachineHistory.ViewMachineHistoryHandler',
-            timeout=core.Duration.seconds(30)
-        )
-
-        #View Machine History Api
-        apigw.LambdaRestApi(
-            self, 'ViewMachineHistoryApi',
-            handler=ViewMachineHistory
-        )
-
-        #Granting Access for ViewMachine History
-        ChildTable.grant_full_access(ViewMachineHistory)
-        MachineTable.grant_full_access(ViewMachineHistory)
-        ParentIndex.grant_full_access(ViewMachineHistory)
-        
-        # View History Function
-        ViewHistory = _lambda.Function(
-            self, 'ViewHistory',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='ViewHistory.ViewHistoryHandler',
-            timeout=core.Duration.seconds(30)
-        )
-
-        #View History Api
-        apigw.LambdaRestApi(
-            self, 'ViewHistoryApi',
-            handler=ViewHistory
-        )
-
-        #Granting Access for View History
-        ChildTable.grant_full_access(ViewHistory)
-        ParentIndex.grant_full_access(ViewHistory)
-        ParentTable.grant_full_access(ViewHistory)
-
-        #Export History Function
-        ExportHistory = _lambda.Function(
-            self, 'ExportHistory',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='ExportHistory.ExportHistoryHandler',
-            initial_policy=[S3Policy],
-            environment={'bucketName': ExportHistoryBucket.bucket_name},
-            timeout=core.Duration.seconds(30)
-        )
-
-        #Export History Api
-        apigw.LambdaRestApi(
-            self, 'ExportHistoryApi',
-            handler=ExportHistory
-        )
-
-        #Granting Access for Export History
-        ChildTable.grant_full_access(ExportHistory)
-        ParentTable.grant_full_access(ExportHistory)
-        ParentIndex.grant_full_access(ExportHistory)
-
-        #Export Machine History Function
-        ExportMachineHistory = _lambda.Function(
-            self, 'ExportMachineHistory',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='ExportMachineHistory.ExportMachineHistoryHandler',
-            initial_policy=[S3Policy],
-            environment={'bucketName': ExportMachineHistoryBucket.bucket_name},
-            timeout=core.Duration.seconds(30)
-        )
-
-        #Export Machine History Api
-        apigw.LambdaRestApi(
-            self, 'ExportMachineHistoryApi',
-            handler=ExportMachineHistory
-        )
-
-        #Granting Access for ExportMachine History
-        ChildTable.grant_full_access(ExportMachineHistory)
-        MachineTable.grant_full_access(ExportMachineHistory)
-        ParentIndex.grant_full_access(ExportMachineHistory)
-
-        #Update Report Email Function
-        UpdateReportEmail = _lambda.Function(
-            self, 'UpdateReportEmail',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='UpdateReportEmail.UpdateReportEmailHandler',
-            initial_policy=[S3Policy],
-            environment={'bucketName': NotificationBucket.bucket_name},
-            timeout=core.Duration.seconds(30)
-        )
-
-        #Update Report Email Api
-        apigw.LambdaRestApi(
-            self, 'UpdateReportEmailApi',
-            handler=UpdateReportEmail
-        )
-
-        #View Report Email Function
-        ViewReportEmail = _lambda.Function(
-            self, 'ViewReportEmail',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='ViewReportEmail.ViewReportEmailHandler',
-            initial_policy=[S3Policy],
-            environment={'bucketName': NotificationBucket.bucket_name},
-            timeout=core.Duration.seconds(30)
-        )
-
-        #View Report Email Api
-        apigw.LambdaRestApi(
-            self, 'ViewReportEmailApi',
-            handler=ViewReportEmail
-        )
-
-    #----------------Background Functions----------------
-
-        #Maintain Tasks Function
-        MaintainTasks = _lambda.Function(
-            self, 'MaintainTasks',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/task'),
-            handler='MaintainTasks.MaintainTasksHandler',
-        )
-
-        #Grant Access for MaintainTask
-        ParentTable.grant_full_access(MaintainTasks)
-        ChildTable.grant_full_access(MaintainTasks)
-        ParentIndex.grant_full_access(MaintainTasks)
-
-        #Rule For Maintain Tasks
-        #MaintainTasksRule = events.Rule(self, 'MaintainTasksRule',
-            #schedule=events.Schedule.cron(hour='20'),
-            #targets=[targets.LambdaFunction(MaintainTasks)]
-        #)
-
-        #Notify Lead Function
-        NotifyLead = _lambda.Function(
-            self, 'NotifyLead',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/reporting'),
-            handler='NotifyLead.NotifyLeadHandler',
-            initial_policy=[S3Policy],
-            environment={'bucketName': NotificationBucket.bucket_name},
-            timeout=core.Duration.seconds(30)
-        )
-
-        #Grant Access for Notify Lead
-        ChildTable.grant_full_access(NotifyLead)
-        
-        #Rule For Notify Lead
-        #NotifyLeadRule = events.Rule(self, 'NotifyLeadRule',
-            #schedule=events.Schedule.cron(hour='20'),
-            #targets=[targets.LambdaFunction(NotifyLead)]
-        #)
-
-    #----------------Sign-In Lambdas----------------
-    ### NOTE: Don't transfer over yet because these are RDS queries/editors
-        #createUser
-        #View machine types function
-        createUser = _lambda.Function(
-            self, 'createUser',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateUser.CreateUserHandler',
         )
+        #Granting Access to view users DynamoDB Table
+        usersTable.grant_full_access(CreateUserLambda)
+        #Add Lambda Integration for API
+        CreateUserLambdaIntegration = apigw.LambdaIntegration(CreateUserLambda)
 
-        #Add integration for auth API Gateway
-        createUserIntegration = apigw.LambdaIntegration(createUser)
 
-        #deleteUser
-        #View machine types function
-        deleteUser = _lambda.Function(
-            self, 'deleteUser',
+        ## DeleteUser ##
+        DeleteUserLambda = _lambda.Function(
+            self, 'DeleteUser',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='DeleteUser.DeleteUserHandler',
         )
+        #Granting Access to view users DynamoDB Table
+        usersTable.grant_full_access(DeleteUserLambda)
+        #Add Lambda Integration for API
+        DeleteUserLambdaIntegration = apigw.LambdaIntegration(DeleteUserLambda)
 
-        #Add integration for auth API Gateway
-        deleteUserIntegration = apigw.LambdaIntegration(deleteUser)
+        #TODO: GetUser once added
+        # GetUsersLambda = _lambda.Function(
+        #     self, 'DeleteUser',
+        #     runtime=_lambda.Runtime.PYTHON_3_7,
+        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+        #     handler='GetUsers.GetUsersHandler',
+        # )
+        # #Granting Access to view users DynamoDB Table
+        # usersTable.grant_full_access(GetUsersLambda)
+        # #Add Lambda Integration for API
+        # GetUsersLambdaIntegration = apigw.LambdaIntegration(GetUsersLambda)
 
-        #getMajors
-        getMajor = _lambda.Function(
-            self, 'getMajors',
+        ###------Visitor------###
+
+        ## CreateVisitor ##
+        CreateVisitorLambda = _lambda.Function(
+            self, 'CreateVisitor',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
-            handler='getMajors.getStudentInfoHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='CreateVisitor.CreateVisitorHandler',
         )
+        #Granting Access to view visitors and visits DynamoDB Table
+        visitorsTable.grant_full_access(CreateVisitorLambda)
+        visitsTable.grant_full_access(CreateVisitorLambda)
+        #Add Lambda Integration for API
+        CreateVisitorLambdaIntegration = apigw.LambdaIntegration(CreateVisitorLambda)
 
-        #getStudentInfo
-        getStudentInfo = _lambda.Function(
-            self, 'getStudentInfo',
+
+        ## GetVisitors ##
+        GetVisitorLambda = _lambda.Function(
+            self, 'GetVisitors',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
-            handler='getStudentInfo.getStudentInfoHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GetVisitors.GetVisitorsHandler',
         )
+        #Granting Access to view visitors and visits DynamoDB Table
+        visitorsTable.grant_full_access(GetVisitorLambda)
+        visitsTable.grant_full_access(GetVisitorLambda)
+        #Add Lambda Integration for API
+        GetVisitorsLambdaIntegration = apigw.LambdaIntegration(GetVisitorLambda)
 
-        #getTotals
-        getTotals = _lambda.Function(
-            self, 'getTotals',
+
+        ###------Sign in/out on Pi's------###
+        ## SignIn ##
+        SignInLambda = _lambda.Function(
+            self, 'SignIn',
             runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
-            handler='getTotals.getTotalsHandler',
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='SignIn.SignInHandler',
         )
-
-        #insertNewStudent
-        insertNewStudent = _lambda.Function(
-            self, 'insertNewStudent',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
-            handler='insertNewStudent.insertNewStudentHandler',
-        )
-
-        #isCardInDatabase
-        isCardInDatabase = _lambda.Function(
-            self, 'isCardInDatabase',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/signIn'),
-            handler='isCardInDatabase.isCardInDatabaseHandler',
-        )
-
-        #Lambda@Edge authenticator
-
-#----------------Master API--------------------------
-        um_api = apigw.LambdaRestApi(self,'Master API',
-                                     handler = addMachine,
-                                     proxy = False)
-        # /
-        um_api.root.add_method('ANY')
-
-        # /tasks
-        tasks = um_api.root.add_resource('tasks')
-
-        #TODO: Ask about 
-            # viewUpcoming vs view and Task API Documentation (only one GET on there)
-            # resolveTask vs deleteTask
-            # update_task PATCH request type
-
-
-        # ViewUpcomingTasks
-        tasks.add_method('GET',ViewUpcomingTasksIntegration)
-        # CreateTask
-        tasks.add_method('POST',CreateTaskIntegration)
-        # /tasks/{task_id}
-        task = tasks.add_resource('{task_id}')
-        # ViewTask
-        task.add_method('GET',ViewTaskIntegration)
-        # DeleteTask
-        task.add_method('DELETE',DeleteTaskIntegration)
-        # EditTask
-        task.add_method('PUT',EditTaskIntegration)
-        # CompleteTask
-        task.add_method('POST',CompleteTaskIntegration)
+        #NOTE: Lambda not currently up to date to use new tables
+        #Granting Access to view users and loginInfo DynamoDB Table
+        visitorsTable.grant_full_access(CreateVisitorLambda)
+        visitsTable.grant_full_access(CreateVisitorLambda)
+        #Add Lambda Integration for API
+        SignInLambdaIntegration = apigw.LambdaIntegration(SignInLambda)
 
         
-        # /machines
+        ## SignOut ##
+        SignOutLambda = _lambda.Function(
+            self, 'SignOut',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='SignOut.SignOutHandler',
+        )
+        #NOTE: Lambda not currently up to date to use new tables
+        #Granting Access to ___ DynamoDB Tables
+        visitorsTable.grant_full_access(CreateVisitorLambda)
+        visitsTable.grant_full_access(CreateVisitorLambda)
+        #Add Lambda Integration for API
+        SignOutLambdaIntegration = apigw.LambdaIntegration(SignOutLambda)
+        
+
+        #TODO: Authorization with JWT Token and Lamdba
+        ###------Authorization------###
+        ## UpdatePermissions ##
+        # UpdatePermissionsLambda = _lambda.Function(
+        #     self, 'UpdatePermissions',
+        #     runtime=_lambda.Runtime.PYTHON_3_7,
+        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+        #     handler='UpdatePermissions.UpdatePermissionsHandler',
+        # )
+        # #Granting Access to view machines DynamoDB Table
+        # usersTable.grant_full_access(UpdatePermissionsLambda)
+        # #Add Lambda Integration for API
+        # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
+
+#----------------Master API--------------------------
+        #Create Master API and enable CORS on all methods
+        um_api = apigw.RestApi(self,'Master API',
+            default_cors_preflight_options = apigw.CorsOptions(
+                allow_origins = apigw.Cors.ALL_ORIGINS,
+                allow_methods = apigw.Cors.ALL_METHODS
+            )
+        )
+        
+        #NOTE: put s3 bucket and API Gateway on same domain?
+        #Need CORS policy for browser to trust API Gateway
+
+        # Add ANY 
+        um_api.root.add_method('ANY')
+
+
+        # ###------Auth------###
+        # auth = um_api.root.add_resource('auth')
+
+        # ## TODO: Delete ##
+        # ## TODO: Put ##
+
+
+        ###------Machines------###
         machines = um_api.root.add_resource('machines')
 
-        #TODO: Ask about 
-            # API documentation only has get_machines_status
-            # View machine types?
-
-        machines.add_method('GET')
-        # AddMachine
-        machines.add_method('POST',addMachineIntegration)
-        # /machines/{machine_id}
-        machine = machines.add_resource('{machine_id}')
-        # ViewMachineUpcomingTasks
-        machine.add_method('GET',ViewMachineUpcomingTasksIntegration)
-        # DeleteMachine
-        machine.add_method('DELETE',deleteMachineIntegration)
-        # EditMachineName
-        machine.add_method('PUT',editMachineNameIntegration)
+        ## Delete ##
+        machines.add_method('DELETE', DeleteMachineLambdaIntegration)
+        ## Post ##
+        machines.add_method('POST', GetMachineStatusLambdaIntegration)
 
 
-        #/auth
-        auth = um_api.root.add_resource('auth')
+        ###------Tasks------###
+        tasks = um_api.root.add_resource('tasks')
 
-        #TODO: Ask about 
-            # get_users GET request 
-            # update_permissions PATCH request
+        ## Delete ##
+        tasks.add_method('DELETE', ResolveTaskLambdaIntegration)
+        ## Get ##
+        tasks.add_method('GET', GetTasksLambdaIntegration)
+        ## Patch ##
+        tasks.add_method('PATCH', UpdateTaskLambdaIntegration)
+        ## Post ##
+        tasks.add_method('POST', CreateTaskLambdaIntegration)
 
-        # create_user
-        auth.add_method('POST',createUserIntegration)
-        #TODO Add resource for email/password
-        # delete_user
-        auth.add_method('DELETE',deleteUserIntegration)
-        # get_users
-        #auth.add_method('GET',...)
-        # update_permissions
-        #auth.add_method('PATCH',...)
+        ###------Users------###
+        users = um_api.root.add_resource('users')
+
+        ## Delete ##
+        users.add_method('DELETE',DeleteUserLambdaIntegration)
+        ##TODO: Get ##
+        # users.add_method('GET',GetUsersLambdaIntegration)
+        ##TODO: Patch ##
+        # users.add_method('PATCH',UpdateUsersLambdaIntegration)
+        ##TODO: Post ##
+        # users.add_method('POST',LoginLambdaIntegration)
+        ## Put ##
+        users.add_method('PUT',CreateUserLambdaIntegration)
 
 
-        #/visitors
+        ###------Visitors------###
         visitors = um_api.root.add_resource('visitors')
 
-        #TODO: Ask about 
-            # get_vistors GET request 
+        ## Post ##
+        visitors.add_method('POST', GetVisitorsLambdaIntegration)
+        ## Put ##
+        visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
-        # get_visitors
-        #visitors.add_method('GET',...)
+
+# #----------------IoT--------------------------
+        ## Thing 1 ##
+        CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
+        # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_01_Policy = iot.CfnPolicy(self, "CUmakeit_01_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_01_Cert.attr_arn, policy_name=CUmakeit_01_Policy.ref)
+
+        ## Thing 2 ##
+        CUmakeit_02_Thing = iot.CfnThing(self, "CUmakeit_02")
+        # CUmakeit_02_Cert = iot.CfnCertificate(self, "CUmakeit_02_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_02_Policy = iot.CfnPolicy(self, "CUmakeit_02_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_02_Cert.attr_arn, thing_name=CUmakeit_02_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_02_Cert.attr_arn, policy_name=CUmakeit_02_Policy.ref)
+
+        ## Thing 3 ##
+        CUmakeit_03_Thing = iot.CfnThing(self, "CUmakeit_03")
+        # CUmakeit_03_Cert = iot.CfnCertificate(self, "CUmakeit_03_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_03_Policy = iot.CfnPolicy(self, "CUmakeit_03_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_03_Cert.attr_arn, thing_name=CUmakeit_03_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_03_Cert.attr_arn, policy_name=CUmakeit_03_Policy.ref)
+
+        ## Thing 4 ##
+        CUmakeit_04_Thing = iot.CfnThing(self, "CUmakeit_04")
+        # CUmakeit_04_Cert = iot.CfnCertificate(self, "CUmakeit_04_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_04_Policy = iot.CfnPolicy(self, "CUmakeit_04_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_04_Cert.attr_arn, thing_name=CUmakeit_04_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_04_Cert.attr_arn, policy_name=CUmakeit_04_Policy.ref)
+
+        ## Thing 5 ##
+        CUmakeit_05_Thing = iot.CfnThing(self, "CUmakeit_05")
+        # CUmakeit_05_Cert = iot.CfnCertificate(self, "CUmakeit_05_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_05_Policy = iot.CfnPolicy(self, "CUmakeit_05_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_05_Cert.attr_arn, thing_name=CUmakeit_05_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_05_Cert.attr_arn, policy_name=CUmakeit_05_Policy.ref)
+
+        ## Thing 6 ##
+        CUmakeit_06_Thing = iot.CfnThing(self, "CUmakeit_06")
+        # CUmakeit_06_Cert = iot.CfnCertificate(self, "CUmakeit_06_Cert", certificate_signing_request=csr, status="ACTIVE")
+        # CUmakeit_06_Policy = iot.CfnPolicy(self, "CUmakeit_06_Policy", policy_document=policy)
+        # # Attach the Certificate to the Thing
+        # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_06_Cert.attr_arn, thing_name=CUmakeit_06_Thing.ref)
+        # # Attach the Policy to the Certificate
+        # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_06_Cert.attr_arn, policy_name=CUmakeit_06_Policy.ref)

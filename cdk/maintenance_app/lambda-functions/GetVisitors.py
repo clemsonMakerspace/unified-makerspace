@@ -22,17 +22,22 @@ def GetVisitors(body):
     start_time = body["start_time"]
     end_time = body["end_time"]
 
+    visitors = Visitors.scan()
+    visitors_list = visitors["Items"]
+
     visits = Visits.scan()
     visits_list = visits["Items"]
 
-    visits_in_tf = []
+    visitors_in_tf = []
 
+    for visitor in visitors_list:
+        for visit in visits_list:
+            if visit["visitor_id"] == visitor["visitor_id"]:
+                if visit["date_visited"] >= start_time and visit["date_visited"] <= end_time:
+                    visitors_in_tf.append(visitor)
+                    break
 
-    for visit in visits_list:
-        if visit["sign_in_time"] >= start_time and visit["sign_out_time"] <= end_time:
-            visits_in_tf.append(visit)
-
-    return visits_in_tf
+    return visitors_in_tf
 
 
 # calls getMachineById to get machine data

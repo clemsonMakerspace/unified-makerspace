@@ -14,10 +14,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'unified-makerspace'`, () => {
+  it(`should have as title 'The MakerSpace'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('unified-makerspace');
+    expect(app.title).toEqual('The MakerSpace');
   });
 
   it('should render title', () => {

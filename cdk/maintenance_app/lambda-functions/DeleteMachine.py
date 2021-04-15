@@ -3,46 +3,29 @@
 
 import boto3
 import json
-import uuid
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-#from api.models import Task
+
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
+Machines = dynamodb.Table('Machines')
 
-# DEPRECATED: TO REMOVE
-# Parent_Table = dynamodb.Table('Parent_Tasks')
-# Child_Table = dynamodb.Table('Child_Tasks')
-# Machine_Table = dynamodb.Table('Machines')
+def DeleteMachine(body):
 
-Tasks = dynamodb.Table('Tasks')
+    machine_name = body["machine_name"]
 
-
-def ResolveTask(data):
-
-    body = json.loads(data["body"])
-    task_id = body["task_id"]
-
-    response = Tasks.update_item(
+    Machines.delete_item (
         Key = {
-            'task_id': task_id
-        },
-        UpdateExpression="set task_status=:s",
-        ExpressionAttributeValues={
-            ':s': 'Completed'
-        },
-        ReturnValues="UPDATED_NEW"
+            'machine_name': machine_name
+        }
     )
-    return response
+
+    return 1
 
 
-def ResolveTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_resolved', 'tags',
-                  'task_status']
+def DeleteMachineHandler(event, context):
 
     # Return client error if no string params
     if (event is None):
@@ -58,7 +41,7 @@ def ResolveTaskHandler(event, context):
 
     try:
         # Call function
-        result = ResolveTask(event)
+        result = DeleteMachine(json.loads(event["body"]))
 
         # Send Response
         return {

@@ -76,11 +76,13 @@ class Visitor:
     """
     Represents a visitor to the MakerSpace.
     """
-    visitor_id: str
+    hardware_id: str
+    college: str
+    degree_type: str
     first_name: str
     last_name: str
     major: str
-    degree: str
+    visitor_id: str
 
 
 
@@ -92,7 +94,7 @@ class Visit:
     `sign_in_time` and may be deprecated in the future.
     """
     visit_id: str
-    visitor_id: str
+    visitor_id:str
     first_visit: bool
     date_visited: int
     sign_in_time: int
