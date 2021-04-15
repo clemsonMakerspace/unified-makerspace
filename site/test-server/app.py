@@ -60,12 +60,13 @@ def reset_password():
 """
 Users
 """
-
-# todo fix conflicting routes
+#
 # @app.route('/api/users', methods=['POST'])
 # def change_password():
+#     if 'new_password' in request.form:
+#         return login()
 #     return dict(code=200, message="Password changed successfully.")
-
+#
 
 @app.route('/api/users', methods=['PUT'])
 def create_user():

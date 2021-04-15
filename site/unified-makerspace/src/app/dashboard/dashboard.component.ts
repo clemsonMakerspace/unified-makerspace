@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ModalService } from '../shared/modal/modal.service';
 import { AuthService } from '../shared/auth/auth.service';
 
 @Component({
@@ -8,7 +7,7 @@ import { AuthService } from '../shared/auth/auth.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  constructor(public modal: ModalService, public auth: AuthService) {}
+  constructor(public auth: AuthService) {}
 
   ngOnInit(): void {}
 }
