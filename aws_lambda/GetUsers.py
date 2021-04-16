@@ -42,7 +42,7 @@ def GetUsersHandler(event, context):
         )
         row = response['Items'][0]
         
-        new_user = User(user_id = row['user_id'], first_name = row['first_name'], last_name= row['last_name'], assigned_tasks=row['assigned_tasks'], permissions= row['permissions'])
+        new_user = User(user_id = row['user_id'], first_name = row['first_name'], last_name= row['last_name'], assigned_tasks=row['assigned_tasks'], permissions= row['user_permissions'])
         
         user_objects.append(new_user)
     
