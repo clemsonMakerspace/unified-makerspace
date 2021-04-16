@@ -279,7 +279,7 @@ def connectToAWS(cardID):
 #         qr.make(fit=True)
 #         img = qr.make_image(fill_color="black", back_color="white")
 #
-#         # Save the generated QR Code to the proper folder
+#         # Save the generated QR Code to the proper tests
 #         img.save('../../../qrcode/qr_image.png')
 #         im = Image.open(imgURL)
 #
