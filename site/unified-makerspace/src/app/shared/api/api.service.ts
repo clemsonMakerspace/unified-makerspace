@@ -153,7 +153,7 @@ export class ApiService {
         first_name: args['firstName'],
         last_name: args['lastName'],
         major: args['major'],
-        degree: args['degree'],
+        degree_type: args['degree'],
       },
       hardware_id: args['hardwareId']
     };
