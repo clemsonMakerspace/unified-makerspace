@@ -47,7 +47,9 @@ function endpoint(
     let body = func(args);
     console.log(body); // todo for testing
     return this.http.request(method,
-      environment.server + url, body);
+      environment.server + url, {
+      'body': body
+      });
   };
 }
 

@@ -9,6 +9,8 @@ export class InterceptorService implements HttpInterceptor{
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
 
+    // todo also authenticate requests
+
     console.log(req.url, req);
 
     let jsonRequest = req.clone({

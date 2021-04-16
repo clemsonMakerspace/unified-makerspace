@@ -29,6 +29,9 @@ export class RegisterComponent implements OnInit {
               public router: Router) {
   }
 
+  // todo are you sure you want to leave this page?
+
+
   registerForm: FormGroup;
   showError;
 
@@ -68,13 +71,7 @@ export class RegisterComponent implements OnInit {
   }
 
 
-  // todo userValidator not working?
-  // todo stronger password (min length)
-  // todo are you sure you want to leave this page?
-  // todo min length -> error handling
-
   onSubmit() {
-    console.log(this.registerForm.errors);
     this.registerForm['submitted'] = true;
     this.registerForm['error'] = '';
     if (this.registerForm.valid) {

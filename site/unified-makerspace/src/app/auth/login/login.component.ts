@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../shared/auth/auth.service';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {showError} from 'src/app/shared/funcs';
+import {showError, useTestData} from 'src/app/shared/funcs';
 
 @Component({
   selector: 'app-login',
@@ -27,12 +27,7 @@ export class LoginComponent implements OnInit {
     });
 
     this.showError = showError(this.loginForm);
-
-    // todo testing - outsource this later
-    this.loginForm.setValue({
-      'email': 'joe@makerspace.com',
-      'password': 'password'
-    });
+    useTestData(this.loginForm, 'user');
 
   }
 
