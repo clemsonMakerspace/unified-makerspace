@@ -1,6 +1,7 @@
 # FROM MAKERSPACE MANAGER LAMBDA APPLICATION
 
 import decimal
+import time
 import boto3
 import json
 import uuid
@@ -20,6 +21,7 @@ dynamodb = boto3.resource('dynamodb')
 
 # Get Table Objects
 Users = dynamodb.Table('Users')
+User_tokens = dynamodb.Table('userVerificationToken')
 
 # Cognito Client
 client = boto3.client('cognito-idp')
@@ -34,11 +36,29 @@ def CreateUser(data):
     first_name = new_user["first_name"]
     last_name = new_user["last_name"]
     
-    #TODO:
+    
     # Check if user_token is in the tokens table
     # If it is, check how old
     # Return error if either does not check
-
+    try:
+        currentTime = int(time.time()) - 18000
+        response = User_tokens.query(
+            KeyConditionExpression = Key('generatedToken').eq(str(user_token))
+        )
+        
+        generatedTime = int(response['Items'][0]['tokenTime'])
+        
+        #check if they are 5 min apart
+        if (abs(currentTime-generatedTime) > 300):
+            return {
+                'code': 406,
+                'message' : json.dumps("Token is expired")
+            }
+    except:
+        return {
+                'code': 405,
+                'message' : json.dumps("Could not validate token")
+        }
     custom_attributes = [
         {'Name': 'email', 'Value': email},
         {'Name': 'custom:firstname', 'Value': first_name},
@@ -95,9 +115,6 @@ def CreateUserHandler(event, context):
     if (event is None):
         return {
             'statusCode': 400,
-            'headers': {
-                'Content-Type': 'text/plain'
-            },
             'body': json.dumps({
                 'Message': 'Failed to provide query string parameters.'
             })
@@ -111,18 +128,12 @@ def CreateUserHandler(event, context):
         # Send Response
         return {
             'statusCode': 200,
-            'headers': {
-                'Content-Type': 'text/plain'
-            },
             'body': json.dumps(result)
         }
     except Exception as e:
         # Return exception with response
         return {
             'statusCode': 500,
-            'headers': {
-                'Content-Type': 'text/plain'
-            },
             'body': json.dumps({
                 'Message': str(e)
             })
