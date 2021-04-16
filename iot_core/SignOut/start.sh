@@ -43,4 +43,4 @@ HAT_CONNECTED="True"
 #printf "\nRunning pub/sub sample application...\n"
 #python aws-iot-device-sdk-python/samples/basicPubSub/basicPubSub.py -e a5oyk3iuhy30n-ats.iot.us-east-1.amazonaws.com -r root-CA.crt -c CUmakeit_01.cert.pem -k CUmakeit_01.private.key
 
-python cardScan.py --endpoint $THING_ENDPOINT --root-ca $CA_CERT --cert $DEVICE_CERT --key $PRIVATE_KEY --location $LOCATION --event $EVENT --topic $TOPIC --hat-connected $HAT_CONNECTED
+python signout.py --endpoint $THING_ENDPOINT --root-ca $CA_CERT --cert $DEVICE_CERT --key $PRIVATE_KEY --location $LOCATION --event $EVENT --topic $TOPIC --hat-connected $HAT_CONNECTED
