@@ -2,6 +2,8 @@ from aws_cdk import (
     core,
     aws_lambda as _lambda,
     aws_apigateway as apigw,
+    aws_apigatewayv2 as apigw2,
+    # aws_apigatewayv2_authorizers as apigw2auth,
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -9,7 +11,8 @@ from aws_cdk import (
     aws_events as events,
     aws_events_targets as targets,
     aws_s3_deployment as s3deploy,
-    aws_iot as iot
+    aws_iot as iot,
+    aws_cognito as cognito
 )
 import boto3
 
@@ -107,7 +110,8 @@ class MaintenanceAppStack(core.Stack):
         
         #TODO:
             #Subdomain
-            #Add compiled build files for the website
+            #Add compiled build files for the website 
+
         
     #------------------Lambda Functions/API Integrations--------------------
 
@@ -371,7 +375,48 @@ class MaintenanceAppStack(core.Stack):
         )        
         #Add Lambda Integration for API
         LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
-        
+
+        ## Pre-Sign Up Trigger ##
+        ConfirmUserLambda = _lambda.Function(
+            self, 'Login',
+            runtime=_lambda.Runtime.NODEJS_12_X,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='Login.LoginHandler',
+        )        
+
+#-------------------Cognito Pool------------------------------
+        cognito.UserPool(self, "myuserpool",
+            user_pool_name="myawesomeapp-userpool",
+            self_sign_up_enabled=True,
+            user_verification= {
+                "email_subject": "Your Veriication code",
+                "email_body": "Your verification code is {####}",
+                "email_style": cognito.VerificationEmailStyle.CODE,
+            },
+            user_invitation={
+                "email_subject": "Your temporary password",
+                "email_body": "Your username is {username} and temporary password is {####}.",
+                "sms_message": "Your username is {username} and temporary password is {####}. "
+            },
+            sign_in_aliases={
+                "username": True, 
+                "email": True
+            },
+            standard_attributes={
+                "email": {
+                    "required": True,
+                    "mutable": False
+                }
+            },
+            custom_attributes={
+                "fistname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
+                "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
+                "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
+            },
+            lambda_triggers={
+                "pre-authentication": ConfirmUserLambda
+            }
+        )          
 #----------------Master API--------------------------
         #Create Master API and enable CORS on all methods
         um_api = apigw.RestApi(self,'Master API',
