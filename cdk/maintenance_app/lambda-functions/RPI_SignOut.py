@@ -6,21 +6,23 @@ import time
 
 ##
 # This function is used for the SignOut process of the Raspberry Pi
-# First it will take the hardware ID and cross reference the MakerspaceUser DynamoDB table to see if user exists
-# If they exist, it will find the most recent signon for the user based on the LoginTable
-# Will then add logout time to the table
+# First it will take the hardware ID and cross reference the Visitors DynamoDB table to see if user exists
+# If they exist, it will find the most recent signon for the visitor based on the VisitTable
+# Will then add logout time to the Visittable
 # Any else branches will return with an error code
 #
 ##
+
 db = boto3.resource('dynamodb')
 db_client = boto3.client('dynamodb')
-userTable = db.Table('MakerspaceUser')
-loginTable = db.Table('UserLoginInfo')
+visitorTable = db.Table('Visitors')
+visitTable = db.Table('Visits')
 
-def SignOutHandler(event, context):
+def RPI_SignOut_Handler(event, context):
     try:
         #getting card id from post command
         new_cardID = event['HardwareID']
+
     except Exception as e:
         print(e)
         return {
@@ -32,9 +34,10 @@ def SignOutHandler(event, context):
 
     try:
         # check if ID is in MakerspaceUser
-        response = userTable.query(
-            KeyConditionExpression = Key('HardwareID').eq(str(new_cardID))
+        response = visitorTable.query(
+            KeyConditionExpression = Key('hardware_id').eq(str(new_cardID))
         )['Items'][0]
+
     except Exception as e:
         print(e)
         return {
@@ -46,8 +49,8 @@ def SignOutHandler(event, context):
 
     try:
         # check if user is in login table
-        login_response = loginTable.query(
-            KeyConditionExpression = Key('HardwareID').eq(str(new_cardID))
+        visit_response = visitTable.query(
+            KeyConditionExpression = Key('visitor_id').eq(str(response["visitor_id"]))
         )['Items'][-1]
 
 
@@ -61,18 +64,20 @@ def SignOutHandler(event, context):
         }
 
     try:
-        logoutTime = str(int(time.time()))
+        #converting to EST
+        logoutTime = str(int(time.time()) - 18000)
 
-        r = loginTable.update_item(
+        r = visitTable.update_item(
             Key={
-                'HardwareID': new_cardID,
-                'LoginTime': login_response['LoginTime']
+                'visitor_id': str(response["visitor_id"]),
+                'sign_in_time': visit_response['sign_in_time']
             },
-            UpdateExpression='set LogoutTime =:logoutTime',
+            UpdateExpression='set sign_out_time =:sign_out_time',
             ExpressionAttributeValues={
-                ':logoutTime':logoutTime
+                ':sign_out_time':logoutTime
             }
         )
+
     except Exception as e:
         print(e)
         return {

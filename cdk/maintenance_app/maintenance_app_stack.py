@@ -110,6 +110,30 @@ class MaintenanceAppStack(core.Stack):
         
     #------------------Lambda Functions/API Integrations--------------------
 
+        ###------Administrative------###
+
+        ## ResetPassword ##
+        ResetPasswordLambda = _lambda.Function(
+            self, 'ResetPassword',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='ResetPassword.ResetPasswordHandler',
+        )
+        #Add Lambda Integration for API
+        ResetPasswordLambdaIntegration = apigw.LambdaIntegration(ResetPasswordLambda)
+        
+        ## TODO: GenerateUserToken
+        GenerateUserTokenLambda = _lambda.Function(
+            self, 'GenerateUserToken',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GenerateUserToken.GenerateUserTokenLambda',
+        )
+        #Add Lambda Integration for API
+        GenerateUserTokenLambdaIntegration = apigw.LambdaIntegration(GenerateUserTokenLambda)
+
+
+
         ###------Machine------###
 
         ## CreateMachine ##
@@ -206,6 +230,7 @@ class MaintenanceAppStack(core.Stack):
         UpdateTaskLambdaIntegration = apigw.LambdaIntegration(UpdateTaskLambda)
 
 
+
         ###------User------###
 
         ## CreateUser ##
@@ -233,17 +258,33 @@ class MaintenanceAppStack(core.Stack):
         #Add Lambda Integration for API
         DeleteUserLambdaIntegration = apigw.LambdaIntegration(DeleteUserLambda)
 
-        #TODO: GetUser once added
-        # GetUsersLambda = _lambda.Function(
-        #     self, 'DeleteUser',
-        #     runtime=_lambda.Runtime.PYTHON_3_7,
-        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-        #     handler='GetUsers.GetUsersHandler',
-        # )
-        # #Granting Access to view users DynamoDB Table
-        # usersTable.grant_full_access(GetUsersLambda)
-        # #Add Lambda Integration for API
-        # GetUsersLambdaIntegration = apigw.LambdaIntegration(GetUsersLambda)
+
+        ## GetUser ##
+        GetUsersLambda = _lambda.Function(
+            self, 'GetUsers',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GetUsers.GetUsersHandler',
+        )
+        #Granting Access to view users DynamoDB Table
+        usersTable.grant_full_access(GetUsersLambda)
+        #Add Lambda Integration for API
+        GetUsersLambdaIntegration = apigw.LambdaIntegration(GetUsersLambda)
+
+
+        ## UpdateUser ##
+        UpdateUserLambda = _lambda.Function(
+            self, 'UpdateUser',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='UpdateUser.UpdateUserHandler',
+        )
+        #Granting Access to view users DynamoDB Table
+        usersTable.grant_full_access(UpdateUserLambda)
+        #Add Lambda Integration for API
+        UpdateUserLambdaIntegration = apigw.LambdaIntegration(UpdateUserLambda)
+
+
 
         ###------Visitor------###
 
@@ -275,35 +316,34 @@ class MaintenanceAppStack(core.Stack):
         GetVisitorsLambdaIntegration = apigw.LambdaIntegration(GetVisitorLambda)
 
 
+
         ###------Sign in/out on Pi's------###
         ## SignIn ##
-        SignInLambda = _lambda.Function(
-            self, 'SignIn',
+        RPI_SignInLambda = _lambda.Function(
+            self, 'RPI_SignIn',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='SignIn.SignInHandler',
+            handler='RPI_SignIn.RPI_SignIn_Handler',
         )
-        #NOTE: Lambda not currently up to date to use new tables
         #Granting Access to view users and loginInfo DynamoDB Table
-        visitorsTable.grant_full_access(CreateVisitorLambda)
-        visitsTable.grant_full_access(CreateVisitorLambda)
+        visitorsTable.grant_full_access(RPI_SignInLambda)
+        visitsTable.grant_full_access(RPI_SignInLambda)
         #Add Lambda Integration for API
-        SignInLambdaIntegration = apigw.LambdaIntegration(SignInLambda)
+        RPI_SignInLambdaIntegration = apigw.LambdaIntegration(RPI_SignInLambda)
 
         
         ## SignOut ##
-        SignOutLambda = _lambda.Function(
-            self, 'SignOut',
+        RPI_SignOutLambda = _lambda.Function(
+            self, 'RPI_SignOut',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='SignOut.SignOutHandler',
+            handler='RPI_SignOut.RPI_SignOut_Handler',
         )
-        #NOTE: Lambda not currently up to date to use new tables
-        #Granting Access to ___ DynamoDB Tables
-        visitorsTable.grant_full_access(CreateVisitorLambda)
-        visitsTable.grant_full_access(CreateVisitorLambda)
+        #Granting Access to view users and loginInfo DynamoDB Table
+        visitorsTable.grant_full_access(RPI_SignOutLambda)
+        visitsTable.grant_full_access(RPI_SignOutLambda)
         #Add Lambda Integration for API
-        SignOutLambdaIntegration = apigw.LambdaIntegration(SignOutLambda)
+        RPI_SignOutLambdaIntegration = apigw.LambdaIntegration(RPI_SignOutLambda)
         
 
         #TODO: Authorization with JWT Token and Lamdba
@@ -320,6 +360,17 @@ class MaintenanceAppStack(core.Stack):
         # #Add Lambda Integration for API
         # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
 
+
+        ## Log in ##
+        LoginLambda = _lambda.Function(
+            self, 'Login',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='Login.LoginHandler',
+        )        
+        #Add Lambda Integration for API
+        LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
+        
 #----------------Master API--------------------------
         #Create Master API and enable CORS on all methods
         um_api = apigw.RestApi(self,'Master API',
@@ -337,21 +388,9 @@ class MaintenanceAppStack(core.Stack):
         ###-----Administrative------###
         administrative = um_api.root.add_resource('administrative')
         ## Patch ##
-        administrative.add_method('PATCH', ) #TODO: Add lambda
+        administrative.add_method('PATCH', ResetPasswordLambdaIntegration)
         ## Post ##
-        administrative.add_method('POST', ) #TODO: Add lambda
-
-        ###-----Raspberry Pi's------###
-        rpi = um_api.root.add_resource('rpi')
-        #Add sign in resource
-        signin = rpi.add_resource('signin')
-        #Add sign in method
-        signin.add_method('POST', SignInLambdaIntegration)
-
-        #Add sign out resource
-        signout = rpi.add_resource('signout')
-        signout.add_method('POST', SignOutLambdaIntegration)
-
+        administrative.add_method('POST', GenerateUserTokenLambdaIntegration)
 
         # ###------Auth------###
         # auth = um_api.root.add_resource('auth')
@@ -368,6 +407,16 @@ class MaintenanceAppStack(core.Stack):
         ## Post ##
         machines.add_method('POST', GetMachineStatusLambdaIntegration)
 
+        ###-----Raspberry Pi's------###
+        ## Sign in ##
+        signin = um_api.root.add_resource('signin')
+        #Add sign in method
+        signin.add_method('POST', RPI_SignInLambdaIntegration)
+
+        ## Sign out
+        signout = um_api.add_resource('signout')
+        #Add sign out method
+        signout.add_method('POST', RPI_SignOutLambdaIntegration)
 
         ###------Tasks------###
         tasks = um_api.root.add_resource('tasks')
@@ -385,15 +434,15 @@ class MaintenanceAppStack(core.Stack):
         users = um_api.root.add_resource('users')
 
         ## Delete ##
-        users.add_method('DELETE',DeleteUserLambdaIntegration)
+        users.add_method('DELETE', DeleteUserLambdaIntegration)
         ## Get ##
-        users.add_method('GET', ) #TODO: Add Lambda
+        users.add_method('GET', GetUsersLambdaIntegration)
         ## Patch ##
-        users.add_method('PATCH', ) #TODO: Add Lambda
+        users.add_method('PATCH', UpdateUserLambdaIntegration)
         ## Post ##
-        users.add_method('POST', ) #TODO: Add Lambda
+        users.add_method('POST', LoginLambdaIntegration)
         ## Put ##
-        users.add_method('PUT',CreateUserLambdaIntegration)
+        users.add_method('PUT', CreateUserLambdaIntegration)
 
 
         ###------Visitors------###
@@ -434,7 +483,7 @@ class MaintenanceAppStack(core.Stack):
         ## Thing 1 ##
         CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
         # # Create cert
-        CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", status='ACTIVE')
+        # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", status='ACTIVE')
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
         # # Attach the Policy to the Certificate

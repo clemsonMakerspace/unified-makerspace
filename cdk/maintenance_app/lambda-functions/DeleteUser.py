@@ -6,62 +6,68 @@ poolID = "us-east-1_l5xLuC13j"
 db = boto3.resource('dynamodb')
 db_client = boto3.client('dynamodb')
 client = boto3.client('cognito-idp')
-table = db.Table('MakerspaceUser')
- 
-# get user role given id
-def getUserRole(id):
+table = db.Table('Users')
 
-    # Get user by id
-    response = table.query(
-        KeyConditionExpression = Key('PK').eq(str(id))
-    )
-    
-    return(response['Items'][0]['AccessLevel'])
-    
-def getUserPK(username):
-    
-    query = "SELECT PK FROM MakerspaceUser WHERE Email = '" + username + "'"
-    r = db_client.execute_statement(Statement=query)
-    return(r['Items'][0]['PK']['S'])
-    
+
 def DeleteUserHandler(event, context):
+    
     try:
-        username = event['username']
-        auth_token = event['auth_token']
+        data = json.loads(event["body"])
+        user_id = data['user_id']
     except:
         return {
             'statusCode': 400,
-            'body': json.dumps({
-                'Message' : 'Error loading data. '
-             })
+            'message': json.dumps("Error loading data")
         }
-    
-    role = getUserRole(auth_token)
-    if(role != "manag"):
-        return {
-            'code': 401,
-            'message' : 'Insufficient Permissions. '
-        }
-
-    key = getUserPK(username)
     
     try:
-        #Remove user from cognito
-        response = client.admin_delete_user(UserPoolId=poolID, Username=username)
-        #remove user from database
-        table.delete_item(
-                Key = {
-                    'PK' : key,
-                    'SK' : "Profile"
-                }
-            )
-    except Exception as e:
+        #Get username of user to delete
+        response = table.query(
+            KeyConditionExpression = Key('user_id').eq(str(user_id))
+        )
+        user = response['Items'][0]
+    except:
         return {
-            'code': 401,
-            'message': "Error removing user"
+            'statusCode': 500,
+            'body': json.dumps({
+                'Message': str("Error finding user")
+            })
+        }
+
+    try:
+        #Remove the user from cognito pool
+        response = client.admin_delete_user(UserPoolId=poolID, Username=user['email'])
+    except Exception as e:
+        # Return exception with response
+        return {
+            'statusCode': 501,
+            'body': json.dumps({
+                'Message': str(e)
+            })
         }
     
+    #Remove user from database
+    try:
+        table.delete_item(
+                Key = {
+                    'user_id' : user_id,
+                }
+                )
+    except Exception as e:
+        # Return exception with response
+        return {
+            'statusCode': 501,
+            'body': json.dumps({
+                'Message': str(e)
+            })
+        }
+
+    #TODO:
+    #Depreciate any tasks assigned to the user
+    
     return {
-            'code': 200,
-            'message' : 'User Deleted. '
+            'statusCode': 200,
+            'body': json.dumps({
+                'Message': "User deleted"
+            })
         }

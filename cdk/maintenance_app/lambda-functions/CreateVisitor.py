@@ -20,8 +20,8 @@ Visits = dynamodb.Table("Visits")
 def CreateVisitor(data):
     new_visitor = json.loads(data["body"])
 
-    new_visitor = Visitor(new_visitor["visitor_id"],new_visitor["first_name"],new_visitor["last_name"],
-                          new_visitor["major"],new_visitor["degree"])
+    new_visitor = Visitor(new_visitor["hardware_id"],new_visitor["college"],new_visitor["degree_type"],new_visitor["first_name"],
+                          new_visitor["last_name"],new_visitor["major"],new_visitor["visitor_id"])
 
 
     visits = Visits.scan()
@@ -32,10 +32,10 @@ def CreateVisitor(data):
     for visit in visits_list:
 
         if visit["visitor_id"] == new_visitor.visitor_id:
-            new_visit = Visit(str(uuid.uuid4()),new_visitor.visitor_id,int(time.time()),"0")
+            new_visit = Visit(str(uuid.uuid4()),"0",int(time.time()),0,new_visitor.visitor_id)
             break
     else:
-        new_visit = Visit(str(uuid.uuid4()),new_visitor.visitor_id,int(time.time()),"1")
+            new_visit = Visit(str(uuid.uuid4()), "1", int(time.time()), 0, new_visitor.visitor_id)
 
     Visits.put_item(
         Item = new_visit.__dict__
