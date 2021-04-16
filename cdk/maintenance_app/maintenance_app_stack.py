@@ -378,10 +378,10 @@ class MaintenanceAppStack(core.Stack):
 
         ## Pre-Sign Up Trigger ##
         ConfirmUserLambda = _lambda.Function(
-            self, 'Login',
+            self, 'ConfirmUser',
             runtime=_lambda.Runtime.NODEJS_12_X,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='Login.LoginHandler',
+            handler='ConfirmUser.ConfirmUserHandler',
         )        
 
 #-------------------Cognito Pool------------------------------
@@ -414,7 +414,7 @@ class MaintenanceAppStack(core.Stack):
                 "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
             },
             lambda_triggers={
-                "pre-authentication": ConfirmUserLambda
+                "pre_authentication": ConfirmUserLambda
             }
         )          
 #----------------Master API--------------------------
