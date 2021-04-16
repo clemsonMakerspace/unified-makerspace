@@ -352,18 +352,6 @@ class MaintenanceAppStack(core.Stack):
         
 
         #TODO: Authorization with JWT Token and Lamdba
-        ###------Authorization------###
-        ## UpdatePermissions ##
-        # UpdatePermissionsLambda = _lambda.Function(
-        #     self, 'UpdatePermissions',
-        #     runtime=_lambda.Runtime.PYTHON_3_7,
-        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-        #     handler='UpdatePermissions.UpdatePermissionsHandler',
-        # )
-        # #Granting Access to view machines DynamoDB Table
-        # usersTable.grant_full_access(UpdatePermissionsLambda)
-        # #Add Lambda Integration for API
-        # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
 
 
         ## Log in ##
@@ -438,13 +426,6 @@ class MaintenanceAppStack(core.Stack):
         ## Post ##
         administrative.add_method('POST', GenerateUserTokenLambdaIntegration)
 
-        # ###------Auth------###
-        # auth = um_api.root.add_resource('auth')
-
-        # ## TODO: Delete ##
-        # ## TODO: Put ##
-
-
         ###------Machines------###
         machines = um_api.root.add_resource('machines')
 
@@ -487,6 +468,9 @@ class MaintenanceAppStack(core.Stack):
         users.add_method('PATCH', UpdateUserLambdaIntegration)
         ## Post ##
         users.add_method('POST', LoginLambdaIntegration)
+        ######################################################################
+        ## NOTE: Documentation has separate POST method for change password ##
+        ######################################################################
         ## Put ##
         users.add_method('PUT', CreateUserLambdaIntegration)
 
@@ -530,6 +514,7 @@ class MaintenanceAppStack(core.Stack):
         CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
         # # Create cert
         # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", status='ACTIVE')
+        # Add to secrets manager
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
         # # Attach the Policy to the Certificate
