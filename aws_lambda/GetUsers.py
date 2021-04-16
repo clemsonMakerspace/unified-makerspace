@@ -48,5 +48,12 @@ def GetUsersHandler(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(user_objects, default=obj_dict)
+        'body': json.dumps(user_objects, default=obj_dict),
+        'headers': {
+            'Content-Type': 'text/plain',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
+        }
     }
