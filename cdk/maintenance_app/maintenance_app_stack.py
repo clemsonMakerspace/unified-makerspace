@@ -415,7 +415,7 @@ class MaintenanceAppStack(core.Stack):
         signin.add_method('POST', RPI_SignInLambdaIntegration)
 
         ## Sign out
-        signout = um_api.add_resource('signout')
+        signout = um_api.root.add_resource('signout')
         #Add sign out method
         signout.add_method('POST', RPI_SignOutLambdaIntegration)
 
