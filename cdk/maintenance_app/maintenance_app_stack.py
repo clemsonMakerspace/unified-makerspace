@@ -69,6 +69,7 @@ class MaintenanceAppStack(core.Stack):
             visitsTable = ddb.Table (
                 self, 'Visits',
                 partition_key={'name': 'visit_id', 'type': ddb.AttributeType.STRING},
+                sort_key={'name': 'sign_in_time', 'type': ddb.AttributeType.NUMBER},
                 table_name='Visits'
             )
         #Find Visits Resource
