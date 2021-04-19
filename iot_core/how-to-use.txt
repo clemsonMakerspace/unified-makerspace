@@ -1,0 +1,46 @@
+During Use:
+
+Ensure that the Card Scanner is plugged in at all times the Raspberry Pi is running. Otherwise, you will need to restart the script.
+
+Before First Use in Specific Location:
+
+There are a couple of steps that need to be taken when setting up the Pi for the first time or moving to a new location.
+  1)   Open the terminal and type:
+            cd Desktop/CUmakeit_XX
+       where XX is the number of the device (shown in the folder name on the desktop) [i.e. CUmakeit_01]
+
+  2)   Decide if this device will be used for Sign In or Sign Out purposes.  Each device is equipped to handle either scenario,
+
+  3a) If Sign In, type in the terminal
+      cd SignIn
+
+  3b) If SignOut, type in the terminal
+      cd SignOut
+
+  4) Verify that the Location is correct in the file start.sh by typing in the terminal
+     nano start.sh
+  and scrolling down to where there is the spot "Location: "
+  Input the Location that the device will be in (THERE CANNOT BE ANY SPACES)
+
+  When satisfied, press control + s to save the file and control + x to close out of the file.
+
+  5) To run the script, type in the terminal
+      ./start.sh
+
+
+
+Running the Pi:
+1)   Open the terminal and type:
+          cd Desktop/CUmakeit_XX
+     where XX is the number of the device (shown in the folder name on the desktop) [i.e. CUmakeit_01]
+
+2)   Decide if this device will be used for Sign In or Sign Out purposes.  Each device is equipped to handle either scenario,
+
+3a) If Sign In, type in the terminal
+    cd SignIn
+
+3b) If SignOut, type in the terminal
+    cd SignOut
+
+4) To run the script, type in the terminal
+    ./start.sh
