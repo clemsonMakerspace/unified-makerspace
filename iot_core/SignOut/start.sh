@@ -9,14 +9,14 @@ if [ ! -f ../certs/root-CA.crt ]; then
 fi
 
 PRIVATE_KEY="../certs/XXXXXXXXXX-private.pem.key" # enter name of private key credential file
-DEVICE_CERT="../certs/XXXXXXXXXX-certificate.pem.crt"
-DEVICE_NAME="CUmakeit_01"
+DEVICE_CERT="../certs/XXXXXXXXXX-certificate.pem.crt" # enter name of device credential file
+DEVICE_NAME="CUmakeit_XX" # enter which number Pi system is being used
 CA_CERT="../certs/root-CA.crt"
 THING_ENDPOINT="a5oyk3iuhy30n-ats.iot.us-east-1.amazonaws.com"
 TOPIC="thing/makerspace_pi/signout"
 PORT=8883
-THING_NAME="CUmakeit_01"
-LOCATION="Watt_Center"
+THING_NAME="CUmakeit_XX" # enter which number Pi system is being used
+LOCATION="Watt_Center" # location Pi is in. NOTE THERE CANNOT BE A SPACE
 EVENT="SignOut"
 HAT_CONNECTED="True"
 
