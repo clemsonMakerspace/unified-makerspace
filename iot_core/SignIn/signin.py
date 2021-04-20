@@ -192,7 +192,7 @@ def callLambda(cardID):
     lambda_payload = {"HardwareID":str(cardID), "LoginLocation": str(args.location)}
 
     try:
-        print("payload is " + str(lambda_payload))
+        print("payload is " + str(lambda_payload) + "\n")
         response = requests.post(lambda_url, json = lambda_payload)
         cardInDBResult = True
         print(str(response.text))
@@ -210,4 +210,4 @@ while(True):
     if (args.hat_connected == "True"):
         print("starting to check if cardID is in DB\n")
         callLambda(cardID)
-        print("\nCardID is :" + str(cardID))
+        print("\nCardID is :" + str(cardID) + "\n")
