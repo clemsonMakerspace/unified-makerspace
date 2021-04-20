@@ -190,11 +190,13 @@ def callLambda(cardID):
     cardInDBResult = False
     lambda_url = "https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com/rpi/signin"
     lambda_payload = {"HardwareID":str(cardID), "LoginLocation": str(args.location)}
+
     try:
-	    print("payload is " + str(lambda_payload))
+        print("payload is " + str(lambda_payload))
         response = requests.post(lambda_url, json = lambda_payload)
         cardInDBResult = True
         print(str(response.text))
+
     except requests.exceptions.RequestException as e:
         print(str(e))
         cardInDBResult = False
@@ -206,6 +208,6 @@ while(True):
     cardID = scanCard()
     connectToAWS(cardID)
     if (args.hat_connected == "True"):
-	print("starting to check if cardID is in DB\n")
-    callLambda(cardID)
-    print("\nCardID is :" + str(cardID))
+        print("starting to check if cardID is in DB\n")
+        callLambda(cardID)
+        print("\nCardID is :" + str(cardID))
