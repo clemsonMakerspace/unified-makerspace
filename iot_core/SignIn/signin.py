@@ -78,7 +78,7 @@ def scanCard():
     # the input as keystrokes here.
     count = 0
     cardID = ""
-    print("[Ready for a new scan]")
+    print("[Ready for a new scan]\n")
     for event in device.read_loop():
         # IDs should not be longer than 7 digits.
         if count == 7:
@@ -94,7 +94,7 @@ def scanCard():
                 cardID += (str(event.code - 1))
                 count += 1
         # End of cardscanning
-    print("Card ID found, ID: " + cardID)
+    print("Card ID found, ID: " + cardID + "\n")
     return int(cardID)
 
 def connectToAWS(cardID):
@@ -112,7 +112,7 @@ def connectToAWS(cardID):
     #                                                                                          #
     ############################################################################################
 
-    print("Setting up AWS Connections...")
+    print("Setting up AWS Connections...\n")
 
     # Establish an mqtt connection to publish and subscribe to topics on.
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
@@ -127,22 +127,22 @@ def connectToAWS(cardID):
         clean_session=False, # Don't know what this is; don't touch it
         keep_alive_secs=6) # Don't know what this is; don't touch it
 
-    print("> Connecting to '{}' with client ID '{}'".format(args.endpoint, args.client_id))
+    print("> Connecting to '{}' with client ID '{}'\n".format(args.endpoint, args.client_id))
 
     connect_future = mqtt_connection.connect()
 
     # Future.result() waits until a result is available.
     connect_future.result()
-    print("> Connected!")
+    print("> Connected!\n")
 
     # Subscribe to the topic passed in from the arguments.
-    print("> Subscribing to topic '{}'".format(args.topic))
+    print("> Subscribing to topic '{}'\n".format(args.topic))
     subscribe_future, packet_id = mqtt_connection.subscribe(
         topic=args.topic,
         qos=mqtt.QoS.AT_LEAST_ONCE)
 
     subscribe_result = subscribe_future.result()
-    print("> Subscribed with {}".format(str(subscribe_result['qos'])))
+    print("> Subscribed with {}\n".format(str(subscribe_result['qos'])))
 
     ############################################################################################
     #                                                                                          #
@@ -159,7 +159,7 @@ def connectToAWS(cardID):
     }
 
     message = json.dumps(msg)
-    print("> Publishing message to topic '{}': {}".format(args.topic, message))
+    print("> Publishing message to topic '{}': {}\n".format(args.topic, message))
     mqtt_connection.publish(
         topic=args.topic,
         payload=message,
@@ -168,7 +168,7 @@ def connectToAWS(cardID):
 
     # Disconnect the connection after our message has been sent.
     disconnect_future = mqtt_connection.disconnect()
-    print("Disconnecting from AWS...")
+    print("\nDisconnecting from AWS...\n")
     disconnect_future.result()
 
 def callLambda(cardID):
@@ -191,13 +191,12 @@ def callLambda(cardID):
     lambda_url = "https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com/rpi/signin"
     lambda_payload = {"HardwareID":str(cardID), "LoginLocation": str(args.location)}
     try:
-	print("payload is " + str(lambda_payload))
+	    print("payload is " + str(lambda_payload))
         response = requests.post(lambda_url, json = lambda_payload)
         cardInDBResult = True
-        print("This should have worked "+ str(response.text))
+        print(str(response.text))
     except requests.exceptions.RequestException as e:
         print(str(e))
-	print("this didn't work")
         cardInDBResult = False
 
 # Main body loop
@@ -207,7 +206,6 @@ while(True):
     cardID = scanCard()
     connectToAWS(cardID)
     if (args.hat_connected == "True"):
-	print("starting to check if cardID is in DB")
-	#changeScreens(cardID)
+	print("starting to check if cardID is in DB\n")
     callLambda(cardID)
-    print("CardID is :" + str(cardID))
+    print("\nCardID is :" + str(cardID))
