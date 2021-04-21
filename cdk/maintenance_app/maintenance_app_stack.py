@@ -3,6 +3,10 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_apigatewayv2 as apigw2,
+<<<<<<< HEAD
+=======
+    aws_apigatewayv2_authorizers as apigw2auth,
+>>>>>>> 4ac4489bab2659f006604ccd021bb98d092bc7ae
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
