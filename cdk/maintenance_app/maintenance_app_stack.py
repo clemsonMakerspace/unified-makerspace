@@ -98,7 +98,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            # website_error_document= 'error.html',
+            # bucket_name='admin.cuMaker.space',
             public_read_access= True
         )
 
@@ -483,7 +483,9 @@ class MaintenanceAppStack(core.Stack):
         ## Put ##
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
-        
+#----------------HTTP/Authorizer API--------------------------
+
+
 # #----------------IoT--------------------------
         #Create All allowed policy
         IoT_All_Allowed_Policy = {

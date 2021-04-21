@@ -1,5 +1,5 @@
 # *****
-# This lambda contains both update_password and login depending on parameters
+# This lambda contains both change_password and login depending on parameters
 # *****
 
 import json
