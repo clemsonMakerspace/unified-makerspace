@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RootComponent } from './root/root.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
@@ -23,6 +23,7 @@ import { VisitorComponent } from './auth/visitor/visitor.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ChangePasswordComponent } from './profile/change-password/change-password.component';
+import {InterceptorService} from './shared/api/interceptor.service';
 
 let routes: Routes = [
   // {path: 'root', component: AppComponent, children: [
@@ -68,7 +69,11 @@ let routes: Routes = [
     RouterModule.forRoot(routes),
     NgbModule,
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: InterceptorService,
+    multi: true
+  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,3 +1,5 @@
+
+<!--todo rename modal-->
 <ng-template #taskModal>
   <app-modal></app-modal>
 </ng-template>
@@ -5,9 +7,11 @@
 
 <div id="tasks" class="card bg-primary h-100">
   <div class="card-body h-100">
+
+    <!--Task Top Bar-->
     <div id="task-top" class="row no-gutters mb-3">
       <h1 class="card-title text-light col-12 col-md-8">Current Tasks</h1>
-      <div class="text-white col-4">
+      <div class="text-white col-12 col-md-4">
         <div id="task-buttons" class="d-flex justify-content-between">
           <button
             id="add-task-button"
@@ -15,7 +19,7 @@
             type="button"
             (click)="open(taskModal)"
           >
-            <h3 class="bi bi-plus-circle"></h3>
+            <span class="h3 bi bi-plus-circle"></span>
           </button>
           <button
             id="clear-completed-button"
@@ -23,10 +27,10 @@
             type="button"
             (click)="clearTasks()"
           >
-            <h3 class="bi bi-trash2-fill"></h3>
+            <span class="h3 bi bi-trash2-fill"></span>
           </button>
           <button class="btn btn-secondary ml-2" (click)="exportTaskData()">
-            <h3 class="bi bi-cloud-arrow-down-fill"></h3>
+            <span class="h3 bi bi-cloud-arrow-down-fill"></span>
           </button>
         </div>
       </div>
@@ -44,13 +48,16 @@
       </div>
     </div>
 
+    <!--Error Message-->
     <div class="card card-dark" *ngIf="errorMessage">
       <h3 class="text-warning">Sorry, there's been an error.</h3>
-      <h6>Please <span class="a font-weight" style="text-decoration: underline">contact</span> the MakerSpace team. </h6>
+      <h6>Please <span class="a font-weight" style="text-decoration: underline">contact</span> the MakerSpace team.
+      </h6>
       <h6 class="text-warning">
         Details: {{errorMessage}}
       </h6>
     </div>
+
 
     <div id="task-data h-100" style="overflow-y: auto; height: 300px" *ngIf="!errorMessage">
       <div
@@ -73,7 +80,7 @@
             </h5>
           </div>
           <div id="task-expanded" class="pl-4 mt-3" *ngIf="task.show">
-            <hr class="text-white" />
+            <hr class="text-white"/>
             <h6 class="text-muted">Date created: {{task.date_created}}</h6>
             <h6 class="text-muted">Task description: {{task.description}}</h6>
           </div>

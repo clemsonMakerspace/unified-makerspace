@@ -1,4 +1,3 @@
-
 <div class="w-100">
 
   <h1 id="welcome-text" *ngIf="auth.isUserLoggedIn()"
@@ -11,23 +10,20 @@
 
 
   <div *ngIf="auth.isUserLoggedIn()">
-    <div id="tasks-card" class="row d-flex align-content-stretch">
+    <div id="top-row" class="row no-gutters d-flex align-content-stretch">
       <!--Tasks-->
-      <div class="card-wrapper col-xl-7 col-12">
+      <div class="card-wrapper col-lg col-12">
         <app-tasks></app-tasks>
       </div>
-
-      <!--Users-->
-      <div class="card-wrapper col-xl-5 col-12">
-        <app-user-graph></app-user-graph>
+      <!--Machines-->
+      <div class="card-wrapper col-lg col-12">
+        <app-machines></app-machines>
       </div>
     </div>
 
-    <!--Machines-->
-    <div id="machines-card" class="row">
-      <div class="card-wrapper col-12">
-        <app-machines></app-machines>
-      </div>
+    <!--Users-->
+    <div class="card-wrapper col-12">
+      <app-user-graph></app-user-graph>
     </div>
   </div>
 

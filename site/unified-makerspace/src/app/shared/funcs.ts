@@ -19,11 +19,6 @@ export function showError(form: FormGroup) {
       'confirmPassword': 'Passwords do not match.'
     };
 
-
-
-
-
-
     let f = form.get(field);
     field = lodash.startCase(field);     // camel case to title case
     let error = '';

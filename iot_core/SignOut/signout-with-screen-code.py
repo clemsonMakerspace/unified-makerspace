@@ -2,18 +2,27 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import pyshorteners
+import mysql.connector
 import datetime
 import evdev
 import subprocess
 import argparse
 import sys
+import threading
 import time
+import qrcode
 import json
 import configparser
+#import boto3
 import requests
 
 from awscrt import io, mqtt, auth, http
 from awsiot import mqtt_connection_builder
+from inky import InkyWHAT
+from PIL import Image, ImageDraw
+from mysql.connector import Error
+from pyshorteners import Shorteners
 
 ############################################################################################
 #                                                                                          #
@@ -78,7 +87,7 @@ def scanCard():
     # the input as keystrokes here.
     count = 0
     cardID = ""
-    print("[Ready for a new scan]\n")
+    print("[Ready for a new scan]")
     for event in device.read_loop():
         # IDs should not be longer than 7 digits.
         if count == 7:
@@ -94,7 +103,7 @@ def scanCard():
                 cardID += (str(event.code - 1))
                 count += 1
         # End of cardscanning
-    print("Card ID found, ID: " + cardID + "\n")
+    print("Card ID found, ID: " + cardID)
     return int(cardID)
 
 def connectToAWS(cardID):
@@ -112,7 +121,7 @@ def connectToAWS(cardID):
     #                                                                                          #
     ############################################################################################
 
-    print("Setting up AWS Connections...\n")
+    print("Setting up AWS Connections...")
 
     # Establish an mqtt connection to publish and subscribe to topics on.
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
@@ -127,22 +136,22 @@ def connectToAWS(cardID):
         clean_session=False, # Don't know what this is; don't touch it
         keep_alive_secs=6) # Don't know what this is; don't touch it
 
-    print("> Connecting to '{}' with client ID '{}'\n".format(args.endpoint, args.client_id))
+    print("> Connecting to '{}' with client ID '{}'".format(args.endpoint, args.client_id))
 
     connect_future = mqtt_connection.connect()
 
     # Future.result() waits until a result is available.
     connect_future.result()
-    print("> Connected!\n")
+    print("> Connected!")
 
     # Subscribe to the topic passed in from the arguments.
-    print("> Subscribing to topic '{}'\n".format(args.topic))
+    print("> Subscribing to topic '{}'".format(args.topic))
     subscribe_future, packet_id = mqtt_connection.subscribe(
         topic=args.topic,
         qos=mqtt.QoS.AT_LEAST_ONCE)
 
     subscribe_result = subscribe_future.result()
-    print("> Subscribed with {}\n".format(str(subscribe_result['qos'])))
+    print("> Subscribed with {}".format(str(subscribe_result['qos'])))
 
     ############################################################################################
     #                                                                                          #
@@ -159,7 +168,7 @@ def connectToAWS(cardID):
     }
 
     message = json.dumps(msg)
-    print("> Publishing message to topic '{}': {}\n".format(args.topic, message))
+    print("> Publishing message to topic '{}': {}".format(args.topic, message))
     mqtt_connection.publish(
         topic=args.topic,
         payload=message,
@@ -168,8 +177,140 @@ def connectToAWS(cardID):
 
     # Disconnect the connection after our message has been sent.
     disconnect_future = mqtt_connection.disconnect()
-    print("\nDisconnecting from AWS...\n")
+    print("Disconnecting from AWS...")
     disconnect_future.result()
+
+# def changeScreens(cardID):
+#     """Changes the screen shown on the Raspberry Pi Hat.
+#
+#     Checks to see if the card is in the database and displays
+#     the corresponding screen.
+#
+#     We are using the inkywHAT Red/Black/White:
+#     https://shop.pimoroni.com/products/inky-what?variant=13590497624147
+#
+#     Documentation:
+#     https://github.com/pimoroni/inky
+#
+#     TODO: Change the screen back to "please scan card" after a set amount of time has passed.
+#     Needs some multithreading or something to accomplish that I think.
+#     """
+#
+#     ######## Pi Hat Setup ########
+#     print("Changing screens...")
+#
+#     inkywhat = InkyWHAT('black')
+#
+#     # Establish a new connection for checking if the card is in the DB.
+#     # Not sure if this is required, but this is the easiest way I could find to do it.
+#     # Copy-pasted from the earlier mqtt_connection variable.
+#     pi_hat_connection = mqtt_connection_builder.mtls_from_path(
+#         endpoint=args.endpoint,
+#         cert_filepath=args.cert,
+#         pri_key_filepath=args.key,
+#         client_bootstrap=client_bootstrap,
+#         ca_filepath=args.root_ca,
+#         client_id=args.client_id,
+#         clean_session=False,
+#         keep_alive_secs=6)
+#
+#     # Query the DB to see if that card is in it.
+#     # Use the config defined at the top of the file to hide connection information.
+#     cardInDBResult = False
+#     lambda_url = "https://td6vp4rpi5.execute-api.us-east-1.amazonaws.com/prod/SignIn"
+#     lambda_payload = {"HardwareID":cardID, "LoginLocation": args.location}
+#     try:
+#         response = requests.post(lambda_url, data = lambda_payload)
+#         mysqlConn = mysql.connector.connect(host="makerdata.cmas8ftjsupb.us-east-1.rds.amazonaws.com",
+#                                             database="makerdata",
+#                                             user="admin",
+#                                             password="20Maker;20Data$")
+#         if mysqlConn.is_connected():
+#             print("Connected to database...")
+#             cursor = mysqlConn.cursor()
+#             cursor.execute("select database();")
+#             record = cursor.fetchone()
+#             lookForCardQuery = "SELECT * FROM Student_ID WHERE SID = " + str(cardID)
+#             cursor.execute(lookForCardQuery)
+#             records = cursor.fetchall()
+#             if(cursor.rowcount > 0):
+#                 cardInDBResult = True
+#     except Error as e:
+#         print("Error while connecting to MySQL Database", e)
+#     finally:
+#         if (mysqlConn.is_connected()):
+#             cursor.close()
+#             mysqlConn.close()
+#             print("Disconnected from database...")
+#
+#     # If the card is in the database, set the screen to be shown to the "Welcome" screen
+#     if (cardInDBResult):
+#         print("ID Found - Displaying Welcome...")
+#         imgURL = "../../../qrcode/displayScreens/welcome_bw.png"
+#         im = Image.open(imgURL)
+#
+#         # Resizing the image so it fits to the screen
+#         # This is specific to the inkywhat, otherwise it claims that there is a size-mismatch.
+#         size = (400,300)
+#         out = im.resize(size)
+#         out.save('../../../qrcode/resize-output.png')
+#         img = Image.open('../../../qrcode/resize-output.png')
+#         pal_img = Image.new("P", (1, 1))
+#         pal_img.putpalette((255, 255, 255, 0, 0, 0, 255, 0, 0) + (0, 0, 0) * 252)
+#         img = img.convert("RGB").quantize(palette=pal_img)
+#
+#     # If the card is not in the database, make a QR code and show the "QR Code" screen
+#     elif (not cardInDBResult):
+#         print("ID Not Found - Displaying Registration...")
+#         imgURL = "../../../qrcode/displayScreens/qrscan_bw.png"
+#         displayURL = "../../../qrcode/qrCodeScreenMerged.png"
+#
+#         # Generate a QR Code Object
+#         qr = qrcode.QRCode(
+#             version=None,
+#             error_correction=qrcode.constants.ERROR_CORRECT_L,
+#             box_size=3,
+#             border=2,
+#         )
+#
+#         # Generate the URL the code points to and add it to the QR Code
+#         wURL = "https://makerspace-registration.s3.amazonaws.com/index.html?id=" + str(cardID)
+#         qr.add_data(wURL)
+#         qr.make(fit=True)
+#         img = qr.make_image(fill_color="black", back_color="white")
+#
+#         # Save the generated QR Code to the proper tests
+#         img.save('../../../qrcode/qr_image.png')
+#         im = Image.open(imgURL)
+#
+#         # Resizing the image so it fits to the screen
+#         size = (400,300)
+#         out = im.resize(size)
+#         out.save('../../../qrcode/resize-output.png')
+#
+#         # We are using ImageMagick installed on the Raspberry Pi to
+#         # composite our generated QR Code onto the premade image
+#         # with this subprocess call. This could be changed to a
+#         # bash script called in the same way.
+#         s = pyshorteners.Shortener(Shorteners.TINYURL)
+#         shortLink = s.short(wURL)
+#         composeQRCodeOntoImageCommand = 'composite -blend 100 -gravity center ../../../qrcode/qr_image.png ../../../qrcode/resize-output.png ../../../qrcode/qrCodeScreenMerged.png'
+#         composeShortLinkOntoImageCommand = 'convert ../../../qrcode/qrCodeScreenMerged.png -font Arial -gravity North -pointsize 24 -annotate +0+215 \'' + shortLink + '\' ../../../qrcode/qrCodeScreenMerged.png'
+#         subprocess.call(composeQRCodeOntoImageCommand, shell=True)
+#         subprocess.call(composeShortLinkOntoImageCommand, shell=True)
+#
+#         img = Image.open(displayURL)
+#
+#         # Continue resizing, inkywhat complains otherwise.
+#         pal_img = Image.new("P", (1, 1))
+#         pal_img.putpalette((255, 255, 255, 0, 0, 0, 255, 0, 0) + (0, 0, 0) * 252)
+#         img = img.convert("RGB").quantize(palette=pal_img)
+#
+#     # Update the image on the screen and show it.
+#     inkywhat.set_image(img)
+#     inkywhat.set_border('white')
+#     inkywhat.show()
+#     print("Finished changing screens...")
 
 def callLambda(cardID):
     # Establish a new connection for checking if the card is in the DB.
@@ -190,15 +331,14 @@ def callLambda(cardID):
     cardInDBResult = False
     lambda_url = "https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com/rpi/signout"
     lambda_payload = {"HardwareID":str(cardID)}
-    
     try:
-        print("payload is " + str(lambda_payload) + "\n")
+	print("payload is " + str(lambda_payload))
         response = requests.post(lambda_url, json = lambda_payload)
         cardInDBResult = True
-        print(str(response.text))
-
+        print("This should have worked "+ str(response.text))
     except requests.exceptions.RequestException as e:
         print(str(e))
+	print("this didn't work")
         cardInDBResult = False
 
 # Main body loop
@@ -208,6 +348,7 @@ while(True):
     cardID = scanCard()
     connectToAWS(cardID)
     if (args.hat_connected == "True"):
-        print("starting to check if cardID is in DB\n")
-        callLambda(cardID)
-        print("\nCardID is :" + str(cardID) + "\n")
+	print("starting to check if cardID is in DB")
+	#changeScreens(cardID)
+    callLambda(cardID)
+    print("CardID is :" + str(cardID))

@@ -47,7 +47,9 @@ function endpoint(
     let body = func(args);
     console.log(body); // todo for testing
     return this.http.request(method,
-      environment.server + url, body);
+      environment.server + url, {
+      'body': body
+      });
   };
 }
 
@@ -153,7 +155,7 @@ export class ApiService {
         first_name: args['firstName'],
         last_name: args['lastName'],
         major: args['major'],
-        degree: args['degree'],
+        degree_type: args['degree'],
       },
       hardware_id: args['hardwareId']
     };

@@ -128,6 +128,13 @@ def CreateUserHandler(event, context):
         # Send Response
         return {
             'statusCode': 200,
+            'headers': {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
+            },
             'body': json.dumps(result)
         }
     except Exception as e:
