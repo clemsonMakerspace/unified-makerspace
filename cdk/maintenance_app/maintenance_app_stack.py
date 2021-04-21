@@ -3,7 +3,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_apigatewayv2 as apigw2,
-    # aws_apigatewayv2_authorizers as apigw2auth,
+    aws_apigatewayv2_authorizers as apigw2auth,
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -371,6 +371,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ConfirmUser.ConfirmUserHandler',
         )        
+        #Add Lambda Integration for authorizer
+        ConfirmUserLambdaIntegration = apigw.LambdaIntegration(ConfirmUserLambda)
 
 #-------------------Cognito Pool------------------------------
         cognito.UserPool(self, "myuserpool",
@@ -484,6 +486,7 @@ class MaintenanceAppStack(core.Stack):
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
 #----------------HTTP/Authorizer API--------------------------
+        #Create HTTP API
 
 
 # #----------------IoT--------------------------
