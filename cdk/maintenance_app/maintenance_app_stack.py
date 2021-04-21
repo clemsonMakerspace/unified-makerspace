@@ -3,7 +3,6 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_apigatewayv2 as apigw2,
-    # aws_apigatewayv2_authorizers as apigw2auth,
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -371,9 +370,11 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ConfirmUser.ConfirmUserHandler',
         )        
+        #Add Lambda Integration for authorizer
+        ConfirmUserLambdaIntegration = apigw.LambdaIntegration(ConfirmUserLambda)
 
 #-------------------Cognito Pool------------------------------
-        cognito.UserPool(self, "myuserpool",
+        makerspaceCognitoPool = cognito.UserPool(self, "myuserpool",
             user_pool_name="myawesomeapp-userpool",
             self_sign_up_enabled=True,
             user_verification= {
@@ -484,6 +485,70 @@ class MaintenanceAppStack(core.Stack):
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
 #----------------HTTP/Authorizer API--------------------------
+#       Resources:
+        #   MyAPI:
+        #     Type: AWS::ApiGatewayV2::Api
+        #     Properties: 
+        #       Description: Example HTTP API
+        #       Name: api-with-auth
+        #       ProtocolType: HTTP
+        #       Target: !GetAtt MyLambdaFunction.Arn
+        #   DefaultRouteOverrides:
+        #     Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+        #     Properties: 
+        #       ApiId: !Ref MyAPI
+        #       Route: 
+        #         AuthorizationType: JWT
+        #         AuthorizerId: !Ref JWTAuthorizer
+        #   JWTAuthorizer:
+        #     Type: AWS::ApiGatewayV2::Authorizer
+        #     Properties: 
+        #       ApiId: !Ref MyAPI
+        #       AuthorizerType: JWT
+        #       IdentitySource: 
+        #         - '$request.querystring.access_token'
+        #       JwtConfiguration: 
+        #         Audience: 
+        #         - !Ref AppClient
+        #         Issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+        #       Name: test-jwt-authorizer
+        authAPI = apigw2.CfnApi(self, 'HTTP Auth API',
+            protocol_type = 'HTTP',
+            target = ConfirmUserLambdaIntegration #TODO: Could be incorrect
+        )
+
+        routeOverride = apigw2.CfnApiGatewayManagedOverrides(self, 'Auth Route Override',
+            api_id = authAPI,
+            route = apigw2.CfnApiGatewayManagedOverrides.RouteOverridesProperty(
+                authorization_type = 'JWT',
+                authorizer_id = JWTAuth
+            )
+        )
+
+        JWTAuth = apigw2.CfnAuthorizer(self, 'JWT Authorizer',
+            api_id = authAPI,
+            authorizer_type = 'JWT',
+            identity_source = #TODO,
+            jwt_configuration = apigw2.CfnAuthorizer.JwtConfigurationProperty(
+                audience = #TODO,
+                issuer = makerspaceCognitoPool
+            )
+            name = 'JWT CDK Authorizer',
+        )
+
+        # #Create apigw2 http API
+        # authAPI = apigw2.HttpApi(self, 'HTTP Auth API',
+        #     default_authorizer = JWTAuth
+        # )
+
+        # #Create apigw2-authorizer JWT Authorizer
+        # JWTAuth = apigw2auth.HttpJwtAuthorizer(self, 'JWT Authorizer',
+        #     jwt_audience = placeHolder,
+        #     jwt_issuer = makerspaceCognitoPool
+        # )
+        #Route override to JWT Authorizer
+
+        #App Client
 
 
 # #----------------IoT--------------------------

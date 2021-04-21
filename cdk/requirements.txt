@@ -1,4 +1,3 @@
-# aws-cdk.aws-apigatewayv2-authorizers==1.75.0
 aws-cdk.aws-apigatewayv2==1.75.0
 aws-cdk.aws-cognito==1.75.0
 aws-cdk.aws-iot==1.75.0
