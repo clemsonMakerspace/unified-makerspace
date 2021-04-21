@@ -8,7 +8,6 @@ from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
 from api.models import Visitor, Visit
 
-
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 
@@ -18,11 +17,12 @@ Visits = dynamodb.Table("Visits")
 
 
 def CreateVisitor(data):
-    new_visitor = json.loads(data["body"])
+    json_data = json.loads(data["body"])
+    hardware_id = json_data["hardware_id"]
+    new_visitor = json_data["visitor"]
 
-    new_visitor = Visitor(new_visitor["hardware_id"],new_visitor["college"],new_visitor["degree_type"],new_visitor["first_name"],
-                          new_visitor["last_name"],new_visitor["major"],new_visitor["visitor_id"])
-
+    new_visitor_obj = Visitor(hardware_id, new_visitor["degree_type"], new_visitor["first_name"],
+                              new_visitor["last_name"], new_visitor["major"], str(uuid.uuid4().hex[:10]))
 
     visits = Visits.scan()
     visits_list = visits["Items"]
@@ -31,28 +31,25 @@ def CreateVisitor(data):
 
     for visit in visits_list:
 
-        if visit["visitor_id"] == new_visitor.visitor_id:
-            new_visit = Visit(str(uuid.uuid4()),"0",int(time.time()),0,new_visitor.visitor_id)
+        if visit["visitor_id"] == new_visitor_obj.visitor_id:
+            new_visit = Visit(str(uuid.uuid4().hex[:10]), new_visitor_obj.visitor_id, "0", int(time.time()), 0)
             break
     else:
-            new_visit = Visit(str(uuid.uuid4()), "1", int(time.time()), 0, new_visitor.visitor_id)
+        new_visit = Visit(str(uuid.uuid4().hex[:10]), new_visitor_obj.visitor_id, "1", int(time.time()), 0)
 
     Visits.put_item(
-        Item = new_visit.__dict__
+        Item=new_visit.__dict__
     )
 
     # Put new task into the tasks eventbase
     Visitors.put_item(
-        Item=new_visitor.__dict__
+        Item=new_visitor_obj.__dict__
     )
 
-
-
-    return 'Visitor ' + new_visitor.visitor_id + ' has been successfully created.'
+    return "Created new visitor: " + new_visitor_obj.visitor_id + " " + new_visitor_obj.first_name + " " + new_visitor_obj.last_name
 
 
 def CreateVisitorHandler(event, context):
-
     # Return client error if no string params
     if (event is None):
         return {
@@ -82,7 +79,11 @@ def CreateVisitorHandler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
             },
             'body': json.dumps({
                 'Message': str(e)

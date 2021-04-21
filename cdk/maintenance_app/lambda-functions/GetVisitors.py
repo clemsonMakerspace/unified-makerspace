@@ -29,7 +29,7 @@ def GetVisitors(body):
 
 
     for visit in visits_list:
-        if visit["sign_in_time"] >= start_time and visit["sign_out_time"] <= end_time:
+        if int(visit["sign_in_time"]) >= start_time and int(visit["sign_out_time"]) <= end_time:
             visits_in_tf.append(visit)
 
     return visits_in_tf
@@ -47,8 +47,12 @@ def GetVisitorsHandler(event, context):
     return {
         'statusCode': 200,
         'headers': {
-            'Content-Type': 'text/plain'
-        },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
+            },
         'body': json.dumps(visitors,cls=DecimalEncoder)
     }
 
