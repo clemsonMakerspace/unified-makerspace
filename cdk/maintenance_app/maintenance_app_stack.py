@@ -3,10 +3,6 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_apigatewayv2 as apigw2,
-<<<<<<< HEAD
-=======
-    aws_apigatewayv2_authorizers as apigw2auth,
->>>>>>> 4ac4489bab2659f006604ccd021bb98d092bc7ae
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -516,29 +512,29 @@ class MaintenanceAppStack(core.Stack):
         #         - !Ref AppClient
         #         Issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
         #       Name: test-jwt-authorizer
-        authAPI = apigw2.CfnApi(self, 'HTTP Auth API',
-            protocol_type = 'HTTP',
-            target = ConfirmUserLambdaIntegration #TODO: Could be incorrect
-        )
+        # authAPI = apigw2.CfnApi(self, 'HTTP Auth API',
+        #     protocol_type = 'HTTP',
+        #     target = ConfirmUserLambdaIntegration #TODO: Could be incorrect
+        # )
 
-        routeOverride = apigw2.CfnApiGatewayManagedOverrides(self, 'Auth Route Override',
-            api_id = authAPI,
-            route = apigw2.CfnApiGatewayManagedOverrides.RouteOverridesProperty(
-                authorization_type = 'JWT',
-                authorizer_id = JWTAuth
-            )
-        )
+        # routeOverride = apigw2.CfnApiGatewayManagedOverrides(self, 'Auth Route Override',
+        #     api_id = authAPI,
+        #     route = apigw2.CfnApiGatewayManagedOverrides.RouteOverridesProperty(
+        #         authorization_type = 'JWT',
+        #         authorizer_id = JWTAuth
+        #     )
+        # )
 
-        JWTAuth = apigw2.CfnAuthorizer(self, 'JWT Authorizer',
-            api_id = authAPI,
-            authorizer_type = 'JWT',
-            identity_source = #TODO,
-            jwt_configuration = apigw2.CfnAuthorizer.JwtConfigurationProperty(
-                audience = #TODO,
-                issuer = makerspaceCognitoPool
-            )
-            name = 'JWT CDK Authorizer',
-        )
+        # JWTAuth = apigw2.CfnAuthorizer(self, 'JWT Authorizer',
+        #     api_id = authAPI,
+        #     authorizer_type = 'JWT',
+        #     identity_source = #TODO,
+        #     jwt_configuration = apigw2.CfnAuthorizer.JwtConfigurationProperty(
+        #         audience = #TODO,
+        #         issuer = makerspaceCognitoPool
+        #     )
+        #     name = 'JWT CDK Authorizer',
+        # )
 
         # #Create apigw2 http API
         # authAPI = apigw2.HttpApi(self, 'HTTP Auth API',
