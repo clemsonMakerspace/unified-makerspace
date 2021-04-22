@@ -21,7 +21,7 @@ def GenerateUserTokenHandler(event, context):
         #Add user token into some table
         #Record and store time into table as well
         insertToken = dynamodb.Table('userVerificationToken')
-        tokenEpochTime = int(time.time()) - 18000
+        tokenEpochTime = int(time.time())
         
         input = {'generatedToken' : user_token, 
                  'tokenTime' : tokenEpochTime

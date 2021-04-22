@@ -54,8 +54,7 @@ def RPI_SignIn_Handler(event, context):
             else:
                 first_visit = False
 
-            # converting to EST
-            time_in = int(time.time()) - 14400
+            time_in = int(time.time())
 
             #generating unique visit id
             visit_id = base64.b64encode(os.urandom(16)).decode('utf-8')

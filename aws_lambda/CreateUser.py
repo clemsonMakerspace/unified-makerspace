@@ -41,7 +41,7 @@ def CreateUser(data):
     # If it is, check how old
     # Return error if either does not check
     try:
-        currentTime = int(time.time()) - 18000
+        currentTime = int(time.time())
         response = User_tokens.query(
             KeyConditionExpression = Key('generatedToken').eq(str(user_token))
         )
