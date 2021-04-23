@@ -66,7 +66,7 @@ export class ApiService {
 
   @endpoint
   generateUserToken(): any | Observable<Response> {
-    return // no parameters
+    return; // no parameters
   }
 
   @endpoint

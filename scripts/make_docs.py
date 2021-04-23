@@ -5,15 +5,15 @@ Compiles API documentation to PDF.
 
 """
 
-# todo refactor (create command class?)
-
 import os
+from command import Command
 
-output = "latexpdf"
-filename = "theunifiedmakerspace.pdf"
+# settings
+output_type = "html"
+file_name = "theunifiedmakerspace.pdf"
+build_path = os.path.join("build", "latex", file_name)
+output_path = os.path.join('%', '..', 'build')
 
-path = os.path.join("../","api", "docs")
-
-output_path = os.path.join(path, "build", "latex", filename)
-os.system(f"cd {path} && make {output}")
-os.system(f"cp {output_path} $p")
+# run
+c = Command(exec_path=["../","api", "docs"])
+c([['make', output_type], ['mkdir', '-p', output_path], ['cp', build_path, output_path]])
