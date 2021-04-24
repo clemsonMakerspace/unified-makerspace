@@ -1,10 +1,11 @@
+<!--Modal for creating user tokens-->
 <ng-template #userTokenModal>
   <div class="card card-dark">
     <div class="card-body ">
       <h1 class="card-title">User Token</h1>
       <p class="font-weight-bold text-secondary">This token will enable
-      a user to sign up with maintainer permissions. Only give
-      it to the selected individual.</p>
+        a user to sign up with maintainer permissions. Only give
+        it to the selected individual.</p>
       <div class="">
         <label for="user-token" class="d-none"></label>
         <input *ngIf="userToken"
@@ -17,11 +18,33 @@
   </div>
 </ng-template>
 
+
+<!--Modal for changing user password-->
 <ng-template #changePasswordModal>
-  <h1>test</h1>
   <app-change-password></app-change-password>
 </ng-template>
 
+
+<!--Modal for deleting account-->
+<ng-template #deleteUserModal>
+  <div class="card card-dark">
+    <div class="card-body ">
+      <h1 class="card-title">Delete Account</h1>
+      <p class="font-weight-bold text-danger">
+        This operation is not reversible. If you are sure that you want to delete your
+        account, please enter your first name below.</p>
+      <form>
+        <label for="death-note" hidden></label>
+        <input name="first-name-input" id="death-note" type="text"
+               class="form-control mb-3" [(ngModel)]="name">
+        <button class="btn btn-danger" [disabled]="name.toLowerCase() !=
+         auth.user.getValue().first_name.toLowerCase()" (click)="deleteUser()">
+          Delete account
+        </button>
+      </form>
+    </div>
+  </div>
+</ng-template>
 
 <div class="w-100">
   <h1 class="text-white font-weight-bold display-3 mb-4">Profile Settings</h1>
@@ -33,18 +56,19 @@
         <a class="text-secondary h2 d-block" (click)="generateUserToken()"
         >Generate User Token</a
         >
-
-        <a class="text-secondary h2 d-block" routerLink="/users"
-        >Add or remove users</a
+        <!-- todo not implemented yet -->
+        <!--        <a class="text-secondary h2 d-block" routerLink="/users"-->
+        <!--        >Add or remove users</a-->
         >
       </div>
       <!--Manage Account-->
       <div class="mb-4">
         <h1 class="card-title text-light">Manage Account</h1>
         <a class="text-secondary h2 d-block" (click)="auth.logout()">Sign Out</a>
+        <!--        todo not implemented yet-->
         <!--        <h2 class="text-secondary">Export All Data</h2>-->
         <a class="text-secondary h2 d-block" (click)="open(changePasswordModal)">Change Password</a>
-        <a class="text-danger h2 d-block" (click)="deleteUser()">Delete Account</a>
+        <a class="text-danger h2 d-block" (click)="open(deleteUserModal)">Delete Account</a>
       </div>
     </div>
   </div>

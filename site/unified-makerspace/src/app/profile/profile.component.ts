@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from '../shared/auth/auth.service';
 import {ApiService} from '../shared/api/api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -12,13 +13,13 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 export class ProfileComponent implements OnInit {
   constructor(public auth: AuthService,
               private api: ApiService,
-              private modal: NgbModal) {
+              private modal: NgbModal,
+              private router: Router) {
   }
 
   @ViewChild('userTokenModal')
   userTokenModal
 
-    // todo remove account management page?
     // todo delete / edit machines
 
   userToken: string;
@@ -40,12 +41,17 @@ export class ProfileComponent implements OnInit {
   }
 
 
-  // todo implement - create modal
+  name = '';
   deleteUser() {
     this.api.deleteUser(
       {'user_id': this.auth.user.getValue().user_id}
       ).subscribe(() => {
-        // todo handle errors
+        this.modal.dismissAll();
+        this.router.navigate(['/']).then(()=> {
+          this.auth.logout();
+        })
+    }, (err) => {
+        // todo implement
     })
   }
 
