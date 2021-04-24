@@ -96,7 +96,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            # bucket_name='admin.cuMaker.space',
+            bucket_name='admin.cumaker.space',
             public_read_access= True
         )
 
@@ -381,7 +381,7 @@ class MaintenanceAppStack(core.Stack):
             },
             user_invitation={
                 "email_subject": "Your temporary password",
-                "email_body": "Your username is {username} and temporary password is {####}.",
+                "email_body": "Your username is {username} and tempxorary password is {####}.",
                 "sms_message": "Your username is {username} and temporary password is {####}. "
             },
             sign_in_aliases={
@@ -414,12 +414,11 @@ class MaintenanceAppStack(core.Stack):
         )
 
         #Add cognito authorizer
-        auth = apigw.CfnAuthorizer(self, "adminSectionAuth",
+        cognitoAuth = apigw.CfnAuthorizer(self, "adminSectionAuth",
             rest_api_id=um_api.rest_api_id,
             type='COGNITO_USER_POOLS', 
-            identity_source='method.request.header.Authorization',
-            provider_arns=[
-                'arn:aws:cognito-idp:...'],
+            identity_source='method.request.header.name.Authorization', #NOTE: Where to check for what to auth
+            provider_arns=[makerspaceCognitoPool.user_pool_arn],
             name="adminSectionAuth"
         )
         
@@ -464,7 +463,11 @@ class MaintenanceAppStack(core.Stack):
         ## Patch ##
         tasks.add_method('PATCH', UpdateTaskLambdaIntegration)
         ## Post ##
-        tasks.add_method('POST', CreateTaskLambdaIntegration)
+        createTaskMethod = tasks.add_method('POST', CreateTaskLambdaIntegration)
+        # Add authorizer to create task
+        method_resource = createTaskMethod.node.find_child('Resource')
+        method_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        method_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ###------Users------###
         users = um_api.root.add_resource('users')
