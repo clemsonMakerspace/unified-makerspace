@@ -1,5 +1,5 @@
 """
-The MakerSpace staff is able to manage maintenance tasks
+The Makerspace staff is able to manage maintenance tasks
 so that equipment can be repaired in a timely manner.
 """
 

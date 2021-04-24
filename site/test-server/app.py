@@ -1,7 +1,7 @@
 """
 app.py
 
-Simple example server for the MakerSpace
+Simple example server for the Makerspace
 website. The purpose is two-fold: to provide
 mock data for the site and to test if requests
 are valid.

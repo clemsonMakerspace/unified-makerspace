@@ -1,5 +1,5 @@
 """
-The MakerSpace staff are able to create, delete, and manage users
+The Makerspace staff are able to create, delete, and manage users
 with varying permissions, such as administrators, managers, and
 visitors.
 """

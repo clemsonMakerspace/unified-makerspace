@@ -1,0 +1,3 @@
+ 
+ # replaces all instances of Makerspace to Makerspace
+ grep -rl Makerspace . | xargs sed -i 's/Makerspace/Makerspace/g'

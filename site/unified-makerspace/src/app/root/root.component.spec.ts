@@ -28,7 +28,7 @@ describe('RootComponent', () => {
     component = fixture.debugElement.componentInstance;
     fixture.detectChanges();
     let compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to the Clemson MakerSpace.');
+    expect(compiled.querySelector('h1').textContent).toContain('Welcome to the Clemson Makerspace.');
   });
 
 });

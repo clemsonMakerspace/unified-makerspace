@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../../../site/test-server'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'The Unified MakerSpace'
+project = 'The Unified Makerspace'
 copyright = '2021, Aru Bhoop'
 author = 'Aru Bhoop'
 

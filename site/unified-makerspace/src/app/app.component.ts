@@ -12,7 +12,7 @@ export class AppComponent {
   constructor(public auth: AuthService) {
   }
 
-  title = 'The MakerSpace';
+  title = 'The Makerspace';
   layerTransforms = this.positionFooter();
 
   get inProduction() {

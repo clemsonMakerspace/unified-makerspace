@@ -1,7 +1,7 @@
 """
-The MakerSpace is visited by students and faculty
+The Makerspace is visited by students and faculty
 from all walks of life. The API enables the staff to see
-who exactly is visiting the MakerSpace, if they are a new
+who exactly is visiting the Makerspace, if they are a new
 member, and when.
 """
 from models import Visitor
@@ -36,7 +36,7 @@ def create_visitor(auth_token: str, visitor: Visitor, hardware_id: str):
 
 def get_visitors(auth_token: str, start_date: int, end_date: int):
     """
-    Gets all MakerSpace visitors within a given timeframe.
+    Gets all Makerspace visitors within a given timeframe.
 
     ================   ============
     **Endpoint**        /api/visitors

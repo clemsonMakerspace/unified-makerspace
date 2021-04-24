@@ -60,7 +60,7 @@ class Permission:
 @dataclass
 class User:
     """
-    Represents a registered user of the MakerSpace. Users are
+    Represents a registered user of the Makerspace. Users are
     those who will be using the dashboard (not visitors). `assigned_tasks`
     is a list of task_ids.
     """
@@ -74,7 +74,7 @@ class User:
 @dataclass
 class Visitor:
     """
-    Represents a visitor to the MakerSpace.
+    Represents a visitor to the Makerspace.
     """
     hardware_id: str
     college: str
@@ -89,7 +89,7 @@ class Visitor:
 @dataclass
 class Visit:
     """
-    Represents a visit to the MakerSpace, and whether
+    Represents a visit to the Makerspace, and whether
     it is the first visit. `date_visited` is equal to
     `sign_in_time` and may be deprecated in the future.
     """
@@ -104,7 +104,7 @@ class Visit:
 @dataclass
 class Request:
     """
-    Represents a maintenance request to the MakerSpace. `request_id`
+    Represents a maintenance request to the Makerspace. `request_id`
     is not passed in when creating requests.
     """
     requester_name: str

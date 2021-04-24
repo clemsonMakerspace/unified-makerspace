@@ -96,7 +96,7 @@
     <div class="form-check text-light mb-3">
       <input id="is-user-or-visitor" type="checkbox" class="form-check-input"
              formControlName="isUser">
-      <label for="is-user-or-visitor" class="form-check-label">I work at the MakerSpace.</label>
+      <label for="is-user-or-visitor" class="form-check-label">I work at the Makerspace.</label>
     </div>
     <h6 class="font-weight-bold text-danger mb-3" *ngIf="registerForm['error']">
       {{registerForm['error']}}
@@ -124,7 +124,7 @@
   <h3 class="card-title text-secondary">Next steps:</h3>
   <ol class="text-light" *ngIf="!isUser">
     <li>Check <b>{{this.registerForm.get("email").value}}</b> for an account confirmation email.</li>
-    <li>When you arrive at the MakerSpace, make sure to scan your card.</li>
+    <li>When you arrive at the Makerspace, make sure to scan your card.</li>
     <li>Play safe! If you run into any problems in the space, reach out to a staff member.</li>
   </ol>
   <ol class="text-light" *ngIf="isUser">

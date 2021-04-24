@@ -29,7 +29,7 @@ permissions: [
   },
   {
     policy_id: "2",
-    policy_name: "MakerSpace_Visitor",
+    policy_name: "Makerspace_Visitor",
     access: [
       { resource_id: "14"
           resource_name: "machines"

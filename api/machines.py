@@ -1,5 +1,5 @@
 """
-The MakerSpace team can quickly get an overview of the status of all MakerSpace equipment.
+The Makerspace team can quickly get an overview of the status of all Makerspace equipment.
 """
 
 def get_machines_status(auth_token: str, start_time: int, end_time: int):

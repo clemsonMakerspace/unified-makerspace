@@ -1,5 +1,5 @@
 """
-Enables MakerSpace visitors make requests to the staff
+Enables Makerspace visitors make requests to the staff
 regarding equipment.
 
 Warnings: This functionality has not been introduced yet.
