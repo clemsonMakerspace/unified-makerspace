@@ -6,10 +6,15 @@ import json
 import boto3
 import json
 from boto3.dynamodb.conditions import Key
+#import os
 
 # Cognito Client
 client = boto3.client('cognito-idp')
 clientID = "20nnrq12vp19a99c58g2r0b0og"
+
+
+## How to import ARN of cognito user pool passed in in the CDK stack ##
+#userPoolARN = os.environ['cognitoUserPool']
 
 def login(email, password):
     try:

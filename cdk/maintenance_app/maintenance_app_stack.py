@@ -96,7 +96,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            bucket_name='admin.cumaker.space',
+            # bucket_name='admin.cumaker.space',
             public_read_access= True
         )
 
@@ -347,20 +347,6 @@ class MaintenanceAppStack(core.Stack):
         visitsTable.grant_full_access(RPI_SignOutLambda)
         #Add Lambda Integration for API
         RPI_SignOutLambdaIntegration = apigw.LambdaIntegration(RPI_SignOutLambda)
-        
-
-        #TODO: Authorization with JWT Token and Lamdba
-
-
-        ## Log in ##
-        LoginLambda = _lambda.Function(
-            self, 'Login',
-            runtime=_lambda.Runtime.PYTHON_3_7,
-            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='Login.LoginHandler',
-        )        
-        #Add Lambda Integration for API
-        LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
 
         ## Pre-Sign Up Trigger ##
         ConfirmUserLambda = _lambda.Function(
@@ -369,6 +355,8 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ConfirmUser.ConfirmUserHandler',
         ) 
+
+        #NOTE: Log in lambda has to bet put after cognito pool
 
 #-------------------Cognito Pool------------------------------
         makerspaceCognitoPool = cognito.UserPool(self, "myuserpool",
@@ -403,6 +391,21 @@ class MaintenanceAppStack(core.Stack):
                 "pre_authentication": ConfirmUserLambda
             }
         )
+
+        ## Log in ##
+        LoginLambda = _lambda.Function(
+            self, 'Login',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='Login.LoginHandler',
+            environment = {
+                'cognitoUserPool': makerspaceCognitoPool.user_pool_arn,
+                #TODO: Pass client ID as well to Login
+            }
+        )
+                
+        #Add Lambda Integration for API
+        LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
 
 #----------------Master API--------------------------
         #Create Master API and enable CORS on all methods
