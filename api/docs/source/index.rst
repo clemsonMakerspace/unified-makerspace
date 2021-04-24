@@ -53,15 +53,14 @@ Example Usage
 User
 ~~~~~~
 
-Joe is a maintainer who wants to be able to view and resolve tasks created by his manager, Ivan. He finds the registration page and marks the checkbox that indicates he works at the Makerspace. He submits the registration form and is prompted for a user token on the next page. He asks Ivan, who generates a new, temporary token from his profile page. Joe enters the token, and his registration is complete. He is redirected to the login page, where he can now use his new credentials.
+Joe is a maintainer who wants to be able to view and resolve tasks created by his manager, Ivan. He finds the registration page and marks the checkbox that indicates he works at the Makerspace. He is prompted for a user token and asks Ivan, who generates a new, temporary token from his profile page. This grants Joe maintainer permissions, but his permissions can be elevated later on.  Joe enters the token, and his registration is complete. He is redirected to the login page, where he can now use his new credentials.
 
 
 
 Visitor
 ~~~~~~~~
 
-Beck’s friends constantly tell her about how amazing the Makerspace is, so she finally makes plans to visit it next week. Before going, she completes the Canvas tutorial, where she is prompted to create an account with the Makerspace. She is redirected to the login page, where she enters her email address and creates a password. Completing the form, she is asked for a few more details on the next page, such as her name, major, degree type, and the hardware id of her TigerCard. She honestly enters this information and she is asked to validate her email address on the next page. Upon validating her email address, she finishes the authentication process and can now visit the Makerspace.
-
+Beck’s friends constantly tell her about how amazing the Makerspace is, so she finally makes plans to visit it next week. Before going, she completes the Canvas tutorial, where she is prompted to create an account with the Makerspace. She is redirected to the login page, where she enters her email address and creates a password. Completing the form, she is asked for a few more details on the next page, such as her name, major, degree type, and the hardware id of her TigerCard. She enters this information and submits the form, and on the next page she finds instructions on how to sign in to the Makerspace. She confirms her email and is now able to visit the Makerspace with her friends.
 
 
 Design
