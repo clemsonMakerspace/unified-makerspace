@@ -12,7 +12,7 @@ To run the MakerSsace, it’s helpful to track the machines and the individuals 
 
 ## Notes
 
-Our team would like to thank our professors, TA's, and, most importantly, our mentors, Owen and Miller, for their unwavering support during our entire journey. We would also like to thank our sponsor Amazon Web Services and the Clemson School of Computing.
+Our team would like to thank our professors, TA's, and, most importantly, our mentors, Owen and Miller, for their unwavering support and guidance during our entire journey. We would also like to thank the Clemson School of Computing and our sponsor Amazon Web Services for providing generous resources.
 
 ## Resources
 
