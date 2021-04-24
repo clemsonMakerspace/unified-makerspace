@@ -3,6 +3,7 @@ import {AuthService} from '../shared/auth/auth.service';
 import {ApiService} from '../shared/api/api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Router} from '@angular/router';
+import {Title} from '@angular/platform-browser';
 
 
 @Component({
@@ -14,7 +15,8 @@ export class ProfileComponent implements OnInit {
   constructor(public auth: AuthService,
               private api: ApiService,
               private modal: NgbModal,
-              private router: Router) {
+              private router: Router,
+              private title: Title) {
   }
 
   @ViewChild('userTokenModal')
@@ -25,6 +27,7 @@ export class ProfileComponent implements OnInit {
   userToken: string;
 
   ngOnInit(): void {
+    this.title.setTitle('Profile');
   }
 
   open(content) {

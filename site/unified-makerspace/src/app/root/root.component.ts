@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -6,14 +7,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./root.component.scss'],
 })
 export class RootComponent implements OnInit {
-  constructor() {}
+  constructor(private title: Title) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.title.setTitle('The Makerspace');
+  }
 
-  machines = [
-    '3D Printer #1',
-    '3D Printer #2',
-    'Satellite Controller',
-    'Mars Rover',
-  ];
 }

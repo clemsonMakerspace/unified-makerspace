@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../shared/auth/auth.service';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,7 +8,10 @@ import { AuthService } from '../shared/auth/auth.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService,
+              private title: Title) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.title.setTitle('Dashboard');
+  }
 }
