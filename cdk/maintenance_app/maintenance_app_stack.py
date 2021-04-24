@@ -2,8 +2,6 @@ from aws_cdk import (
     core,
     aws_lambda as _lambda,
     aws_apigateway as apigw,
-    aws_apigatewayv2 as apigw2,
-    # aws_apigatewayv2_authorizers as apigw2auth,
     aws_dynamodb as ddb,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -98,7 +96,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            # website_error_document= 'error.html',
+            bucket_name='admin.cumaker.space',
             public_read_access= True
         )
 
@@ -352,18 +350,6 @@ class MaintenanceAppStack(core.Stack):
         
 
         #TODO: Authorization with JWT Token and Lamdba
-        ###------Authorization------###
-        ## UpdatePermissions ##
-        # UpdatePermissionsLambda = _lambda.Function(
-        #     self, 'UpdatePermissions',
-        #     runtime=_lambda.Runtime.PYTHON_3_7,
-        #     code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-        #     handler='UpdatePermissions.UpdatePermissionsHandler',
-        # )
-        # #Granting Access to view machines DynamoDB Table
-        # usersTable.grant_full_access(UpdatePermissionsLambda)
-        # #Add Lambda Integration for API
-        # UpdatePermissionsLambdaIntegration = apigw.LambdaIntegration(UpdatePermissionsLambda)
 
 
         ## Log in ##
@@ -382,10 +368,10 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.NODEJS_12_X,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ConfirmUser.ConfirmUserHandler',
-        )        
+        ) 
 
 #-------------------Cognito Pool------------------------------
-        cognito.UserPool(self, "myuserpool",
+        makerspaceCognitoPool = cognito.UserPool(self, "myuserpool",
             user_pool_name="myawesomeapp-userpool",
             self_sign_up_enabled=True,
             user_verification= {
@@ -395,7 +381,7 @@ class MaintenanceAppStack(core.Stack):
             },
             user_invitation={
                 "email_subject": "Your temporary password",
-                "email_body": "Your username is {username} and temporary password is {####}.",
+                "email_body": "Your username is {username} and tempxorary password is {####}.",
                 "sms_message": "Your username is {username} and temporary password is {####}. "
             },
             sign_in_aliases={
@@ -416,7 +402,8 @@ class MaintenanceAppStack(core.Stack):
             lambda_triggers={
                 "pre_authentication": ConfirmUserLambda
             }
-        )          
+        )
+
 #----------------Master API--------------------------
         #Create Master API and enable CORS on all methods
         um_api = apigw.RestApi(self,'Master API',
@@ -425,8 +412,17 @@ class MaintenanceAppStack(core.Stack):
                 allow_methods = apigw.Cors.ALL_METHODS
             )
         )
+
+        #Add cognito authorizer
+        cognitoAuth = apigw.CfnAuthorizer(self, "adminSectionAuth",
+            rest_api_id=um_api.rest_api_id,
+            type='COGNITO_USER_POOLS', 
+            identity_source='method.request.header.name.Authorization', #NOTE: Where to check for what to auth
+            provider_arns=[makerspaceCognitoPool.user_pool_arn],
+            name="adminSectionAuth"
+        )
         
-        #NOTE: put s3 bucket and API Gateway on same domain?
+        #NOTE: put s3 bucket and API Gateway on same domain to avoid using CORS?
 
         # Add ANY 
         um_api.root.add_method('ANY')
@@ -437,13 +433,6 @@ class MaintenanceAppStack(core.Stack):
         administrative.add_method('PATCH', ResetPasswordLambdaIntegration)
         ## Post ##
         administrative.add_method('POST', GenerateUserTokenLambdaIntegration)
-
-        # ###------Auth------###
-        # auth = um_api.root.add_resource('auth')
-
-        # ## TODO: Delete ##
-        # ## TODO: Put ##
-
 
         ###------Machines------###
         machines = um_api.root.add_resource('machines')
@@ -474,7 +463,11 @@ class MaintenanceAppStack(core.Stack):
         ## Patch ##
         tasks.add_method('PATCH', UpdateTaskLambdaIntegration)
         ## Post ##
-        tasks.add_method('POST', CreateTaskLambdaIntegration)
+        createTaskMethod = tasks.add_method('POST', CreateTaskLambdaIntegration)
+        # Add authorizer to create task
+        method_resource = createTaskMethod.node.find_child('Resource')
+        method_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        method_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ###------Users------###
         users = um_api.root.add_resource('users')
@@ -487,6 +480,9 @@ class MaintenanceAppStack(core.Stack):
         users.add_method('PATCH', UpdateUserLambdaIntegration)
         ## Post ##
         users.add_method('POST', LoginLambdaIntegration)
+        ######################################################################
+        ## NOTE: Documentation has separate POST method for change password ##
+        ######################################################################
         ## Put ##
         users.add_method('PUT', CreateUserLambdaIntegration)
 
@@ -499,7 +495,7 @@ class MaintenanceAppStack(core.Stack):
         ## Put ##
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
-        
+
 # #----------------IoT--------------------------
         #Create All allowed policy
         IoT_All_Allowed_Policy = {
@@ -530,6 +526,7 @@ class MaintenanceAppStack(core.Stack):
         CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
         # # Create cert
         # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", status='ACTIVE')
+        # Add to secrets manager
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
         # # Attach the Policy to the Certificate

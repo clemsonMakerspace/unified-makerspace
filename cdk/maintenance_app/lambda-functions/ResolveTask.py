@@ -73,7 +73,11 @@ def ResolveTaskHandler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
             },
             'body': json.dumps({
                 'Message': str(e)

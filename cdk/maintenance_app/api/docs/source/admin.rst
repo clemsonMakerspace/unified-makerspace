@@ -1,0 +1,7 @@
+================
+Administrative
+================
+
+
+.. automodule:: admin
+   :members:

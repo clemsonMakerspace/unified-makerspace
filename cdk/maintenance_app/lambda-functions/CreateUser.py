@@ -41,7 +41,7 @@ def CreateUser(data):
     # If it is, check how old
     # Return error if either does not check
     try:
-        currentTime = int(time.time()) - 18000
+        currentTime = int(time.time())
         response = User_tokens.query(
             KeyConditionExpression = Key('generatedToken').eq(str(user_token))
         )
@@ -128,6 +128,13 @@ def CreateUserHandler(event, context):
         # Send Response
         return {
             'statusCode': 200,
+            'headers': {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
+            },
             'body': json.dumps(result)
         }
     except Exception as e:

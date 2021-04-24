@@ -64,8 +64,7 @@ def RPI_SignOut_Handler(event, context):
         }
 
     try:
-        #converting to EST
-        logoutTime = str(int(time.time()) - 18000)
+        logoutTime = str(int(time.time()))
 
         r = visitTable.update_item(
             Key={
