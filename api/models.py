@@ -102,17 +102,6 @@ class Visit:
 
 
 @dataclass
-class Request:
-    """
-    Represents a maintenance request to the Makerspace. `request_id`
-    is not passed in when creating requests.
-    """
-    requester_name: str
-    description: str
-    request_id: str
-
-
-@dataclass
 class Machine:
     """
     Represents a machine. `machine_state` can be either "1" (Working) or
