@@ -1,6 +1,6 @@
 <!--Development Mode Warning-->
 <div class="bg-secondary text-dark text-center w-100 p-3"
- *ngIf="!inProduction">
+     *ngIf="!inProduction">
   <h6>
     This site is in development mode. Do not use it on a production server.
   </h6>
@@ -37,7 +37,6 @@
 </nav>
 
 
-
 <!--Main Content-->
 <div class="container py-6">
   <router-outlet></router-outlet>
@@ -65,10 +64,17 @@
   />
 </div>
 
+
+<!--Footer-->
 <footer class="bg-transparent">
-  <div class="row no-gutters d-flex justify-content-center py-5">
-    <div class="col-8 text-secondary text-center">
+  <div class="row no-gutters d-flex justify-content-center py-6">
+    <div class="col-3 text-secondary text-center">
       The Clemson Makerspace. All Rights Reserved.
+      <div class="mt-3 text-muted">
+        This site was made possible
+        by support from Amazon Web Services and the Clemson School of Computing.
+        Site design by Aru Bhoop.
+      </div>
     </div>
   </div>
 </footer>

@@ -1,11 +1,12 @@
 <div class="w-100">
 
+  <!--Welcome Message-->
   <h1 id="welcome-text" *ngIf="auth.isUserLoggedIn()"
       class="text-white font-weight-bold display-3 mb-4">
     Welcome back,
     <span class="text-secondary">
       {{ auth.user.getValue().first_name }}
-    </span>
+    </span>.
   </h1>
 
 

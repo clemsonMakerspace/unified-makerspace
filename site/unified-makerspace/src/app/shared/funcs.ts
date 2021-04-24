@@ -3,6 +3,7 @@ import * as lodash from 'lodash';
 import {environment} from '../../environments/environment';
 
 
+/* returns a functional that handles common form errors */
 export function showError(form: FormGroup) {
   return function err(field: string,
                       crossError=null) {
@@ -51,6 +52,7 @@ export function showError(form: FormGroup) {
 }
 
 
+/* fills form with test data */
 export function useTestData(control: FormGroup, object: string) {
   if (!environment.production) {
     for (let [c, v] of Object.entries(control.controls)) {

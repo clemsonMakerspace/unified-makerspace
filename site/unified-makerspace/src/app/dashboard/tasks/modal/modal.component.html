@@ -1,10 +1,10 @@
 <div class="card card-dark" style="min-width: 800px">
   <div class="text-right">
-    <i class="bi-x text-secondary h2"></i>
+    <i class="bi-x text-secondary h2" (click)="modal.dismissAll()"></i>
   </div>
 
-  <div class="">
-    <form class="card-body" *ngIf="!showCompletion()">
+  <div>
+    <form class="card-body" *ngIf="!taskForm['success']">
       <h1 class="card-title display-4">Add Task</h1>
       <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
         <div class="row">
@@ -92,12 +92,6 @@
                 formControlName="person"
               >
                 <option *ngFor="let user of users" value="person">{{user}}</option>
-                <option
-                  value="new"
-                  class="text-secondary font-weight-bold"
-                >
-                  Add Person
-                </option>
               </select>
               <small
                 class="text-danger font-weight-bold"
@@ -106,22 +100,6 @@
               >
             </div>
 
-<!--todo remvoe-->
-<!--            <div-->
-<!--              class=""-->
-<!--              *ngIf="taskForm.get('person').value == 'new'"-->
-<!--            >-->
-<!--              <label for="new-person" class="text-secondary"-->
-<!--              >Name</label-->
-<!--              >-->
-<!--              <input type="text" class="form-control" id="new-person" formControlName="newPerson"/>-->
-<!--              <small-->
-<!--                class="text-danger font-weight-bold"-->
-<!--                *ngIf="showError('newPerson')"-->
-<!--              >This field cannot be empty.</small-->
-<!--              >-->
-<!--            </div>-->
-
           </div>
         </div>
 
@@ -129,27 +107,19 @@
           <button class="btn btn-secondary py-2 px-4" type="submit">
             Create Task
           </button>
+          <h6 class="warning-label" *ngIf="taskForm['error']">
+            {{taskForm['error']}}
+          </h6>
         </div>
       </form>
     </form>
 
 
-    <div class="h-center card-body pb-5" *ngIf="showCompletion()">
-      <div *ngIf="!formLoading">
-        <div *ngIf="errMessage">
-          <h2 class="text-danger font-weight-bold">
-            Sorry, there was an error.
-          </h2>
-          <h6>{{ errMessage }}</h6>
-        </div>
-        <h2 *ngIf="!errMessage" class="font-weight-bold">
-          Successfully added task.
-        </h2>
-      </div>
-      <i
-        class="bi-gear-fill spinner d-inline-block mr-3 display-1 text-secondary"
-        *ngIf="formLoading"
-      ></i>
+    <div class="card-body pb-5 text-center" *ngIf="taskForm['success']">
+      <h3 class="font-weight-bold">
+        <i class="h1 bi bi-check text-success"></i>
+        Task Successfully Created</h3>
+      <h5 class="text-muted">You may close this form now.</h5>
     </div>
 
 

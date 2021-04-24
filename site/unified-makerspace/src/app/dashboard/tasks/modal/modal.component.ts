@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../../../shared/api/api.service';
 import {showError, useTestData} from '../../../shared/funcs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-modal',
@@ -11,102 +12,79 @@ import {showError, useTestData} from '../../../shared/funcs';
 export class ModalComponent implements OnInit {
 
   // todo modal close
-  errMessage = '';
   // todo remove these
-  // todo remove modal service
-  formSubmitted = false;
-  formLoading = false;
+  // todo get list of machines?
+  // todo rename modal?
+  // todo add comments
+  // todo validation of parameters
 
-  showError: any;
+  // todo show message?
+  // todo handle error
+  // todo success parameter?
+
+
+  constructor(private api: ApiService,
+              private fb: FormBuilder,
+              public modal: NgbModal) {
+  }
+
 
   tags = [];
   users = [];
 
-  // todo add comments
-
   taskForm: FormGroup;
+  showError: any;
 
-  constructor(private api: ApiService,
-              private fb: FormBuilder) {
-  }
 
   ngOnInit(): void {
 
-
-    // todo get list of machines?
-    // todo rename modal?
-
-
     /* get list of users for dropdown */
     this.api.getUsers([]).subscribe((result) => {
-      this.users = result.users.map((user) => user.first_name)
-    })
+      this.users = result.users.map((user) => user.first_name);
+    });
 
-    // todo validation of parameters
-
-
-    // todo should be able to create new person??
 
     this.taskForm = this.fb.group({
       taskName: ['', Validators.required],
-      description: [''], // todo use N/A or if...
-      tags: ['', Validators.required], // todo optional?
+      description: [''],
+      tags: ['', Validators.required],
       person: ['', Validators.required]
-    })
+    });
 
-
-    this.showError = showError(this.taskForm)
+    // fill with test data
     useTestData(this.taskForm, 'task');
-    this.tags = this.parseTags()
+
+    this.showError = showError(this.taskForm);
+    this.tags = this.parseTags();
 
   }
 
+  /* convert comma separated string of tags to array */
   parseTags(): string[] {
-    let tags  = this.taskForm.get('tags').value
+    let tags = this.taskForm.get('tags').value;
     return tags.toString().toLowerCase().trim().split(',');
   }
 
 
-
-  // todo implement
-
-
   onSubmit(): void {
 
-    let getValue = (field: string) => this.taskForm.get(field).value;
-
-
-
-    // todo show message?
-    // todo handle error
-    // todo fields missing error
-
-
-
+    let getValue = (field: string) =>
+      this.taskForm.get(field).value;
+    this.taskForm['error'] = '';
     this.taskForm['submitted'] = true;
 
     if (this.taskForm.valid) {
-
-      this.formLoading = true;
-
       this.api.createTask({
         'person': getValue('person') == 'new' ? getValue('newPerson') : getValue('person'),
         'task_name': getValue('taskName'),
         'description': getValue('description'),
         'tags': this.tags,
       }).subscribe((res) => {
-        this.formLoading = false; // todo remove
+        this.taskForm['success'] = true;
       }, (err) => {
-        this.formLoading = false;
-        this.errMessage = 'Sorry an error occurred!'; // todo read err message
+        this.taskForm['error'] = 'Sorry an error occurred!';
       });
     }
-  }
-
-
-  // todo remove
-  showCompletion() {
-    return this.formSubmitted && this.taskForm.valid;
   }
 
 
