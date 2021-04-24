@@ -1,40 +1,37 @@
-<h1 class="font-weight-bold display-2 text-secondary">
-  Welcome to the Clemson Makerspace.
-</h1>
-<h2 class="text-light display-4 font-weight-bold pb-5">
-  Where ideas come alive.
-</h2>
+<!--Title-->
+<div id="title">
+  <h1 class="font-weight-bold display-2 text-secondary" style="line-height: .95">
+    Welcome to the Clemson Makerspace.
+  </h1>
+  <h2 class="text-light display-4 font-weight-bolder pb-5 mt-3">
+    Where ideas come alive.
+  </h2>
+</div>
 
+<!--Spinning Gear-->
 <h1 class="text-primary spinner bi bi-gear-fill position-absolute text-center"
     style="font-size: 20rem; top: -100px; left: -220px; z-index: -1000; width: 500px; height: 500px">
 </h1>
-<!--<h1 class="text-primary spinner bi bi-gear-fill position-absolute text-center"-->
-<!--    style="font-size: 50rem; bottom: -1000px; right: 120px; z-index: -3000; width: 1000px; height: 1000px">-->
-<!--</h1>-->
 
-<div class="row">
-  <div class="col-sm-3 col-12">
-    <div class="pb-3 w-100">
-      <button class="btn btn-secondary btn-lg w-100">Get Started</button>
-    </div>
-    <div class="pb-3 w-100">
-      <button class="btn btn-secondary btn-lg w-100">Take Classes</button>
-    </div>
-    <div class="pb-3 w-100">
-      <button class="btn btn-secondary btn-lg w-100">Make a Reservation</button>
-    </div>
+
+<!--Quick Links-->
+<div class="col-sm-3 col-12">
+  <div class="pb-3 w-100">
+    <button class="btn btn-secondary btn-lg w-100">
+      <a href="https://clemson.instructure.com/enroll/FDF6PW">
+        Get Started
+      </a>
+    </button>
   </div>
-  <div class="col-9">
-    <div style="display: grid; grid-template-columns: 6fr 6fr">
-      <div
-        class="card p-1 bg-primary text-white mb-2 mr-2"
-        *ngFor="let machine of machines"
-      >
-        <div class="card-body p-0">
-          <h3 class="card-title mb-n1">{{ machine }}</h3>
-          <p class="text-success">Currently Free</p>
-        </div>
-      </div>
-    </div>
+  <div class="pb-3 w-100">
+    <button class="btn btn-secondary btn-lg w-100" >
+      <a href="https://www.cumaker.space/reservations">Make a Reservation</a>
+    </button>
   </div>
+  <div class="pb-3 w-100">
+    <button class="btn btn-secondary btn-lg w-100" >
+      <a href="https://forms.gle/sZpygwFTkiwLsUNB9">3D Printer</a>
+    </button>
+  </div>
+
 </div>
