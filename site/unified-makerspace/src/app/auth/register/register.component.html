@@ -46,7 +46,6 @@
         id="new-password"
         formControlName="password"
         required
-        #password
       />
       <small
         class="warning-label"
@@ -115,7 +114,7 @@
 </div>
 
 
-<!--Visitor-->
+<!--Visitor -->
 <app-visitor *ngIf="state == 'visitor'"></app-visitor>
 
 <!--Success-->
@@ -131,13 +130,5 @@
     <li>Check <b>{{this.registerForm.get("email").value}}</b> for an account confirmation email.</li>
     <li>Login to your dashboard <a routerLink="/login" class="text-secondary">here</a>.</li>
   </ol>
-
-<!--  <div class="card-footer">-->
-<!--    <h6 class="font-weight-bold text-secondary" style="opacity: 80%">How was your registration experience?</h6>-->
-<!--    <ul class="text-white list-unstyled">-->
-<!--      <li class="float-left bi-emoji-smile-fill mr-3"></li>-->
-<!--      <li class="float-left bi-emoji-frown-fill mr-3"></li>-->
-<!--    </ul>-->
-<!--  </div>-->
 
 </div>

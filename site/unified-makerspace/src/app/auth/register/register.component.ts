@@ -31,6 +31,11 @@ export class RegisterComponent implements OnInit {
 
   // todo are you sure you want to leave this page?
 
+  // todo possible failures:
+  // todo incorrect password
+  // todo email in use
+
+
 
   registerForm: FormGroup;
   showError;
@@ -98,10 +103,6 @@ export class RegisterComponent implements OnInit {
         }
       );
   }
-
-  // todo possible failures:
-  // todo incorrect password
-  // todo email in use
 
 
 }
