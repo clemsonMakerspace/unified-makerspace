@@ -1,7 +1,8 @@
 """
 make_docs.py
 
-Compiles API documentation to PDF.
+Compiles API documentation to PDF. Outputs to /build
+in root directory.
 
 """
 

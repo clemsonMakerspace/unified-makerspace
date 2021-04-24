@@ -1,3 +1,10 @@
+"""
+build_site.py
+
+Compiles Angular site. Outputs to /build in root directory.
+
+"""
+
 import os
 from command import Command
 

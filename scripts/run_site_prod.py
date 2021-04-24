@@ -1,8 +1,7 @@
 """
-run_site_production.py
+run_site_prod.py
 
-Serves the site in development mode on port 8000
-for testing.
+Serves the site in production mode on port 8000.
 
 """
 
