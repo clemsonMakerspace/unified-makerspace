@@ -1,21 +1,16 @@
 <div class="card bg-primary w-100 h-100">
   <div class="card-body w-100 h-100 text-light">
-
-    <h1 class="card-title">N/a</h1>
-
-    <table class="w-100 table table-striped text-white table-bordered">
+    <table class="w-100 table table-dark table-striped ">
       <thead class="bg-secondary font-weight-bold text-primary">
       <tr>
         <td *ngFor="let key of keys">{{tableFields[key]}}</td>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let visitor of visitors">
+      <tr *ngFor="let visitor of visitors" class="bg-dark">
         <td *ngFor="let key of keys">{{visitor[key]}}</td>
       </tr>
       </tbody>
-
     </table>
-
   </div>
 </div>

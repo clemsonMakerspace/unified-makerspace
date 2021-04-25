@@ -5,10 +5,10 @@ import {logger} from 'codelyzer/util/logger';
 
 @Component({
   selector: 'app-user-table',
-  templateUrl: './user-table.component.html',
-  styleUrls: ['./user-table.component.scss']
+  templateUrl: './visitors-table.component.html',
+  styleUrls: ['./visitors-table.component.scss']
 })
-export class UserTableComponent implements OnInit {
+export class VisitorsTableComponent implements OnInit {
 
   constructor(private api: ApiService) { }
 
@@ -19,15 +19,9 @@ export class UserTableComponent implements OnInit {
     first_name: 'First Name',
     last_name: 'Last Name',
     major: 'Major',
-    degree: 'Degree',
-    sign_in_time: 'Sign-in Time',
-    sign_out_time: 'Sign-out time'
-  }
-
-
-
-  tempTableFields: {
-
+    // degree: 'Degree',
+    // sign_in_time: 'Sign-in Time',
+    // sign_out_time: 'Sign-out time'
   }
 
 

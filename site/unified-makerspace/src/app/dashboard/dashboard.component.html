@@ -12,22 +12,22 @@
   </div>
 
 
-
   <div *ngIf="auth.isUserLoggedIn()">
     <div id="top-row" class="row no-gutters d-flex align-content-stretch">
       <!--Tasks-->
-      <div class="card-wrapper col-lg col-12">
+      <div class="card-wrapper col-lg-8 col-12">
         <app-tasks></app-tasks>
       </div>
-      <!--Users-->
-      <div class="card-wrapper col-lg col-12">
-        <app-user-graph></app-user-graph>
+
+      <!-- Users / Maintainers -->
+      <div class="card-wrapper col-lg-4 d-md-block d-sm-none">
+        <app-users></app-users>
       </div>
     </div>
 
-    <div class="card-wrapper col-12">
-      <app-users></app-users>
-    </div>
+
+    <!--  Visitors -->
+    <app-visitors></app-visitors>
 
 
     <!--Machines-->

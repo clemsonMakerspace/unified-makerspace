@@ -18,6 +18,16 @@ export class TasksComponent implements OnInit {
   users: User[];
   errorMessage: string;
 
+  tableFields = {
+    task_name: 'Task Name',
+    assigned_to: 'Assigned To',
+    state: 'State',
+    // date_created: 'Date Created',
+    // description: 'Description'
+  }
+
+  keys = Object.keys(this.tableFields);
+
 
   /* integer type to status mappings */
   status_map = {
@@ -35,6 +45,8 @@ export class TasksComponent implements OnInit {
     // refresh tasks whenever modal is closed
     taskModal.dismissed.subscribe(() => this.getTasks());
   }
+
+
 
   ngOnInit(): void {
     this.getUsers();

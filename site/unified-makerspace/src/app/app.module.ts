@@ -16,7 +16,7 @@ import {ProfileComponent} from './profile/profile.component';
 import {NotFoundComponent} from './not-found/not-found.component';
 import {AccountsComponent} from './accounts/accounts.component';
 import {RequestsComponent} from './dashboard/requests/requests.component';
-import {UserGraphComponent} from './dashboard/visitors/user-graph/user-graph.component';
+import {VisitorsGraphComponent} from './dashboard/visitors/visitors-graph/visitors-graph.component';
 import {MachinesComponent} from './dashboard/machines/machines.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {VisitorComponent} from './auth/visitor/visitor.component';
@@ -25,8 +25,9 @@ import {LoginComponent} from './auth/login/login.component';
 import {ChangePasswordComponent} from './profile/change-password/change-password.component';
 import {InterceptorService} from './shared/api/interceptor.service';
 import {ResetPasswordComponent} from './auth/reset-password/reset-password.component';
-import { UsersComponent } from './dashboard/visitors/users.component';
-import { UserTableComponent } from './dashboard/visitors/user-table/user-table.component';
+import { VisitorsComponent } from './dashboard/visitors/visitors.component';
+import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visitors-table.component';
+import { UsersComponent } from './dashboard/users/users.component';
 
 let routes: Routes = [
   {path: '', component: RootComponent},
@@ -51,15 +52,16 @@ let routes: Routes = [
     NotFoundComponent,
     AccountsComponent,
     RequestsComponent,
-    UserGraphComponent,
+    VisitorsGraphComponent,
     MachinesComponent,
     VisitorComponent,
     RegisterComponent,
     LoginComponent,
     ChangePasswordComponent,
     ResetPasswordComponent,
+    VisitorsComponent,
+    VisitorsTableComponent,
     UsersComponent,
-    UserTableComponent,
   ],
   imports: [
     BrowserModule,

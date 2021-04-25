@@ -3,11 +3,11 @@ import {ApiService} from '../../../shared/api/api.service';
 import {Visit} from '../../../shared/models';
 
 @Component({
-  selector: 'app-user-graph',
-  templateUrl: './user-graph.component.html',
-  styleUrls: ['./user-graph.component.scss'],
+  selector: 'app-visitors-graph',
+  templateUrl: './visitors-graph.component.html',
+  styleUrls: ['./visitors-graph.component.scss'],
 })
-export class UserGraphComponent implements OnInit, OnDestroy {
+export class VisitorsGraphComponent implements OnInit, OnDestroy {
   constructor(
     private api: ApiService,
   ) {
