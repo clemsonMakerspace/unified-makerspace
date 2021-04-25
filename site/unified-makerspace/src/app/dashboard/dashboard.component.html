@@ -1,13 +1,16 @@
 <div class="w-100">
 
   <!--Welcome Message-->
-  <h1 id="welcome-text" *ngIf="auth.isUserLoggedIn()"
-      class="text-white font-weight-bold display-3 mb-4">
-    Welcome back,
-    <span class="text-secondary">
-      {{ auth.user.getValue().first_name }}
-    </span>.
-  </h1>
+  <div class="card card-dark bg-primary">
+    <div class="card-body">
+      <h1 id="welcome-text" *ngIf="auth.isUserLoggedIn()"
+          class="text-white font-weight-bold display-3 mb-4">
+        Welcome back,
+        <span class="text-secondary">{{auth.user.getValue().first_name}}</span>.
+      </h1>
+    </div>
+  </div>
+
 
 
   <div *ngIf="auth.isUserLoggedIn()">
@@ -22,7 +25,10 @@
       </div>
     </div>
 
-    <app-users></app-users>
+    <div class="card-wrapper col-12">
+      <app-users></app-users>
+    </div>
+
 
     <!--Machines-->
     <div class="card-wrapper col-12">

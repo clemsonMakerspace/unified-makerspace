@@ -78,7 +78,7 @@ class Visitor:
     """
     hardware_id: str
     college: str
-    degree_type: str
+    degree: str
     first_name: str
     last_name: str
     major: str

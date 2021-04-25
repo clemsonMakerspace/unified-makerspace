@@ -32,8 +32,8 @@ let endpoints = {
   /* visitors */
   createVisitor: ['/api/visitors', 'PUT'],
   getVisitors: ['/api/visitors', 'POST'],
+  getVisitorData: ['/api/visitors', 'GET']
 };
-
 
 
 function endpoint(
@@ -46,10 +46,12 @@ function endpoint(
   descriptor.value = function(args): any {
     let body = func(args);
     console.log(body); // todo for testing
+
+    let data = method == 'GET' ?
+      {'params': body} : {'body': body};
+
     return this.http.request(method,
-      environment.server + url, {
-      'body': body
-      });
+      environment.server + url, data);
   };
 }
 
@@ -164,6 +166,12 @@ export class ApiService {
 
   @endpoint
   getVisitors(args: any): any | Observable<Response> {
+    return args;
+  }
+
+
+  @endpoint
+  getVisitorData(args: any): any | Observable<Response> {
     return args;
   }
 

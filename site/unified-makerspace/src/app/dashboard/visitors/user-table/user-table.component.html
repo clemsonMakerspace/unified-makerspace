@@ -3,13 +3,18 @@
 
     <h1 class="card-title">N/a</h1>
 
-    <table>
+    <table class="w-100 table table-striped text-white table-bordered">
+      <thead class="bg-secondary font-weight-bold text-primary">
       <tr>
         <td *ngFor="let key of keys">{{tableFields[key]}}</td>
       </tr>
+      </thead>
+      <tbody>
       <tr *ngFor="let visitor of visitors">
         <td *ngFor="let key of keys">{{visitor[key]}}</td>
       </tr>
+      </tbody>
+
     </table>
 
   </div>

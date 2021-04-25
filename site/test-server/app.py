@@ -146,3 +146,13 @@ def get_visitors():
 
 
 
+@app.route('/api/visitors', methods=['GET'])
+def get_visitor_data():
+    visitors = fetch_data('visitors')
+    for visitor in visitors:
+        if request.args.get('visitor_id') == visitor['visitor_id']:
+            return dict(code=200, visitor=visitor)
+
+
+
+

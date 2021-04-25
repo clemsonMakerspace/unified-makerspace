@@ -1,32 +1,32 @@
-<div class="w-100">
-  <div class="mb-5" *ngFor="let role of roles">
-    <h1 class="text-white font-weight-bold display-4 mb-4">{{ role }}s</h1>
-    <div class="card bg-primary">
-      <div class="card-body">
-        <div>
-          <div
-            class="rounded bg-dark p-1 text-light my-2"
-            *ngFor="let user of getUsersByRole(role)"
-          >
-            <div
-              class="card-body p-3"
-              (mouseenter)="user.show = true"
-              (mouseleave)="user.show = false"
-            >
-              <div class="d-flex justify-content-between px-3">
-                <h3 class="mb-0 font-weight-bold">{{ user["Name"] }}</h3>
-                <h3
-                  class="bi bi-pencil-fill text-secondary font-weight-bold"
-                ></h3>
-              </div>
-            </div>
-            <div class="pl-4 my-3" *ngIf="user.show">
-              <hr class="text-white" />
-              <h6 class="text-muted">Type: Student</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<!--<div class="w-100">-->
+<!--  <div class="mb-5" *ngFor="let role of roles">-->
+<!--    <h1 class="text-white font-weight-bold display-4 mb-4">{{ role }}s</h1>-->
+<!--    <div class="card bg-primary">-->
+<!--      <div class="card-body">-->
+<!--        <div>-->
+<!--          <div-->
+<!--            class="rounded bg-dark p-1 text-light my-2"-->
+<!--            *ngFor="let user of getUsersByRole(role)"-->
+<!--          >-->
+<!--            <div-->
+<!--              class="card-body p-3"-->
+<!--              (mouseenter)="user.show = true"-->
+<!--              (mouseleave)="user.show = false"-->
+<!--            >-->
+<!--              <div class="d-flex justify-content-between px-3">-->
+<!--                <h3 class="mb-0 font-weight-bold">{{ user["Name"] }}</h3>-->
+<!--                <h3-->
+<!--                  class="bi bi-pencil-fill text-secondary font-weight-bold"-->
+<!--                ></h3>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="pl-4 my-3" *ngIf="user.show">-->
+<!--              <hr class="text-white" />-->
+<!--              <h6 class="text-muted">Type: Student</h6>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->

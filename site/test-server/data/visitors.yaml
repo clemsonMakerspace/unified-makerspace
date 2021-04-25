@@ -5,6 +5,8 @@ visitors: [
     degree: "Masters",
     first_name: "Love",
     last_name: "Quinn",
+    college: "Hogwarts",
+    hardware_id: "000000"
 
   },
   {
@@ -13,6 +15,8 @@ visitors: [
     degree: "Phd",
     first_name: "Delilah",
     last_name: "Alves",
+    college: "Hogwarts",
+    hardware_id: "000000"
 
 
   },
@@ -22,14 +26,18 @@ visitors: [
     degree: "B.S",
     first_name: "Candace",
     last_name: "Stone",
+    college: "Hogwarts",
+    hardware_id: "000000"
 
   },
   {
-    visitor_id: "3",
+    visitor_id: "4",
     major: "Chemistry",
     degree: "B.A",
     first_name: "Delilah",
     last_name: "Alves",
+    college: "Hogwarts",
+    hardware_id: "000000"
 
   }
 
