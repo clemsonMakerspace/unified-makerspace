@@ -1,23 +1,18 @@
-{
-  "visits": [
-    {
-      "visit_id": "1",
-      "visitor_id": "2",
-      "first_visit": 1,
-      "date_visited": 234923432,
-      sign_in_time: 2472422140,
-      sign_out_time: 343423413
-    },
-    {
-      "visit_id": "2",
-      "visitor_id": "2",
-      "first_visit": 0,
-      "date_visited": 2342343,
-      sign_in_time: 2472422140,
-      sign_out_time: 343423413
-    }
-  ]
-}
-
-
-# todo visitors -> visits
+visits: [
+  {
+    visit_id: 1,
+    visitor_id: 2,
+    first_visit: 1,
+    date_visited: 234923432,
+    sign_in_time: 2472422140,
+    sign_out_time: 343423413
+  },
+  {
+    visit_id: 2,
+    visitor_id: 2,
+    first_visit: 0,
+    date_visited: 2342343,
+    sign_in_time: 2472422140,
+    sign_out_time: 343423413
+  }
+]

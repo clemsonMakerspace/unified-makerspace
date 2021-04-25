@@ -1,5 +1,5 @@
-<div class="card bg-primary w-100">
-  <div class="card-body w-100">
+<div class="card bg-primary w-100 h-100">
+  <div class="card-body w-100 h-100">
 
     <!--graph header-->
     <div id="graph-header" class="d-flex justify-content-between mb-3">
@@ -23,12 +23,12 @@
 
 
     <!--chart-->
-    <div class="w-100 h-100" #wrapper
-         *ngIf="!errorMessage">
-      <div id="user-graph-wrapper w-100" style="height: 300px">
+    <div class="w-100" *ngIf="!errorMessage">
+      <div id="user-graph-wrapper w-100" style="max-height: 300px;"
+           #wrapper >
         <ngx-charts-line-chart
           class="w-100"
-          [view]="[wrapper.offsetWidth, 300]"
+          [view]="[wrapper.offsetWidth, wrapper.offsetHeight]"
           [results]="visits"
           [xAxis]="true"
           [yAxis]="true"

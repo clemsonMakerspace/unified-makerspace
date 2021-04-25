@@ -14,9 +14,9 @@ import {TasksComponent} from './dashboard/tasks/tasks.component';
 import {ModalComponent} from './dashboard/tasks/modal/modal.component';
 import {ProfileComponent} from './profile/profile.component';
 import {NotFoundComponent} from './not-found/not-found.component';
-import {UsersComponent} from './users/users.component';
+import {AccountsComponent} from './accounts/accounts.component';
 import {RequestsComponent} from './dashboard/requests/requests.component';
-import {UserGraphComponent} from './dashboard/user-graph/user-graph.component';
+import {UserGraphComponent} from './dashboard/visitors/user-graph/user-graph.component';
 import {MachinesComponent} from './dashboard/machines/machines.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {VisitorComponent} from './auth/visitor/visitor.component';
@@ -25,6 +25,8 @@ import {LoginComponent} from './auth/login/login.component';
 import {ChangePasswordComponent} from './profile/change-password/change-password.component';
 import {InterceptorService} from './shared/api/interceptor.service';
 import {ResetPasswordComponent} from './auth/reset-password/reset-password.component';
+import { UsersComponent } from './dashboard/visitors/users.component';
+import { UserTableComponent } from './dashboard/visitors/user-table/user-table.component';
 
 let routes: Routes = [
   {path: '', component: RootComponent},
@@ -33,7 +35,7 @@ let routes: Routes = [
   {path: 'register', component: AuthComponent},
   {path: 'dashboard', component: DashboardComponent},
   {path: 'profile', component: ProfileComponent},
-  {path: 'users', component: UsersComponent},
+  {path: 'users', component: AccountsComponent},
   {path: '**', component: NotFoundComponent},
 ];
 
@@ -47,7 +49,7 @@ let routes: Routes = [
     RootComponent,
     ProfileComponent,
     NotFoundComponent,
-    UsersComponent,
+    AccountsComponent,
     RequestsComponent,
     UserGraphComponent,
     MachinesComponent,
@@ -56,6 +58,8 @@ let routes: Routes = [
     LoginComponent,
     ChangePasswordComponent,
     ResetPasswordComponent,
+    UsersComponent,
+    UserTableComponent,
   ],
   imports: [
     BrowserModule,

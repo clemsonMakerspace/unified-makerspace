@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ApiService} from '../../shared/api/api.service';
-import {Visit} from '../../shared/models';
+import {ApiService} from '../../../shared/api/api.service';
+import {Visit} from '../../../shared/models';
 
 @Component({
   selector: 'app-user-graph',
@@ -9,7 +9,7 @@ import {Visit} from '../../shared/models';
 })
 export class UserGraphComponent implements OnInit, OnDestroy {
   constructor(
-    private api: ApiService
+    private api: ApiService,
   ) {
   }
 
@@ -35,17 +35,6 @@ export class UserGraphComponent implements OnInit, OnDestroy {
 
   }
 
-  onSliderChange(value: number) {
-    setTimeout(() => {
-      if (value == this.startTime) {
-        let d = new Date();
-        d.setDate(d.getDate() + value);
-        this.getVisits(d.getTime(), this.endTime);
-      }
-    }, 500);
-  }
-
-
   /* gets all visits in a certain period */
   getVisits(startTime: number, endTime: number) {
     this.api.getVisitors({
@@ -60,6 +49,16 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     }, (err) => {
       this.errorMessage = err.message;
     });
+  }
+
+  onSliderChange(value: number) {
+    setTimeout(() => {
+      if (value == this.startTime) {
+        let d = new Date();
+        d.setDate(d.getDate() + value);
+        this.getVisits(d.getTime(), this.endTime);
+      }
+    }, 500);
   }
 
 
@@ -134,7 +133,7 @@ export class UserGraphComponent implements OnInit, OnDestroy {
     link.click();
   }
 
-  /* remove csv link on leaving page */
+  /* remove csv link when leaving page */
   ngOnDestroy() {
     let csv = document.getElementById('csv-dl');
     if (csv) {

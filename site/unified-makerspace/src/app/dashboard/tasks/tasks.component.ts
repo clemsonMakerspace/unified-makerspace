@@ -10,7 +10,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 })
 export class TasksComponent implements OnInit {
 
-  constructor(private modal: NgbModal, private api: ApiService) {
+  constructor(private modal: NgbModal,
+              private api: ApiService) {
   }
 
   tasks: Task[];
@@ -18,7 +19,7 @@ export class TasksComponent implements OnInit {
   errorMessage: string;
 
 
-  /* type to status mappings */
+  /* integer type to status mappings */
   status_map = {
     0: 'Not Completed',
     1: 'In-Progress',
@@ -26,9 +27,13 @@ export class TasksComponent implements OnInit {
   };
 
   open(content) {
-    this.modal.open(content, {
+    let taskModal = this.modal.open(content, {
       size: 'lg'
     });
+
+
+    // refresh tasks whenever modal is closed
+    taskModal.dismissed.subscribe(() => this.getTasks());
   }
 
   ngOnInit(): void {
