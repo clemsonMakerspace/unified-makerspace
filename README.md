@@ -7,7 +7,7 @@ The Makerspace is the hub for innovation on Clemson University’s campus. Here,
 
 ## The Project
 
-To run the MakerSpace, it’s helpful to track the machines and the individuals using them, both which enable more optimal allocation of resources. Our Capstone team built a complete management system for the MakerSpace where staff can see detailed information about users, assign maintenance tasks, and better manage equipment.
+To run the Makerspace, it’s helpful to track the machines and the individuals using them, both which enable more optimal allocation of resources. Our Capstone team built a complete management system for the MakerSpace where staff can see detailed information about users, assign maintenance tasks, and better manage equipment.
 
 
 ## Notes
