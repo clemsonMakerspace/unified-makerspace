@@ -127,13 +127,14 @@ export class ApiService {
     return args;
   }
 
+
+  // todo what's the point of this
   @endpoint
   resolveTask(args: { 'task_id': string }): any | Observable<Response> {
     return args;
   }
 
 
-  // todo what's the point of this
   @endpoint
   updateTask(args: any): any | Observable<Response> {
     return args;

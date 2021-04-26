@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 // todo remvoe later
-// https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com
+//
 
 export const environment = {
   production: false,
@@ -23,12 +23,16 @@ export const environment = {
     'hardwareId': '902100'
   },
 
-  task : {
+
+  //
+  task: {
     'taskName': 'Build glass box to store valuables',
     'description': 'It should have a hatch for delivering food.',
     'tags': ['*, High priority, Help wanted'],
     'person': 'Joe'
   }
+
+
 };
 
 /*

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AuthService} from '../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-tasks',
@@ -11,7 +12,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 export class TasksComponent implements OnInit {
 
   constructor(private modal: NgbModal,
-              private api: ApiService) {
+              private api: ApiService,
+              public auth: AuthService) {
   }
 
   tasks: Task[];
@@ -22,8 +24,8 @@ export class TasksComponent implements OnInit {
     task_name: 'Task Name',
     assigned_to: 'Assigned To',
     state: 'State',
-    // date_created: 'Date Created',
-    // description: 'Description'
+    date_created: 'Date Created',
+    description: 'Description'
   }
 
   keys = Object.keys(this.tableFields);
@@ -67,6 +69,7 @@ export class TasksComponent implements OnInit {
       this.tasks.forEach(((task, i) => {
           for (let user of this.users) {
             if (user.user_id == task.assigned_to) {
+              this.tasks[i]['user_id'] = this.tasks[i].assigned_to;
               this.tasks[i].assigned_to = user.first_name;
             }
           }
@@ -78,7 +81,17 @@ export class TasksComponent implements OnInit {
     }, (err) => this.handleError(err));
   }
 
+  changeTaskState(taskId: string, newState: number) {
+    this.api.updateTask(
+      {'task_id': taskId, 'state': newState }
+      ).subscribe((res) => {
+      this.getTasks(); // refresh after task state changed
+    }, (err) => {
+        // todo implement this..
+    })
+  }
 
+  /* resolves all tasks */
   clearTasks(): void {
     for (let task of this.tasks.filter((task) => task.state == 'Completed')) {
       this.resolveTask(task.task_id);

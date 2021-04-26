@@ -51,14 +51,23 @@
         style="border-radius: 20px !important">
       <thead class="bg-secondary font-weight-bold text-primary">
       <tr class="card-body rounded">
-        <td *ngFor="let key of keys">{{tableFields[key]}}</td>
+        <td *ngFor="let key of keys">
+            {{tableFields[key]}}
+        </td>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let task of tasks" class="bg-dark">
-        <td *ngFor="let key of keys"
-            [ngClass]="{'text-success': task[key] == 'Completed'}"
-        >{{task[key]}}</td>
+      <tr *ngFor="let task of tasks" class="bg-dark"
+          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}">
+        <td *ngFor="let key of keys">
+          <span *ngIf="key != 'state'">{{task[key]}}</span>
+          <select [name]="'task-' + task.task_id + 'state'" id=""
+                  *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
+                  class="form-control p-0 text-light">
+            <option value="1" [selected]="task[key] === 'Completed'" class="text-success">Completed</option>
+            <option value="0" [selected]="task[key] === 'Not Completed'">Not Started</option>
+          </select>
+        </td>
       </tr>
       </tbody>
     </table>
