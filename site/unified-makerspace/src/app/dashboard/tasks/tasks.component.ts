@@ -119,9 +119,17 @@ export class TasksComponent implements OnInit {
 
     //setup header of csv as Task, Person, Status
     formattedData +=
-      'Task' +
+      'Task ID' +
       columnDelimiter +
-      'Person' +
+      'Task Name' +
+      columnDelimiter +
+      'Description' +
+      columnDelimiter +
+      'Assigned to' +
+      columnDelimiter +
+      'Date Created' +
+      columnDelimiter +
+      'Date Resolved' +
       columnDelimiter +
       'Status' +
       rowDelimiter;
@@ -129,9 +137,17 @@ export class TasksComponent implements OnInit {
     //loop through tasks and add data to csv
     this.tasks.forEach(function(item, index) {
       formattedData +=
+        item.task_id +
+        columnDelimiter +
         item.task_name +
         columnDelimiter +
+        item.description +
+        columnDelimiter +
         item.assigned_to +
+        columnDelimiter +
+        item.date_created +
+        columnDelimiter +
+        item.date_resolved +
         columnDelimiter +
         item.status +
         rowDelimiter;

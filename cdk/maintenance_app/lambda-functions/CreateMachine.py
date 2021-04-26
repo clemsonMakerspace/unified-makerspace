@@ -22,9 +22,27 @@ dynamodb = boto3.resource('dynamodb')
 Machines = dynamodb.Table('Machines')
 
 
-def CreateMachine(machine_name,machine_status):
+# Function for Calculating Due Dates for Children
+def CalculateNextDate(start, freq, add):
+    # Convert start date to DateTime
+    startDateTime = datetime.strptime(str(start), '%Y%m%d')
 
-    new_machine = Machine(machine_name,machine_status)
+    # Add offset for each frequency category
+    if freq == 'Daily':
+        startDateTime += timedelta(days=add)
+    elif freq == 'Weekly':
+        startDateTime += timedelta(weeks=add)
+    elif freq == 'Monthly':
+        startDateTime += relativedelta(months=add)
+
+    # Return NextDate as String
+    return startDateTime.strftime('%Y%m%d')
+
+
+def CreateMachine(data):
+    new_machine = data["body"]
+
+    new_machine = Machine(new_machine["machine_name"],new_machine["machine_state"])
 
 
     # Put new task into the Machines eventbase
@@ -66,11 +84,7 @@ def CreateMachineHandler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'text/plain',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
+                'Content-Type': 'text/plain'
             },
             'body': json.dumps({
                 'Message': str(e)
