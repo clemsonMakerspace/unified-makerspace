@@ -23,8 +23,9 @@ visitTable = db.Table('Visits')
 def RPI_SignIn_Handler(event, context):
 
     try:
-        new_cardID = event['HardwareID']
-        location = event['LoginLocation']
+        data = json.loads(event["body"])
+        new_cardID = data['HardwareID']
+        location = data['LoginLocation']
 
     except Exception as e:
         print(e)

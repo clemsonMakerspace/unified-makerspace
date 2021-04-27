@@ -10,9 +10,12 @@ from aws_cdk import (
     aws_events_targets as targets,
     aws_s3_deployment as s3deploy,
     aws_iot as iot,
-    aws_cognito as cognito
+    aws_cognito as cognito,
+    aws_secretsmanager as secrets
 )
-import boto3
+import boto3, json
+
+from thingcert import createThing as create_thing
 
 class MaintenanceAppStack(core.Stack):
 
@@ -28,7 +31,7 @@ class MaintenanceAppStack(core.Stack):
 
         #Define Existing Tables
         existing_tables = dynamodb_client.list_tables()['TableNames']
-        
+
         #Create Tasks Resource
         if 'Tasks' not in existing_tables:
             tasksTable = ddb.Table(
@@ -69,7 +72,7 @@ class MaintenanceAppStack(core.Stack):
         if 'Visits' not in existing_tables:
             visitsTable = ddb.Table (
                 self, 'Visits',
-                partition_key={'name': 'visit_id', 'type': ddb.AttributeType.STRING},
+                partition_key={'name': 'visitor_id', 'type': ddb.AttributeType.STRING},
                 sort_key={'name': 'sign_in_time', 'type': ddb.AttributeType.NUMBER},
                 table_name='Visits'
             )
@@ -77,7 +80,7 @@ class MaintenanceAppStack(core.Stack):
         else:
             visitsTable = ddb.Table.from_table_name(self,
                 'Visits', 'Visits')
-        
+
 
         #Create User resource
         if 'Users' not in existing_tables:
@@ -105,12 +108,12 @@ class MaintenanceAppStack(core.Stack):
             destination_bucket=FrontEndBucket,
             # destination_key_prefix="web/static"
         )
-        
+
         #TODO:
             #Subdomain
-            #Add compiled build files for the website 
+            #Add compiled build files for the website
 
-        
+
     #------------------Lambda Functions/API Integrations--------------------
 
         ###------Administrative------###
@@ -118,16 +121,18 @@ class MaintenanceAppStack(core.Stack):
         ## ResetPassword ##
         ResetPasswordLambda = _lambda.Function(
             self, 'ResetPassword',
+            function_name = 'ResetPassword',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ResetPassword.ResetPasswordHandler',
         )
         #Add Lambda Integration for API
         ResetPasswordLambdaIntegration = apigw.LambdaIntegration(ResetPasswordLambda)
-        
+
         ## TODO: GenerateUserToken
         GenerateUserTokenLambda = _lambda.Function(
             self, 'GenerateUserToken',
+            function_name = 'GenerateUserToken',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GenerateUserToken.GenerateUserTokenLambda',
@@ -142,6 +147,7 @@ class MaintenanceAppStack(core.Stack):
         ## CreateMachine ##
         CreateMachineLambda = _lambda.Function(
             self, 'CreateMachine',
+            function_name = 'CreateMachine',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateMachine.CreateMachineHandler',
@@ -150,11 +156,12 @@ class MaintenanceAppStack(core.Stack):
         machinesTable.grant_full_access(CreateMachineLambda)
         #Add Lambda Integration for API
         CreateMachineLambdaIntegration = apigw.LambdaIntegration(CreateMachineLambda)
-        
+
 
         ## GetMachineStatus ##
         GetMachineStatusLambda = _lambda.Function(
             self, 'GetMachineStatus',
+            function_name = 'GetMachineStatus',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GetMachineStatus.GetMachineStatusHandler',
@@ -163,11 +170,12 @@ class MaintenanceAppStack(core.Stack):
         machinesTable.grant_full_access(GetMachineStatusLambda)
         #Add Lambda Integration for API
         GetMachineStatusLambdaIntegration = apigw.LambdaIntegration(GetMachineStatusLambda)
-        
+
 
         ##DeleteMachine
         DeleteMachineLambda = _lambda.Function(
             self, 'DeleteMachine',
+            function_name = 'DeleteMachine',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='DeleteMachine.DeleteMachineHandler',
@@ -184,6 +192,7 @@ class MaintenanceAppStack(core.Stack):
         ## CreateTask ##
         CreateTaskLambda = _lambda.Function(
             self, 'CreateTask',
+            function_name = 'CreateTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateTask.CreateTaskHandler',
@@ -197,6 +206,7 @@ class MaintenanceAppStack(core.Stack):
         ## GetTasks ##
         GetTasksLambda = _lambda.Function(
             self, 'GetTasks',
+            function_name = 'GetTasks',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GetTasks.GetTasksHandler',
@@ -210,6 +220,7 @@ class MaintenanceAppStack(core.Stack):
         ## ResolveTask ##
         ResolveTaskLambda = _lambda.Function(
             self, 'ResolveTask',
+            function_name = 'ResolveTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ResolveTask.ResolveTaskHandler',
@@ -223,6 +234,7 @@ class MaintenanceAppStack(core.Stack):
         ## UpdateTask ##
         UpdateTaskLambda = _lambda.Function(
             self, 'UpdateTask',
+            function_name = 'UpdateTask',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='UpdateTask.UpdateTaskHandler',
@@ -239,6 +251,7 @@ class MaintenanceAppStack(core.Stack):
         ## CreateUser ##
         CreateUserLambda = _lambda.Function(
             self, 'CreateUser',
+            function_name = 'CreateUser',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateUser.CreateUserHandler',
@@ -252,6 +265,7 @@ class MaintenanceAppStack(core.Stack):
         ## DeleteUser ##
         DeleteUserLambda = _lambda.Function(
             self, 'DeleteUser',
+            function_name = 'DeleteUser',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='DeleteUser.DeleteUserHandler',
@@ -265,6 +279,7 @@ class MaintenanceAppStack(core.Stack):
         ## GetUser ##
         GetUsersLambda = _lambda.Function(
             self, 'GetUsers',
+            function_name = 'GetUsers',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GetUsers.GetUsersHandler',
@@ -278,6 +293,7 @@ class MaintenanceAppStack(core.Stack):
         ## UpdateUser ##
         UpdateUserLambda = _lambda.Function(
             self, 'UpdateUser',
+            function_name = 'UpdateUser',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='UpdateUser.UpdateUserHandler',
@@ -294,6 +310,7 @@ class MaintenanceAppStack(core.Stack):
         ## CreateVisitor ##
         CreateVisitorLambda = _lambda.Function(
             self, 'CreateVisitor',
+            function_name = 'CreateVisitor',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateVisitor.CreateVisitorHandler',
@@ -308,6 +325,7 @@ class MaintenanceAppStack(core.Stack):
         ## GetVisitors ##
         GetVisitorLambda = _lambda.Function(
             self, 'GetVisitors',
+            function_name = 'GetVisitors',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GetVisitors.GetVisitorsHandler',
@@ -324,6 +342,7 @@ class MaintenanceAppStack(core.Stack):
         ## SignIn ##
         RPI_SignInLambda = _lambda.Function(
             self, 'RPI_SignIn',
+            function_name = 'RPI_SignIn',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='RPI_SignIn.RPI_SignIn_Handler',
@@ -332,12 +351,13 @@ class MaintenanceAppStack(core.Stack):
         visitorsTable.grant_full_access(RPI_SignInLambda)
         visitsTable.grant_full_access(RPI_SignInLambda)
         #Add Lambda Integration for API
-        RPI_SignInLambdaIntegration = apigw.LambdaIntegration(RPI_SignInLambda)
+        RPI_SignInLambdaIntegration = apigw.LambdaIntegration(RPI_SignInLambda, proxy=True)
 
-        
+
         ## SignOut ##
         RPI_SignOutLambda = _lambda.Function(
             self, 'RPI_SignOut',
+            function_name = 'RPI_SignOut',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='RPI_SignOut.RPI_SignOut_Handler',
@@ -346,15 +366,16 @@ class MaintenanceAppStack(core.Stack):
         visitorsTable.grant_full_access(RPI_SignOutLambda)
         visitsTable.grant_full_access(RPI_SignOutLambda)
         #Add Lambda Integration for API
-        RPI_SignOutLambdaIntegration = apigw.LambdaIntegration(RPI_SignOutLambda)
+        RPI_SignOutLambdaIntegration = apigw.LambdaIntegration(RPI_SignOutLambda, proxy=True)
 
         ## Pre-Sign Up Trigger ##
         ConfirmUserLambda = _lambda.Function(
             self, 'ConfirmUser',
+            function_name = 'ConfirmUser',
             runtime=_lambda.Runtime.NODEJS_12_X,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ConfirmUser.ConfirmUserHandler',
-        ) 
+        )
 
         #NOTE: Log in lambda has to bet put after cognito pool
 
@@ -373,7 +394,7 @@ class MaintenanceAppStack(core.Stack):
                 "sms_message": "Your username is {username} and temporary password is {####}. "
             },
             sign_in_aliases={
-                "username": True, 
+                "username": True,
                 "email": True
             },
             standard_attributes={
@@ -395,6 +416,7 @@ class MaintenanceAppStack(core.Stack):
         ## Log in ##
         LoginLambda = _lambda.Function(
             self, 'Login',
+            function_name = 'Login',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='Login.LoginHandler',
@@ -403,7 +425,7 @@ class MaintenanceAppStack(core.Stack):
                 #TODO: Pass client ID as well to Login
             }
         )
-                
+
         #Add Lambda Integration for API
         LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
 
@@ -419,15 +441,15 @@ class MaintenanceAppStack(core.Stack):
         #Add cognito authorizer
         cognitoAuth = apigw.CfnAuthorizer(self, "adminSectionAuth",
             rest_api_id=um_api.rest_api_id,
-            type='COGNITO_USER_POOLS', 
+            type='COGNITO_USER_POOLS',
             identity_source='method.request.header.name.Authorization', #NOTE: Where to check for what to auth
             provider_arns=[makerspaceCognitoPool.user_pool_arn],
             name="adminSectionAuth"
         )
-        
+
         #NOTE: put s3 bucket and API Gateway on same domain to avoid using CORS?
 
-        # Add ANY 
+        # Add ANY
         um_api.root.add_method('ANY')
 
         ###-----Administrative------###
@@ -523,20 +545,39 @@ class MaintenanceAppStack(core.Stack):
         }
 
         # Create policy for IoT Devices
-        CUmakeit_IoT_Policy = iot.CfnPolicy(self, "IoT_All_Allowed", policy_document= IoT_All_Allowed_Policy)
+        CUmakeit_IoT_Policy = iot.CfnPolicy(self, "IoT_All_Allowed", policy_name="IoT_All_Allowed", policy_document= IoT_All_Allowed_Policy)
 
-        ## Thing 1 ##
-        CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01")
+        ## ---- Thing 1 ---- ##
+        CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
+
+        # key, csr = thingcert.create_key("CUmakeit_01_IoT_Key_Cert")
+        #
+        # CUmakeit_01_Thing = iot.CfnThing(self, "CUmakeit_01", thing_name="CUmakeit_01")
+        #
         # # Create cert
-        # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", status='ACTIVE')
-        # Add to secrets manager
+        # CUmakeit_01_Cert = iot.CfnCertificate(self, "CUmakeit_01_Cert", certificate_signing_request=csr, status='ACTIVE')
+        #
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_01_Cert.attr_arn, thing_name=CUmakeit_01_Thing.ref)
+        #
         # # Attach the Policy to the Certificate
         # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_01_Cert.attr_arn, policy_name=CUmakeit_IoT_Policy.ref)
+        #
+        # # Add to secrets manager
+        # private_key = secrets.CfnSecret(self, "PrivateKeySecretCUmakeit_01", name="PrivateKeySecretCUmakeit_01", secret_string = key)
+        #
+        # certificate = secrets.CfnSecret(self, "CertificateCUmakeit_01", name="CertificateCUmakeit_01", secret_string=csr)
+        #
+        # # secret = secrets.CfnSecret(self, "PrivateKeySecretCUmakeit_01", secret_string=json.dumps({"certificateId": CUmakeit_01_Cert, "csr": csr, "privateKey": key}))
+        #
+        # core.CfnOutput(self, "CUmakeit_01_ID", value=CUmakeit_01_Thing.ref)
+        # core.CfnOutput(self, "Certificate_ID", value=CUmakeit_01_Cert.ref)
+        # core.CfnOutput(self, "PrivateKey", value=private_key.ref)
+        # core.CfnOutput(self, "Certificate", value=certificate.ref)
 
-        ## Thing 2 ##
-        CUmakeit_02_Thing = iot.CfnThing(self, "CUmakeit_02")
+        ## ---- Thing 2 ---- ##
+        #CUmakeit_02_Thing = iot.CfnThing(self, "CUmakeit_02")
+        #CUmakeit_02 = thingcert.createThing(self, '02', CUmakeit_IoT_Policy)
         # Create cert
         # CUmakeit_02_Cert = iot.CfnCertificate(self, "CUmakeit_02_Cert", certificate_signing_request=csr, status="ACTIVE")
         # # Attach the Certificate to the Thing
@@ -544,32 +585,36 @@ class MaintenanceAppStack(core.Stack):
         # # Attach the Policy to the Certificate
         # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_02_Cert.attr_arn, policy_name=CUmakeit_02_Policy.ref)
 
-        ## Thing 3 ##
-        CUmakeit_03_Thing = iot.CfnThing(self, "CUmakeit_03")
+        ## ---- Thing 3 ---- ##
+        #CUmakeit_03_Thing = iot.CfnThing(self, "CUmakeit_03")
+        #CUmakeit_03 = thingcert.createThing(self, '03', CUmakeit_IoT_Policy)
         # CUmakeit_03_Cert = iot.CfnCertificate(self, "CUmakeit_03_Cert", certificate_signing_request=csr, status="ACTIVE")
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_03_Cert.attr_arn, thing_name=CUmakeit_03_Thing.ref)
         # # Attach the Policy to the Certificate
         # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_03_Cert.attr_arn, policy_name=CUmakeit_03_Policy.ref)
 
-        ## Thing 4 ##
-        CUmakeit_04_Thing = iot.CfnThing(self, "CUmakeit_04")
+        ## ---- Thing 4 ---- ##
+        #CUmakeit_04_Thing = iot.CfnThing(self, "CUmakeit_04")
+        #CUmakeit_04 = thingcert.createThing(self, '04', CUmakeit_IoT_Policy)
         # CUmakeit_04_Cert = iot.CfnCertificate(self, "CUmakeit_04_Cert", certificate_signing_request=csr, status="ACTIVE")
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_04_Cert.attr_arn, thing_name=CUmakeit_04_Thing.ref)
         # # Attach the Policy to the Certificate
         # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_04_Cert.attr_arn, policy_name=CUmakeit_04_Policy.ref)
 
-        ## Thing 5 ##
-        CUmakeit_05_Thing = iot.CfnThing(self, "CUmakeit_05")
+        ## ---- Thing 5 ---- ##
+        #CUmakeit_05_Thing = iot.CfnThing(self, "CUmakeit_05")
+        #CUmakeit_05 = thingcert.createThing(self, '05', CUmakeit_IoT_Policy)
         # CUmakeit_05_Cert = iot.CfnCertificate(self, "CUmakeit_05_Cert", certificate_signing_request=csr, status="ACTIVE")
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_05_Cert.attr_arn, thing_name=CUmakeit_05_Thing.ref)
         # # Attach the Policy to the Certificate
         # iot.CfnPolicyPrincipalAttachment(self, "thing1PolicyAttachment", principal=CUmakeit_05_Cert.attr_arn, policy_name=CUmakeit_05_Policy.ref)
 
-        ## Thing 6 ##
-        CUmakeit_06_Thing = iot.CfnThing(self, "CUmakeit_06")
+        ## ---- Thing 6 ---- ##
+        #CUmakeit_06_Thing = iot.CfnThing(self, "CUmakeit_06")
+        #CUmakeit_06 = thingcert.createThing(self, '06', CUmakeit_IoT_Policy)
         # CUmakeit_06_Cert = iot.CfnCertificate(self, "CUmakeit_06_Cert", certificate_signing_request=csr, status="ACTIVE")
         # # Attach the Certificate to the Thing
         # iot.CfnThingPrincipalAttachment(self, "thing1CertificateAttachment", principal=CUmakeit_06_Cert.attr_arn, thing_name=CUmakeit_06_Thing.ref)
