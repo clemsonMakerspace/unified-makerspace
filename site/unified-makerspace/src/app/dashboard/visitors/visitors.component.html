@@ -1,10 +1,11 @@
 <div>
-  <div class="row no-gutters">
-    <div class="card-wrapper col-lg-6 col-12">
-      <app-visitors-graph></app-visitors-graph>
-    </div>
-    <div class="card-wrapper col-lg-6 col-12">
+  <div class="row no-gutters flex-row-reverse">
+    <div class="card-wrapper col-12" [ngClass]="{'col-lg-6': !layout.usersTableIsExpanded}" >
       <app-user-table></app-user-table>
     </div>
+    <div class="card-wrapper col-12" [ngClass]="{'col-lg-6': !layout.usersTableIsExpanded}">
+      <app-visitors-graph></app-visitors-graph>
+    </div>
+
   </div>
 </div>

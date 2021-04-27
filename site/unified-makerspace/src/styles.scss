@@ -27,6 +27,12 @@ html {
 }
 
 
+// transitions
+* {
+  transition: max-width .8s ease-out, width .5s ease-in-out;
+}
+
+
 .fill-primary {
   fill: #FF9900;
 }

@@ -12,7 +12,7 @@ import {LayoutService} from '../../../shared/layout/layout.service';
 export class VisitorsTableComponent implements OnInit {
 
   constructor(private api: ApiService,
-      private layout: LayoutService) { }
+      public layout: LayoutService) { }
 
 
   // todo currently using visits; change to vistors later
@@ -21,14 +21,22 @@ export class VisitorsTableComponent implements OnInit {
     first_name: 'First Name',
     last_name: 'Last Name',
     major: 'Major',
-    // degree: 'Degree',
-    // sign_in_time: 'Sign-in Time',
-    // sign_out_time: 'Sign-out time'
+    degree: 'Degree',
+    sign_in_time: 'Sign-in Time',
+    sign_out_time: 'Sign-out time'
   }
 
+  toggle() {
 
+    this.layout.usersTableIsExpanded = !this.layout.usersTableIsExpanded ;
+    if (this.layout.usersTableIsExpanded) {
+      this.keys = Object.keys(this.tableFields);
+    } else {
+      this.keys = Object.keys(this.tableFields).slice(0,3);
+    }
+  }
 
-  keys = Object.keys(this.tableFields);
+  keys = Object.keys(this.tableFields).slice(0,3);
   visitors = []
 
 
@@ -43,6 +51,8 @@ export class VisitorsTableComponent implements OnInit {
     this.api.getVisitors({}).subscribe((data)=> {
       // todo check
       data['visitors'].map(v => {
+        v['sign_in_time'] = new Date(v['sign_in_time']).toLocaleString();
+        v['sign_out_time'] = new Date(v['sign_out_time']).toLocaleString();
         this.api.getVisitorData(
           {'visitor_id': v['visitor_id']}
         ).subscribe(d => (

@@ -13,14 +13,18 @@
       </tr>
       </tbody>
     </table>
-    <div class="paging-buttons" style="position: absolute; bottom: 4rem">
+    <div class="paging-buttons">
       <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
               [disabled]="page == 1"
-              (click)="page = page - 1">Previous Page</button>
-      <button class="btn btn-primary border-secondary btn-sm" type="button"
-              [disabled] = "page >= visitors.length/pageSize"
-              (click)="page = page + 1">Next Page</button>
-
+              (click)="page = page - 1">Previous Page
+      </button>
+      <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
+              [disabled]="page >= visitors.length/pageSize"
+              (click)="page = page + 1">Next Page
+      </button>
+      <button class="btn btn-secondary btn-sm" (click)="toggle()">
+        {{layout.usersTableIsExpanded ? 'collapse' : 'expand'}}
+      </button>
     </div>
 
   </div>

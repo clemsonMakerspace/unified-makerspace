@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {LayoutService} from '../../shared/layout/layout.service';
 
 @Component({
   selector: 'app-visitors',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VisitorsComponent implements OnInit {
 
-  constructor() { }
+  constructor(public layout: LayoutService) { }
 
   ngOnInit(): void {
   }

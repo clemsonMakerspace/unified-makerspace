@@ -6,4 +6,7 @@ import { Injectable } from '@angular/core';
 export class LayoutService {
 
   constructor() { }
+
+  usersTableIsExpanded = false;
+
 }
