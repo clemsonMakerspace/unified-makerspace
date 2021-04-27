@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
 import {map} from 'rxjs/operators';
 import {logger} from 'codelyzer/util/logger';
+import {LayoutService} from '../../../shared/layout/layout.service';
 
 @Component({
   selector: 'app-user-table',
@@ -10,7 +11,8 @@ import {logger} from 'codelyzer/util/logger';
 })
 export class VisitorsTableComponent implements OnInit {
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService,
+      private layout: LayoutService) { }
 
 
   // todo currently using visits; change to vistors later

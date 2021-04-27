@@ -2,14 +2,30 @@
   <div class="text-right">
     <i class="bi-x text-secondary h2" (click)="modal.dismissAll()"></i>
   </div>
-  <h1 class="card-title">Details</h1>
+  <h1 class="card-title">Task Details</h1>
 
 
+  <div class="row">
 
-  <p>{{task.description}}</p>
-  <h5>{{task.title}}</h5>
+    <div class="col">
+      <h4 class="font-weight-bold text-secondary">Name</h4>
+      <h5>{{task['task_name']}}</h5>
 
+      <h4 class="font-weight-bold text-secondary">State</h4>
+      <h5>{{task.state}}</h5>
 
-  <h4 class="font-weight-bold text-secondary">State</h4>
-  <h5>{{task.state}}</h5>
+      <h4 class="font-weight-bold text-secondary">Assigned to</h4>
+      <h5>{{task.assigned_to}}</h5>
+    </div>
+
+    <div class="col">
+      <h4 class="font-weight-bold text-secondary">Description</h4>
+      <h5>{{task['description']}}</h5>
+
+      <h4 class="font-weight-bold text-secondary">Date Created</h4>
+      <h5>{{task['date_created_str']}}</h5>
+    </div>
+
+  </div>
+
 </div>
