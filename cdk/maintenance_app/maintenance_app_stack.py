@@ -550,16 +550,16 @@ class MaintenanceAppStack(core.Stack):
         CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
 
         ## ---- Thing 2 ---- ##
-        CUmakeit_02 = thingcert.createThing(self, '02', CUmakeit_IoT_Policy)
+        CUmakeit_02, cert02 = create_thing(self, '02', CUmakeit_IoT_Policy)
 
         ## ---- Thing 3 ---- ##
-        CUmakeit_03 = thingcert.createThing(self, '03', CUmakeit_IoT_Policy)
+        CUmakeit_03, cert03 = create_thing(self, '03', CUmakeit_IoT_Policy)
 
         ## ---- Thing 4 ---- ##
-        CUmakeit_04 = thingcert.createThing(self, '04', CUmakeit_IoT_Policy)
+        CUmakeit_04, cert04 = create_thing(self, '04', CUmakeit_IoT_Policy)
 
         ## ---- Thing 5 ---- ##
-        CUmakeit_05 = thingcert.createThing(self, '05', CUmakeit_IoT_Policy)
+        CUmakeit_05, cert05 = create_thing(self, '05', CUmakeit_IoT_Policy)
 
         ## ---- Thing 6 ---- ##
-        CUmakeit_06 = thingcert.createThing(self, '06', CUmakeit_IoT_Policy)
+        CUmakeit_06, cert06 = create_thing(self, '06', CUmakeit_IoT_Policy)
