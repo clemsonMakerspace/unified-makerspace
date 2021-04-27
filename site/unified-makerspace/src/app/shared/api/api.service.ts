@@ -45,7 +45,6 @@ function endpoint(
   let func = descriptor.value;
   descriptor.value = function(args): any {
     let body = func(args);
-    console.log(body); // todo for testing
 
     let data = method == 'GET' ?
       {'params': body} : {'body': body};
@@ -128,7 +127,6 @@ export class ApiService {
   }
 
 
-  // todo what's the point of this
   @endpoint
   resolveTask(args: { 'task_id': string }): any | Observable<Response> {
     return args;

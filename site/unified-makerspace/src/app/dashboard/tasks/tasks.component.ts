@@ -19,6 +19,10 @@ export class TasksComponent implements OnInit {
   tasks: Task[];
   users: User[];
   errorMessage: string;
+
+  selTask;
+
+  // for pagination
   page = 1;
   pageSize = 5;
 
@@ -42,6 +46,7 @@ export class TasksComponent implements OnInit {
 
   /* get users on launch */
   ngOnInit(): void {
+    this.tasks = []
     this.getUsers();
     this.keys = Object.keys(this.tableFields);
   }

@@ -25,16 +25,16 @@ export class VisitorsTableComponent implements OnInit {
   }
 
 
+
+  keys = Object.keys(this.tableFields);
+  visitors = []
+
+
+  // pagination
   page = 1;
   pageSize = 6;
 
 
-  keys = Object.keys(this.tableFields);
-
-  visitors = []
-
-
-  // todo limit to 50...?
   // todo handle errors
   ngOnInit(): void {
 
@@ -49,15 +49,6 @@ export class VisitorsTableComponent implements OnInit {
         )
       })
     })
-
-
-
-
-    setTimeout(() => {
-      console.log(this.visitors);
-      }, 2000)
-
-
   }
 
 }

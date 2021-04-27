@@ -92,7 +92,6 @@ export class MachinesComponent implements OnInit {
       if (data === undefined) { // for backward compatibility
         data = res['machines'];
       }
-      console.log("data", res);
       this.machines = this.convertData(
         data, startTime, endTime);
     }, (err) => {

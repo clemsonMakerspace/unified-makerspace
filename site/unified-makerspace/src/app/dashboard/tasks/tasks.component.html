@@ -3,6 +3,9 @@
   <app-modal></app-modal>
 </ng-template>
 
+<ng-template #details>
+  <app-details [task]="selTask"></app-details>
+</ng-template>
 
 <div id="tasks" class="card bg-primary h-100">
   <div class="card-body h-100">
@@ -46,25 +49,26 @@
       </h6>
     </div>
 
-<!--Tasks Table-->
+    <!--Tasks Table-->
     <table class="w-100 table table-striped text-white table-dark table-hover"
-        style="border-radius: 20px !important">
+           style="border-radius: 20px !important">
       <thead class="bg-secondary font-weight-bold text-primary">
       <tr class="card-body rounded">
         <td *ngFor="let key of keys">
-            {{tableFields[key]}}
+          {{tableFields[key]}}
         </td>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let task of tasks.slice(pageSize * (page - 1), pageSize * page)" class="bg-dark"
-          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}">
+          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}"
+          (click)="selTask=task;open(details)">
         <td *ngFor="let key of keys">
           <span *ngIf="key != 'state'">{{task[key]}}</span>
           <label for="task-state"></label>
           <select [name]="'task-' + task.task_id + 'state'" id="task-state"
-                                        *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
-                                        class="form-control p-0 text-light">
+                  *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
+                  class="form-control p-0 text-light">
             <option value="1" [selected]="task[key] === 'Completed'" class="text-success">Completed</option>
             <option value="0" [selected]="task[key] === 'Not Completed'">Not Started</option>
           </select>
@@ -75,10 +79,12 @@
     <div class="paging-buttons">
       <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
               [disabled]="page == 1"
-              (click)="page = page - 1">Previous Page</button>
+              (click)="page = page - 1">Previous Page
+      </button>
       <button class="btn btn-primary border-secondary btn-sm" type="button"
-              [disabled] = "page >= tasks.length/pageSize"
-              (click)="page = page + 1">Next Page</button>
+              [disabled]="page >= tasks.length/pageSize"
+              (click)="page = page + 1">Next Page
+      </button>
 
     </div>
 
