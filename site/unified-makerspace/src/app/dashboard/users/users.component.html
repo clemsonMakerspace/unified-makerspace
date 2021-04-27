@@ -2,7 +2,7 @@
   <div class="card-body h-100">
     <h3 class="font-weight-bold text-secondary">Maintainers</h3>
     <table class="table table-striped table-dark">
-      <tr *ngFor="let user of users" class="bg-dark">
+      <tr *ngFor="let user of users.slice(pageSize*(page - 1),pageSize*page)" class="bg-dark">
         <td>
           <div class="text-light">
             {{user.name}}

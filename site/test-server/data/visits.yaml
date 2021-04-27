@@ -23,155 +23,140 @@ visits: [
     sign_in_time: 2472422140,
     sign_out_time: 343423413
   },
-  
+
   {
-        "date_visited": 1619445630,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619456400,
-        "sign_out_time": 1619467200,
-        "visit_id": "jkhs8239*(*",
-        "visitor_id": "kjsdu092"
-    },
+    "date_visited": 1619445630,
+    "first_visit": false,
+    "sign_in_time": 1619456400,
+    "sign_out_time": 1619467200,
+    "visit_id": "jkhs8239*(*",
+    "visitor_id": "kjsdu092"
+  },
 
-    {
-        "date_visited": 1619294400,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619299800,
-        "sign_out_time": 1619301000,
-        "visit_id": "&*#hsaid32",
-        "visitor_id": "bkji893"
-    },
+  {
+    "date_visited": 1619294400,
+    "first_visit": false,
+    "sign_in_time": 1619299800,
+    "sign_out_time": 1619301000,
+    "visit_id": "&*#hsaid32",
+    "visitor_id": "bkji893"
+  },
 
-    {
-        "date_visited": 1619182200,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619274600,
-        "sign_out_time": 1619285400,
-        "visit_id": "qi2*(@u2iuw",
-        "visitor_id": "afhisdh930"
-    },
+  {
+    "date_visited": 1619182200,
+    "first_visit": true,
+    "sign_in_time": 1619274600,
+    "sign_out_time": 1619285400,
+    "visit_id": "qi2*(@u2iuw",
+    "visitor_id": "afhisdh930"
+  },
 
-    {
-        "date_visited": 1619371800,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619461800,
-        "sign_out_time": 1619465400,
-        "visit_id": "sh(@(2jw9",
-        "visitor_id": "jhf83uie"
-    },
+  {
+    "date_visited": 1619371800,
+    "first_visit": false,
+    "sign_in_time": 1619461800,
+    "sign_out_time": 1619465400,
+    "visit_id": "sh(@(2jw9",
+    "visitor_id": "jhf83uie"
+  },
 
-    {
-        "date_visited": 1619272800,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619276400,
-        "sign_out_time": 1619278200,
-        "visit_id": "kwe38*(@*)",
-        "visitor_id": "habci983"
-    },
+  {
+    "date_visited": 1619272800,
+    "first_visit": false,
+    "sign_in_time": 1619276400,
+    "sign_out_time": 1619278200,
+    "visit_id": "kwe38*(@*)",
+    "visitor_id": "habci983"
+  },
 
-    {
-        "date_visited": 1614789000,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1614796200,
-        "sign_out_time": 1614801600,
-        "visit_id": "kjw*(23129",
-        "visitor_id": "ywu9201g"
-    },
+  {
+    "date_visited": 1614789000,
+    "first_visit": true,
+    "sign_in_time": 1614796200,
+    "sign_out_time": 1614801600,
+    "visit_id": "kjw*(23129",
+    "visitor_id": "ywu9201g"
+  },
 
-    {
-        "date_visited": 1616934600,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1616940000,
-        "sign_out_time": 1616950800,
-        "visit_id": "aushgd&@*71",
-        "visitor_id": "qodi9200sd"
-    },
+  {
+    "date_visited": 1616934600,
+    "first_visit": false,
+    "sign_in_time": 1616940000,
+    "sign_out_time": 1616950800,
+    "visit_id": "aushgd&@*71",
+    "visitor_id": "qodi9200sd"
+  },
 
-    {
-        "date_visited": 1618921800,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1618928730,
-        "sign_out_time": 1618935463,
-        "visit_id": "qw&*@18291",
-        "visitor_id": "ihs9832"
-    },
+  {
+    "date_visited": 1618921800,
+    "first_visit": true,
+    "sign_in_time": 1618928730,
+    "sign_out_time": 1618935463,
+    "visit_id": "qw&*@18291",
+    "visitor_id": "ihs9832"
+  },
 
-    {
-        "date_visited": 1619284663,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619291592,
-        "sign_out_time": 1619295610,
-        "visit_id": "asjh&*2128",
-        "visitor_id": "iub983sd"
-    },
+  {
+    "date_visited": 1619284663,
+    "first_visit": true,
+    "sign_in_time": 1619291592,
+    "sign_out_time": 1619295610,
+    "visit_id": "asjh&*2128",
+    "visitor_id": "iub983sd"
+  },
 
-    {
-        "date_visited": 1618462800,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1618491600,
-        "sign_out_time": 1618500600,
-        "visit_id": "asjkdh*((81kn2",
-        "visitor_id": "agsah82037"
-    },
+  {
+    "date_visited": 1618462800,
+    "first_visit": true,
+    "sign_in_time": 1618491600,
+    "sign_out_time": 1618500600,
+    "visit_id": "asjkdh*((81kn2",
+    "visitor_id": "agsah82037"
+  },
 
-    {
-        "date_visited": 1618756200,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1618723712,
-        "sign_out_time": 1618729965,
-        "visit_id": "12kj)#)(llk1",
-        "visitor_id": "klai20378"
-    },
+  {
+    "date_visited": 1618756200,
+    "first_visit": true,
+    "sign_in_time": 1618723712,
+    "sign_out_time": 1618729965,
+    "visit_id": "12kj)#)(llk1",
+    "visitor_id": "klai20378"
+  },
 
-    {
-        "date_visited": 1619424000,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619438400,
-        "sign_out_time": 1619445600,
-        "visit_id": "21hjs(*(*@",
-        "visitor_id": "basu398"
-    },
+  {
+    "date_visited": 1619424000,
+    "first_visit": false,
+    "sign_in_time": 1619438400,
+    "sign_out_time": 1619445600,
+    "visit_id": "21hjs(*(*@",
+    "visitor_id": "basu398"
+  },
 
-    {
-        "date_visited": 1619276400,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619285023,
-        "sign_out_time": 1619291552,
-        "visit_id": "3uiwe*(21",
-        "visitor_id": "hndbri298"
-    },
+  {
+    "date_visited": 1619276400,
+    "first_visit": true,
+    "sign_in_time": 1619285023,
+    "sign_out_time": 1619291552,
+    "visit_id": "3uiwe*(21",
+    "visitor_id": "hndbri298"
+  },
 
-    {
-        "date_visited": 1619014352,
-        "first_visit": false,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619025141,
-        "sign_out_time": 1619022154,
-        "visit_id": "jhqw&^761",
-        "visitor_id": "hais839j2"
-    },
+  {
+    "date_visited": 1619014352,
+    "first_visit": false,
+    "sign_in_time": 1619025141,
+    "sign_out_time": 1619022154,
+    "visit_id": "jhqw&^761",
+    "visitor_id": "hais839j2"
+  },
 
-    {
-        "date_visited": 1619361000,
-        "first_visit": true,
-        "login_location": "Watt_Center",
-        "sign_in_time": 1619364212,
-        "sign_out_time": 1619379163,
-        "visit_id": "ed8&hb3j^&",
-        "visitor_id": "jugsd9839"
-    }
-  
+  {
+    "date_visited": 1619361000,
+    "first_visit": true,
+    "sign_in_time": 1619364212,
+    "sign_out_time": 1619379163,
+    "visit_id": "ed8&hb3j^&",
+    "visitor_id": "jugsd9839"
+  }
+
 ]

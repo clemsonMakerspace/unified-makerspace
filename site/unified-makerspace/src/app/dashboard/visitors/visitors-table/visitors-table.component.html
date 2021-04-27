@@ -8,7 +8,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let visitor of visitors" class="bg-dark">
+      <tr *ngFor="let visitor of visitors.slice(pageSize*(page - 1),pageSize*page)" class="bg-dark">
         <td *ngFor="let key of keys">{{visitor[key]}}</td>
       </tr>
       </tbody>

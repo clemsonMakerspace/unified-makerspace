@@ -3,35 +3,42 @@ visitors: [
   {
     "visitor_id": "1",
     "major": "Computer Science",
-    "degree_type": "Masters",
+    "degree": "Masters",
     "first_name": "Love",
-    "last_name": "Quinn"
+    "last_name": "Quinn",
+    "hardware_id": "000000",
+    "college": "Hogwarts"
   },
 
   {
     "visitor_id": "2",
     "major": "Chemistry",
-    "degree_type": "Phd",
+    "degree": "Phd",
     "first_name": "Delilah",
-    "last_name": "Alves"
+    "last_name": "Alves",
+    "hardware_id": "000000",
+    "college": "Hogwarts"
   },
 
   {
     "visitor_id": "3",
     "major": "Literature",
-    "degree_type": "B.S",
+    "degree": "B.S",
     "first_name": "Candace",
-    "last_name": "Stone"
+    "last_name": "Stone",
+    "hardware_id": "000000",
+    "college": "Hogwarts"
   },
 
   {
     "visitor_id": "4",
     "major": "Chemistry",
-    "degree_type": "B.A",
+    "degree": "B.A",
     "first_name": "Delilah",
-    "last_name": "Alves"
+    "last_name": "Alves",
+    "hardware_id": "000000",
+    "college": "Hogwarts"
   },
-  
   {
     "visitor_id": "kjsdu092",
     "major": "Criminal Justice",
