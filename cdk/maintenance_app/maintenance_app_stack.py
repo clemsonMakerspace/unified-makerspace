@@ -11,7 +11,8 @@ from aws_cdk import (
     aws_s3_deployment as s3deploy,
     aws_iot as iot,
     aws_cognito as cognito,
-    aws_secretsmanager as secrets
+    aws_secretsmanager as secrets,
+    aws_backup as backup
 )
 import boto3, json
 
@@ -26,73 +27,60 @@ class MaintenanceAppStack(core.Stack):
 
         #Tasks, Machines, Visitors, Visits, Users, Permissions
 
-        #Get the client
-        dynamodb_client = boto3.client('dynamodb')
-
-        #Define Existing Tables
-        existing_tables = dynamodb_client.list_tables()['TableNames']
-
         #Create Tasks Resource
-        if 'Tasks' not in existing_tables:
-            tasksTable = ddb.Table(
-                self, 'Tasks',
-                partition_key={'name': 'task_id', 'type': ddb.AttributeType.STRING},
-                table_name='Tasks'
-            )
-        #Find Parent Tasks Resource
-        else:
-            tasksTable = ddb.Table.from_table_name(self, 'Tasks', 'Tasks')
-
+        tasksTable = ddb.Table(
+            self, 'Tasks',
+            partition_key={'name': 'task_id', 'type': ddb.AttributeType.STRING},
+            table_name='Tasks',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
 
         #Create Machines resource
-        if 'Machines' not in existing_tables:
-            machinesTable = ddb.Table(
-                self, 'Machines',
-                partition_key={'name': 'machine_name', 'type': ddb.AttributeType.STRING},
-                table_name='Machines'
-            )
-        #Find Machines Resource
-        else:
-            machinesTable = ddb.Table.from_table_name(self, 'Machines', 'Machines')
+        machinesTable = ddb.Table(
+            self, 'Machines',
+            partition_key={'name': 'machine_name', 'type': ddb.AttributeType.STRING},
+            table_name='Machines',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
+
+        visitorsTable = ddb.Table(
+            self, 'Visitors',
+            partition_key={'name': 'hardware_id', 'type': ddb.AttributeType.STRING},
+            table_name='Visitors',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
+
+        visitsTable = ddb.Table (
+            self, 'Visits',
+            partition_key={'name': 'visitor_id', 'type': ddb.AttributeType.STRING},
+            sort_key={'name': 'sign_in_time', 'type': ddb.AttributeType.NUMBER},
+            table_name='Visits',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
+
+        usersTable = ddb.Table (
+            self, 'Users',
+            partition_key={'name': 'user_id', 'type': ddb.AttributeType.STRING},
+            table_name='Users',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
 
 
-        #Create Visitors resource
-        if 'Visitors' not in existing_tables:
-            visitorsTable = ddb.Table(
-                self, 'Visitors',
-                partition_key={'name': 'hardware_id', 'type': ddb.AttributeType.STRING},
-                table_name='Visitors'
-            )
-        #Find Visitors Resource
-        else:
-            visitorsTable = ddb.Table.from_table_name(self,
-                'Visitors', 'Visitors')
+        plan = backup.BackupPlan.daily_monthly1_year_retention(
+            self, 'BackupPlan'
+        )
 
-        #Create Visits resource
-        if 'Visits' not in existing_tables:
-            visitsTable = ddb.Table (
-                self, 'Visits',
-                partition_key={'name': 'visitor_id', 'type': ddb.AttributeType.STRING},
-                sort_key={'name': 'sign_in_time', 'type': ddb.AttributeType.NUMBER},
-                table_name='Visits'
-            )
-        #Find Visits Resource
-        else:
-            visitsTable = ddb.Table.from_table_name(self,
-                'Visits', 'Visits')
+        plan.add_selection(
+            'BackupSelection', resources=[
+                backup.BackupResource.from_dynamo_db_table(tasksTable),
+                backup.BackupResource.from_dynamo_db_table(machinesTable),
+                backup.BackupResource.from_dynamo_db_table(visitorsTable),
+                backup.BackupResource.from_dynamo_db_table(visitsTable),
+                backup.BackupResource.from_dynamo_db_table(usersTable),
+            ]
+        )
 
 
-        #Create User resource
-        if 'Users' not in existing_tables:
-            usersTable = ddb.Table (
-                self, 'Users',
-                partition_key={'name': 'user_id', 'type': ddb.AttributeType.STRING},
-                table_name='Users'
-            )
-        #Find User Resource
-        else:
-            usersTable = ddb.Table.from_table_name(self,
-                'Users', 'Users')
 
     #-------------------S3 Buckets------------------------------
 
