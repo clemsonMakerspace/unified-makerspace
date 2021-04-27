@@ -57,13 +57,14 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let task of tasks" class="bg-dark"
+      <tr *ngFor="let task of tasks.slice(pageSize * (page - 1), pageSize * page)" class="bg-dark"
           [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}">
         <td *ngFor="let key of keys">
           <span *ngIf="key != 'state'">{{task[key]}}</span>
-          <select [name]="'task-' + task.task_id + 'state'" id=""
-                  *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
-                  class="form-control p-0 text-light">
+          <label for="task-state"></label>
+          <select [name]="'task-' + task.task_id + 'state'" id="task-state"
+                                        *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
+                                        class="form-control p-0 text-light">
             <option value="1" [selected]="task[key] === 'Completed'" class="text-success">Completed</option>
             <option value="0" [selected]="task[key] === 'Not Completed'">Not Started</option>
           </select>
@@ -71,6 +72,16 @@
       </tr>
       </tbody>
     </table>
+    <div class="paging-buttons">
+      <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
+              [disabled]="page == 1"
+              (click)="page = page - 1">Previous Page</button>
+      <button class="btn btn-primary border-secondary btn-sm" type="button"
+              [disabled] = "page >= tasks.length/pageSize"
+              (click)="page = page + 1">Next Page</button>
+
+    </div>
+
 
   </div>
 </div>

@@ -28,6 +28,7 @@ import {ResetPasswordComponent} from './auth/reset-password/reset-password.compo
 import { VisitorsComponent } from './dashboard/visitors/visitors.component';
 import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visitors-table.component';
 import { UsersComponent } from './dashboard/users/users.component';
+import { DetailsComponent } from './dashboard/tasks/details/details.component';
 
 let routes: Routes = [
   {path: '', component: RootComponent},
@@ -62,6 +63,7 @@ let routes: Routes = [
     VisitorsComponent,
     VisitorsTableComponent,
     UsersComponent,
+    DetailsComponent,
   ],
   imports: [
     BrowserModule,

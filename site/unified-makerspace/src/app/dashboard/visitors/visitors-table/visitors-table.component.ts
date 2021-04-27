@@ -25,6 +25,10 @@ export class VisitorsTableComponent implements OnInit {
   }
 
 
+  page = 1;
+  pageSize = 6;
+
+
   keys = Object.keys(this.tableFields);
 
   visitors = []

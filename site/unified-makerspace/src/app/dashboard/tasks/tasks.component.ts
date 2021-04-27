@@ -19,6 +19,8 @@ export class TasksComponent implements OnInit {
   tasks: Task[];
   users: User[];
   errorMessage: string;
+  page = 1;
+  pageSize = 5;
 
   tableFields = {
     task_name: 'Task Name',
@@ -26,33 +28,37 @@ export class TasksComponent implements OnInit {
     date_created_str: 'Date Created',
     // description: 'Description',
     state: 'State',
-  }
+  };
 
-  keys = Object.keys(this.tableFields);
+  keys: string[];
 
 
-  /* integer type to status mappings */
+  /* status integer to description */
   status_map = {
     0: 'Not Completed',
     1: 'In-Progress',
     2: 'Completed'
   };
 
-  open(content) {
+  /* get users on launch */
+  ngOnInit(): void {
+    this.getUsers();
+    this.keys = Object.keys(this.tableFields);
+  }
+
+
+  /* wrapper to open modal */
+  open(content, refresh=true) {
     let taskModal = this.modal.open(content, {
       size: 'lg'
     });
 
-
     // refresh tasks whenever modal is closed
-    taskModal.dismissed.subscribe(() => this.getTasks());
+    if (refresh) {
+      taskModal.dismissed.subscribe(() => this.getTasks());
+    }
   }
 
-
-
-  ngOnInit(): void {
-    this.getUsers();
-  }
 
   /* gets users and then tasks */
   getUsers() {
@@ -76,7 +82,7 @@ export class TasksComponent implements OnInit {
           }
           for (let task of this.tasks) {
             task.state = this.status_map[task.status];
-            let date =  new Date(task['date_created']*1000);
+            let date = new Date(task['date_created'] * 1000);
             task['date_created_str'] = date.toLocaleString();
           }
         }
@@ -84,23 +90,25 @@ export class TasksComponent implements OnInit {
     }, (err) => this.handleError(err));
   }
 
+  /* changes a task's state */
   changeTaskState(taskId: string, newState: number) {
     this.api.updateTask(
-      {'task_id': taskId, 'state': newState }
-      ).subscribe((res) => {
+      {'task_id': taskId, 'state': newState}
+    ).subscribe((res) => {
       this.getTasks(); // refresh after task state changed
     }, (err) => {
-        // todo implement this..
-    })
+      // todo implement this..
+    });
   }
 
-  /* resolves all tasks */
+  /* calls `resolveTask` for all completed tasks */
   clearTasks(): void {
     for (let task of this.tasks.filter((task) => task.state == 'Completed')) {
       this.resolveTask(task.task_id);
     }
   }
 
+  /* resolves a single task */
   resolveTask(taskId: string) {
     this.api.resolveTask({
       'task_id': taskId

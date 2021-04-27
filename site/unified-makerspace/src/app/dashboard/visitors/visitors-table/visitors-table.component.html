@@ -1,5 +1,6 @@
 <div class="card bg-primary w-100 h-100">
   <div class="card-body w-100 h-100 text-light">
+    <h3 class="text-secondary font-weight-bold">Users</h3>
     <table class="w-100 table table-dark table-striped ">
       <thead class="bg-secondary font-weight-bold text-primary">
       <tr>
@@ -12,5 +13,15 @@
       </tr>
       </tbody>
     </table>
+    <div class="paging-buttons" style="position: absolute; bottom: 4rem">
+      <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
+              [disabled]="page == 1"
+              (click)="page = page - 1">Previous Page</button>
+      <button class="btn btn-primary border-secondary btn-sm" type="button"
+              [disabled] = "page >= visitors.length/pageSize"
+              (click)="page = page + 1">Next Page</button>
+
+    </div>
+
   </div>
 </div>

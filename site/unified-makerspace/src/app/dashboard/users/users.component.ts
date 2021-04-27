@@ -11,6 +11,10 @@ export class UsersComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   users = []
+  page = 1;
+  pageSize = 10;
+
+
   ngOnInit(): void {
     this.api.getUsers({}).subscribe((res)=> {
       this.users = res['users'];
