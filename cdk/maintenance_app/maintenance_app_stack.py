@@ -99,14 +99,13 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            # bucket_name='admin.cumaker.space',
+            bucket_name='admin.cumaker.space',
             public_read_access= True
         )
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
             sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
-            destination_bucket=FrontEndBucket,
-            # destination_key_prefix="web/static"
+            destination_bucket=FrontEndBucket
         )
 
         #TODO:
