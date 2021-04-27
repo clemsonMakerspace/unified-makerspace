@@ -34,7 +34,6 @@ def createThing(self, ThingNum, CUmakeit_IoT_Policy):
     cert_attachment_ID = thingName + "CertificateAttachment"
     policy_attachment_ID = thingName + "PolicyAttachment"
     private_key_name = "PrivateKey" + thingName
-    certificate_secrets_name = "Certificate" + thingName
 
     key, csr = create_key(key_cert_name)
 
@@ -52,13 +51,8 @@ def createThing(self, ThingNum, CUmakeit_IoT_Policy):
     # Add to secrets manager
     private_key = secrets.CfnSecret(self, private_key_name, name=private_key_name, secret_string = key)
 
-    certificate_secret = secrets.CfnSecret(self, certificate_secrets_name, name=certificate_secrets_name, secret_string=csr)
-
-    # secret = secrets.CfnSecret(self, "PrivateKeySecretCUmakeit_01", secret_string=json.dumps({"certificateId": CUmakeit_01_Cert, "csr": csr, "privateKey": key}))
-
     core.CfnOutput(self, thingName + "_ID", value=thing.ref)
     core.CfnOutput(self, thingName+"Certificate_ID", value=cert.ref)
     core.CfnOutput(self, thingName+"PrivateKey", value=private_key.ref)
-    core.CfnOutput(self, thingName+"Certificate", value=certificate_secret.ref)
 
     return thing, cert
