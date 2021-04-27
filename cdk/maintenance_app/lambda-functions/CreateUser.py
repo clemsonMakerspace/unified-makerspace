@@ -28,15 +28,15 @@ client = boto3.client('cognito-idp')
 
 def CreateUser(data):
     new_user = json.loads(data["body"])
-    
+
     print(new_user)
     user_token = new_user["user_token"]
     email = new_user["email"]
     password = new_user["password"]
     first_name = new_user["first_name"]
     last_name = new_user["last_name"]
-    
-    
+
+
     # Check if user_token is in the tokens table
     # If it is, check how old
     # Return error if either does not check
@@ -45,18 +45,18 @@ def CreateUser(data):
         response = User_tokens.query(
             KeyConditionExpression = Key('generatedToken').eq(str(user_token))
         )
-        
+
         generatedTime = int(response['Items'][0]['tokenTime'])
-        
+
         #check if they are 5 min apart
         if (abs(currentTime-generatedTime) > 300):
             return {
-                'code': 406,
+                'statusCode': 406,
                 'message' : json.dumps("Token is expired")
             }
     except:
         return {
-                'code': 405,
+                'statusCode': 405,
                 'message' : json.dumps("Could not validate token")
         }
     custom_attributes = [
@@ -72,12 +72,12 @@ def CreateUser(data):
     except client.exceptions.UsernameExistsException as e:
         #Return error if email is already in use
         return {
-                'code': 400,
+                'statusCode': 400,
                 'message' : 'This email is already being used. '
         }
     except Exception as e:
         return {
-                'code': 402,
+                'statusCode': 402,
                 'message' : json.dumps(str(e))
         }
 
@@ -128,13 +128,6 @@ def CreateUserHandler(event, context):
         # Send Response
         return {
             'statusCode': 200,
-            'headers': {
-                'Content-Type': 'text/plain',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
-            },
             'body': json.dumps(result)
         }
     except Exception as e:

@@ -10,16 +10,18 @@ table = db.Table('Users')
 
 
 def DeleteUserHandler(event, context):
-    
+
     try:
         data = json.loads(event["body"])
         user_id = data['user_id']
     except:
         return {
             'statusCode': 400,
-            'message': json.dumps("Error loading data")
+            'body': json.dumps({
+                'Message': "Error loading data"
+            })
         }
-    
+
     try:
         #Get username of user to delete
         response = table.query(
@@ -28,9 +30,9 @@ def DeleteUserHandler(event, context):
         user = response['Items'][0]
     except:
         return {
-            'statusCode': 500,
+            'statusCode': 401,
             'body': json.dumps({
-                'Message': str("Error finding user")
+                'Message': "Error finding user"
             })
         }
 
@@ -45,7 +47,7 @@ def DeleteUserHandler(event, context):
                 'Message': str(e)
             })
         }
-    
+
     #Remove user from database
     try:
         table.delete_item(
@@ -64,16 +66,9 @@ def DeleteUserHandler(event, context):
 
     #TODO:
     #Depreciate any tasks assigned to the user
-    
+
     return {
             'statusCode': 200,
-            'headers': {
-                'Content-Type': 'text/plain',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
-            },
             'body': json.dumps({
                 'Message': "User deleted"
             })
