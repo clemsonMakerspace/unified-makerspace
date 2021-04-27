@@ -1,44 +1,136 @@
-visitors: [
+[
   {
-    visitor_id: "1",
-    major: "Computer Science",
-    degree: "Masters",
-    first_name: "Love",
-    last_name: "Quinn",
-    college: "Hogwarts",
-    hardware_id: "000000"
-
+    "visitor_id": "kjsdu092",
+    "major": "Criminla Justice",
+    "degree_type": "Masters",
+    "first_name": "Love",
+    "last_name": "Quinn",
+    "hardware_id": "1549209"
   },
+
   {
-    visitor_id: "2",
-    major: "Chemistry",
-    degree: "Phd",
-    first_name: "Delilah",
-    last_name: "Alves",
-    college: "Hogwarts",
-    hardware_id: "000000"
-
-
+    "visitor_id": "bkji893",
+    "major": "Forensic Science",
+    "degree_type": "Masters",
+    "first_name": "Ellie",
+    "last_name": "Alves",
+    "hardware_id": "16390238"
   },
-  {
-    visitor_id: "3",
-    major: "Literature",
-    degree: "B.S",
-    first_name: "Candace",
-    last_name: "Stone",
-    college: "Hogwarts",
-    hardware_id: "000000"
 
+  {
+    "visitor_id": "afhisdh930",
+    "major": "Business Management",
+    "degree_type": "B.S.",
+    "first_name": "Delilah",
+    "last_name": "Alves",
+    "hardware_id": "7819837"
   },
-  {
-    visitor_id: "4",
-    major: "Chemistry",
-    degree: "B.A",
-    first_name: "Delilah",
-    last_name: "Alves",
-    college: "Hogwarts",
-    hardware_id: "000000"
 
+  {
+    "visitor_id": "jhf83uie",
+    "major": "Secondary Education",
+    "degree_type": "B.S.",
+    "first_name": "Peach",
+    "last_name": "Salinger",
+    "hardware_id": "9377930"
+  },
+
+  {
+    "visitor_id": "habci983",
+    "major": "Psychology",
+    "degree_type": "Masters",
+    "first_name": "Joe",
+    "last_name": "Goldberg",
+    "hardware_id": "5280020"
+  },
+
+  {
+    "visitor_id": "ywu9201g",
+    "major": "Marketing",
+    "degree_type": "B.S.",
+    "first_name": "Forty",
+    "last_name": "Quinn",
+    "hardware_id": "41830476"
+  },
+
+  {
+    "visitor_id": "qodi9200sd",
+    "major": "Nursing",
+    "degree_type": "B.S.",
+    "first_name": "Candace",
+    "last_name": "Stone",
+    "hardware_id": "0183984"
+  },
+
+  {
+    "visitor_id": "ihs9832",
+    "major": "Secondary Education",
+    "degree_type": "B.S.",
+    "first_name": "Annika",
+    "last_name": "Atwater",
+    "hardware_id": "4964019"
+  },
+
+  {
+    "visitor_id": "iub983sd",
+    "major": "Athletic Leadership",
+    "degree_type": "Masters",
+    "first_name": "Dottie",
+    "last_name": "Quinn",
+    "hardware_id": "5280472"
+  },
+
+  {
+    "visitor_id": "agsah82037",
+    "major": "Computer Science",
+    "degree_type": "B.S.",
+    "first_name": "Gabe",
+    "last_name": "Miranda",
+    "hardware_id": "6921193"
+  },
+  
+  {
+    "visitor_id": "klai20378",
+    "major": "Biology",
+    "degree_type": "Masters",
+    "first_name": "Karen",
+    "last_name": "Minty",
+    "hardware_id": "891739"
+  },
+
+  {
+    "visitor_id": "basu398",
+    "major": "Finance",
+    "degree_type": "B.S.",
+    "first_name": "Lucy",
+    "last_name": "Sprecher",
+    "hardware_id": "0192783"
+  },
+
+  {
+    "visitor_id": "hndbri298",
+    "major": "Biology",
+    "degree_type": "Masters",
+    "first_name": "Roger",
+    "last_name": "Stevens",
+    "hardware_id": "79782032"
+  },
+
+  {
+    "visitor_id": "hais839j2",
+    "major": "Finance",
+    "degree_type": "Masters",
+    "first_name": "David",
+    "last_name": "Fincher",
+    "hardware_id": "5418739"
+  },
+
+  {
+    "visitor_id": "jugsd9839",
+    "major": "Finance",
+    "degree_type": "B.S.",
+    "first_name": "Will",
+    "last_name": "Bettelheim",
+    "hardware_id": "58293979"
   }
-
 ]
