@@ -5,7 +5,8 @@
     "degree_type": "Masters",
     "first_name": "Love",
     "last_name": "Quinn",
-    "hardware_id": "1549209"
+    "hardware_id": "1549209",
+    "college": "College of Behavioral, Social, and Health Sciences"
   },
 
   {
@@ -14,7 +15,8 @@
     "degree_type": "Masters",
     "first_name": "Ellie",
     "last_name": "Alves",
-    "hardware_id": "16390238"
+    "hardware_id": "16390238",
+    "college": "College of Science"
   },
 
   {
@@ -23,7 +25,8 @@
     "degree_type": "B.S.",
     "first_name": "Delilah",
     "last_name": "Alves",
-    "hardware_id": "7819837"
+    "hardware_id": "7819837",
+    "college": "College of Business"
   },
 
   {
@@ -32,7 +35,8 @@
     "degree_type": "B.S.",
     "first_name": "Peach",
     "last_name": "Salinger",
-    "hardware_id": "9377930"
+    "hardware_id": "9377930",
+    "college": "College of Education"
   },
 
   {
@@ -41,7 +45,8 @@
     "degree_type": "Masters",
     "first_name": "Joe",
     "last_name": "Goldberg",
-    "hardware_id": "5280020"
+    "hardware_id": "5280020",
+    "college": "College of Behavioral, Social, and Health Sciences"
   },
 
   {
@@ -50,7 +55,8 @@
     "degree_type": "B.S.",
     "first_name": "Forty",
     "last_name": "Quinn",
-    "hardware_id": "41830476"
+    "hardware_id": "41830476",
+    "college": "College of Business"
   },
 
   {
@@ -59,7 +65,8 @@
     "degree_type": "B.S.",
     "first_name": "Candace",
     "last_name": "Stone",
-    "hardware_id": "0183984"
+    "hardware_id": "0183984",
+    "college": "College of Behavioral, Social, and Health Sciences"
   },
 
   {
@@ -68,16 +75,18 @@
     "degree_type": "B.S.",
     "first_name": "Annika",
     "last_name": "Atwater",
-    "hardware_id": "4964019"
+    "hardware_id": "4964019",
+    "college": "College of Education"
   },
 
   {
     "visitor_id": "iub983sd",
-    "major": "Athletic Leadership",
+    "major": "Genetics",
     "degree_type": "Masters",
     "first_name": "Dottie",
     "last_name": "Quinn",
-    "hardware_id": "5280472"
+    "hardware_id": "5280472",
+    "college": "College of Science"
   },
 
   {
@@ -86,7 +95,8 @@
     "degree_type": "B.S.",
     "first_name": "Gabe",
     "last_name": "Miranda",
-    "hardware_id": "6921193"
+    "hardware_id": "6921193",
+    "college": "College of Engineering, Computing, and Applied Sciences"
   },
   
   {
@@ -95,7 +105,8 @@
     "degree_type": "Masters",
     "first_name": "Karen",
     "last_name": "Minty",
-    "hardware_id": "891739"
+    "hardware_id": "891739",
+    "college": "College of Science"
   },
 
   {
@@ -104,7 +115,8 @@
     "degree_type": "B.S.",
     "first_name": "Lucy",
     "last_name": "Sprecher",
-    "hardware_id": "0192783"
+    "hardware_id": "0192783",
+    "college": "College of Business"
   },
 
   {
@@ -113,7 +125,8 @@
     "degree_type": "Masters",
     "first_name": "Roger",
     "last_name": "Stevens",
-    "hardware_id": "79782032"
+    "hardware_id": "79782032",
+    "college": "College of Science"
   },
 
   {
@@ -122,7 +135,8 @@
     "degree_type": "Masters",
     "first_name": "David",
     "last_name": "Fincher",
-    "hardware_id": "5418739"
+    "hardware_id": "5418739",
+    "college": "College of Business"
   },
 
   {
@@ -131,6 +145,7 @@
     "degree_type": "B.S.",
     "first_name": "Will",
     "last_name": "Bettelheim",
-    "hardware_id": "58293979"
+    "hardware_id": "58293979",
+    "college": "College of Business"
   }
 ]
