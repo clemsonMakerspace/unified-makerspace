@@ -23,9 +23,9 @@ export class TasksComponent implements OnInit {
   tableFields = {
     task_name: 'Task Name',
     assigned_to: 'Assigned To',
+    date_created_str: 'Date Created',
+    // description: 'Description',
     state: 'State',
-    date_created: 'Date Created',
-    description: 'Description'
   }
 
   keys = Object.keys(this.tableFields);
@@ -72,9 +72,12 @@ export class TasksComponent implements OnInit {
               this.tasks[i]['user_id'] = this.tasks[i].assigned_to;
               this.tasks[i].assigned_to = user.first_name;
             }
+
           }
           for (let task of this.tasks) {
             task.state = this.status_map[task.status];
+            let date =  new Date(task['date_created']*1000);
+            task['date_created_str'] = date.toLocaleString();
           }
         }
       ));

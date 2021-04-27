@@ -12,8 +12,12 @@ export class UsersComponent implements OnInit {
 
   users = []
   ngOnInit(): void {
-    this.api.getUsers((res)=> {
+    this.api.getUsers({}).subscribe((res)=> {
       this.users = res['users'];
+      for (let user of this.users) {
+        user['name'] = user.first_name + ' ' + user.last_name;
+      }
+
     })
   }
 

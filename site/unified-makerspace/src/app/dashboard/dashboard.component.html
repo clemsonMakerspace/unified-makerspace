@@ -15,15 +15,14 @@
   <div *ngIf="auth.isUserLoggedIn()">
     <div id="top-row" class="row no-gutters d-flex align-content-stretch">
       <!--Tasks-->
-      <div class="card-wrapper col-12">
+      <div class="card-wrapper col-8">
         <app-tasks></app-tasks>
       </div>
 
       <!-- Users / Maintainers -->
-<!-- todo not yet implemented-->
-<!--      <div class="card-wrapper col-lg-4 d-md-block d-sm-none">-->
-<!--        <app-users></app-users>-->
-<!--      </div>-->
+      <div class="card-wrapper col-lg-4 d-md-block d-sm-none">
+        <app-users></app-users>
+      </div>
     </div>
 
 
