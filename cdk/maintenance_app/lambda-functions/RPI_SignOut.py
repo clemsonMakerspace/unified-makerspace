@@ -21,7 +21,8 @@ visitTable = db.Table('Visits')
 def RPI_SignOut_Handler(event, context):
     try:
         #getting card id from post command
-        new_cardID = event['HardwareID']
+        data = json.loads(event["body"])
+        new_cardID = data['HardwareID']
 
     except Exception as e:
         print(e)
