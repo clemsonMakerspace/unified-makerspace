@@ -51,8 +51,8 @@ export class VisitorsTableComponent implements OnInit {
     this.api.getVisitors({}).subscribe((data)=> {
       // todo check
       data['visitors'].map(v => {
-        v['sign_in_time'] = new Date(v['sign_in_time']).toLocaleString();
-        v['sign_out_time'] = new Date(v['sign_out_time']).toLocaleString();
+        v['sign_in_time'] = new Date(v['sign_in_time']*1000).toLocaleString();
+        v['sign_out_time'] = new Date(v['sign_out_time']*1000).toLocaleString();
         this.api.getVisitorData(
           {'visitor_id': v['visitor_id']}
         ).subscribe(d => (
