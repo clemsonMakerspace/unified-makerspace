@@ -97,7 +97,6 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         (res) => {
           this.auth.regState = 'success';
-          this.auth.user.next({...res['user'], 'auth_token': res['auth_token']});
         },
         (err) => {
           this.handleError(err);
@@ -107,15 +106,13 @@ export class RegisterComponent implements OnInit {
 
   handleError(err: HttpErrorResponse) {
 
-    let error = '';
+    let error = 'Sorry, we\'re having trouble creating your account';
     if (err.status == 400) {
       error = 'This email is already in use!';
     } else if (err.status == 405) {
       error = 'This provided user token is invalid!';
     } else if (err.status == 406) {
       error = 'This provided user token is expired!';
-    } else {
-      error = 'Sorry, we\'re having trouble creating your account.';
     }
     this.registerForm['error'] = error;
   }

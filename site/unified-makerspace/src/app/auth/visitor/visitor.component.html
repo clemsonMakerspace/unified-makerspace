@@ -1,18 +1,19 @@
-<ng-template #tigeronecards>
+<!-- Navigation -->
+<ng-template>
   <div class="w-100">
     <img src="/assets/tiger-one-cards/old-card.png"
          class="d-inline-block"
          alt="" style="width: 400px">
-
   </div>
 </ng-template>
 
 <!-- Visitor Form-->
 <div class="card-header">
-<!--  todo fix-->
   <i class="bi bi-arrow-left-circle-fill"
   (click)="auth.regState = 'register'"></i>
 </div>
+
+
 <div class="card-body">
   <h1 class="card-title text-light text-capitalize">Hello {{auth.newUserInfo['firstName']}}!</h1>
   <h6 class="card-text mb-3">We just need a few more details.
@@ -70,7 +71,7 @@
 
     </div>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="active">
+    <ul ngbNav #cardNav="ngbNav" [(activeId)]="active">
       <li [ngbNavItem]="1">
         <a ngbNavLink class="text-secondary">Old Card</a>
         <ng-template ngbNavContent >
@@ -87,8 +88,7 @@
       </li>
     </ul>
 
-    <div class="mb-3 p-4" [ngbNavOutlet]="nav"></div>
-
+    <div class="mb-3 p-4" [ngbNavOutlet]="cardNav"></div>
     <h6 class="font-weight-bold text-danger mb-3"
         *ngIf="visitorForm['error']">
       {{visitorForm['error']}}
