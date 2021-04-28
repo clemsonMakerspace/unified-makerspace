@@ -19,11 +19,11 @@ export class InterceptorService implements HttpInterceptor{
     })
 
 
-    if (this.auth.isUserLoggedIn()) {
-      request = request.clone({ // all outgoing requests are json
-        headers: req.headers.append('Authorization', this.auth.user.getValue()['auth_token'])
-      })
-    }
+    // if (this.auth.isUserLoggedIn()) {
+    //   request = request.clone({ // all outgoing requests are json
+    //     headers: req.headers.append('Authorization', this.auth.user.getValue()['auth_token'])
+    //   })
+    // }
 
     // todo remove this
     console.log(request);

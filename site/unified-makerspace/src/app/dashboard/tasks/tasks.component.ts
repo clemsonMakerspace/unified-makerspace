@@ -68,6 +68,8 @@ export class TasksComponent implements OnInit {
   /* gets users and then tasks */
   getUsers() {
     this.api.getUsers([]).subscribe((res) => {
+      console.log(res);
+
       this.users = res['users'];
       this.getTasks();
     }, (err) => this.handleError(err));

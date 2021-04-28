@@ -53,7 +53,6 @@ export class AuthService {
     return this.user.getValue() != null;
   }
 
-  // todo create user object and then pass that in
 
   // todo implement this method
   // todo intercept subscription
