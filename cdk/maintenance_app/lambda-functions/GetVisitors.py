@@ -53,8 +53,8 @@ def GetVisitorsHandler(event, context):
 
         },
         'body': json.dumps({
-            'visitors': visitors, cls=DecimalEncoder
-    })
+            'visitors': visitors
+        }, cls=DecimalEncoder)
     }
 
 
