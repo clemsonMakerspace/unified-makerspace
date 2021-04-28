@@ -14,7 +14,7 @@ from aws_cdk import (
     aws_secretsmanager as secrets,
     aws_backup as backup
 )
-import boto3, json
+import json
 
 from thingcert import createThing as create_thing
 
@@ -65,6 +65,13 @@ class MaintenanceAppStack(core.Stack):
             billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
         )
 
+        userVerificationTokenTable = ddb.Table (
+            self, 'userVerificationToken',
+            partition_key={'name': 'generatedToken', 'type': ddb.AttributeType.STRING},
+            table_name='userVerificationToken',
+            billing_mode= ddb.BillingMode('PAY_PER_REQUEST')
+        )
+
 
         plan = backup.BackupPlan.daily_monthly1_year_retention(
             self, 'BackupPlan'
@@ -77,6 +84,7 @@ class MaintenanceAppStack(core.Stack):
                 backup.BackupResource.from_dynamo_db_table(visitorsTable),
                 backup.BackupResource.from_dynamo_db_table(visitsTable),
                 backup.BackupResource.from_dynamo_db_table(usersTable),
+                backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
             ]
         )
 
@@ -95,10 +103,6 @@ class MaintenanceAppStack(core.Stack):
             sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
             destination_bucket=FrontEndBucket
         )
-
-        #TODO:
-            #Subdomain
-            #Add compiled build files for the website
 
 
     #------------------Lambda Functions/API Integrations--------------------
@@ -507,6 +511,17 @@ class MaintenanceAppStack(core.Stack):
         ## Put ##
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
 
+
+        apiStageDeployment = apigw.Deployment(self, 'API Deployment',
+            api = um_api
+        )
+
+        stage = apigw.Stage(self, 'api_stage',
+            deployment = apiStageDeployment,
+            stage_name= 'api'
+        )
+
+        um_api.deployment_stage = stage
 
 # #----------------IoT--------------------------
         #Create All allowed policy
