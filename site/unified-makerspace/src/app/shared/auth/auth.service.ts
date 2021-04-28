@@ -73,7 +73,7 @@ export class AuthService {
   // todo intercept responses
 
   createUser(args: any): Observable<Response> {
-    // todo modify responose
+    // todo modify response ?
     return this.api.createUser(args);
   }
 

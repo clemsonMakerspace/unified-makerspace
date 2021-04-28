@@ -14,14 +14,20 @@ export class InterceptorService implements HttpInterceptor{
 
     // todo also authenticate requests
 
-    let jsonRequest = req.clone({ // all outgoing requests are json
+    let request = req.clone({ // all outgoing requests are json
       headers: req.headers.append('Content-Type', 'application/json')
     })
 
+
     if (this.auth.isUserLoggedIn()) {
-      // todo implement
+      request = request.clone({ // all outgoing requests are json
+        headers: req.headers.append('Authorization', this.auth.user.getValue()['auth_token'])
+      })
     }
 
-    return next.handle(jsonRequest);
+    // todo remove this
+    console.log(request);
+
+    return next.handle(request);
   }
 }

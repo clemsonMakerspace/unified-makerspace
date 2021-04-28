@@ -32,6 +32,9 @@ export class LoginComponent implements OnInit {
   }
 
   // todo show loading indicators....
+  // todo possible failures:
+  // todo incorrect password
+  // todo email in use
 
   login() {
 

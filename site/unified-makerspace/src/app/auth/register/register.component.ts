@@ -3,12 +3,18 @@ import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} f
 import {AuthService} from '../../shared/auth/auth.service';
 import {Router} from '@angular/router';
 import {showError, useTestData} from 'src/app/shared/funcs';
+import {HttpErrorResponse} from '@angular/common/http';
 
 
 /* ensures that userToken is entered if user */
 function UserValidator(control: AbstractControl)
   : null | ValidationErrors {
-  return (!!control.get('isUser').value == !!control.get('userToken').value) ? null : {'token': true};
+    if (!!control.get('isUser').value) {
+      if (!!control.get('userToken').value) {
+        return null;
+      }
+      return {'token': true}
+    }
 }
 
 function ConfirmPasswordValidator(control: AbstractControl):
@@ -30,11 +36,6 @@ export class RegisterComponent implements OnInit {
   }
 
   // todo are you sure you want to leave this page?
-
-  // todo possible failures:
-  // todo incorrect password
-  // todo email in use
-
 
 
   registerForm: FormGroup;
@@ -75,7 +76,6 @@ export class RegisterComponent implements OnInit {
 
   }
 
-
   onSubmit() {
     this.registerForm['submitted'] = true;
     this.registerForm['error'] = '';
@@ -95,13 +95,29 @@ export class RegisterComponent implements OnInit {
     this.auth
       .createUser(arg)
       .subscribe(
-        // ignore response
-        (res) => this.auth.regState = 'success',
+        (res) => {
+          this.auth.regState = 'success';
+          this.auth.user.next({...res['user'], 'auth_token': res['auth_token']});
+        },
         (err) => {
-          this.registerForm['error'] =
-            'Sorry, we\'re having trouble creating your account.';
+          this.handleError(err);
         }
       );
+  }
+
+  handleError(err: HttpErrorResponse) {
+
+    let error = '';
+    if (err.status == 400) {
+      error = 'This email is already in use!';
+    } else if (err.status == 405) {
+      error = 'This provided user token is invalid!';
+    } else if (err.status == 406) {
+      error = 'This provided user token is expired!';
+    } else {
+      error = 'Sorry, we\'re having trouble creating your account.';
+    }
+    this.registerForm['error'] = error;
   }
 
 
