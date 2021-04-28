@@ -71,11 +71,10 @@ def RPI_SignIn_Handler(event, context):
 
         except Exception as e:
             print(e)
-            message_text = 'User not successfully added to visit table' + 'trying to put visit info as ' + str(new_login)
             return {
             'statusCode': 403,
             'body': json.dumps({
-            'Message' : message_text
+            'Message' : 'User not successfully added to visit table'
             })
         }
 
