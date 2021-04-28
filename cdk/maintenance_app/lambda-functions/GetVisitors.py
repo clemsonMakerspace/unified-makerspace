@@ -2,6 +2,7 @@ import json
 import boto3
 from boto3.dynamodb.conditions import Key
 import decimal
+import time
 
 dynamodb = boto3.resource('dynamodb')
 dynamodb_client = boto3.client('dynamodb')
@@ -20,11 +21,11 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def GetVisitors(body):
-    start_date = body["start_date"]
-    end_date = body["end_date"]
-
     visits = Visits.scan()
     visits_list = visits["Items"]
+
+    start_date = body["start_date"]
+    end_date = body["end_date"]
 
     visits_in_tf = []
 
@@ -40,6 +41,13 @@ def GetVisitors(body):
 def GetVisitorsHandler(event, context):
     # Call function
     body = json.loads(event["body"])
+    try:
+        body["start_date"]
+    except:
+        body = {
+            "start_date": 0,
+            "end_date": int(time.time()) + 10
+        }
 
     visitors = GetVisitors(body)
 
