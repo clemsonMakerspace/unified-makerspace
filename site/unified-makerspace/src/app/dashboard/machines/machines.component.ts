@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../shared/api/api.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-machines',
@@ -10,13 +11,7 @@ export class MachinesComponent implements OnInit {
   constructor(private api: ApiService) {
   }
 
-  // todo better err handling?
-  // todo fix links on the first page
-  // todo check for permissions for showing stuff
-
-  // todo change length automatically based on screen size
-
-  errorMessage: string;
+  error: HttpErrorResponse;
   machines = [];
   startTime: number;
   endTime: number;
@@ -69,6 +64,7 @@ export class MachinesComponent implements OnInit {
     return v;
   }
 
+
   // todo call todays?
   toTime(value: number):number {
     let v = (102 - value)/24;
@@ -95,12 +91,12 @@ export class MachinesComponent implements OnInit {
       this.machines = this.convertData(
         data, startTime, endTime);
     }, (err) => {
-      this.errorMessage = err.message;
+      this.error = err;
     });
   }
 
 
-  /* converts response to usable data */
+  /* converts response to usable data by `ngxCharts` */
   convertData(data, startTime: number, endTime: number) {
 
     let interval = endTime - startTime;

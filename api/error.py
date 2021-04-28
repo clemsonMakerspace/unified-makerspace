@@ -1,4 +1,3 @@
-from requests import Response
 
 response_body = {
     'code': 200,

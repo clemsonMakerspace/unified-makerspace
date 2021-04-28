@@ -118,10 +118,17 @@ class Machine:
 @dataclass
 class Error:
     """
-    General error class. `code` should be from 400 - 405. `error` should
+    General error class. `code` should be the return code of the response. `error` should
     be a short snake case description of the error. Message should be a
     short message that can be displayed to the end user.
+
+    Note
+    -----
+    For compatibility with AWS Lambdas, it is acceptable to return `statusCode` instead
+    of `code`.
+
     """
     code: int
+    statusCode: int
     error: str
     message: str

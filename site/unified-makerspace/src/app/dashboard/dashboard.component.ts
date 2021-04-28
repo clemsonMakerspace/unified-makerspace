@@ -16,4 +16,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.title.setTitle('Dashboard');
   }
+
+  // todo remove later?
+
+  // handleMessages(event: any) {
+  //   if ()
+  // }
 }

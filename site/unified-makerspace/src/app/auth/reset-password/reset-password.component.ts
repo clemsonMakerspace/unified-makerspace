@@ -31,7 +31,7 @@ export class ResetPasswordComponent implements OnInit {
       this.api.resetPassword(this.resetForm.value).subscribe((res) => {
         this.resetForm['success'] = true;
       }, (err) => {
-        this.resetForm['error'] = err.errorMessage;
+        this.resetForm['error'] = err.error;
       })
     }
   }

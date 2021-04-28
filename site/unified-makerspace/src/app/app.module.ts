@@ -29,6 +29,7 @@ import { VisitorsComponent } from './dashboard/visitors/visitors.component';
 import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visitors-table.component';
 import { UsersComponent } from './dashboard/users/users.component';
 import { DetailsComponent } from './dashboard/tasks/details/details.component';
+import { ErrorComponent } from './dashboard/error/error.component';
 
 let routes: Routes = [
   {path: '', component: RootComponent},
@@ -64,6 +65,7 @@ let routes: Routes = [
     VisitorsTableComponent,
     UsersComponent,
     DetailsComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,

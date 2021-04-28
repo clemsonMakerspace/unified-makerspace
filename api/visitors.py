@@ -34,9 +34,16 @@ def create_visitor(auth_token: str, visitor: Visitor, hardware_id: str):
     message: str
     """
 
+
 def get_visitors(auth_token: str, start_date: int, end_date: int):
     """
-    Gets all Makerspace visitors within a given timeframe.
+    Gets all Makerspace visitors within a given timeframe. If neither
+    `start_date` or `end_date specified`, get all data.
+
+    Note
+    ------
+    Returns `visit`, not `visitor`, objects. Name not changed
+    to `get_visits` for backwards compatibility.
 
     ================   ============
     **Endpoint**        /api/visitors
@@ -48,8 +55,9 @@ def get_visitors(auth_token: str, start_date: int, end_date: int):
     ----------
     auth_token : str, required
         Token to verify user credentials.
-    start_date: str, required
-        The start date (inclusive) of the time frame.
+    start_date: str, optional
+        The start date (inclusive) of the time frame. If not specified,
+        assume the start of time (epoch of 0).
     end_date: str, optional
         The end date (inclusive) of the time frame. If not specified,
         "today" is assumed.
@@ -64,4 +72,40 @@ def get_visitors(auth_token: str, start_date: int, end_date: int):
     code: int
         Return Code
     visitors: [model.Visit]
+    """
+
+
+def get_visitor_data(auth_token: str, visitor_id: str):
+    """
+    Gets all Makerspace visitors within a given timeframe. If neither
+    `start_date` or `end_date specified`, get all data.
+
+    Note
+    ------
+    Returns `visit`, not `visitor`, objects. Name not changed
+    to `get_visits` for backwards compatibility.
+
+    ================   ============
+    **Endpoint**        /api/visitors
+    **Request Type**    POST
+    **Access**          MANAGER
+    ================   ============
+
+    Parameters
+    ----------
+    auth_token : str, required
+        Token to verify user credentials.
+    visitor_id : str, required
+        Visitor to return data for.
+
+    Note
+    -----
+    Endpoint returns type `visits`, not `visitors`.
+
+    Returns
+    -------
+    Success
+    code: int
+        Return Code
+    visitor: [model.Visitor]
     """

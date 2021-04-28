@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -16,6 +16,9 @@ export class TasksComponent implements OnInit {
               public auth: AuthService) {
   }
 
+  // todo use better types
+  @Output() messageEvent = new EventEmitter<any>();
+
   tasks: Task[];
   users: User[];
   errorMessage: string;
@@ -30,7 +33,6 @@ export class TasksComponent implements OnInit {
     task_name: 'Task Name',
     assigned_to: 'Assigned To',
     date_created_str: 'Date Created',
-    // description: 'Description',
     state: 'State',
   };
 
@@ -126,6 +128,8 @@ export class TasksComponent implements OnInit {
 
 
   handleError(err: Error) {
+    // todo keep this?
+    this.messageEvent.emit({'error': true, message: err.message})
     this.errorMessage = err.message;
   }
 
