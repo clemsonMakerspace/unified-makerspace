@@ -24,16 +24,12 @@ Tasks = dynamodb.Table('Tasks')
 
 
 # Function for Calculating Due Dates for Children
-def GetTasks():
+def GetTasks(data):
     tasks = Tasks.scan()
     return tasks["Items"]
 
 
 def GetTasksHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_resolved', 'tags',
-                  'task_status']
-
-
     # Return client error if no string params
     if (event is None):
         return {
@@ -48,15 +44,22 @@ def GetTasksHandler(event, context):
 
     try:
         # Call function
-        result = list(GetTasks())
+        result = list(GetTasks(event))
+        print(json.dumps(result, cls=DecimalEncoder))
 
         # Send Response
         return {
             'statusCode': 200,
             'headers': {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
             },
-            'body': json.dumps(result, cls=DecimalEncoder)
+            'body': json.dumps({
+                'tasks': result
+            }, cls=DecimalEncoder)
         }
     except Exception as e:
         # Return exception with response
