@@ -105,7 +105,7 @@ def CreateUser(data):
 
     return {
             'statusCode': 200,
-            'user':json.dumps(user_obj.__dict__),
+            'user': user_obj.__dict__,
             'auth_token': auth_response['AuthenticationResult']['AccessToken']
         }
 
