@@ -97,7 +97,7 @@ def CreateUser(data):
                                          })
     except Exception as e:
         return {
-                'code': 403,
+                'statusCode': 403,
                 'message' : json.dumps(str(e))
         }
 
