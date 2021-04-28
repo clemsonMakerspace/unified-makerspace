@@ -95,23 +95,23 @@ def CreateUser(data):
     Users.put_item(Item=user_data)
 
     # Get token for new user
-    try:
-        auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
-                                             AuthParameters={
-                                                 'USERNAME': email,
-                                                 'PASSWORD': password
-                                             })
-    except Exception as e:
-        statusCode = 403
-        return {
-            'message': json.dumps(str(e))
-        }
+    #try:
+        #auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
+        #                                     AuthParameters={
+        #                                         'USERNAME': email,
+        #                                         'PASSWORD': password
+        #                                     })
+    #except Exception as e:
+    #    statusCode = 403
+    #    return {
+    #        'message': json.dumps(str(e))
+    #    }
 
-    print(auth_response)
+    #print(auth_response)
 
     return {
-        'user': user_obj.__dict__,
-        'auth_token': auth_response['AuthenticationResult']['AccessToken']
+        'user': user_obj.__dict__
+        #'auth_token': auth_response['AuthenticationResult']['AccessToken']
     }
 
 
