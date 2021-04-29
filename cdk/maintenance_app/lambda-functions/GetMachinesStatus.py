@@ -31,10 +31,10 @@ def processAvailability(machines, tasks, start_time, end_time):
     for machine in machines:
         times = []
         for task in tasks:
-            if (task["tags"])[0] == machine["machine_id"]:
-                if task["date_created"] >= start_time and task["date_resolved"] <= end_time:
-                    times.append((task["date_created"],task["date_resolved"]))
-        avail[machine["machine_id"]] = times
+            if (task["tags"])[0] == machine["machine_name"]:
+                if task["date_created"] >= start_time and task["date_completed"] <= end_time:
+                    times.append((task["date_resolved"],task["date_resolved"]))
+        avail[machine["machine_name"]] = times
     return avail
 
 
@@ -46,8 +46,8 @@ def GetMachineStatusHandler(event, context):
     tasks = list(GetTasks())
 
     body = json.loads(event["body"])
-    start_time = body["start_time"]
-    end_time = body["end_time"]
+    start_time = body["start_date"]
+    end_time = body["end_date"]
 
     availability = processAvailability(machines,tasks,start_time, end_time)
 
@@ -59,8 +59,7 @@ def GetMachineStatusHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
-            },
+                },
         'body': json.dumps(availability,cls=DecimalEncoder)
     }
 
