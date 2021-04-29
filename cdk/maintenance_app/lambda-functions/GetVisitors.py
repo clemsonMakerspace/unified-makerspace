@@ -21,19 +21,13 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def GetVisitors(body):
-    visits = Visits.scan()
-    visits_list = visits["Items"]
+    visitors = Visitors.scan()
+    visitors_list = visitors["Items"]
 
     start_date = body["start_date"]
     end_date = body["end_date"]
 
-    visits_in_tf = []
-
-    for visit in visits_list:
-        if int(visit["sign_in_time"]) >= start_date and int(visit["sign_out_time"]) <= end_date:
-            visits_in_tf.append(visit)
-
-    return visits_in_tf
+    return visitors_list
 
 
 # calls getMachineById to get machine data
@@ -90,7 +84,7 @@ def GetVisitorsHandler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 
             },
-            'body': json.dumps({'Message': "Visitor id parameter not provided."})
+            'body': json.dumps({'Message': "visitor id parameter not provided."})
         }
 
 
