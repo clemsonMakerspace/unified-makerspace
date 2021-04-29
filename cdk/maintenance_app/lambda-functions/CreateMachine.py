@@ -42,7 +42,7 @@ def CalculateNextDate(start, freq, add):
 def CreateMachine(data):
     new_machine = data["body"]
 
-    new_machine = Machine(new_machine["machine_name"],new_machine["machine_state"])
+    new_machine = Machine(new_machine["machine_name"],new_machine["machine_status"])
 
 
     # Put new task into the Machines eventbase
