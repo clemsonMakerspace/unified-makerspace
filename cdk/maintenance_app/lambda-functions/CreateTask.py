@@ -2,6 +2,7 @@
 
 
 import boto3
+import time
 import json
 import uuid
 from datetime import datetime, timedelta
@@ -29,8 +30,8 @@ def CreateTask(data):
 
     machine_name = (new_task["tags"])[0]
 
-    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
-                    new_task["date_created"], new_task["date_resolved"], new_task["tags"], new_task["status"])
+    new_task = Task(str(uuid.uuid4().hex[:6]), new_task["task_name"], new_task["description"], new_task["person"],
+                    int(time.time()), 0, new_task["tags"], new_task["status"])
 
     machines = Machines.scan()
     machines_list = machines["Items"]
@@ -67,7 +68,10 @@ def CreateTaskHandler(event, context):
         return {
             'statusCode': 200,
             'headers': {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
             'body': json.dumps(result)
         }
@@ -76,7 +80,10 @@ def CreateTaskHandler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
             'body': json.dumps({
                 'Message': str(e)
