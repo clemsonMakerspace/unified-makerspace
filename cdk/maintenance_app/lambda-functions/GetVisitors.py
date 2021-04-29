@@ -40,29 +40,60 @@ def GetVisitors(body):
 # input format: ?machine_id=<id>
 def GetVisitorsHandler(event, context):
     # Call function
-    body = json.loads(event["body"])
+
+    params = event["queryStringParameters"]
+
     try:
-        body["start_date"]
-    except:
+        params["visitor_id"]
         body = {
             "start_date": 0,
             "end_date": int(time.time()) + 10
         }
+        visitors = GetVisitors(body)
 
-    visitors = GetVisitors(body)
+        for visitor in visitors:
+            if visitor["visitor_id"] == params["visitor_id"]:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'text/plain',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'text/plain',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps({
+                        'visitor': visitor
+                    }, cls=DecimalEncoder)
+                }
+        else:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 
-        },
-        'body': json.dumps({
-            'visitors': visitors
-        }, cls=DecimalEncoder)
-    }
+                },
+                'body': json.dumps({'Message': "Visitor id does not exist in system."})
+            }
+
+
+    except Exception as e:
+        return {
+            'statusCode': 401,
+            'headers': {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+
+            },
+            'body': json.dumps({'Message': "Visitor id parameter not provided."})
+        }
+
+
+
 
 
