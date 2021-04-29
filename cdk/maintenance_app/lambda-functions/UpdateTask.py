@@ -54,8 +54,11 @@ def UpdateTaskHandler(event, context):
         return {
             'statusCode': 400,
             'headers': {
-                'Content-Type': 'text/plain'
-            },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
                 'Message': 'Failed to provide query string parameters.'
             })
@@ -69,8 +72,11 @@ def UpdateTaskHandler(event, context):
         return {
             'statusCode': 200,
             'headers': {
-                'Content-Type': 'text/plain'
-            },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps(result)
         }
     except Exception as e:
@@ -78,8 +84,11 @@ def UpdateTaskHandler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'text/plain'
-            },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
                 'Message': str(e)
             })
