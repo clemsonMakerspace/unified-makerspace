@@ -11,7 +11,6 @@ function ListValidator(list: string[]): ValidatorFn {
   return (control: FormControl) => list.includes(control.value) ? null : {'list': true}
 }
 
-// todo numeric?
 /* validates length and type of hardware id */
 function IdValidator(control : FormControl): null | ValidationErrors {
   if (control.value.length != 6) {
@@ -27,7 +26,6 @@ function IdValidator(control : FormControl): null | ValidationErrors {
 export class VisitorComponent implements OnInit {
 
 
-  // todo update card text
   // todo do you want to leave this page
 
 
@@ -66,7 +64,6 @@ export class VisitorComponent implements OnInit {
       }).subscribe((res) => {
         // clear sensitive data
         this.auth.newUserInfo = null;
-        // todo show loading
         this.auth.regState = 'success'
       }, (err) => {
         // todo better error handling ?

@@ -24,7 +24,9 @@ export class ProfileComponent implements OnInit {
 
     // todo delete / edit machines
 
+
   userToken: string;
+  generateTokenError;
 
   ngOnInit(): void {
     this.title.setTitle('Profile');
@@ -38,8 +40,8 @@ export class ProfileComponent implements OnInit {
     this.modal.open(this.userTokenModal)
     this.api.generateUserToken()
       .subscribe((res) => this.userToken = res.user_token,
-        () => {
-        // todo handle error
+        (err) => {
+        this.generateTokenError = err;
       });
   }
 

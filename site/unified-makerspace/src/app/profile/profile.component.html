@@ -5,15 +5,17 @@
       <h1 class="card-title">User Token</h1>
       <p class="font-weight-bold text-secondary">This token will enable
         a user to sign up with maintainer permissions. Only give
-        it to the selected individual.</p>
-      <div class="">
+        it to trusted individuals. Tokens will last 24 hours and can only be used once.</p>
+      <div>
         <label for="user-token" class="d-none"></label>
         <input *ngIf="userToken"
                id="user-token" type="text"
                class="form-control mb-2"
                style="width:400px"
-               disabled value="{{userToken}}">
+               value="{{userToken}}"
+               disabled>
       </div>
+      <app-error [error]="generateTokenError"></app-error>
     </div>
   </div>
 </ng-template>

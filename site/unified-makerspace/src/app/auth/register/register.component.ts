@@ -54,7 +54,7 @@ export class RegisterComponent implements OnInit {
 
     // enable user to register again
     if (this.auth.regState == 'success') {
-      this.auth.regState = 'register'; // todo change to start?
+      this.auth.regState = 'register';
     }
 
     this.registerForm = this.fb.group({

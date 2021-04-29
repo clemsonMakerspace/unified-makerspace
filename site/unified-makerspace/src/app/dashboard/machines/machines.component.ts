@@ -11,25 +11,28 @@ export class MachinesComponent implements OnInit {
   constructor(private api: ApiService) {
   }
 
-  error: HttpErrorResponse;
+  // all machines
   machines = [];
-  startTime: number;
+
+  // for getting data
+  startTime: number; // bound to slider
   endTime: number;
-  intervalFormat: string;
+
+  // for displaying data
+  intervalFormat: string; // seconds | minutes | hours ...
   intervalLength = 'hours';
 
+  // http error
+  error: HttpErrorResponse;
 
-  // todo change slider value and use that
+
   ngOnInit(): void {
-    // default start time is 24 hours ago
-    let dt = new Date()
-    dt.setHours(dt.getHours() - 24);
-    this.startTime = dt.getTime();
-
     // end time is always now
     this.endTime = Date.now();
-    this.getMachines(this.startTime, this.endTime);
-    this.startTime = 1; // todo remove later
+
+    // 93 is roughly 24 hours ago
+    this.startTime = 93;
+    this.onSliderChange(this.startTime);
   }
 
   /* send request after 500 ms of inactivity */
@@ -65,7 +68,7 @@ export class MachinesComponent implements OnInit {
   }
 
 
-  // todo call todays?
+  // todo call toDays?
   toTime(value: number):number {
     let v = (102 - value)/24;
     if (value < 75) {

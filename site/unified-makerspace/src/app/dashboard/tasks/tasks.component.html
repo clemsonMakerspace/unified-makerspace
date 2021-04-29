@@ -1,10 +1,9 @@
-<!--todo rename modal-->
 <ng-template #taskModal>
-  <app-modal></app-modal>
+  <app-create-task></app-create-task>
 </ng-template>
 
 <ng-template #details>
-  <app-details [task]="selTask"></app-details>
+  <app-task-details [task]="selTask"></app-task-details>
 </ng-template>
 
 <div id="tasks" class="card bg-primary h-100">

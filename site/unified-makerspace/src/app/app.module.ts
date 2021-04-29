@@ -11,7 +11,7 @@ import {AppComponent} from './app.component';
 import {AuthComponent} from './auth/auth.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {TasksComponent} from './dashboard/tasks/tasks.component';
-import {ModalComponent} from './dashboard/tasks/modal/modal.component';
+import {CreateTaskComponent} from './dashboard/tasks/create-modal/create-task.component';
 import {ProfileComponent} from './profile/profile.component';
 import {NotFoundComponent} from './not-found/not-found.component';
 import {AccountsComponent} from './accounts/accounts.component';
@@ -28,7 +28,7 @@ import {ResetPasswordComponent} from './auth/reset-password/reset-password.compo
 import { VisitorsComponent } from './dashboard/visitors/visitors.component';
 import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visitors-table.component';
 import { UsersComponent } from './dashboard/users/users.component';
-import { DetailsComponent } from './dashboard/tasks/details/details.component';
+import { TaskDetailsComponent } from './dashboard/tasks/details-modal/task-details.component';
 import { ErrorComponent } from './dashboard/error/error.component';
 
 let routes: Routes = [
@@ -48,7 +48,7 @@ let routes: Routes = [
     AuthComponent,
     DashboardComponent,
     TasksComponent,
-    ModalComponent,
+    CreateTaskComponent,
     HomeComponent,
     ProfileComponent,
     NotFoundComponent,
@@ -64,7 +64,7 @@ let routes: Routes = [
     VisitorsComponent,
     VisitorsTableComponent,
     UsersComponent,
-    DetailsComponent,
+    TaskDetailsComponent,
     ErrorComponent,
   ],
   imports: [

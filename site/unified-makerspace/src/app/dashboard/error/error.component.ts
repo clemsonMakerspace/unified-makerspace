@@ -12,7 +12,9 @@ export class ErrorComponent implements OnInit {
 
   @Input() error: HttpErrorResponse;
 
+  // show error message details
   showDetails = false;
+
   ngOnInit(): void {
   }
 

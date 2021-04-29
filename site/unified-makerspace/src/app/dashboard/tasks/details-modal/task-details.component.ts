@@ -2,11 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss']
+  selector: 'app-task-details',
+  templateUrl: './task-details.component.html',
+  styleUrls: ['./task-details.component.scss']
 })
-export class DetailsComponent implements OnInit {
+export class TaskDetailsComponent implements OnInit {
 
   constructor(public modal: NgbModal) { }
 

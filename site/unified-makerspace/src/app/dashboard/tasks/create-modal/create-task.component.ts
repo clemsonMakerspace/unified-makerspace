@@ -5,23 +5,13 @@ import {showError, useTestData} from '../../../shared/funcs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.scss'],
+  selector: 'app-create-task',
+  templateUrl: './create-task.component.html',
+  styleUrls: ['./create-task.component.scss'],
 })
-export class ModalComponent implements OnInit {
+export class CreateTaskComponent implements OnInit {
 
-  // todo modal close
-  // todo remove these
   // todo get list of machines?
-  // todo rename modal?
-  // todo add comments
-  // todo validation of parameters
-
-  // todo show message?
-  // todo handle error
-  // todo success parameter?
-
 
   constructor(private api: ApiService,
               private fb: FormBuilder,
@@ -35,10 +25,9 @@ export class ModalComponent implements OnInit {
   taskForm: FormGroup;
   showError: any;
 
-
   ngOnInit(): void {
 
-    /* get list of users for dropdown */
+    // get list of users for dropdown
     this.api.getUsers([]).subscribe((result) => {
       this.users = result.users.map((user) => user.first_name);
     });
@@ -75,13 +64,13 @@ export class ModalComponent implements OnInit {
 
     if (this.taskForm.valid) {
       this.api.createTask({
-        'person': getValue('person') == 'new' ? getValue('newPerson') : getValue('person'),
+        'person': getValue('person'),
         'task_name': getValue('taskName'),
         'description': getValue('description'),
         'tags': this.tags,
       }).subscribe((res) => {
         this.taskForm['success'] = true;
-      }, (err) => {
+      }, () => {
         this.taskForm['error'] = 'Sorry an error occurred!';
       });
     }
