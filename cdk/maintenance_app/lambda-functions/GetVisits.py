@@ -30,7 +30,7 @@ def GetVisits(body):
     visits_in_tf = []
 
     for visit in visits_list:
-        if int(visit["sign_in_time"]) >= start_date and int(visit["sign_out_time"]) <= end_date:
+        if int(visit["date_visited"]) >= start_date and int(visit["date_visited"]) <= end_date:
             visits_in_tf.append(visit)
 
     return visits_in_tf
