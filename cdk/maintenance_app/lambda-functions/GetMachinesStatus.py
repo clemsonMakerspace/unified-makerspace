@@ -60,7 +60,7 @@ def GetMachineStatusHandler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-        'body': json.dumps(availability,cls=DecimalEncoder)
+        'body': json.dumps({'machines': availability},cls=DecimalEncoder)
     }
 
 
