@@ -4,6 +4,7 @@
 import boto3
 import json
 import uuid
+import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
@@ -32,9 +33,10 @@ def ResolveTask(data):
         Key={
             'task_id': task_id
         },
-        UpdateExpression="set status=:s",
+        UpdateExpression="set status=:s, date_resolved=:t",
         ExpressionAttributeValues={
             ':s': 2
+            ':t': int(time.time())
         },
         ReturnValues="UPDATED_NEW"
     )
@@ -68,7 +70,7 @@ def ResolveTaskHandler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 
             },
-            'body': json.dumps(result)
+            'body': json.dumps({'Message': "Task successfully resolved."})
         }
     except Exception as e:
         # Return exception with response
