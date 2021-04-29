@@ -3,6 +3,7 @@ import {ApiService} from '../../../shared/api/api.service';
 import {map} from 'rxjs/operators';
 import {logger} from 'codelyzer/util/logger';
 import {LayoutService} from '../../../shared/layout/layout.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-user-table',
@@ -16,6 +17,8 @@ export class VisitorsTableComponent implements OnInit {
 
 
   // todo currently using visits; change to vistors later
+
+  error: HttpErrorResponse;
 
   tableFields = {
     first_name: 'First Name',
@@ -45,7 +48,6 @@ export class VisitorsTableComponent implements OnInit {
   pageSize = 6;
 
 
-  // todo handle errors
   ngOnInit(): void {
 
     this.api.getVisitors({}).subscribe((data)=> {
@@ -60,6 +62,8 @@ export class VisitorsTableComponent implements OnInit {
           , () => ({...v, "error": true}) // todo fix this
         )
       })
+    }, (err) => {
+      this.error = err;
     })
   }
 

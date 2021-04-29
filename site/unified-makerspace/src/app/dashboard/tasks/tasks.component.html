@@ -38,12 +38,6 @@
       </div>
     </div>
 
-
-    <!--Error Message-->
-    <div class="card card-dark" *ngIf="errorMessage">
-      <app-error></app-error>
-    </div>
-
     <!--Tasks Table-->
     <table class="w-100 table table-striped text-white table-dark table-hover"
            style="border-radius: 20px !important">
@@ -71,6 +65,8 @@
       </tr>
       </tbody>
     </table>
+
+    <!--Paging Buttons-->
     <div class="paging-buttons">
       <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
               [disabled]="page == 1"
@@ -80,7 +76,12 @@
               [disabled]="page >= tasks.length/pageSize"
               (click)="page = page + 1">Next Page
       </button>
+    </div>
 
+
+    <!--Error Message-->
+    <div class="card card-dark" *ngIf="errorMessage">
+      <app-error></app-error>
     </div>
 
 

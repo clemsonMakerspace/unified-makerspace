@@ -13,6 +13,8 @@
       </tr>
       </tbody>
     </table>
+
+    <!--Paging Buttons-->
     <div class="paging-buttons">
       <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
               [disabled]="page == 1"
@@ -26,6 +28,9 @@
         {{layout.usersTableIsExpanded ? 'collapse' : 'expand'}}
       </button>
     </div>
+
+    <!--Error Message-->
+    <app-error *ngIf="error" [error]="error"></app-error>
 
   </div>
 </div>

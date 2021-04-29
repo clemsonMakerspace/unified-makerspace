@@ -1,6 +1,12 @@
+"""
+utils.py
+
+Utilities for loading data for the test server.
+
+"""
+
 import os
 import sys
-
 import yaml
 
 # to enable importing of distant modules
@@ -13,8 +19,6 @@ from models import Machine
 from models import Permission
 from models import Visit
 
-# todo
-# def args(f):
 
 def fetch_data(resource: str, data_path='./data') -> [dict]:
     """

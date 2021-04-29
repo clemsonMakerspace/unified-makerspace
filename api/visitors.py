@@ -77,8 +77,8 @@ def get_visitors(auth_token: str, start_date: int, end_date: int):
 
 def get_visitor_data(auth_token: str, visitor_id: str):
     """
-    Gets all Makerspace visitors within a given timeframe. If neither
-    `start_date` or `end_date specified`, get all data.
+    Gets data for visitor specified by `visitor_id`. If
+    visitor_id not specified, get data for all visitors.
 
     Note
     ------
@@ -93,7 +93,7 @@ def get_visitor_data(auth_token: str, visitor_id: str):
 
     Parameters
     ----------
-    auth_token : str, required
+    auth_token : str, optional
         Token to verify user credentials.
     visitor_id : str, required
         Visitor to return data for.
@@ -107,5 +107,5 @@ def get_visitor_data(auth_token: str, visitor_id: str):
     Success
     code: int
         Return Code
-    visitor: [model.Visitor]
+    visitor: model.Visitor | [model.Visitor]
     """
