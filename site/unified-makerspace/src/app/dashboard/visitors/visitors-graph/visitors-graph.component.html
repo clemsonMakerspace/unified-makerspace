@@ -11,10 +11,10 @@
       </div>
     </div>
 
-    <app-error *ngIf="errorMessage"></app-error>
+    <app-error [error]="error"></app-error>
 
     <!--chart-->
-    <div class="w-100" *ngIf="!errorMessage">
+    <div class="w-100" *ngIf="!error">
       <div id="user-graph-wrapper w-100" style="max-height: 300px;"
            #wrapper >
         <ngx-charts-line-chart

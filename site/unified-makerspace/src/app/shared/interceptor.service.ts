@@ -30,7 +30,7 @@ export class InterceptorService implements HttpInterceptor{
 
     if (!environment.production) {
       // log all outgoing requests in development
-      console.log(request);
+      console.info(request.url, request);
     }
 
     return next.handle(request);

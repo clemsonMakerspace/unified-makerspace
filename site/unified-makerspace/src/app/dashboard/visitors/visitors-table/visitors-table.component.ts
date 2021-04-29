@@ -15,9 +15,9 @@ export class VisitorsTableComponent implements OnInit {
   }
 
 
-  // data for visitors
-  visitors = [];
-
+  // data for visits
+  visits = [];
+  visitors = {};
 
   // response key to display name mapping
   tableFields = {
@@ -41,26 +41,39 @@ export class VisitorsTableComponent implements OnInit {
   pageSize = 6;
 
 
+
   ngOnInit(): void {
 
-    // fetch data on start
-    this.api.getVisitors({}).subscribe((data) => {
-      data['visitors'].map(v => {
-        // convert epoch to milliseconds
-        v['sign_in_time'] = new Date(v['sign_in_time'] * 1000).toLocaleString();
-        v['sign_out_time'] = new Date(v['sign_out_time'] * 1000).toLocaleString();
+
+    this.api.getVisitorData({}).subscribe((res) => {
+      res['visitors'].forEach((v) => {
+        this.visitors[v['visitor_id']] = v;
+      })
+
+      this.api.getVisitors({}).subscribe((data) => {
 
         // get data for each visitor
-        this.api.getVisitorData(
-          {'visitor_id': v['visitor_id']}
-        ).subscribe(d => (
-            this.visitors.push({...d['visitor'], ...v}))
-          , () => ({...v, 'error': true}) // todo fix this
-        );
-      });
-    }, (err) => {
-      this.error = err;
-    });
+        data['visitors'].map(v => {
+
+          // convert epoch to milliseconds
+          v['sign_in_time'] = new Date(v['sign_in_time'] * 1000).toLocaleString();
+          v['sign_out_time'] = new Date(v['sign_out_time'] * 1000).toLocaleString();
+
+          let visitor = this.visitors[v['visitor_id']];
+          if (visitor) {
+            this.visits.push({...visitor, ...v});
+          }
+
+        });
+
+        console.warn(this.visits);
+
+      }, (err) => this.error = err);
+
+
+
+    }, (err) => this.error = err);
+
 
   }
 

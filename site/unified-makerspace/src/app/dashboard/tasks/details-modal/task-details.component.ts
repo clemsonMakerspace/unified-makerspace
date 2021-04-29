@@ -13,6 +13,9 @@ export class TaskDetailsComponent implements OnInit {
   @Input('task') task;
 
   ngOnInit(): void {
+
+    // todo remove
+    console.warn(this.task);
   }
 
 }

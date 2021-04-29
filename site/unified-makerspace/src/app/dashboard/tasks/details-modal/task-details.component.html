@@ -20,7 +20,7 @@
 
     <div class="col">
       <h4 class="font-weight-bold text-secondary">Description</h4>
-      <h5>{{task['description']}}</h5>
+      <h5>{{task['description'].trim() ? task['description'] : 'No description available.'}}</h5>
 
       <h4 class="font-weight-bold text-secondary">Date Created</h4>
       <h5>{{task['date_created_str']}}</h5>

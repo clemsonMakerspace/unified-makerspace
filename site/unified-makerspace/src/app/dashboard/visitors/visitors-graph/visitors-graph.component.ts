@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
 import {Visit} from '../../../shared/models';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-visitors-graph',
@@ -13,14 +14,14 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  // todo handle error better?
   // todo slider labels...?
 
-  errorMessage: string;
   startTime: number;
   endTime: number;
-
   visits: any;
+
+  error: HttpErrorResponse;
+
 
   ngOnInit(): void {
     // default start time is 7 days ago
@@ -31,6 +32,11 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     // end time is always now
     this.endTime = Date.now();
     this.getVisits(this.startTime, this.endTime);
+
+
+    // todo remove
+    console.warn("data", this.startTime, this.endTime);
+
     this.startTime = -7; // for slider
 
   }
@@ -38,16 +44,18 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
   /* gets all visits in a certain period */
   getVisits(startTime: number, endTime: number) {
     this.api.getVisitors({
-      start_date: startTime,
-      end_date: endTime
+      start_date: startTime/1000,
+      end_date: endTime/1000
     }).subscribe((res) => {
-      let data = res['visits'];
+      let data = res['visitors'];
       if (data === undefined) { // for backward compatibility
-        data = res['visitors'];
+        data = res['visits'];
       }
+
+
       this.visits = this.convertData(data, startTime, endTime);
     }, (err) => {
-      this.errorMessage = err.message;
+      this.error = err;
     });
   }
 
@@ -95,6 +103,7 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
       ret[1].series.push({'name': i, 'value': count['new']});
     }
 
+    console.warn(ret);
     return ret;
   }
 

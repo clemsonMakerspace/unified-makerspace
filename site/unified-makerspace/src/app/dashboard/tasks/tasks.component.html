@@ -49,17 +49,20 @@
       </thead>
       <tbody>
       <tr *ngFor="let task of tasks.slice(pageSize * (page - 1), pageSize * page)" class="bg-dark"
-          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}"
-          (click)="selTask=task;open(details)">
-        <td *ngFor="let key of keys">
-          <span *ngIf="key != 'state'">{{task[key]}}</span>
-          <label for="task-state"></label>
-          <select [name]="'task-' + task.task_id + 'state'" id="task-state"
-                  *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
-                  class="form-control p-0 text-light">
-            <option value="1" [selected]="task[key] === 'Completed'" class="text-success">Completed</option>
-            <option value="0" [selected]="task[key] === 'Not Completed'">Not Started</option>
-          </select>
+          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}">
+        <td *ngFor="let key of keys" (click)="selTask=task; key != 'state' ? open(details) : selTask=task">
+          <div *ngIf="key != 'state'">
+            <span>{{task[key]}}</span>
+          </div>
+          <div>
+            <label for="task-state"></label>
+            <select [name]="'task-' + task.task_id + 'state'" id="task-state"
+                    *ngIf="key == 'state'" (change)="changeTaskState(task.task_id, $event.target.value)"
+                    class="form-control p-0 text-light">
+              <option value="1" [selected]="task[key] === 'Completed'" class="text-success">Completed</option>
+              <option value="0" [selected]="task[key] === 'Not Completed'">Not Started</option>
+            </select>
+          </div>
         </td>
       </tr>
       </tbody>

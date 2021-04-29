@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, ElementRef} from '@angular/core';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -16,8 +16,6 @@ export class TasksComponent implements OnInit {
               public auth: AuthService) {
   }
 
-  // todo use better types
-  @Output() messageEvent = new EventEmitter<any>();
 
   tasks: Task[];
   users: User[];
@@ -55,14 +53,16 @@ export class TasksComponent implements OnInit {
 
 
   /* wrapper to open modal */
-  open(content, refresh=true) {
+  open(content: ElementRef, refresh=true) {
     let taskModal = this.modal.open(content, {
       size: 'lg'
     });
 
     // refresh tasks whenever modal is closed
     if (refresh) {
-      taskModal.dismissed.subscribe(() => this.getTasks());
+      if (content.nativeElement.id === 'create-task-modal') {
+        taskModal.dismissed.subscribe(() => this.getTasks());
+      }
     }
   }
 
@@ -70,8 +70,6 @@ export class TasksComponent implements OnInit {
   /* gets users and then tasks */
   getUsers() {
     this.api.getUsers([]).subscribe((res) => {
-      console.log(res);
-
       this.users = res['users'];
       this.getTasks();
     }, (err) => this.handleError(err));
@@ -94,8 +92,9 @@ export class TasksComponent implements OnInit {
             let date = new Date(task['date_created'] * 1000);
             task['date_created_str'] = date.toLocaleString();
           }
-        }
-      ));
+        }));
+      console.warn(this.tasks);
+
     }, (err) => this.handleError(err));
   }
 
@@ -128,8 +127,6 @@ export class TasksComponent implements OnInit {
 
 
   handleError(err: Error) {
-    // todo keep this?
-    this.messageEvent.emit({'error': true, message: err.message})
     this.errorMessage = err.message;
   }
 

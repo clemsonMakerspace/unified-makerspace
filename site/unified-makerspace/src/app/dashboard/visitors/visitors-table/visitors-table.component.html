@@ -8,7 +8,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let visitor of visitors.slice(pageSize*(page - 1),pageSize*page)" class="bg-dark">
+      <tr *ngFor="let visitor of visits.slice(pageSize*(page - 1),pageSize*page)" class="bg-dark">
         <td *ngFor="let key of keys">{{visitor[key]}}</td>
       </tr>
       </tbody>
@@ -21,7 +21,7 @@
               (click)="page = page - 1">Previous Page
       </button>
       <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
-              [disabled]="page >= visitors.length/pageSize"
+              [disabled]="page >= visits.length/pageSize"
               (click)="page = page + 1">Next Page
       </button>
       <button class="btn btn-secondary btn-sm" (click)="toggle()">
