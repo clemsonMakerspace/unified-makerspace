@@ -76,6 +76,7 @@ export class RegisterComponent implements OnInit {
 
   }
 
+  /* called when form is submitted */
   onSubmit() {
     this.registerForm['submitted'] = true;
     this.registerForm['error'] = '';
@@ -91,6 +92,7 @@ export class RegisterComponent implements OnInit {
   }
 
 
+  /* calls create user endpoint and handle errors */
   createUser(arg: any) {
     this.auth
       .createUser(arg)
@@ -104,6 +106,7 @@ export class RegisterComponent implements OnInit {
       );
   }
 
+  /* handles all errors */
   handleError(err: HttpErrorResponse) {
 
     let error = 'Sorry, we\'re having trouble creating your account';

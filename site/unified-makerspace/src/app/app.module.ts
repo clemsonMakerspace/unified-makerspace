@@ -23,21 +23,22 @@ import {VisitorComponent} from './auth/visitor/visitor.component';
 import {RegisterComponent} from './auth/register/register.component';
 import {LoginComponent} from './auth/login/login.component';
 import {ChangePasswordComponent} from './profile/change-password/change-password.component';
-import {InterceptorService} from './shared/api/interceptor.service';
+import {InterceptorService} from './shared/interceptor.service';
 import {ResetPasswordComponent} from './auth/reset-password/reset-password.component';
 import { VisitorsComponent } from './dashboard/visitors/visitors.component';
 import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visitors-table.component';
 import { UsersComponent } from './dashboard/users/users.component';
 import { TaskDetailsComponent } from './dashboard/tasks/details-modal/task-details.component';
 import { ErrorComponent } from './dashboard/error/error.component';
+import {AuthGuard} from './shared/auth-guard.service';
 
 let routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: AuthComponent},
   {path: 'forgot', component: ResetPasswordComponent},
   {path: 'register', component: AuthComponent},
-  {path: 'dashboard', component: DashboardComponent},
-  {path: 'profile', component: ProfileComponent},
+  {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
+  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   {path: 'users', component: AccountsComponent},
   {path: '**', component: NotFoundComponent},
 ];
