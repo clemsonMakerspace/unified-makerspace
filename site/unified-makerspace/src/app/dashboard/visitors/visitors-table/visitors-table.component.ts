@@ -66,11 +66,7 @@ export class VisitorsTableComponent implements OnInit {
 
         });
 
-        console.warn(this.visits);
-
       }, (err) => this.error = err);
-
-
 
     }, (err) => this.error = err);
 

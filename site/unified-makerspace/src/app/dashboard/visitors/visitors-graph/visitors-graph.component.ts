@@ -32,11 +32,6 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     // end time is always now
     this.endTime = Date.now();
     this.getVisits(this.startTime, this.endTime);
-
-
-    // todo remove
-    console.warn("data", this.startTime, this.endTime);
-
     this.startTime = -7; // for slider
 
   }
@@ -103,7 +98,6 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
       ret[1].series.push({'name': i, 'value': count['new']});
     }
 
-    console.warn(ret);
     return ret;
   }
 

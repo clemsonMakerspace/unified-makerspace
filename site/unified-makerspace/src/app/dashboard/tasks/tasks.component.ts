@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter, ElementRef} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, ElementRef, TemplateRef} from '@angular/core';
 import {ApiService} from '../../shared/api/api.service';
 import {Task, User} from 'src/app/shared/models';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -39,7 +39,7 @@ export class TasksComponent implements OnInit {
 
   /* status integer to description */
   status_map = {
-    0: 'Not Completed',
+    0: 'Not Started',
     1: 'In-Progress',
     2: 'Completed'
   };
@@ -53,16 +53,15 @@ export class TasksComponent implements OnInit {
 
 
   /* wrapper to open modal */
-  open(content: ElementRef, refresh=true) {
+  open(content: TemplateRef<any>, refresh=true) {
     let taskModal = this.modal.open(content, {
       size: 'lg'
     });
 
     // refresh tasks whenever modal is closed
+    // todo make less expensive...
     if (refresh) {
-      if (content.nativeElement.id === 'create-task-modal') {
         taskModal.dismissed.subscribe(() => this.getTasks());
-      }
     }
   }
 
@@ -93,8 +92,6 @@ export class TasksComponent implements OnInit {
             task['date_created_str'] = date.toLocaleString();
           }
         }));
-      console.warn(this.tasks);
-
     }, (err) => this.handleError(err));
   }
 

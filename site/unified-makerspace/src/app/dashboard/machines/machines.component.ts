@@ -155,7 +155,6 @@ export class MachinesComponent implements OnInit {
     return ret;
   }
 
-
   /* tooltip for squares */
   tooltip(data) {
     return (
@@ -165,7 +164,7 @@ export class MachinesComponent implements OnInit {
         '1': 'was working',
         '0': 'was not working',
       }[data.data.toString()] +
-      ' at ' + this.intervalLength + ' ' +
+      ' at period ' +
       data.series
     );
   }
