@@ -145,8 +145,6 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view machines DynamoDB Table
         machinesTable.grant_full_access(CreateMachineLambda)
-        #Add Lambda Integration for API
-        CreateMachineLambdaIntegration = apigw.LambdaIntegration(CreateMachineLambda)
 
 
         ## GetMachineStatus ##
@@ -314,7 +312,7 @@ class MaintenanceAppStack(core.Stack):
 
 
         ## GetVisitors ##
-        GetVisitorLambda = _lambda.Function(
+        GetVisitorsLambda = _lambda.Function(
             self, 'GetVisitors',
             function_name = 'GetVisitors',
             runtime=_lambda.Runtime.PYTHON_3_7,
@@ -322,10 +320,24 @@ class MaintenanceAppStack(core.Stack):
             handler='GetVisitors.GetVisitorsHandler',
         )
         #Granting Access to view visitors and visits DynamoDB Table
-        visitorsTable.grant_full_access(GetVisitorLambda)
-        visitsTable.grant_full_access(GetVisitorLambda)
+        visitorsTable.grant_full_access(GetVisitorsLambda)
+        visitsTable.grant_full_access(GetVisitorsLambda)
         #Add Lambda Integration for API
-        GetVisitorsLambdaIntegration = apigw.LambdaIntegration(GetVisitorLambda)
+        GetVisitorsLambdaIntegration = apigw.LambdaIntegration(GetVisitorsLambda)
+
+        ## GetVisits ##
+        GetVisitsLambda = _lambda.Function(
+            self, 'GetVisits',
+            function_name = 'GetVisits',
+            runtime=_lambda.Runtime.PYTHON_3_7,
+            code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
+            handler='GetVisits.GetVisitsHandler',
+        )
+        #Granting Access to view visitors and visits DynamoDB Table
+        visitorsTable.grant_full_access(GetVisitsLambda)
+        visitsTable.grant_full_access(GetVisitsLambda)
+        #Add Lambda Integration for API
+        GetVisitsLambdaIntegration = apigw.LambdaIntegration(GetVisitsLambda)
 
 
 
@@ -435,12 +447,12 @@ class MaintenanceAppStack(core.Stack):
         )
 
         #Add cognito authorizer
-        cognitoAuth = apigw.CfnAuthorizer(self, "adminSectionAuth",
+        cognitoAuth = apigw.CfnAuthorizer(self, "makerspaceWorkerAuth",
             rest_api_id=um_api.rest_api_id,
             type='COGNITO_USER_POOLS',
-            identity_source='method.request.header.name.Authorization', #NOTE: Where to check for what to auth
+            identity_source='method.request.header.name.auth_token',
             provider_arns=[makerspaceUserCognitoPool.user_pool_arn],
-            name="adminSectionAuth"
+            name="makerspaceWorkerAuth"
         )
         #NOTE: put s3 bucket and API Gateway on same domain to avoid using CORS?
 
@@ -564,7 +576,7 @@ class MaintenanceAppStack(core.Stack):
         visitors = um_api.root.add_resource('visitors')
 
         ## Post ##
-        visitors_POST_method = visitors.add_method('POST', GetVisitorsLambdaIntegration)
+        visitors_POST_method = visitors.add_method('POST', GetVisitsLambdaIntegration)
         # Add authorizer to visitors POST
         visitors_POST_resource = visitors_POST_method.node.find_child('Resource')
         visitors_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
@@ -572,6 +584,13 @@ class MaintenanceAppStack(core.Stack):
 
         ## Put ##
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
+
+        ## Get ##
+        visits_GET_method = visitors.add_method('GET', GetVisitorsLambdaIntegration)
+        # Add authorizer to visitors POST
+        visits_POST_resource = visits_GET_method.node.find_child('Resource')
+        visits_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        visits_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
 
         ###------Staging------###
