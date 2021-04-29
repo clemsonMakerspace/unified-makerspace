@@ -37,13 +37,14 @@ def GetVisitorsHandler(event, context):
 
     params = event["queryStringParameters"]
 
+    body = {
+        "start_date": 0,
+        "end_date": int(time.time()) + 10
+    }
+    visitors = GetVisitors(body)
+
     try:
         params["visitor_id"]
-        body = {
-            "start_date": 0,
-            "end_date": int(time.time()) + 10
-        }
-        visitors = GetVisitors(body)
 
         for visitor in visitors:
             if visitor["visitor_id"] == params["visitor_id"]:
@@ -76,7 +77,7 @@ def GetVisitorsHandler(event, context):
 
     except Exception as e:
         return {
-            'statusCode': 401,
+            'statusCode': 200,
             'headers': {
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Headers': 'Content-Type',
@@ -84,7 +85,7 @@ def GetVisitorsHandler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 
             },
-            'body': json.dumps({'Message': "visitor id parameter not provided."})
+            'body': json.dumps({'visitors': visitors}, cls=DecimalEncoder)
         }
 
 
