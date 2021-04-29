@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule, Routes} from '@angular/router';
-import {RootComponent} from './root/root.component';
+import {HomeComponent} from './home/home.component';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
@@ -32,7 +32,7 @@ import { DetailsComponent } from './dashboard/tasks/details/details.component';
 import { ErrorComponent } from './dashboard/error/error.component';
 
 let routes: Routes = [
-  {path: '', component: RootComponent},
+  {path: '', component: HomeComponent},
   {path: 'login', component: AuthComponent},
   {path: 'forgot', component: ResetPasswordComponent},
   {path: 'register', component: AuthComponent},
@@ -49,7 +49,7 @@ let routes: Routes = [
     DashboardComponent,
     TasksComponent,
     ModalComponent,
-    RootComponent,
+    HomeComponent,
     ProfileComponent,
     NotFoundComponent,
     AccountsComponent,

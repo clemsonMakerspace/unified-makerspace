@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
-import { RootComponent } from './root.component';
+import { HomeComponent } from './home.component';
 
 describe('RootComponent', () => {
-  let component: RootComponent;
-  let fixture: ComponentFixture<RootComponent>;
+  let component: HomeComponent;
+  let fixture: ComponentFixture<HomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RootComponent ]
+      declarations: [ HomeComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RootComponent);
+    fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -24,7 +24,7 @@ describe('RootComponent', () => {
   });
 
   it('should return title', () => {
-    fixture = TestBed.createComponent(RootComponent);
+    fixture = TestBed.createComponent(HomeComponent);
     component = fixture.debugElement.componentInstance;
     fixture.detectChanges();
     let compiled = fixture.debugElement.nativeElement;

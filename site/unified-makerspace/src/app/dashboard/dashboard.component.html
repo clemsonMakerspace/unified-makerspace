@@ -1,4 +1,4 @@
-<div class="w-100">
+<section class="w-100">
 
   <!--Welcome Message-->
   <div class="card card-dark bg-primary">
@@ -12,7 +12,8 @@
   </div>
 
 
-  <div *ngIf="auth.isUserLoggedIn()">
+  <!--Dashboard-->
+  <main *ngIf="auth.isUserLoggedIn()">
     <div id="top-row" class="row no-gutters d-flex align-content-stretch">
       <!--Tasks-->
       <div class="card-wrapper col-lg-8 col-12">
@@ -26,15 +27,14 @@
     </div>
 
 
-    <!--  Visitors -->
+    <!--Visitors-->
     <app-visitors></app-visitors>
 
 
-    <!--Machines-->
+    <!-- Machines -->
     <div class="card-wrapper col-12">
       <app-machines></app-machines>
     </div>
-  </div>
+  </main>
 
-
-</div>
+</section>

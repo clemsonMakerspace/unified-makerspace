@@ -7,6 +7,7 @@ export class LayoutService {
 
   constructor() { }
 
+  // whether the users table is expanded
   usersTableIsExpanded = false;
 
 }

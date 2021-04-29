@@ -1,6 +1,6 @@
 build
 node modules
-.ipynb
+*.ipynb
 
 
 # ides
