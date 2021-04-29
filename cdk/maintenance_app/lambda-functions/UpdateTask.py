@@ -31,16 +31,12 @@ def UpdateTask(data):
         Key = {
             'task_id': task_id
         },
-        UpdateExpression="set task_name=:n, description=:d, date_created=:c, date_resolved=:o, tags=:t, "
-                         "assigned_to=:a, status=:s",
+        UpdateExpression="set #st=:s",
         ExpressionAttributeValues={
-            ':n': body["task_name"],
-            ':d': body["description"],
-            ':c': body["date_created"],
-            ':o': body["date_resolved"],
-            ':t': body["tags"],
-            ':a': body['assigned_to'],
-            ':s': body['status'],
+            ':s': body['state'],
+        },
+        ExpressionAttributeNames={
+            '#st': "status"
         },
         ReturnValues="UPDATED_NEW"
     )
@@ -57,7 +53,7 @@ def UpdateTaskHandler(event, context):
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
                 },
             'body': json.dumps({
                 'Message': 'Failed to provide query string parameters.'
@@ -75,9 +71,9 @@ def UpdateTaskHandler(event, context):
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
                 },
-            'body': json.dumps(result)
+            'body': json.dumps({'Message': "Task successfully updated."})
         }
     except Exception as e:
         # Return exception with response
@@ -87,7 +83,7 @@ def UpdateTaskHandler(event, context):
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
                 },
             'body': json.dumps({
                 'Message': str(e)
