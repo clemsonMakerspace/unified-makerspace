@@ -31,17 +31,16 @@ def UpdateTask(data):
         Key = {
             'task_id': task_id
         },
-        UpdateExpression="set task_name=:n, description=:d, date_created=:c, date_completed=:o, tags=:t, "
-                         "assigned_to=:a, task_status=:s, task_id=:i",
+        UpdateExpression="set task_name=:n, description=:d, date_created=:c, date_resolved=:o, tags=:t, "
+                         "assigned_to=:a, status=:s",
         ExpressionAttributeValues={
             ':n': body["task_name"],
             ':d': body["description"],
             ':c': body["date_created"],
-            ':o': body["date_completed"],
+            ':o': body["date_resolved"],
             ':t': body["tags"],
             ':a': body['assigned_to'],
-            ':s': body['task_status'],
-            ':i': task_id
+            ':s': body['status'],
         },
         ReturnValues="UPDATED_NEW"
     )
@@ -49,8 +48,6 @@ def UpdateTask(data):
 
 
 def UpdateTaskHandler(event, context):
-    reqHeaders = ['task_id', 'task_name', 'description', 'assigned_to', 'date_created', 'date_completion', 'tags',
-                  'task_status']
 
     # Return client error if no string params
     if (event is None):
