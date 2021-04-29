@@ -7,7 +7,8 @@ import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-from api.models import Machine
+from api.models import Task
+from aws_lambda.CreateMachine import *
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -15,46 +16,37 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 
 # DEPRECATED: TO REMOVE
-# Parent_Table = dynamodb.Table('Parent_Machines')
-# Child_Table = dynamodb.Table('Child_Machines')
+# Parent_Table = dynamodb.Table('Parent_Tasks')
+# Child_Table = dynamodb.Table('Child_Tasks')
 # Machine_Table = dynamodb.Table('Machines')
 
+Tasks = dynamodb.Table('Tasks')
 Machines = dynamodb.Table('Machines')
 
 
-# Function for Calculating Due Dates for Children
-def CalculateNextDate(start, freq, add):
-    # Convert start date to DateTime
-    startDateTime = datetime.strptime(str(start), '%Y%m%d')
+def CreateTask(data):
+    new_task = json.loads(data["body"])
 
-    # Add offset for each frequency category
-    if freq == 'Daily':
-        startDateTime += timedelta(days=add)
-    elif freq == 'Weekly':
-        startDateTime += timedelta(weeks=add)
-    elif freq == 'Monthly':
-        startDateTime += relativedelta(months=add)
+    machine_name = (new_task["tags"])[0]
 
-    # Return NextDate as String
-    return startDateTime.strftime('%Y%m%d')
+    new_task = Task(new_task["task_id"], new_task["task_name"], new_task["description"], new_task["assigned_to"],
+                    new_task["date_created"], new_task["date_resolved"], new_task["tags"], new_task["task_status"])
 
+    machines = Machines.scan()
+    machines_list = machines["Items"]
 
-def CreateMachine(data):
-    new_machine = json.loads(data["body"])
+    if machine_name not in machines_list and machine_name != "*":
+        CreateMachine(machine_name, "0")
 
-    new_machine = Machine(new_machine["machine_name"],new_machine["machine_status"])
-
-
-    # Put new task into the Machines eventbase
-    Machines.put_item(
-        Item = new_machine.__dict__
+    # Put new task into the tasks eventbase
+    Tasks.put_item(
+        Item=new_task.__dict__
     )
 
     return 1
 
 
-def CreateMachineHandler(event, context):
-
+def CreateTaskHandler(event, context):
     # Return client error if no string params
     if (event is None):
         return {
@@ -69,7 +61,7 @@ def CreateMachineHandler(event, context):
 
     try:
         # Call function
-        result = CreateMachine(event)
+        result = CreateTask(event)
 
         # Send Response
         return {
