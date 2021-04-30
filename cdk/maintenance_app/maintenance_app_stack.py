@@ -73,20 +73,20 @@ class MaintenanceAppStack(core.Stack):
         )
 
 
-        # plan = backup.BackupPlan.daily_monthly1_year_retention(
-        #     self, 'BackupPlan'
-        # )
+        plan = backup.BackupPlan.daily_monthly1_year_retention(
+            self, 'BackupPlan'
+        )
 
-        # plan.add_selection(
-        #     'BackupSelection', resources=[
-        #         backup.BackupResource.from_dynamo_db_table(tasksTable),
-        #         backup.BackupResource.from_dynamo_db_table(machinesTable),
-        #         backup.BackupResource.from_dynamo_db_table(visitorsTable),
-        #         backup.BackupResource.from_dynamo_db_table(visitsTable),
-        #         backup.BackupResource.from_dynamo_db_table(usersTable),
-        #         backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
-        #     ]
-        # )
+        plan.add_selection(
+            'BackupSelection', resources=[
+                backup.BackupResource.from_dynamo_db_table(tasksTable),
+                backup.BackupResource.from_dynamo_db_table(machinesTable),
+                backup.BackupResource.from_dynamo_db_table(visitorsTable),
+                backup.BackupResource.from_dynamo_db_table(visitsTable),
+                backup.BackupResource.from_dynamo_db_table(usersTable),
+                backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
+            ]
+        )
 
 
 
@@ -95,7 +95,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            # bucket_name='admin.cumaker.space',
+            bucket_name='testing.cumaker.space',
             public_read_access= True
         )
 
@@ -137,14 +137,11 @@ class MaintenanceAppStack(core.Stack):
 
         userClient = cognito.UserPoolClient(self, 'user-client',
             user_pool = makerspaceUserCognitoPool,
-            # refresh_token_validity = core.Duration.days(3650),
-            # access_token_validity = core.Duration.days(1),
             auth_flows = cognito.AuthFlow(
                 custom = True,
                 user_password = True,
                 user_srp = True
-            ),
-            # id_token_validity = core.Duration.days(1)
+            )
         )
 
         makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
@@ -167,14 +164,11 @@ class MaintenanceAppStack(core.Stack):
 
         visitorClient = cognito.UserPoolClient(self, 'visitor-client',
             user_pool = makerspaceVisitorCognitoPool,
-            # refresh_token_validity = core.Duration.days(3650),
-            # access_token_validity = core.Duration.days(1),
             auth_flows = cognito.AuthFlow(
                 custom = True,
                 user_password = True,
                 user_srp = True
-            ),
-            # id_token_validity = core.Duration.days(1)
+            )
         )
 
     #------------------Lambda Functions/API Integrations--------------------
