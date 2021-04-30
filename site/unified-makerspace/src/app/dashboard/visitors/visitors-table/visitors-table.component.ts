@@ -25,8 +25,8 @@ export class VisitorsTableComponent implements OnInit {
     last_name: 'Last Name',
     major: 'Major',
     degree: 'Degree',
-    sign_in_time: 'Sign-in Time',
-    sign_out_time: 'Sign-out time'
+    sign_in_time_str: 'Sign-in Time',
+    sign_out_time_str: 'Sign-out time'
   };
 
 
@@ -42,6 +42,9 @@ export class VisitorsTableComponent implements OnInit {
 
 
   ngOnInit(): void {
+    // first get visitors
+    // then get visits
+    // and then associate visits with visitors data
     this.getVisitors();
   }
 
@@ -53,23 +56,36 @@ export class VisitorsTableComponent implements OnInit {
         this.visitors[v['visitor_id']] = v;
       });
 
-      this.api.getVisitors({}).subscribe((data) => {
+      if (res['visitors']) {
+        this.getVisits();
+      }
 
-        // get data for each visitor
-        data['visitors'].map(v => {
+    }, (err) => this.error = err);
+  }
 
-          // convert epoch to milliseconds
-          v['sign_in_time'] = new Date(v['sign_in_time'] * 1000).toLocaleString();
-          v['sign_out_time'] = new Date(v['sign_out_time'] * 1000).toLocaleString();
 
-          let visitor = this.visitors[v['visitor_id']];
-          if (visitor) {
-            this.visits.push({...visitor, ...v});
-          }
+  getVisits() {
+    this.visits = [];
+    this.api.getVisitors({}).subscribe((data) => {
 
-        });
+      // get data for each visitor
+      data['visits'].map(v => {
 
-      }, (err) => this.error = err);
+        // convert epoch to milliseconds
+        v['sign_in_time_str'] = new Date(v['sign_in_time'] * 1000).toLocaleString();
+        v['sign_out_time_str'] = new Date(v['sign_out_time'] * 1000).toLocaleString();
+
+        let visitor = this.visitors[v['visitor_id']];
+        if (visitor) {
+          this.visits.push({...visitor, ...v});
+        }
+
+      });
+
+      this.visits.sort(
+        (a, b) =>
+          (a.sign_in_time < b.sign_in_time)
+            ? 1 : -1);
 
     }, (err) => this.error = err);
   }

@@ -39,8 +39,8 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
   /* gets all visits in a certain period */
   getVisits(startTime: number, endTime: number) {
     this.api.getVisitors({
-      start_date: startTime/1000,
-      end_date: endTime/1000
+      start_date: startTime / 1000,
+      end_date: endTime / 1000
     }).subscribe((res) => {
       let data = res['visitors'];
       if (data === undefined) { // for backward compatibility
@@ -48,7 +48,9 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
       }
 
 
-      this.visits = this.convertData(data, startTime, endTime);
+      console.warn(data); // todo remove
+      this.visits = this.convertData(data, startTime / 1000, endTime / 1000);
+      console.warn(this.visits); // todo remove
     }, (err) => {
       this.error = err;
     });
@@ -69,33 +71,40 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
   convertData(data: Visit[], startTime: number, endTime: number) {
 
     let interval = endTime - startTime;
-    let stepSize = 1000 * 60 * 60 * 24; // a day
+    let stepSize = 60 * 60 * 24; // a day
     let steps = Math.floor(interval / stepSize);
 
+    // return data
     let ret = [{
       name: 'All Users',
       series: []
     }, {
       name: 'New Users',
       series: []
-    }
-    ]; // return data
+    }];
+
+
     let t = startTime;
     for (let i = 0; i < steps; i++) {
-      let series = [];
-      t += stepSize;
+
       let count = {
         'new': 0,
         'all': 0,
       };
+
       for (const visit of (data as any)) {
-        let d = visit.date_visited;
-        if (t[0] >= d && d <= t[1]) {
-          count[d.is_new ? 'new' : 'all']++;
+        let d = visit.sign_in_time;
+        if (d >= t && d <= t + stepSize) {
+          count[visit.first_visit ? 'new' : 'all']++;
         }
+
       }
+
+
+      t += stepSize;
       ret[0].series.push({'name': i, 'value': count['all']});
       ret[1].series.push({'name': i, 'value': count['new']});
+
     }
 
     return ret;
