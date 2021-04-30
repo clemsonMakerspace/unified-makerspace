@@ -7,25 +7,26 @@ import {environment} from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class InterceptorService implements HttpInterceptor{
+export class InterceptorService implements HttpInterceptor {
 
-  constructor(private auth: AuthService){}
+  constructor(private auth: AuthService) {
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
 
     // all outgoing requests are json
     let request = req.clone({
       headers: req.headers.append('Content-Type', 'application/json')
-    })
-
+    });
 
 
     // authenticate outgoing requests
-    // if (this.auth.isUserLoggedIn()) {
-    //   request = request.clone({ // all outgoing requests are json
-    //     headers: req.headers.append('Authorization', this.auth.user.getValue()['auth_token'])
-    //   })
-    // }
+    if (this.auth.isUserLoggedIn()) {
+      request = request.clone({ // all outgoing requests are json
+        headers: req.headers.append('Authorization',
+          JSON.stringify({'auth_token': this.auth.user.getValue()['auth_token']}))
+      });
+    }
 
 
     if (!environment.production) {

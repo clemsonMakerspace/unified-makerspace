@@ -41,14 +41,17 @@ export class VisitorsTableComponent implements OnInit {
   pageSize = 6;
 
 
-
   ngOnInit(): void {
+    this.getVisitors();
+  }
 
+
+  getVisitors() {
 
     this.api.getVisitorData({}).subscribe((res) => {
       res['visitors'].forEach((v) => {
         this.visitors[v['visitor_id']] = v;
-      })
+      });
 
       this.api.getVisitors({}).subscribe((data) => {
 
@@ -69,8 +72,6 @@ export class VisitorsTableComponent implements OnInit {
       }, (err) => this.error = err);
 
     }, (err) => this.error = err);
-
-
   }
 
 

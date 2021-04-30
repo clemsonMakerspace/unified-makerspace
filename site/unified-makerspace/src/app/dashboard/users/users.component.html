@@ -11,10 +11,12 @@
       </tr>
     </table>
     <div class="paging-buttons">
-      <button class="btn btn-primary border-secondary btn-sm mr-3" type="button"
+      <button class="btn btn-primary border-secondary btn-sm mr-3 mb-3"
+              type="button"
               [disabled]="page == 1"
               (click)="page = page - 1">Previous Page</button>
-      <button class="btn btn-primary border-secondary btn-sm" type="button"
+      <button class="btn btn-primary border-secondary btn-sm"
+              type="button"
               [disabled] = "page >= users.length/pageSize"
               (click)="page = page + 1">Next Page</button>
 

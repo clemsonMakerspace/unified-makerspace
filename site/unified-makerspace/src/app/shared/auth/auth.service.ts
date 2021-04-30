@@ -73,6 +73,7 @@ export class AuthService {
 
   createUser(args: any): Observable<Response> {
     // todo modify response ?
+    // args['first_name'] = args['first_name']
     return this.api.createUser(args);
   }
 

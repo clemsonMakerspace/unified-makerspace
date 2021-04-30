@@ -14,7 +14,6 @@ export class UsersComponent implements OnInit {
   page = 1;
   pageSize = 10;
 
-
   ngOnInit(): void {
     this.api.getUsers({}).subscribe((res)=> {
       this.users = res['users'];
@@ -22,7 +21,8 @@ export class UsersComponent implements OnInit {
         user['name'] = user.first_name + ' ' + user.last_name;
       }
 
-      this.users = this.users.sort((a,b) => a['name'] > b['name'] ? 1 : -1);
+      this.users = this.users.sort(
+        (a,b) => a['name'] > b['name'] ? 1 : -1);
 
     })
   }

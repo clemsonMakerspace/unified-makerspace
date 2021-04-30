@@ -68,6 +68,8 @@ export class LoginComponent implements OnInit {
       error = 'Sorry, your password is incorrect.';
     } else if (err.status == 408) {
       error = "Sorry, this email is not associated with any account."
+    } else if (err.status == 411) {
+      error = "Please verify your account before logging in."
     }
     this.loginForm['error'] = error;
   }

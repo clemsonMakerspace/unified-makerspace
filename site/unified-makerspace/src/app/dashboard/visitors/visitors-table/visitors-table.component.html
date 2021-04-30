@@ -1,6 +1,10 @@
 <div class="card bg-primary w-100 h-100">
   <div class="card-body w-100 h-100 text-light">
-    <h3 class="text-secondary font-weight-bold">Users</h3>
+    <div class="d-flex justify-content-between mb-3">
+      <h3 class="text-secondary font-weight-bold">Users</h3>
+      <h3 class="bi bi-arrow-repeat text-secondary" (click)="getVisitors()"></h3>
+    </div>
+
     <table class="w-100 table table-dark table-striped ">
       <thead class="bg-secondary font-weight-bold text-primary">
       <tr>

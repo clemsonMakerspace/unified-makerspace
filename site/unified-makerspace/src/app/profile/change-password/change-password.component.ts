@@ -44,7 +44,7 @@ export class ChangePasswordComponent implements OnInit {
       }).subscribe(res => {
         // todo this
       }, err => {
-        // todo this
+        this.changePassword['error'] = 'Sorry, the server is having some issues!';
       });
     }
   }
