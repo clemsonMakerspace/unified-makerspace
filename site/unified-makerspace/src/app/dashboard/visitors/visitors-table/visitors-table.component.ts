@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
 import {LayoutService} from '../../../shared/layout/layout.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {DataService} from '../../../shared/data.service';
 
 @Component({
   selector: 'app-user-table',
@@ -11,6 +12,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class VisitorsTableComponent implements OnInit {
 
   constructor(private api: ApiService,
+              private ds: DataService,
               public layout: LayoutService) {
   }
 
@@ -86,6 +88,8 @@ export class VisitorsTableComponent implements OnInit {
         (a, b) =>
           (a.sign_in_time < b.sign_in_time)
             ? 1 : -1);
+
+      this.ds.visits.next(this.visits);
 
     }, (err) => this.error = err);
   }

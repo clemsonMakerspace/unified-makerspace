@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
-import {Visit} from '../../../shared/models';
+import {Visit, Visitor} from '../../../shared/models';
 import {HttpErrorResponse} from '@angular/common/http';
+import {DataService} from '../../../shared/data.service';
 
 @Component({
   selector: 'app-visitors-graph',
@@ -11,6 +12,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class VisitorsGraphComponent implements OnInit, OnDestroy {
   constructor(
     private api: ApiService,
+    private ds: DataService,
   ) {
   }
 
@@ -115,29 +117,35 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
   exportUserData() {
     let rowDelimiter = '\n';
     let columnDelimiter = ',';
-    let formattedData = 'data:text/csv;charset=utf-8,';
 
-    //setup header of csv as All Users, New Users, Day
-    formattedData += 'Day' + columnDelimiter;
-    this.visits.forEach(function(item, index) {
-      // formattedData += item.firstName + columnDelimiter;
-    });
-    formattedData = formattedData.slice(0, -1) + rowDelimiter; //replace last comma with newline
 
-    let temp = this.visitsGraphData[1];
+    let csvString = 'data:text/csv;charset=utf-8,';
+    let data = this.ds.visits.getValue();
+
+    let keys = {
+      first_name: 'First Name',
+      last_name: 'Last Name',
+      major: 'Major',
+      degree: 'Degree',
+      sign_in_time_str: 'Sign-in Time',
+      sign_out_time_str: 'Sign-out time'
+    };
+
+
+    csvString += Object.values(keys).join(',');
+
+    // replace last comma with newline
+    csvString = csvString.slice(0, -1) + rowDelimiter;
+
     //for each day listed in the series, record data
-    this.visitsGraphData[0].series.forEach(function(item, index) {
-      formattedData +=
-        item.firstName +
-        columnDelimiter +
-        item.value +
-        columnDelimiter +
-        temp.series[index].value +
-        rowDelimiter;
+    this.visitsGraphData.forEach(function(item, index) {
+      Object.keys(keys).forEach((k) => {
+        csvString += k + ',';
+      });
     });
 
     //Download data as a csv
-    let encodedUri = encodeURI(formattedData);
+    let encodedUri = encodeURI(csvString);
     var link = document.createElement('a');
     link.setAttribute('href', encodedUri);
     link.setAttribute('download', 'Users.csv');
