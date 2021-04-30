@@ -3,12 +3,14 @@ import boto3
 import json
 import uuid
 import time
+import os
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
 from api.models import Visitor, Visit
 
-clientID="3q2dlou1tfbr6gpb83af94jv6g"
+# clientID="3q2dlou1tfbr6gpb83af94jv6g"
+clientID = os.environ['visitor_cognitoClientID']
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')

@@ -73,20 +73,20 @@ class MaintenanceAppStack(core.Stack):
         )
 
 
-        plan = backup.BackupPlan.daily_monthly1_year_retention(
-            self, 'BackupPlan'
-        )
+        # plan = backup.BackupPlan.daily_monthly1_year_retention(
+        #     self, 'BackupPlan'
+        # )
 
-        plan.add_selection(
-            'BackupSelection', resources=[
-                backup.BackupResource.from_dynamo_db_table(tasksTable),
-                backup.BackupResource.from_dynamo_db_table(machinesTable),
-                backup.BackupResource.from_dynamo_db_table(visitorsTable),
-                backup.BackupResource.from_dynamo_db_table(visitsTable),
-                backup.BackupResource.from_dynamo_db_table(usersTable),
-                backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
-            ]
-        )
+        # plan.add_selection(
+        #     'BackupSelection', resources=[
+        #         backup.BackupResource.from_dynamo_db_table(tasksTable),
+        #         backup.BackupResource.from_dynamo_db_table(machinesTable),
+        #         backup.BackupResource.from_dynamo_db_table(visitorsTable),
+        #         backup.BackupResource.from_dynamo_db_table(visitsTable),
+        #         backup.BackupResource.from_dynamo_db_table(usersTable),
+        #         backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
+        #     ]
+        # )
 
 
 
@@ -95,7 +95,7 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            bucket_name='admin.cumaker.space',
+            # bucket_name='admin.cumaker.space',
             public_read_access= True
         )
 
@@ -104,6 +104,78 @@ class MaintenanceAppStack(core.Stack):
             destination_bucket=FrontEndBucket
         )
 
+    #-------------------Cognito Pool------------------------------
+        makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
+            user_pool_name="makerspace-user-userpool",
+            self_sign_up_enabled=True,
+            user_verification= {
+                "email_subject": "Your Veriication code",
+                "email_body": "Your verification code is {####}",
+                "email_style": cognito.VerificationEmailStyle.CODE,
+            },
+            user_invitation={
+                "email_subject": "Your temporary password",
+                "email_body": "Your username is {username} and temporary password is {####}.",
+                "sms_message": "Your username is {username} and temporary password is {####}. "
+            },
+            sign_in_aliases={
+                "username": True,
+                "email": True
+            },
+            standard_attributes={
+                "email": {
+                    "required": True,
+                    "mutable": False
+                }
+            },
+            custom_attributes={
+                "fistname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
+                "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
+                "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
+            }
+        )
+
+        userClient = cognito.UserPoolClient(self, 'user-client',
+            user_pool = makerspaceUserCognitoPool,
+            # access_token_validity = [core.Duration.days(1)],
+            auth_flows = cognito.AuthFlow(
+                custom = True,
+                user_password = True,
+                user_srp = True
+            ),
+            # id_token_validity = core.Duration.days(1),
+            # refresh_token_validity = core.Duration.days(3650)
+        )
+
+        makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
+            user_pool_name="makerspace-visitor-userpool",
+            self_sign_up_enabled=True,
+            user_verification= {
+                "email_subject": "Your Verification code",
+                "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
+                "email_style": cognito.VerificationEmailStyle.LINK,
+            },
+            user_invitation={
+                "email_subject": "Your temporary password",
+                "email_body": "Your username is {username} and temporary password is {####}.",
+                "sms_message": "Your username is {username} and temporary password is {####}. "
+            },
+            sign_in_aliases={
+                "email": True
+            }
+        )
+
+        visitorClient = cognito.UserPoolClient(self, 'visitor-client',
+            user_pool = makerspaceVisitorCognitoPool,
+            # access_token_validity = core.Duration.days(1),
+            auth_flows = cognito.AuthFlow(
+                custom = True,
+                user_password = True,
+                user_srp = True
+            ),
+            # id_token_validity = core.Duration.days(1),
+            # refresh_token_validity = core.Duration.days(3650)
+        )
 
     #------------------Lambda Functions/API Integrations--------------------
 
@@ -116,6 +188,9 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='ResetPassword.ResetPasswordHandler',
+            environment = {
+                'user_cognitoClientID': userClient.user_pool_client_id,
+            }
         )
         #Add Lambda Integration for API
         ResetPasswordLambdaIntegration = apigw.LambdaIntegration(ResetPasswordLambda)
@@ -130,8 +205,6 @@ class MaintenanceAppStack(core.Stack):
         )
         #Add Lambda Integration for API
         GenerateUserTokenLambdaIntegration = apigw.LambdaIntegration(GenerateUserTokenLambda)
-
-
 
         ###------Machine------###
 
@@ -244,6 +317,9 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateUser.CreateUserHandler',
+            environment = {
+                'user_cognitoClientID': userClient.user_pool_client_id,
+            }
         )
         #Granting Access to view users DynamoDB Table
         usersTable.grant_full_access(CreateUserLambda)
@@ -258,6 +334,9 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='DeleteUser.DeleteUserHandler',
+            environment = {
+                'user_cognitoUserPoolID': makerspaceUserCognitoPool.user_pool_id,
+            }
         )
         #Granting Access to view users DynamoDB Table
         usersTable.grant_full_access(DeleteUserLambda)
@@ -303,6 +382,9 @@ class MaintenanceAppStack(core.Stack):
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='CreateVisitor.CreateVisitorHandler',
+            environment = {
+                'visitor_cognitoClientID': visitorClient.user_pool_client_id,
+            }
         )
         #Granting Access to view visitors and visits DynamoDB Table
         visitorsTable.grant_full_access(CreateVisitorLambda)
@@ -371,55 +453,6 @@ class MaintenanceAppStack(core.Stack):
         #Add Lambda Integration for API
         RPI_SignOutLambdaIntegration = apigw.LambdaIntegration(RPI_SignOutLambda, proxy=True)
 
-#-------------------Cognito Pool------------------------------
-        makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
-            user_pool_name="makerspace-user-userpool",
-            self_sign_up_enabled=True,
-            user_verification= {
-                "email_subject": "Your Veriication code",
-                "email_body": "Your verification code is {####}",
-                "email_style": cognito.VerificationEmailStyle.CODE,
-            },
-            user_invitation={
-                "email_subject": "Your temporary password",
-                "email_body": "Your username is {username} and temporary password is {####}.",
-                "sms_message": "Your username is {username} and temporary password is {####}. "
-            },
-            sign_in_aliases={
-                "username": True,
-                "email": True
-            },
-            standard_attributes={
-                "email": {
-                    "required": True,
-                    "mutable": False
-                }
-            },
-            custom_attributes={
-                "fistname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
-                "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
-                "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
-            }
-        )
-
-        makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
-            user_pool_name="makerspace-visitor-userpool",
-            self_sign_up_enabled=True,
-            user_verification= {
-                "email_subject": "Your Verification code",
-                "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
-                "email_style": cognito.VerificationEmailStyle.LINK,
-            },
-            user_invitation={
-                "email_subject": "Your temporary password",
-                "email_body": "Your username is {username} and temporary password is {####}.",
-                "sms_message": "Your username is {username} and temporary password is {####}. "
-            },
-            sign_in_aliases={
-                "email": True
-            }
-        )
-
         ## Log in ##
         LoginLambda = _lambda.Function(
             self, 'Login',
@@ -428,8 +461,7 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='Login.LoginHandler',
             environment = {
-                'cognitoUserPool': makerspaceUserCognitoPool.user_pool_arn,
-                #TODO: Pass client ID as well to Login
+                'user_cognitoClientID': userClient.user_pool_client_id,
             }
         )
         #Add permisisons for
@@ -469,9 +501,9 @@ class MaintenanceAppStack(core.Stack):
         ## Post ##
         admin_POST_method = administrative.add_method('POST', GenerateUserTokenLambdaIntegration)
         # Add authorizer to admin POST
-        admin_POST_resource = admin_POST_method.node.find_child('Resource')
-        admin_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        admin_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # admin_POST_resource = admin_POST_method.node.find_child('Resource')
+        # admin_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # admin_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
 
 
@@ -481,16 +513,16 @@ class MaintenanceAppStack(core.Stack):
         ## Delete ##
         machines_DELETE_method = machines.add_method('DELETE', DeleteMachineLambdaIntegration)
         # Add authorizer to machines DELETE
-        machines_DELETE_resource = machines_DELETE_method.node.find_child('Resource')
-        machines_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        machines_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # machines_DELETE_resource = machines_DELETE_method.node.find_child('Resource')
+        # machines_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # machines_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
         
         ## Post ##
         machines_POST_method = machines.add_method('POST', GetMachineStatusLambdaIntegration)
         # Add authorizer to machines POST
-        machines_POST_resource = machines_POST_method.node.find_child('Resource')
-        machines_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        machines_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # machines_POST_resource = machines_POST_method.node.find_child('Resource')
+        # machines_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # machines_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
 
 
@@ -513,30 +545,30 @@ class MaintenanceAppStack(core.Stack):
         ## Delete ##
         tasks_DELETE_method = tasks.add_method('DELETE', ResolveTaskLambdaIntegration)
         # Add authorizer to tasks DELETE
-        tasks_DELETE_resource = tasks_DELETE_method.node.find_child('Resource')
-        tasks_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        tasks_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # tasks_DELETE_resource = tasks_DELETE_method.node.find_child('Resource')
+        # tasks_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # tasks_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Get ##
         tasks_GET_method = tasks.add_method('GET', GetTasksLambdaIntegration)
         # Add authorizer to tasks GET
-        tasks_GET_resource = tasks_GET_method.node.find_child('Resource')
-        tasks_GET_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        tasks_GET_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # tasks_GET_resource = tasks_GET_method.node.find_child('Resource')
+        # tasks_GET_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # tasks_GET_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Patch ##
         tasks_PATCH_method = tasks.add_method('PATCH', UpdateTaskLambdaIntegration)
         # Add authorizer to tasks PATCH
-        tasks_PATCH_resource = tasks_PATCH_method.node.find_child('Resource')
-        tasks_PATCH_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        tasks_PATCH_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # tasks_PATCH_resource = tasks_PATCH_method.node.find_child('Resource')
+        # tasks_PATCH_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # tasks_PATCH_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Post ##
         tasks_POST_method = tasks.add_method('POST', CreateTaskLambdaIntegration)
         # Add authorizer to tasks POST
-        tasks_POST_resource = tasks_POST_method.node.find_child('Resource')
-        tasks_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        tasks_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # tasks_POST_resource = tasks_POST_method.node.find_child('Resource')
+        # tasks_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # tasks_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
 
 
@@ -546,23 +578,23 @@ class MaintenanceAppStack(core.Stack):
         ## Delete ##
         users_DELETE_method = users.add_method('DELETE', DeleteUserLambdaIntegration)
         # Add authorizer to users DELETE
-        users_DELETE_resource = users_DELETE_method.node.find_child('Resource')
-        users_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        users_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # users_DELETE_resource = users_DELETE_method.node.find_child('Resource')
+        # users_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # users_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Get ##
         users_GET_method = users.add_method('GET', GetUsersLambdaIntegration)
         # Add authorizer to users GET
-        users_GET_resource = users_GET_method.node.find_child('Resource')
-        users_GET_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        users_GET_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # users_GET_resource = users_GET_method.node.find_child('Resource')
+        # users_GET_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # users_GET_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Patch ##
         users_PATCH_method = users.add_method('PATCH', UpdateUserLambdaIntegration)
         # Add authorizer to users PATCH
-        users_PATCH_resource = users_PATCH_method.node.find_child('Resource')
-        users_PATCH_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        users_PATCH_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # users_PATCH_resource = users_PATCH_method.node.find_child('Resource')
+        # users_PATCH_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # users_PATCH_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
         
         ## Post ##
         users.add_method('POST', LoginLambdaIntegration)
@@ -578,9 +610,9 @@ class MaintenanceAppStack(core.Stack):
         ## Post ##
         visitors_POST_method = visitors.add_method('POST', GetVisitsLambdaIntegration)
         # Add authorizer to visitors POST
-        visitors_POST_resource = visitors_POST_method.node.find_child('Resource')
-        visitors_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        visitors_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # visitors_POST_resource = visitors_POST_method.node.find_child('Resource')
+        # visitors_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # visitors_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
         ## Put ##
         visitors.add_method('PUT', CreateVisitorLambdaIntegration)
@@ -588,9 +620,9 @@ class MaintenanceAppStack(core.Stack):
         ## Get ##
         visits_GET_method = visitors.add_method('GET', GetVisitorsLambdaIntegration)
         # Add authorizer to visitors POST
-        visits_POST_resource = visits_GET_method.node.find_child('Resource')
-        visits_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
-        visits_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
+        # visits_POST_resource = visits_GET_method.node.find_child('Resource')
+        # visits_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
+        # visits_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
 
 
         ###------Staging------###

@@ -12,8 +12,8 @@ from api.models import User
 from base64 import b64encode
 import os
 
-clientID = "20nnrq12vp19a99c58g2r0b0og"
-poolID = "us-east-1_l5xLuC13j"
+# clientID = "20nnrq12vp19a99c58g2r0b0og"
+clientID = os.environ['user_cognitoClientID']
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')

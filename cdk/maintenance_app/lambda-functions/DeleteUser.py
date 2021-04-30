@@ -1,8 +1,11 @@
 import json
 import boto3
 from boto3.dynamodb.conditions import Key
+import os
 
-poolID = "us-east-1_l5xLuC13j"
+# poolID = "us-east-1_l5xLuC13j"
+poolID = os.environ['user_cognitoUserPoolID']
+
 db = boto3.resource('dynamodb')
 db_client = boto3.client('dynamodb')
 client = boto3.client('cognito-idp')

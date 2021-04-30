@@ -2,7 +2,7 @@ import json
 import boto3
 from boto3.dynamodb.conditions import Key
 
-poolID = "us-east-1_l5xLuC13j"
+# poolID = "us-east-1_l5xLuC13j"
 db = boto3.resource('dynamodb')
 db_client = boto3.client('dynamodb')
 client = boto3.client('cognito-idp')

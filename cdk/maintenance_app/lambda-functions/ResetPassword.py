@@ -1,10 +1,12 @@
 import json
 import boto3
+import os
 
 # Cognito Client
 client = boto3.client('cognito-idp')
-clientID = "20nnrq12vp19a99c58g2r0b0og"
-poolID = "us-east-1_l5xLuC13j"
+# clientID = "20nnrq12vp19a99c58g2r0b0og"
+clientID = os.environ['user_cognitoClientID']
+# poolID = "us-east-1_l5xLuC13j"
 
 
 def ResetPasswordHandler(event, context):
