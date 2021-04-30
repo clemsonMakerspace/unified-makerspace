@@ -137,14 +137,14 @@ class MaintenanceAppStack(core.Stack):
 
         userClient = cognito.UserPoolClient(self, 'user-client',
             user_pool = makerspaceUserCognitoPool,
-            # access_token_validity = [core.Duration.days(1)],
+            # refresh_token_validity = core.Duration.days(3650),
+            # access_token_validity = core.Duration.days(1),
             auth_flows = cognito.AuthFlow(
                 custom = True,
                 user_password = True,
                 user_srp = True
             ),
-            # id_token_validity = core.Duration.days(1),
-            # refresh_token_validity = core.Duration.days(3650)
+            # id_token_validity = core.Duration.days(1)
         )
 
         makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
@@ -167,14 +167,14 @@ class MaintenanceAppStack(core.Stack):
 
         visitorClient = cognito.UserPoolClient(self, 'visitor-client',
             user_pool = makerspaceVisitorCognitoPool,
+            # refresh_token_validity = core.Duration.days(3650),
             # access_token_validity = core.Duration.days(1),
             auth_flows = cognito.AuthFlow(
                 custom = True,
                 user_password = True,
                 user_srp = True
             ),
-            # id_token_validity = core.Duration.days(1),
-            # refresh_token_validity = core.Duration.days(3650)
+            # id_token_validity = core.Duration.days(1)
         )
 
     #------------------Lambda Functions/API Integrations--------------------
