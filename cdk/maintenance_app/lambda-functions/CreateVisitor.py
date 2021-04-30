@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
 from api.models import Visitor, Visit
 
-clientID = "3q2dlou1tfbr6gpb83af94jv6g"
+clientID="3q2dlou1tfbr6gpb83af94jv6g"
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -20,15 +20,14 @@ Visits = dynamodb.Table("Visits")
 # Cognito Client
 client = boto3.client('cognito-idp')
 
-
 def CreateVisitor(data):
     json_data = json.loads(data["body"])
     hardware_id = json_data["hardware_id"]
     new_visitor = json_data["visitor"]
     email = new_visitor["email"]
 
-    new_visitor_obj = Visitor(hardware_id, new_visitor["degree"], new_visitor["first_name"],
-                              new_visitor["last_name"], new_visitor["major"], str(uuid.uuid4().hex[:10]))
+    new_visitor_obj = Visitor(hardware_id,new_visitor["degree_type"],new_visitor["first_name"],
+    new_visitor["last_name"],new_visitor["major"],str(uuid.uuid4().hex[:10]))
 
     visits = Visits.scan()
     visits_list = visits["Items"]
@@ -38,13 +37,13 @@ def CreateVisitor(data):
     for visit in visits_list:
 
         if visit["visitor_id"] == new_visitor_obj.visitor_id:
-            new_visit = Visit(str(uuid.uuid4().hex[:10]), new_visitor_obj.visitor_id, "0", int(time.time()), 0)
+            new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"0",int(time.time()),0)
             break
     else:
-        new_visit = Visit(str(uuid.uuid4().hex[:10]), new_visitor_obj.visitor_id, "1", int(time.time()), 0)
+        new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"1",int(time.time()),0)
 
     Visits.put_item(
-        Item=new_visit.__dict__
+        Item = new_visit.__dict__
     )
 
     # Put new task into the tasks eventbase
@@ -52,13 +51,14 @@ def CreateVisitor(data):
         Item=new_visitor_obj.__dict__
     )
 
-    # Add viitor to congito pool and send verficiation email
+    #Add viitor to congito pool and send verficiation email
     response = client.sign_up(ClientId=clientID, Username=email, Password=hardware_id)
 
     return "Created new visitor: " + new_visitor_obj.visitor_id + " " + new_visitor_obj.first_name + " " + new_visitor_obj.last_name
 
 
 def CreateVisitorHandler(event, context):
+
     # Return client error if no string params
     if (event is None):
         return {
@@ -83,7 +83,7 @@ def CreateVisitorHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
+        
             },
             'body': json.dumps(result)
         }
@@ -96,7 +96,7 @@ def CreateVisitorHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
+        
             },
             'body': json.dumps({
                 'Message': str(e)
