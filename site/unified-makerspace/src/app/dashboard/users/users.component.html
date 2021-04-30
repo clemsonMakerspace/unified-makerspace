@@ -15,7 +15,7 @@
               type="button"
               [disabled]="page == 1"
               (click)="page = page - 1">Previous Page</button>
-      <button class="btn btn-primary border-secondary btn-sm"
+      <button class="btn btn-primary border-secondary btn-sm mb-3"
               type="button"
               [disabled] = "page >= users.length/pageSize"
               (click)="page = page + 1">Next Page</button>

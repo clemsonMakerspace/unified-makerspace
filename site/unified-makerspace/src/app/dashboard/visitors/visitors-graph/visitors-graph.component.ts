@@ -18,7 +18,12 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
 
   startTime: number;
   endTime: number;
-  visits: any;
+
+  // raw visit data
+  visits: Visit[];
+
+  // converted data
+  visitsGraphData: any;
 
   error: HttpErrorResponse;
 
@@ -47,10 +52,9 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
         data = res['visits'];
       }
 
-
-      console.warn(data); // todo remove
-      this.visits = this.convertData(data, startTime / 1000, endTime / 1000);
-      console.warn(this.visits); // todo remove
+      this.visits = data;
+      this.visitsGraphData = this.convertData(data,
+        startTime / 1000, endTime / 1000);
     }, (err) => {
       this.error = err;
     });
@@ -87,20 +91,17 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     let t = startTime;
     for (let i = 0; i < steps; i++) {
 
-      let count = {
-        'new': 0,
-        'all': 0,
-      };
+      let count = {'new': 0, 'all': 0,};
 
+      // check if visit falls in time step
       for (const visit of (data as any)) {
         let d = visit.sign_in_time;
         if (d >= t && d <= t + stepSize) {
           count[visit.first_visit ? 'new' : 'all']++;
         }
-
       }
 
-
+      // updates
       t += stepSize;
       ret[0].series.push({'name': i, 'value': count['all']});
       ret[1].series.push({'name': i, 'value': count['new']});
@@ -119,13 +120,13 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     //setup header of csv as All Users, New Users, Day
     formattedData += 'Day' + columnDelimiter;
     this.visits.forEach(function(item, index) {
-      formattedData += item.firstName + columnDelimiter;
+      // formattedData += item.firstName + columnDelimiter;
     });
     formattedData = formattedData.slice(0, -1) + rowDelimiter; //replace last comma with newline
 
-    let temp = this.visits[1];
+    let temp = this.visitsGraphData[1];
     //for each day listed in the series, record data
-    this.visits[0].series.forEach(function(item, index) {
+    this.visitsGraphData[0].series.forEach(function(item, index) {
       formattedData +=
         item.firstName +
         columnDelimiter +
