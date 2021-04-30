@@ -22,6 +22,8 @@ export class UsersComponent implements OnInit {
         user['name'] = user.first_name + ' ' + user.last_name;
       }
 
+      this.users = this.users.sort((a,b) => a['name'] > b['name'] ? 1 : -1);
+
     })
   }
 
