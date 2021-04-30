@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs';
 export class DataService {
 
 
-  visits: BehaviorSubject<any>;
+  visits = new BehaviorSubject<any>(null);
 
   constructor() { }
 

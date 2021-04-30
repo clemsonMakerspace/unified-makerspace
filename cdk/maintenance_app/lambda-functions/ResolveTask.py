@@ -25,7 +25,7 @@ Tasks = dynamodb.Table('Tasks')
 
 def ResolveTask(data):
     print(data)
-    body = data["body"]
+    body = json.loads(data["body"])
     task_id = body["task_id"]
 
     response = Tasks.update_item(
