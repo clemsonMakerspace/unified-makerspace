@@ -78,13 +78,13 @@ export class TasksComponent implements OnInit {
   getTasks() {
     this.api.getTasks([]).subscribe((res) => {
       this.tasks = res['tasks'];
+
       this.tasks.forEach(((task, i) => {
           for (let user of this.users) {
             if (user.user_id == task.assigned_to) {
               this.tasks[i]['user_id'] = this.tasks[i].assigned_to;
               this.tasks[i].assigned_to = user.first_name;
             }
-
           }
           for (let task of this.tasks) {
             task.state = this.status_map[task.status];
@@ -92,6 +92,10 @@ export class TasksComponent implements OnInit {
             task['date_created_str'] = date.toLocaleString();
           }
         }));
+
+      this.tasks = this.tasks.sort((a,b) =>
+        a['date_created'] < b['date_created'] ? 1 : -1)
+
     }, (err) => this.handleError(err));
   }
 
