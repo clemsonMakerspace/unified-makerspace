@@ -8,8 +8,7 @@ import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from boto3.dynamodb.conditions import Key
-
-# from api.models import Task
+#from api.models import Task
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -26,16 +25,15 @@ Tasks = dynamodb.Table('Tasks')
 
 def ResolveTask(data):
     print(data)
-    body = json.loads(data["body"])
+    body = data["body"]
     task_id = body["task_id"]
 
     response = Tasks.update_item(
-        Key={
+        Key = {
             'task_id': task_id
         },
-        UpdateExpression="set status=:s, date_resolved=:t",
+        UpdateExpression="set date_resolved=:t",
         ExpressionAttributeValues={
-            ':s': 2
             ':t': int(time.time())
         },
         ReturnValues="UPDATED_NEW"
@@ -44,6 +42,7 @@ def ResolveTask(data):
 
 
 def ResolveTaskHandler(event, context):
+
     # Return client error if no string params
     if (event is None):
         return {
