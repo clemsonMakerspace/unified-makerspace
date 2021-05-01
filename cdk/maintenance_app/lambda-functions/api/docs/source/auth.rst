@@ -1,0 +1,7 @@
+
+===============
+Authentication
+===============
+
+.. automodule:: auth
+   :members:

@@ -1,6 +1,0 @@
-=========
-Machines
-=========
-
-.. automodule:: machines
-   :members:

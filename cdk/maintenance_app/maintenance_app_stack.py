@@ -73,20 +73,20 @@ class MaintenanceAppStack(core.Stack):
         )
 
 
-        plan = backup.BackupPlan.daily_monthly1_year_retention(
-            self, 'BackupPlan'
-        )
+        # plan = backup.BackupPlan.daily_monthly1_year_retention(
+        #     self, 'BackupPlan'
+        # )
 
-        plan.add_selection(
-            'BackupSelection', resources=[
-                backup.BackupResource.from_dynamo_db_table(tasksTable),
-                backup.BackupResource.from_dynamo_db_table(machinesTable),
-                backup.BackupResource.from_dynamo_db_table(visitorsTable),
-                backup.BackupResource.from_dynamo_db_table(visitsTable),
-                backup.BackupResource.from_dynamo_db_table(usersTable),
-                backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
-            ]
-        )
+        # plan.add_selection(
+        #     'BackupSelection', resources=[
+        #         backup.BackupResource.from_dynamo_db_table(tasksTable),
+        #         backup.BackupResource.from_dynamo_db_table(machinesTable),
+        #         backup.BackupResource.from_dynamo_db_table(visitorsTable),
+        #         backup.BackupResource.from_dynamo_db_table(visitsTable),
+        #         backup.BackupResource.from_dynamo_db_table(usersTable),
+        #         backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
+        #     ]
+        # )
 
 
 
@@ -107,6 +107,13 @@ class MaintenanceAppStack(core.Stack):
     #-------------------Cognito Pool------------------------------
         makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
             user_pool_name="makerspace-user-userpool",
+            password_policy = cognito.PasswordPolicy(
+                min_length = 6,
+                require_digits= False,
+                require_lowercase = False,
+                require_symbols= False,
+                require_uppercase= False
+            ),
             self_sign_up_enabled=True,
             user_verification= {
                 "email_subject": "Your Veriication code",
@@ -119,8 +126,7 @@ class MaintenanceAppStack(core.Stack):
                 "sms_message": "Your username is {username} and temporary password is {####}. "
             },
             sign_in_aliases={
-                "username": True,
-                "email": True
+                "username": True
             },
             standard_attributes={
                 "email": {
@@ -135,6 +141,12 @@ class MaintenanceAppStack(core.Stack):
             }
         )
 
+        makerspaceUserCognitoPool.add_domain('makerspace-user-cognitoDomain',
+            cognito_domain= cognito.CognitoDomainOptions(
+                domain_prefix = 'makerspace-signup-users'
+            )
+        )
+
         userClient = cognito.UserPoolClient(self, 'user-client',
             user_pool = makerspaceUserCognitoPool,
             auth_flows = cognito.AuthFlow(
@@ -144,8 +156,17 @@ class MaintenanceAppStack(core.Stack):
             )
         )
 
+        #TODO: Change from link to none or code
+        #TODO: Change password policy
         makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
             user_pool_name="makerspace-visitor-userpool",
+            password_policy = cognito.PasswordPolicy(
+                min_length = 6,
+                require_digits= False,
+                require_lowercase = False,
+                require_symbols= False,
+                require_uppercase= False
+            ),
             self_sign_up_enabled=True,
             user_verification= {
                 "email_subject": "Your Verification code",
@@ -160,6 +181,12 @@ class MaintenanceAppStack(core.Stack):
             sign_in_aliases={
                 "email": True
             }
+        )
+
+        makerspaceVisitorCognitoPool.add_domain('makerspace-visitor-cognitoDomain',
+            cognito_domain= cognito.CognitoDomainOptions(
+                domain_prefix = 'makerspace-signup-visitors'
+            )
         )
 
         visitorClient = cognito.UserPoolClient(self, 'visitor-client',
@@ -317,6 +344,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view users DynamoDB Table
         usersTable.grant_full_access(CreateUserLambda)
+        userVerificationTokenTable.grant_full_access(CreateUserLambda)
         #Add Lambda Integration for API
         CreateUserLambdaIntegration = apigw.LambdaIntegration(CreateUserLambda)
 
@@ -658,20 +686,20 @@ class MaintenanceAppStack(core.Stack):
         # Create policy for IoT Devices
         CUmakeit_IoT_Policy = iot.CfnPolicy(self, "IoT_All_Allowed", policy_name="IoT_All_Allowed", policy_document= IoT_All_Allowed_Policy)
 
-        ## ---- Thing 1 ---- ##
-        CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
+        # ## ---- Thing 1 ---- ##
+        # CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
 
-        ## ---- Thing 2 ---- ##
-        CUmakeit_02, cert02 = create_thing(self, '02', CUmakeit_IoT_Policy)
+        # ## ---- Thing 2 ---- ##
+        # CUmakeit_02, cert02 = create_thing(self, '02', CUmakeit_IoT_Policy)
 
-        ## ---- Thing 3 ---- ##
-        CUmakeit_03, cert03 = create_thing(self, '03', CUmakeit_IoT_Policy)
+        # ## ---- Thing 3 ---- ##
+        # CUmakeit_03, cert03 = create_thing(self, '03', CUmakeit_IoT_Policy)
 
-        ## ---- Thing 4 ---- ##
-        CUmakeit_04, cert04 = create_thing(self, '04', CUmakeit_IoT_Policy)
+        # ## ---- Thing 4 ---- ##
+        # CUmakeit_04, cert04 = create_thing(self, '04', CUmakeit_IoT_Policy)
 
-        ## ---- Thing 5 ---- ##
-        CUmakeit_05, cert05 = create_thing(self, '05', CUmakeit_IoT_Policy)
+        # ## ---- Thing 5 ---- ##
+        # CUmakeit_05, cert05 = create_thing(self, '05', CUmakeit_IoT_Policy)
 
-        ## ---- Thing 6 ---- ##
-        CUmakeit_06, cert06 = create_thing(self, '06', CUmakeit_IoT_Policy)
+        # ## ---- Thing 6 ---- ##
+        # CUmakeit_06, cert06 = create_thing(self, '06', CUmakeit_IoT_Policy)

@@ -41,8 +41,8 @@ def CreateVisitor(data):
         if visit["visitor_id"] == new_visitor_obj.visitor_id:
             new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"0",int(time.time()),0)
             break
-    else:
-        new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"1",int(time.time()),0)
+        else:
+            new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"1",int(time.time()),0)
 
     Visits.put_item(
         Item = new_visit.__dict__
