@@ -51,7 +51,7 @@ def processAvailability(machines, tasks, start_time, end_time):
 
 # calls getMachineById to get machine data
 # input format: ?machine_id=<id>
-def GetMachineStatusHandler(event, context):
+def GetMachinesStatusHandler(event, context):
     # Call function
     machines = list(GetMachines())
     tasks = list(GetTasks())
