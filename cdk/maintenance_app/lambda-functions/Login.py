@@ -9,7 +9,7 @@ from boto3.dynamodb.conditions import Key
 
 # Cognito Client
 client = boto3.client('cognito-idp')
-# clientID = "20nnrq12vp19a99c58g2r0b0og"
+#clientID = "20nnrq12vp19a99c58g2r0b0og"
 clientID = os.environ['user_cognitoClientID']
 
 statusCode = 200
@@ -87,6 +87,7 @@ def loginHandler(event, context):
 
     try:
         data=json.loads(event["body"])
+        new_password = data["new_password"]
         try:
             token =event["headers"]["auth_token"]
         except:
@@ -102,7 +103,7 @@ def loginHandler(event, context):
             }
         
         #print(token)
-        result = change_password(data["password"], data["new_password"], token)
+        result = change_password(data["password"], new_password, token)
         #print(result)
 
         # Send Response

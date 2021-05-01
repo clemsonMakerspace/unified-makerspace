@@ -116,9 +116,9 @@ class MaintenanceAppStack(core.Stack):
             ),
             self_sign_up_enabled=True,
             user_verification= {
-                "email_subject": "Your Veriication code",
-                "email_body": "Your verification code is {####}",
-                "email_style": cognito.VerificationEmailStyle.CODE,
+                "email_subject": "Your Verification code",
+                "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
+                "email_style": cognito.VerificationEmailStyle.LINK,
             },
             user_invitation={
                 "email_subject": "Your temporary password",
@@ -135,7 +135,7 @@ class MaintenanceAppStack(core.Stack):
                 }
             },
             custom_attributes={
-                "fistname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
+                "firstname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                 "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                 "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
             }
@@ -224,6 +224,7 @@ class MaintenanceAppStack(core.Stack):
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
             handler='GenerateUserToken.GenerateUserTokenLambda',
         )
+        userVerificationTokenTable.grant_full_access(GenerateUserTokenLambda)
         #Add Lambda Integration for API
         GenerateUserTokenLambdaIntegration = apigw.LambdaIntegration(GenerateUserTokenLambda)
 
@@ -282,6 +283,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view tasks DynamoDB Table
         tasksTable.grant_full_access(CreateTaskLambda)
+        machinesTable.grant_full_access(CreateTaskLambda)
         #Add Lambda Integration for API
         CreateTaskLambdaIntegration = apigw.LambdaIntegration(CreateTaskLambda)
 
@@ -296,6 +298,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view tasks DynamoDB Table
         tasksTable.grant_full_access(GetTasksLambda)
+        machinesTable.grant_full_access(GetTasksLambda)
         #Add Lambda Integration for API
         GetTasksLambdaIntegration = apigw.LambdaIntegration(GetTasksLambda)
 
@@ -310,6 +313,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view tasks DynamoDB Table
         tasksTable.grant_full_access(ResolveTaskLambda)
+        machinesTable.grant_full_access(ResolveTaskLambda)
         #Add Lambda Integration for API
         ResolveTaskLambdaIntegration = apigw.LambdaIntegration(ResolveTaskLambda)
 
@@ -324,6 +328,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #Granting Access to view tasks DynamoDB Table
         tasksTable.grant_full_access(UpdateTaskLambda)
+        machinesTable.grant_full_access(UpdateTaskLambda)
         #Add Lambda Integration for API
         UpdateTaskLambdaIntegration = apigw.LambdaIntegration(UpdateTaskLambda)
 
@@ -481,13 +486,14 @@ class MaintenanceAppStack(core.Stack):
             function_name = 'Login',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='Login.LoginHandler',
+            handler='Login.loginHandler',
             environment = {
                 'user_cognitoClientID': userClient.user_pool_client_id,
             }
         )
         #Add permisisons for
         userVerificationTokenTable.grant_full_access(LoginLambda)
+        usersTable.grant_full_access(LoginLambda)
         #Add Lambda Integration for API
         LoginLambdaIntegration = apigw.LambdaIntegration(LoginLambda)
 
