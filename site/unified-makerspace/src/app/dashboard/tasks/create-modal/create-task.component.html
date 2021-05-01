@@ -85,13 +85,12 @@
               >People</label
               >
               <select
-                name=""
                 id="users"
                 class="form-control"
                 style="padding: 5px 20px"
                 formControlName="person"
               >
-                <option *ngFor="let user of users" value="{{user}}">{{user}}</option>
+                <option [selected]="i == 0" *ngFor="let user of users; let i = index" value="{{user}}">{{user}}</option>
               </select>
               <small
                 class="text-danger font-weight-bold"

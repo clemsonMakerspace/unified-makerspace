@@ -49,7 +49,8 @@
       </thead>
       <tbody>
       <tr *ngFor="let task of tasks.slice(pageSize * (page - 1), pageSize * page)" class="bg-dark"
-          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id}">
+          [ngClass]="{'font-weight-bold text-secondary': task['user_id'] == auth.user.getValue().user_id,
+                        'font-weight-bold text-success': task['state'] === 'Completed'}">
         <td *ngFor="let key of keys" (click)="selTask=task; key != 'state' ? open(details) : selTask=task">
           <div *ngIf="key != 'state'">
             <span>{{task[key]}}</span>

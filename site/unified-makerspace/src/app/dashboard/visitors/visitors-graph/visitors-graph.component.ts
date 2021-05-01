@@ -113,11 +113,10 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     return ret;
   }
 
-  /* exports users data to csv file */
+  /* exports users data to tsv file */
   exportUserData() {
     let rowDelimiter = '\n';
-    let columnDelimiter = ',';
-
+    let columnDelimiter = '\t';
 
     let csvString = 'data:text/csv;charset=utf-8,';
     let data = this.ds.visits.getValue();
@@ -132,23 +131,25 @@ export class VisitorsGraphComponent implements OnInit, OnDestroy {
     };
 
 
-    csvString += Object.values(keys).join(',');
+    // header row
+    csvString += Object.values(keys)
+      .join(columnDelimiter) + rowDelimiter;
 
-    // replace last comma with newline
-    csvString = csvString.slice(0, -1) + rowDelimiter;
+    // for each day listed in the series, record data
+    data.forEach((item) => {
+      console.log(item);
+        Object.keys(keys).forEach((k) => {
+          csvString += item[k] + columnDelimiter;
+        })
+        csvString += rowDelimiter;
+      }
+    );
 
-    //for each day listed in the series, record data
-    this.visitsGraphData.forEach(function(item, index) {
-      Object.keys(keys).forEach((k) => {
-        csvString += k + ',';
-      });
-    });
-
-    //Download data as a csv
+    // download data as a csv
     let encodedUri = encodeURI(csvString);
-    var link = document.createElement('a');
+    let link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'Users.csv');
+    link.setAttribute('download', 'Users.tsv');
     link.id = 'csv-dl';
     document.body.appendChild(link);
     link.click();

@@ -26,10 +26,12 @@ Tasks = dynamodb.Table('Tasks')
 # Function for Calculating Due Dates for Children
 def GetTasks(data):
     tasks = Tasks.scan()
-    return tasks["Items"]
+    return list(filter(lambda t: t['date_resolved'] == 0,tasks["Items"]))
 
 
 def GetTasksHandler(event, context):
+
+
     # Return client error if no string params
     if (event is None):
         return {
