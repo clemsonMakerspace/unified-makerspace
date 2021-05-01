@@ -44,9 +44,9 @@ def CreateVisitor(data):
     else:
         new_visit = Visit(str(uuid.uuid4().hex[:10]),new_visitor_obj.visitor_id,"1",int(time.time()),0)
 
-    Visits.put_item(
-        Item = new_visit.__dict__
-    )
+    # Visits.put_item(
+    #     Item = new_visit.__dict__
+    # )
 
     # Put new task into the tasks eventbase
     Visitors.put_item(

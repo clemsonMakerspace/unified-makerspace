@@ -98,6 +98,7 @@ class MaintenanceAppStack(core.Stack):
             bucket_name='testing.cumaker.space',
             public_read_access= True
         )
+        #TODO: single page application
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
             sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
@@ -222,7 +223,7 @@ class MaintenanceAppStack(core.Stack):
             function_name = 'GenerateUserToken',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='GenerateUserToken.GenerateUserTokenLambda',
+            handler='GenerateUserToken.GenerateUserTokenHandler',
         )
         userVerificationTokenTable.grant_full_access(GenerateUserTokenLambda)
         #Add Lambda Integration for API
@@ -242,18 +243,19 @@ class MaintenanceAppStack(core.Stack):
         machinesTable.grant_full_access(CreateMachineLambda)
 
 
-        ## GetMachineStatus ##
-        GetMachineStatusLambda = _lambda.Function(
-            self, 'GetMachineStatus',
-            function_name = 'GetMachineStatus',
+        ## GetMachinesStatus ##
+        GetMachinesStatusLambda = _lambda.Function(
+            self, 'GetMachinesStatus',
+            function_name = 'GetMachinesStatus',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='GetMachineStatus.GetMachineStatusHandler',
+            handler='GetMachinesStatus.GetMachinesStatusHandler',
         )
         #Granting Access to view machines DynamoDB Table
-        machinesTable.grant_full_access(GetMachineStatusLambda)
+        machinesTable.grant_full_access(GetMachinesStatusLambda)
+        tasksTable.grant_full_access(GetMachinesStatusLambda)
         #Add Lambda Integration for API
-        GetMachineStatusLambdaIntegration = apigw.LambdaIntegration(GetMachineStatusLambda)
+        GetMachinesStatusLambdaIntegration = apigw.LambdaIntegration(GetMachinesStatusLambda)
 
 
         ##DeleteMachine
@@ -546,7 +548,7 @@ class MaintenanceAppStack(core.Stack):
         # machines_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
         
         ## Post ##
-        machines_POST_method = machines.add_method('POST', GetMachineStatusLambdaIntegration)
+        machines_POST_method = machines.add_method('POST', GetMachinesStatusLambdaIntegration)
         # Add authorizer to machines POST
         # machines_POST_resource = machines_POST_method.node.find_child('Resource')
         # machines_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')

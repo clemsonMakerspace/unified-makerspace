@@ -53,7 +53,7 @@ def CreateUser(data):
         generatedTime = int(response['Items'][0]['tokenTime'])
 
         # check if they are 5 min apart
-        if (abs(currentTime - generatedTime) > 300):
+        if (abs(currentTime - generatedTime) > 86400):
             statusCode = 406
             return {
                 'message': json.dumps("Token is expired")
