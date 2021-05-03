@@ -66,7 +66,7 @@ export class CreateTaskComponent implements OnInit {
       this.api.createTask({
         'person': getValue('person'),
         'task_name': getValue('taskName'),
-        'description': getValue('description'),
+        'description': getValue('description4'),
         'tags': this.tags,
       }).subscribe((res) => {
         this.taskForm['success'] = true;

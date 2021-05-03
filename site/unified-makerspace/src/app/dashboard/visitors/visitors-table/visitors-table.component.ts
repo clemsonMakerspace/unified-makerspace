@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
 import {LayoutService} from '../../../shared/layout/layout.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {DataService} from '../../../shared/data.service';
+import {DataService} from '../../../shared/data/data.service';
 
 @Component({
   selector: 'app-user-table',

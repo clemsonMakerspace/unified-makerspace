@@ -59,6 +59,8 @@ export class MachinesComponent implements OnInit {
     └────────┴──────────────┘
    */
 
+
+  /* converts slider value to number of days ago*/
   toDays(value: number):number {
     let v = (102 - value)/24;
     if (value < 75) {
@@ -68,14 +70,10 @@ export class MachinesComponent implements OnInit {
   }
 
 
-  // todo call toDays?
+  /* converts number of days ago to time */
   toTime(value: number):number {
-    let v = (102 - value)/24;
-    if (value < 75) {
-      v = 364.8263 - 8.4582 * value + 0.04823 * Math.pow(value, 2);
-    }
     let d = new Date();
-    d.setHours(d.getHours() - v*24);
+    d.setHours(d.getHours() - this.toDays(value)*24);
     return d.getTime();
   }
 

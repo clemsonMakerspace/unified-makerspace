@@ -30,7 +30,7 @@ import { VisitorsTableComponent } from './dashboard/visitors/visitors-table/visi
 import { UsersComponent } from './dashboard/users/users.component';
 import { TaskDetailsComponent } from './dashboard/tasks/details-modal/task-details.component';
 import { ErrorComponent } from './dashboard/error/error.component';
-import {AuthGuard} from './shared/auth-guard.service';
+import {AuthGuard} from './shared/auth/auth-guard.service';
 
 let routes: Routes = [
   {path: '', component: HomeComponent},

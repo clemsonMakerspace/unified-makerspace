@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService} from '../../../shared/api/api.service';
 import {Visit, Visitor} from '../../../shared/models';
 import {HttpErrorResponse} from '@angular/common/http';
-import {DataService} from '../../../shared/data.service';
+import {DataService} from '../../../shared/data/data.service';
 
 @Component({
   selector: 'app-visitors-graph',
