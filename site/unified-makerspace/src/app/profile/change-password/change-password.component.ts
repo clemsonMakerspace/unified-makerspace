@@ -42,9 +42,13 @@ export class ChangePasswordComponent implements OnInit {
         'new_password': this.changePassword.get('newPassword').value,
         'user_id': this.auth.user.getValue().user_id
       }).subscribe(res => {
-        // todo this
+        this.changePassword['success'] = true;
       }, err => {
-        this.changePassword['error'] = 'Sorry, the server is having some issues!';
+        let error = 'Sorry, the server is having some issues!';
+        if (err.status == 419) {
+          error = "Sorry, your current password is not correct."
+        }
+        this.changePassword['error'] = error;
       });
     }
   }
