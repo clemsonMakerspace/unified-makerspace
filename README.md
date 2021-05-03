@@ -16,4 +16,4 @@ Our team would like to thank our professors, TA's, and, most importantly, our me
 
 ## Resources
 
-[1] [The Unified Makerspace](http://makerspace-site.s3-website-us-east-1.amazonaws.com/)
+[1] [The Unified Makerspace](http://admin.cumaker.space/)
