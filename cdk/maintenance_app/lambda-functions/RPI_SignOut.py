@@ -18,6 +18,8 @@ db_client = boto3.client('dynamodb')
 visitorTable = db.Table('Visitors')
 visitTable = db.Table('Visits')
 
+statusCode = 200
+
 def RPI_SignOut_Handler(event, context):
     try:
         #getting card id from post command
@@ -28,6 +30,12 @@ def RPI_SignOut_Handler(event, context):
         print(e)
         return {
                 'statusCode': 401,
+                'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
                 'body': json.dumps({
                     'Message' : 'Error loading data. '
                 })
@@ -43,6 +51,12 @@ def RPI_SignOut_Handler(event, context):
         print(e)
         return {
             'statusCode': 402,
+            'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
             'Message' : 'User does not exist! '
             })
@@ -59,6 +73,12 @@ def RPI_SignOut_Handler(event, context):
         print(e)
         return {
             'statusCode': 403,
+            'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
             'Message' : 'User never signed in! '
             })
@@ -82,6 +102,12 @@ def RPI_SignOut_Handler(event, context):
         print(e)
         return {
             'statusCode': 404,
+            'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
             'Message' : 'Error in updating table with logout time' + str(e)
             })
@@ -89,5 +115,11 @@ def RPI_SignOut_Handler(event, context):
 
     return {
         'statusCode': 200,
+        'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
         'body': json.dumps('Success')
     }

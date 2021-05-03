@@ -20,6 +20,8 @@ db_client = boto3.client('dynamodb')
 visitorsTable = db.Table('Visitors')
 visitTable = db.Table('Visits')
 
+statusCode = 200
+
 def RPI_SignIn_Handler(event, context):
 
     try:
@@ -31,6 +33,12 @@ def RPI_SignIn_Handler(event, context):
         print(e)
         return {
                 'statusCode': 401,
+                'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
                 'body': json.dumps({
                     'Message' : 'Error loading data. '
                 })
@@ -73,6 +81,12 @@ def RPI_SignIn_Handler(event, context):
             print(e)
             return {
             'statusCode': 403,
+            'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
             'Message' : 'User not successfully added to visit table'
             })
@@ -82,6 +96,12 @@ def RPI_SignIn_Handler(event, context):
         print(e)
         return {
             'statusCode': 402,
+            'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
             'body': json.dumps({
             'Message' : 'User does not exist! '
             })
@@ -89,5 +109,11 @@ def RPI_SignIn_Handler(event, context):
 
     return {
         'statusCode': 200,
+        'headers': {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
         'body': json.dumps('Success')
         }

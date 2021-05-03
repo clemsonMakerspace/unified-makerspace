@@ -518,7 +518,7 @@ class MaintenanceAppStack(core.Stack):
         )
         #NOTE: put s3 bucket and API Gateway on same domain to avoid using CORS?
 
-#----------------Master API Methods--------------------------        
+#----------------Master API Methods--------------------------
         # Add ANY
         um_api.root.add_method('ANY')
 
@@ -546,27 +546,13 @@ class MaintenanceAppStack(core.Stack):
         # machines_DELETE_resource = machines_DELETE_method.node.find_child('Resource')
         # machines_DELETE_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
         # machines_DELETE_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
-        
+
         ## Post ##
         machines_POST_method = machines.add_method('POST', GetMachinesStatusLambdaIntegration)
         # Add authorizer to machines POST
         # machines_POST_resource = machines_POST_method.node.find_child('Resource')
         # machines_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
         # machines_POST_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
-
-
-
-        ###-----Raspberry Pi's------###
-        ## Sign in ##
-        signin = um_api.root.add_resource('signin')
-        #Add sign in method
-        signin.add_method('POST', RPI_SignInLambdaIntegration)
-
-        ## Sign out
-        signout = um_api.root.add_resource('signout')
-        #Add sign out method
-        signout.add_method('POST', RPI_SignOutLambdaIntegration)
-
 
 
         ###------Tasks------###
@@ -625,7 +611,7 @@ class MaintenanceAppStack(core.Stack):
         # users_PATCH_resource = users_PATCH_method.node.find_child('Resource')
         # users_PATCH_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
         # users_PATCH_resource.add_property_override('AuthorizerId', {"Ref": cognitoAuth.logical_id})
-        
+
         ## Post ##
         users.add_method('POST', LoginLambdaIntegration)
 
@@ -669,6 +655,39 @@ class MaintenanceAppStack(core.Stack):
         um_api.deployment_stage = stage
 
 # #----------------IoT--------------------------
+        # Creating API Gateway for IoT
+        iot_api = apigw.RestApi(self,'IoT API')
+
+        # IoT API Methods
+
+        # Add ANY
+        iot_api.root.add_method('ANY')
+
+        ###-----Raspberry Pi's------###
+
+        ## Sign in
+        signin = iot_api.root.add_resource('signin')
+        #Add sign in method
+        signin.add_method('POST', RPI_SignInLambdaIntegration)
+
+        ## Sign out
+        signout = iot_api.root.add_resource('signout')
+        #Add sign out method
+        signout.add_method('POST', RPI_SignOutLambdaIntegration)
+
+        #IoT API deployment
+        #Add stage deployment for API
+        iot_apiStageDeployment = apigw.Deployment(self, 'IoT API Deployment',
+            api = iot_api
+        )
+        #Create stage with stage name "api"
+        iot_stage = apigw.Stage(self, 'iot_api_stage',
+            deployment = iot_apiStageDeployment,
+            stage_name= 'iot'
+        )
+        #Deploy the stage
+        iot_api.deployment_stage = iot_stage
+
         #Create All allowed policy
         IoT_All_Allowed_Policy = {
             "Version": "2012-10-17",
