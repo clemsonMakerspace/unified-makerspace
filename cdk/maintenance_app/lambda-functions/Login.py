@@ -20,7 +20,6 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 Users = dynamodb.Table('Users')
 
-
 def login(email, password):
     global statusCode
     try:
@@ -59,8 +58,7 @@ def login(email, password):
             
         }
         
-        
-        
+    
 def change_password(old, new, auth_token):
     global statusCode
      #update password
