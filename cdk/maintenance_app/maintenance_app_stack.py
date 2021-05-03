@@ -136,9 +136,9 @@ class MaintenanceAppStack(core.Stack):
             }
         )
 
-        makerspaceUserCognitoPool.add_domain('makerspace-user-cognitoDomain',
+        makerspaceUserCognitoPool.add_domain('admin-makerspace-user-cognitoDomain',
             cognito_domain= cognito.CognitoDomainOptions(
-                domain_prefix = 'makerspace-signup-users'
+                domain_prefix = 'admin-makerspace-signup-users'
             )
         )
 
@@ -176,9 +176,9 @@ class MaintenanceAppStack(core.Stack):
             }
         )
 
-        makerspaceVisitorCognitoPool.add_domain('makerspace-visitor-cognitoDomain',
+        makerspaceVisitorCognitoPool.add_domain('admin-makerspace-visitor-cognitoDomain',
             cognito_domain= cognito.CognitoDomainOptions(
-                domain_prefix = 'makerspace-signup-visitors'
+                domain_prefix = 'admin-makerspace-signup-visitors'
             )
         )
 
