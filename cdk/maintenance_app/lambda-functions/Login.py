@@ -9,8 +9,8 @@ from boto3.dynamodb.conditions import Key
 
 # Cognito Client
 client = boto3.client('cognito-idp')
-#clientID = "20nnrq12vp19a99c58g2r0b0og"
-clientID = os.environ['user_cognitoClientID']
+clientID = "20nnrq12vp19a99c58g2r0b0og"
+#clientID = os.environ['user_cognitoClientID']
 
 statusCode = 200
 
@@ -62,15 +62,25 @@ def login(email, password):
         
         
 def change_password(old, new, auth_token):
-
+    global statusCode
      #update password
     try:
-        #client.change_password(PreviousPassword=old, ProposedPassword=new, AccessToken=auth_token)
+        client.change_password(PreviousPassword=old, ProposedPassword=new, AccessToken=auth_token)
         statusCode = 200
         return {
             
                 'Message': 'The password has been successfully updated. '
             
+        }
+    except client.exceptions.InvalidPasswordException as e:
+        statusCode = 419
+        return {
+                'Message': "Invalid Password"
+        }
+    except client.exceptions.NotAuthorizedException as e:
+        statusCode = 419
+        return {
+                'Message': "Invalid Password"
         }
     except Exception as e:
         # Return exception with response
@@ -89,7 +99,7 @@ def loginHandler(event, context):
         data=json.loads(event["body"])
         new_password = data["new_password"]
         try:
-            token =event["headers"]["auth_token"]
+            token = json.loads(event["headers"]["Authorization"])["auth_token"]
         except:
             return {
                 'statusCode': 417,
@@ -108,16 +118,15 @@ def loginHandler(event, context):
 
         # Send Response
         return {
-            'statusCode': 200,
+            'statusCode': statusCode,
             'headers': {
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-            'body': json.dumps(str(token))
+            'body': json.dumps(result)
         }
-        
     except:
         #Otherwise login if a new password is not specified
         try:
@@ -162,6 +171,4 @@ def loginHandler(event, context):
             }
         
             
-            
-
-    
+  
