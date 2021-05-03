@@ -6,7 +6,7 @@
 export const environment = {
   production: false,
   // server: 'http://localhost:5000',
-  server: 'https://vq1hg48s6i.execute-api.us-east-1.amazonaws.com',
+  server: 'https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com',
 
   /* test data */
 

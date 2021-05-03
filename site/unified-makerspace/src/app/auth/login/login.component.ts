@@ -44,13 +44,12 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.loginForm.value).subscribe(
         (res) => {
 
-          let user = res['user'];
+          let user = {...res['user'], 'auth_token': res['auth_token']};
           if (user) {
-            this.auth.user.next({...user, 'auth_token': user['auth_token']});
+            this.auth.user.next(user);
             localStorage.setItem('User', JSON.stringify(user));
             this.router.navigate(['dashboard']).then();
           } else {
-            console.log(res); // todo remove
             this.loginForm['error'] = 'Sorry, we\'re having issue with the server.';
           }
         },
