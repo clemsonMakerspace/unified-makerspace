@@ -73,20 +73,20 @@ class MaintenanceAppStack(core.Stack):
         )
 
 
-        # plan = backup.BackupPlan.daily_monthly1_year_retention(
-        #     self, 'BackupPlan'
-        # )
+        plan = backup.BackupPlan.daily_monthly1_year_retention(
+            self, 'BackupPlan'
+        )
 
-        # plan.add_selection(
-        #     'BackupSelection', resources=[
-        #         backup.BackupResource.from_dynamo_db_table(tasksTable),
-        #         backup.BackupResource.from_dynamo_db_table(machinesTable),
-        #         backup.BackupResource.from_dynamo_db_table(visitorsTable),
-        #         backup.BackupResource.from_dynamo_db_table(visitsTable),
-        #         backup.BackupResource.from_dynamo_db_table(usersTable),
-        #         backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
-        #     ]
-        # )
+        plan.add_selection(
+            'BackupSelection', resources=[
+                backup.BackupResource.from_dynamo_db_table(tasksTable),
+                backup.BackupResource.from_dynamo_db_table(machinesTable),
+                backup.BackupResource.from_dynamo_db_table(visitorsTable),
+                backup.BackupResource.from_dynamo_db_table(visitsTable),
+                backup.BackupResource.from_dynamo_db_table(usersTable),
+                backup.BackupResource.from_dynamo_db_table(userVerificationTokenTable)
+            ]
+        )
 
 
 
@@ -95,10 +95,10 @@ class MaintenanceAppStack(core.Stack):
         #Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
             website_index_document= 'index.html',
-            bucket_name='testing.cumaker.space',
+            website_error_document= 'index.html',
+            bucket_name='admin.cumaker.space',
             public_read_access= True
         )
-        #TODO: single page application
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
             sources=[s3deploy.Source.asset('maintenance_app/front-end/')],
@@ -127,13 +127,7 @@ class MaintenanceAppStack(core.Stack):
                 "sms_message": "Your username is {username} and temporary password is {####}. "
             },
             sign_in_aliases={
-                "username": True
-            },
-            standard_attributes={
-                "email": {
-                    "required": True,
-                    "mutable": False
-                }
+                "email": True
             },
             custom_attributes={
                 "firstname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
@@ -157,8 +151,6 @@ class MaintenanceAppStack(core.Stack):
             )
         )
 
-        #TODO: Change from link to none or code
-        #TODO: Change password policy
         makerspaceVisitorCognitoPool = cognito.UserPool(self, "visitor-userpool",
             user_pool_name="makerspace-visitor-userpool",
             password_policy = cognito.PasswordPolicy(
@@ -713,20 +705,20 @@ class MaintenanceAppStack(core.Stack):
         # Create policy for IoT Devices
         CUmakeit_IoT_Policy = iot.CfnPolicy(self, "IoT_All_Allowed", policy_name="IoT_All_Allowed", policy_document= IoT_All_Allowed_Policy)
 
-        # ## ---- Thing 1 ---- ##
-        # CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
+        ## ---- Thing 1 ---- ##
+        CUmakeit_01, cert01 = create_thing(self, '01', CUmakeit_IoT_Policy)
 
-        # ## ---- Thing 2 ---- ##
-        # CUmakeit_02, cert02 = create_thing(self, '02', CUmakeit_IoT_Policy)
+        ## ---- Thing 2 ---- ##
+        CUmakeit_02, cert02 = create_thing(self, '02', CUmakeit_IoT_Policy)
 
-        # ## ---- Thing 3 ---- ##
-        # CUmakeit_03, cert03 = create_thing(self, '03', CUmakeit_IoT_Policy)
+        ## ---- Thing 3 ---- ##
+        CUmakeit_03, cert03 = create_thing(self, '03', CUmakeit_IoT_Policy)
 
-        # ## ---- Thing 4 ---- ##
-        # CUmakeit_04, cert04 = create_thing(self, '04', CUmakeit_IoT_Policy)
+        ## ---- Thing 4 ---- ##
+        CUmakeit_04, cert04 = create_thing(self, '04', CUmakeit_IoT_Policy)
 
-        # ## ---- Thing 5 ---- ##
-        # CUmakeit_05, cert05 = create_thing(self, '05', CUmakeit_IoT_Policy)
+        ## ---- Thing 5 ---- ##
+        CUmakeit_05, cert05 = create_thing(self, '05', CUmakeit_IoT_Policy)
 
-        # ## ---- Thing 6 ---- ##
-        # CUmakeit_06, cert06 = create_thing(self, '06', CUmakeit_IoT_Policy)
+        ## ---- Thing 6 ---- ##
+        CUmakeit_06, cert06 = create_thing(self, '06', CUmakeit_IoT_Policy)
