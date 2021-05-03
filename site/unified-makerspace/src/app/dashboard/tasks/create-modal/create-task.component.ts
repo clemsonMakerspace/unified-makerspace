@@ -37,7 +37,7 @@ export class CreateTaskComponent implements OnInit {
       taskName: ['', Validators.required],
       description: [''],
       tags: ['', Validators.required],
-      person: ['', Validators.required]
+      person: [this.users[0], Validators.required]
     });
 
     // fill with test data
@@ -66,7 +66,7 @@ export class CreateTaskComponent implements OnInit {
       this.api.createTask({
         'person': getValue('person'),
         'task_name': getValue('taskName'),
-        'description': getValue('description4'),
+        'description': getValue('description'),
         'tags': this.tags,
       }).subscribe((res) => {
         this.taskForm['success'] = true;

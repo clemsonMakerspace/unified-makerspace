@@ -90,7 +90,8 @@
                 style="padding: 5px 20px"
                 formControlName="person"
               >
-                <option [selected]="i == 0" *ngFor="let user of users; let i = index" value="{{user}}">{{user}}</option>
+                <option selected value="Anyone">Anyone</option>
+                <option *ngFor="let user of users; let i = index" value="{{user}}">{{user}}</option>
               </select>
               <small
                 class="text-danger font-weight-bold"
