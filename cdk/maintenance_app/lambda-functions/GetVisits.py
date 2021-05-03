@@ -10,7 +10,6 @@ dynamodb_client = boto3.client('dynamodb')
 Visitors = dynamodb.Table('Visitors')
 Visits = dynamodb.Table('Visits')
 
-
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
@@ -21,14 +20,18 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def GetVisits(body):
+    
     visits = Visits.scan()
     visits_list = visits["Items"]
-
+    
     start_date = body["start_date"]
     end_date = body["end_date"]
 
+   
+
     visits_in_tf = []
 
+    
     for visit in visits_list:
         if int(visit["date_visited"]) >= start_date and int(visit["date_visited"]) <= end_date:
             visits_in_tf.append(visit)
@@ -40,8 +43,7 @@ def GetVisits(body):
 # input format: ?machine_id=<id>
 def GetVisitsHandler(event, context):
     # Call function
-    body = json.loads(event["body"])
-
+    body = event["body"]
     try:
         body["start_date"]
     except:
@@ -50,20 +52,21 @@ def GetVisitsHandler(event, context):
             "end_date": int(time.time()) + 10
         }
 
+
     visitors = GetVisits(body)
 
     return {
         'statusCode': 200,
         'headers': {
-            'Content-Type': 'text/plain',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-
-        },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        
+            },
         'body': json.dumps({
-            'visitors': visitors
-        }, cls=DecimalEncoder)
+            'visits': visitors
+            }, cls=DecimalEncoder)
     }
 
 

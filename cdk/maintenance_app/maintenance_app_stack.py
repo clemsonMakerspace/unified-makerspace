@@ -117,7 +117,7 @@ class MaintenanceAppStack(core.Stack):
             ),
             self_sign_up_enabled=True,
             user_verification= {
-                "email_subject": "Your Verification code",
+                "email_subject": "Your Verification Link",
                 "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
                 "email_style": cognito.VerificationEmailStyle.LINK,
             },
@@ -170,7 +170,7 @@ class MaintenanceAppStack(core.Stack):
             ),
             self_sign_up_enabled=True,
             user_verification= {
-                "email_subject": "Your Verification code",
+                "email_subject": "Your Verification Link",
                 "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
                 "email_style": cognito.VerificationEmailStyle.LINK,
             },
@@ -249,7 +249,7 @@ class MaintenanceAppStack(core.Stack):
             function_name = 'GetMachinesStatus',
             runtime=_lambda.Runtime.PYTHON_3_7,
             code=_lambda.Code.asset('maintenance_app/lambda-functions/'),
-            handler='GetMachinesStatus.GetMachinesStatusHandler',
+            handler='GetMachinesStatus.GetMachinesStatusHandler'
         )
         #Granting Access to view machines DynamoDB Table
         machinesTable.grant_full_access(GetMachinesStatusLambda)
@@ -523,13 +523,13 @@ class MaintenanceAppStack(core.Stack):
         um_api.root.add_method('ANY')
 
         ###-----Administrative------###
-        administrative = um_api.root.add_resource('administrative')
+        admin = um_api.root.add_resource('admin')
 
         ## Patch ##
-        administrative.add_method('PATCH', ResetPasswordLambdaIntegration)
+        admin.add_method('PATCH', ResetPasswordLambdaIntegration)
 
         ## Post ##
-        admin_POST_method = administrative.add_method('POST', GenerateUserTokenLambdaIntegration)
+        admin_POST_method = admin.add_method('POST', GenerateUserTokenLambdaIntegration)
         # Add authorizer to admin POST
         # admin_POST_resource = admin_POST_method.node.find_child('Resource')
         # admin_POST_resource.add_property_override('AuthorizationType', 'COGNITO_USER_POOLS')
