@@ -9,8 +9,8 @@ from boto3.dynamodb.conditions import Key
 
 # Cognito Client
 client = boto3.client('cognito-idp')
-clientID = "20nnrq12vp19a99c58g2r0b0og"
-#clientID = os.environ['user_cognitoClientID']
+#clientID = "20nnrq12vp19a99c58g2r0b0og"
+clientID = os.environ['user_cognitoClientID']
 
 statusCode = 200
 
