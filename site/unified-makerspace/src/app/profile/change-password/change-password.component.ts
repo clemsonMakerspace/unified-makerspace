@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../../shared/api/api.service';
 import {showError} from '../../shared/funcs';
 import {AuthService} from '../../shared/auth/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-change-password',
@@ -15,6 +16,7 @@ export class ChangePasswordComponent implements OnInit {
     private fb: FormBuilder,
     private api: ApiService,
     private auth: AuthService,
+    private router: Router,
   ) { }
 
 
@@ -42,9 +44,16 @@ export class ChangePasswordComponent implements OnInit {
         'new_password': this.changePassword.get('newPassword').value,
         'user_id': this.auth.user.getValue().user_id
       }).subscribe(res => {
-        // todo this
+        this.changePassword['success'] = true;
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 5000);
       }, err => {
-        this.changePassword['error'] = 'Sorry, the server is having some issues!';
+        let error = 'Sorry, the server is having some issues!';
+        if (err.status == 419) {
+          error = "Sorry, your current password is not correct."
+        }
+        this.changePassword['error'] = error;
       });
     }
   }
