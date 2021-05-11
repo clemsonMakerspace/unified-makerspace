@@ -329,7 +329,7 @@ def callLambda(cardID):
     # Query the DB to see if that card is in it.
     # Use the config defined at the top of the file to hide connection information.
     cardInDBResult = False
-    lambda_url = "https://9bhfui3vn2.execute-api.us-east-1.amazonaws.com/rpi/signin"
+    lambda_url = "https://7becb2gddl.execute-api.us-east-1.amazonaws.com/iot/signin"
     lambda_payload = {"HardwareID":str(cardID), "LoginLocation": str(args.location)}
     try:
 	print("payload is " + str(lambda_payload))

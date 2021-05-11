@@ -8,15 +8,15 @@ if [ ! -f ../certs/root-CA.crt ]; then
   curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt
 fi
 
-PRIVATE_KEY="../certs/XXXXXXXXXX-private.pem.key" # enter name of private key credential file
-DEVICE_CERT="../certs/XXXXXXXXXX-certificate.pem.crt" # enter name of device credential file
+PRIVATE_KEY="../certs/PrivateKeyCUmakeit_XX.pem.key" # enter name of private key credential file
+DEVICE_CERT="../certs/CertificateCUmakeit_XX.pem.crt" # enter name of device credential file
 DEVICE_NAME="CUmakeit_XX" # enter which number Pi system is being used
 CA_CERT="../certs/root-CA.crt"
-THING_ENDPOINT="a5oyk3iuhy30n-ats.iot.us-east-1.amazonaws.com"
+THING_ENDPOINT="a1gohrbna3djed-ats.iot.us-east-1.amazonaws.com"
 TOPIC="thing/makerspace_pi/signin"
 PORT=8883
 THING_NAME="CUmakeit_XX" # enter which number Pi system is being used
-LOCATION="Watt_Center" # location Pi is in. NOTE THERE CANNOT BE A SPACE
+LOCATION="" # location Pi is in. NOTE THERE CANNOT BE A SPACE
 EVENT="SignIn"
 HAT_CONNECTED="True"
 
