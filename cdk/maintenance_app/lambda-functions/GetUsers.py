@@ -20,7 +20,7 @@ def GetUsersHandler(event, context):
     try:
         users_string = event['queryStringParameters']['users']
         users_list = users_string.split(',')
-    except:
+    except BaseException:
         # If list is not specified, return all users
         all_users = Users.scan()
         users_list = []

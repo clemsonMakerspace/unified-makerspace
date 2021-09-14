@@ -39,29 +39,31 @@ def CalculateNextDate(start, freq, add):
     return startDateTime.strftime('%Y%m%d')
 
 
-def CreateMachine(machine_name,machine_status):
-    new_machine = Machine(machine_name,machine_status)
-
+def CreateMachine(machine_name, machine_status):
+    new_machine = Machine(machine_name, machine_status)
 
     # Put new task into the Machines eventbase
     Machines.put_item(
-        Item = new_machine.__dict__
+        Item=new_machine.__dict__
     )
 
     return 1
+
 
 def CreateMachineBody(data):
     new_machine = json.loads(data["body"])
 
-    new_machine = Machine(new_machine["machine_name"],new_machine["machine_status"])
-
+    new_machine = Machine(
+        new_machine["machine_name"],
+        new_machine["machine_status"])
 
     # Put new task into the Machines eventbase
     Machines.put_item(
-        Item = new_machine.__dict__
+        Item=new_machine.__dict__
     )
 
     return 1
+
 
 def CreateMachineHandler(event, context):
 

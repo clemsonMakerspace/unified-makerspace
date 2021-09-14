@@ -5,19 +5,18 @@ Utilities for loading data for the test server.
 
 """
 
+from models import Visit
+from models import Permission
+from models import Machine
+from models import Visitor
+from models import Task
+from models import User
 import os
 import sys
 import yaml
 
 # to enable importing of distant modules
 sys.path.append("../../api")
-
-from models import User
-from models import Task
-from models import Visitor
-from models import Machine
-from models import Permission
-from models import Visit
 
 
 def fetch_data(resource: str, data_path='./data') -> [dict]:

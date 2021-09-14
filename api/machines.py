@@ -2,6 +2,7 @@
 The Makerspace team can quickly get an overview of the status of all Makerspace equipment.
 """
 
+
 def get_machines_status(auth_token: str, start_time: int, end_time: int):
     """
     Gets the status for all machines within the given timeframe. Dates are
@@ -73,4 +74,3 @@ def delete_machine(auth_token: str, machine_name: str):
         Return Code
     message: str
     """
-

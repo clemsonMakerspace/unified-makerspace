@@ -51,4 +51,3 @@ def GenerateUserTokenHandler(event, context):
             },
             'message': json.dumps(str(e))
         }
-

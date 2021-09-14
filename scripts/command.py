@@ -17,7 +17,7 @@ class Command:
 
         joined = ' && '.join([
             ' '.join(command).replace('%', self.curr_path)
-                    for command in commands])
+            for command in commands])
 
         print(joined)
         os.system(joined)
