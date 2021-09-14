@@ -20,20 +20,21 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 Users = dynamodb.Table('Users')
 
+
 def login(email, password):
     global statusCode
     try:
         auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
-                                     AuthParameters = {
-                                         'USERNAME': email,
-                                         'PASSWORD': password
-                                 }) 
+                                             AuthParameters={
+                                                 'USERNAME': email,
+                                                 'PASSWORD': password
+                                             })
         print(auth_response)
         statusCode = 200
         return {
-                'auth_token': auth_response['AuthenticationResult']['AccessToken']
+            'auth_token': auth_response['AuthenticationResult']['AccessToken']
         }
-        
+
     except client.exceptions.NotAuthorizedException as e:
         statusCode = 401
         return {
@@ -53,48 +54,50 @@ def login(email, password):
         # Return exception with response
         statusCode = 403
         return {
-            
-                'Message': str(e)
-            
+
+            'Message': str(e)
+
         }
-        
-    
+
+
 def change_password(old, new, auth_token):
     global statusCode
-     #update password
+    # update password
     try:
-        client.change_password(PreviousPassword=old, ProposedPassword=new, AccessToken=auth_token)
+        client.change_password(PreviousPassword=old,
+                               ProposedPassword=new, AccessToken=auth_token)
         statusCode = 200
         return {
-            
-                'Message': 'The password has been successfully updated. '
-            
+
+            'Message': 'The password has been successfully updated. '
+
         }
     except client.exceptions.InvalidPasswordException as e:
         statusCode = 419
         return {
-                'Message': "Invalid Password"
+            'Message': "Invalid Password"
         }
     except client.exceptions.NotAuthorizedException as e:
         statusCode = 419
         return {
-                'Message': "Invalid Password"
+            'Message': "Invalid Password"
         }
     except Exception as e:
         # Return exception with response
         statusCode = 405
         return {
-            
-                'Message': str(e)
-            
+
+            'Message': str(e)
+
         }
-            
+
+
 def loginHandler(event, context):
 
-    #Try to change password if given
+    # Try to change password if given
 
     try:
-        data=json.loads(event["body"])
+        data = json.loads(event["body"])
         new_password = data["new_password"]
         try:
             token = json.loads(event["headers"]["Authorization"])["auth_token"]
@@ -106,13 +109,13 @@ def loginHandler(event, context):
                     'Access-Control-Allow-Headers': 'Content-Type',
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
+                },
                 'body': "Cannot find auth_token"
             }
-        
-        #print(token)
+
+        # print(token)
         result = change_password(data["password"], new_password, token)
-        #print(result)
+        # print(result)
 
         # Send Response
         return {
@@ -122,51 +125,47 @@ def loginHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+            },
             'body': json.dumps(result)
         }
     except:
-        #Otherwise login if a new password is not specified
+        # Otherwise login if a new password is not specified
         try:
             data = json.loads(event["body"])
-            
+
             result = login(data['email'], data['password'])
-            
+
             users = Users.scan()
             for user in users["Items"]:
                 if user["email"] == data['email']:
                     result["user"] = user
                     break
             #    pass
-            
+
             #result["user"] = final_user
-            
-            #print(result)
-            
-            
+
+            # print(result)
+
             # Send Response
             return {
                 'statusCode': statusCode,
                 'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
                 'body': json.dumps(result)
             }
-            
+
         except Exception as e:
             return {
                 'statusCode': 407,
                 'headers': {
-                'Content-Type': 'text/plain',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
                 'body': json.dumps({'Message': str(e)})
             }
-        
-            
-  

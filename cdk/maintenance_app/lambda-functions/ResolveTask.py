@@ -29,7 +29,7 @@ def ResolveTask(data):
     task_id = body["task_id"]
 
     response = Tasks.update_item(
-        Key = {
+        Key={
             'task_id': task_id
         },
         UpdateExpression="set date_resolved=:t",

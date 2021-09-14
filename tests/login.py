@@ -57,7 +57,8 @@ def login(email, password):
 def change_password(old, new, auth_token):
     # update password
     try:
-        client.change_password(PreviousPassword=old, ProposedPassword=new, AccessToken=auth_token)
+        client.change_password(PreviousPassword=old,
+                               ProposedPassword=new, AccessToken=auth_token)
         statusCode = 200
         return {
 
@@ -77,7 +78,8 @@ def change_password(old, new, auth_token):
 def loginHandler(event, context):
     data = json.loads(event["body"])
     try:
-        result = change_password(data["password"], data["new_password"], data["auth_token"])
+        result = change_password(
+            data["password"], data["new_password"], data["auth_token"])
         print(result)
 
         # Send Response
@@ -131,7 +133,3 @@ def loginHandler(event, context):
                 },
                 'body': json.dumps({'Message': str(e)})
             }
-
-
-
-

@@ -38,4 +38,3 @@ def ResetPasswordHandler(event, context):
             },
             'message': json.dumps(str(e))
         }
-

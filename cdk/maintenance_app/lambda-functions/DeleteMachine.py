@@ -12,12 +12,13 @@ dynamodb = boto3.resource('dynamodb')
 # Get Table Objects
 Machines = dynamodb.Table('Machines')
 
+
 def DeleteMachine(body):
 
     machine_name = body["machine_name"]
 
-    Machines.delete_item (
-        Key = {
+    Machines.delete_item(
+        Key={
             'machine_name': machine_name
         }
     )

@@ -45,17 +45,16 @@ Admin
 """
 
 
-
 @app.route('/api/admin', methods=['POST'])
 def generate_user_token():
     # implemented
     return dict(code=200, user_token=app.config['SECRET_KEY'])
 
 
-
 @app.route('/api/admin', methods=['PATCH'])
 def reset_password():
     return dict(code=200, message="Password reset email sent.")
+
 
 """
 Users
@@ -67,6 +66,7 @@ Users
 #         return login()
 #     return dict(code=200, message="Password changed successfully.")
 #
+
 
 @app.route('/api/users', methods=['PUT'])
 def create_user():
@@ -97,6 +97,7 @@ def update_user():
 Tasks
 """
 
+
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
     return dict(code=200, task_id="RANDOM_TASK_ID")
@@ -121,6 +122,7 @@ def update_task():
 Machines
 """
 
+
 @app.route('/api/machines', methods=['DELETE'])
 def delete_machine():
     return dict(code=200, message="Machine deleted successfully.")
@@ -135,6 +137,7 @@ def get_machines_status():
 Visitors
 """
 
+
 @app.route('/api/visitors', methods=['PUT'])
 def create_visitor():
     return dict(code=200, message="Visitor successfully created.")
@@ -145,14 +148,9 @@ def get_visitors():
     return dict(code=200, visitors=fetch_data('visits'))
 
 
-
 @app.route('/api/visitors', methods=['GET'])
 def get_visitor_data():
     visitors = fetch_data('visitors')
     for visitor in visitors:
         if request.args.get('visitor_id') == visitor['visitor_id']:
             return dict(code=200, visitor=visitor)
-
-
-
-

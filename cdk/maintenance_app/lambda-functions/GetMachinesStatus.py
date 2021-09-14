@@ -41,9 +41,11 @@ def processAvailability(machines, tasks, start_time, end_time):
                 if int(task["date_created"]) >= int(start_time) and int(task["date_created"]) <= int(end_time):
                     print("true2")
                     if int(task["date_resolved"]) == 0:
-                        times.append((int(task["date_created"]), int(time.time())))
+                        times.append(
+                            (int(task["date_created"]), int(time.time())))
                     else:
-                        times.append((int(task["date_created"]), int(task["date_resolved"])))
+                        times.append(
+                            (int(task["date_created"]), int(task["date_resolved"])))
         times.sort()
         avail[machine["machine_name"]] = times
     return avail
@@ -75,5 +77,3 @@ def GetMachinesStatusHandler(event, context):
         },
         'body': json.dumps({'machines': availability}, cls=DecimalEncoder)
     }
-
-

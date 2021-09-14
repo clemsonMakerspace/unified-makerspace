@@ -20,31 +20,32 @@ visitTable = db.Table('Visits')
 
 statusCode = 200
 
+
 def RPI_SignOut_Handler(event, context):
     try:
-        #getting card id from post command
+        # getting card id from post command
         data = json.loads(event["body"])
         new_cardID = data['HardwareID']
 
     except Exception as e:
         print(e)
         return {
-                'statusCode': 401,
-                'headers': {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body': json.dumps({
-                    'Message' : 'Error loading data. '
-                })
+            'statusCode': 401,
+            'headers': {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps({
+                'Message': 'Error loading data. '
+            })
         }
 
     try:
         # check if ID is in MakerspaceUser
         response = visitorTable.query(
-            KeyConditionExpression = Key('hardware_id').eq(str(new_cardID))
+            KeyConditionExpression=Key('hardware_id').eq(str(new_cardID))
         )['Items'][0]
 
     except Exception as e:
@@ -52,35 +53,35 @@ def RPI_SignOut_Handler(event, context):
         return {
             'statusCode': 402,
             'headers': {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
             'body': json.dumps({
-            'Message' : 'User does not exist! '
+                'Message': 'User does not exist! '
             })
         }
 
     try:
         # check if user is in login table
         visit_response = visitTable.query(
-            KeyConditionExpression = Key('visitor_id').eq(str(response["visitor_id"]))
+            KeyConditionExpression=Key('visitor_id').eq(
+                str(response["visitor_id"]))
         )['Items'][-1]
-
 
     except Exception as e:
         print(e)
         return {
             'statusCode': 403,
             'headers': {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
             'body': json.dumps({
-            'Message' : 'User never signed in! '
+                'Message': 'User never signed in! '
             })
         }
 
@@ -94,7 +95,7 @@ def RPI_SignOut_Handler(event, context):
             },
             UpdateExpression='set sign_out_time =:sign_out_time',
             ExpressionAttributeValues={
-                ':sign_out_time':logoutTime
+                ':sign_out_time': logoutTime
             }
         )
 
@@ -103,23 +104,23 @@ def RPI_SignOut_Handler(event, context):
         return {
             'statusCode': 404,
             'headers': {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
             'body': json.dumps({
-            'Message' : 'Error in updating table with logout time' + str(e)
+                'Message': 'Error in updating table with logout time' + str(e)
             })
         }
 
     return {
         'statusCode': 200,
         'headers': {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+            'Content-Type': 'text/plain',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
         'body': json.dumps('Success')
     }

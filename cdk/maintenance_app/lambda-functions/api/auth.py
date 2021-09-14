@@ -132,7 +132,6 @@ def create_user(email: str, password: str,
     """
 
 
-
 def delete_user(auth_token: str, user_id: str):
     """
     Deletes a user specified by their email.
@@ -227,5 +226,3 @@ def update_user(auth_token: str, user_id: str, user: models.User):
     message: str
         Response Message
     """
-
-

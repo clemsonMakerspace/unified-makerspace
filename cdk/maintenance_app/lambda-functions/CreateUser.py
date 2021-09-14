@@ -89,29 +89,30 @@ def CreateUser(data):
     # Generate user_id and store into database
     # Store user into the database
     userId = b64encode(os.urandom(6)).decode('utf-8')
-    user_obj = User(userId, new_user["first_name"], new_user["last_name"], [], [])
+    user_obj = User(userId, new_user["first_name"],
+                    new_user["last_name"], [], [])
     user_data = {'user_id': userId, 'assigned_tasks': [], 'first_name': first_name, 'last_name': last_name,
                  'user_permissions': [], 'email': email}
     Users.put_item(Item=user_data)
 
     # Get token for new user
-    #try:
-        #auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
-        #                                     AuthParameters={
-        #                                         'USERNAME': email,
-        #                                         'PASSWORD': password
-        #                                     })
-    #except Exception as e:
+    # try:
+    # auth_response = client.initiate_auth(AuthFlow='USER_PASSWORD_AUTH', ClientId=clientID,
+    #                                     AuthParameters={
+    #                                         'USERNAME': email,
+    #                                         'PASSWORD': password
+    #                                     })
+    # except Exception as e:
     #    statusCode = 403
     #    return {
     #        'message': json.dumps(str(e))
     #    }
 
-    #print(auth_response)
+    # print(auth_response)
 
     return {
         'user': user_obj.__dict__
-        #'auth_token': auth_response['AuthenticationResult']['AccessToken']
+        # 'auth_token': auth_response['AuthenticationResult']['AccessToken']
     }
 
 

@@ -38,19 +38,24 @@ except(IOError):
     print("Could not find the configuration file. Please email moherol@g.clemson.edu to request the config file.")
 '''
 # Command-line arguments for the IoT connections.
-parser = argparse.ArgumentParser(description="Send and receive messages through and MQTT connection.")
+parser = argparse.ArgumentParser(
+    description="Send and receive messages through and MQTT connection.")
 
 # If you need to add more command line arguments to this function, add them here.
 parser.add_argument('--endpoint', required=True, help="Your AWS IoT custom endpoint, not including a port. " +
-                                                    "Ex: \"abcd123456wxyz-ats.iot.us-east-1.amazonaws.com\"")
-parser.add_argument('--cert', help="File path to your client certificate, in PEM format.")
-parser.add_argument('--key', help="File path to your private key, in PEM format.")
+                    "Ex: \"abcd123456wxyz-ats.iot.us-east-1.amazonaws.com\"")
+parser.add_argument(
+    '--cert', help="File path to your client certificate, in PEM format.")
+parser.add_argument(
+    '--key', help="File path to your private key, in PEM format.")
 parser.add_argument('--root-ca', help="File path to root certificate authority, in PEM format. " +
-                                    "Necessary if MQTT server uses a certificate that's not already in " +
-                                    "your trust store.")
-parser.add_argument('--client-id', default='samples-client-id', help="Client ID for MQTT connection.")
-parser.add_argument('--topic', default="samples/test", help="Topic to subscribe to, and publish messages to.")
-parser.add_argument('--location', default = "Default Location")
+                    "Necessary if MQTT server uses a certificate that's not already in " +
+                    "your trust store.")
+parser.add_argument('--client-id', default='samples-client-id',
+                    help="Client ID for MQTT connection.")
+parser.add_argument('--topic', default="samples/test",
+                    help="Topic to subscribe to, and publish messages to.")
+parser.add_argument('--location', default="Default Location")
 parser.add_argument('--event', default="Sign In")
 parser.add_argument('--hat-connected', default="True")
 args = parser.parse_args()
@@ -60,6 +65,7 @@ args = parser.parse_args()
 event_loop_group = io.EventLoopGroup(1)
 host_resolver = io.DefaultHostResolver(event_loop_group)
 client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
+
 
 def scanCard():
     """Scans ID from a card reader attached to the Raspberry Pi.
@@ -106,6 +112,7 @@ def scanCard():
     print("Card ID found, ID: " + cardID)
     return int(cardID)
 
+
 def connectToAWS(cardID):
     """Connects our device to AWS IoT in order to send information to AWS.
 
@@ -128,15 +135,16 @@ def connectToAWS(cardID):
         endpoint=args.endpoint,
         cert_filepath=args.cert,
         pri_key_filepath=args.key,
-        client_bootstrap=client_bootstrap, # Don't know what this is; don't touch it
+        client_bootstrap=client_bootstrap,  # Don't know what this is; don't touch it
         ca_filepath=args.root_ca,
-        #on_connection_interrupted=on_connection_interrupted, # Don't know what this is; don't touch it
-        #on_connection_resumed=on_connection_resumed, # Don't know what this is; don't touch it
+        # on_connection_interrupted=on_connection_interrupted, # Don't know what this is; don't touch it
+        # on_connection_resumed=on_connection_resumed, # Don't know what this is; don't touch it
         client_id=args.client_id,
-        clean_session=False, # Don't know what this is; don't touch it
-        keep_alive_secs=6) # Don't know what this is; don't touch it
+        clean_session=False,  # Don't know what this is; don't touch it
+        keep_alive_secs=6)  # Don't know what this is; don't touch it
 
-    print("> Connecting to '{}' with client ID '{}'".format(args.endpoint, args.client_id))
+    print("> Connecting to '{}' with client ID '{}'".format(
+        args.endpoint, args.client_id))
 
     connect_future = mqtt_connection.connect()
 
@@ -161,10 +169,10 @@ def connectToAWS(cardID):
 
     # Message JSON <<THIS IS WHAT GETS SENT TO THE TOPIC>>
     msg = {
-    "ID": cardID,
-    "Location": args.location,
-    "Event": args.event,
-    "DateTime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "ID": cardID,
+        "Location": args.location,
+        "Event": args.event,
+        "DateTime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
     message = json.dumps(msg)
@@ -312,6 +320,7 @@ def connectToAWS(cardID):
 #     inkywhat.show()
 #     print("Finished changing screens...")
 
+
 def callLambda(cardID):
     # Establish a new connection for checking if the card is in the DB.
     # Not sure if this is required, but this is the easiest way I could find to do it.
@@ -330,16 +339,18 @@ def callLambda(cardID):
     # Use the config defined at the top of the file to hide connection information.
     cardInDBResult = False
     lambda_url = "https://7becb2gddl.execute-api.us-east-1.amazonaws.com/iot/signin"
-    lambda_payload = {"HardwareID":str(cardID), "LoginLocation": str(args.location)}
+    lambda_payload = {"HardwareID": str(
+        cardID), "LoginLocation": str(args.location)}
     try:
-	print("payload is " + str(lambda_payload))
-        response = requests.post(lambda_url, json = lambda_payload)
+        print("payload is " + str(lambda_payload))
+        response = requests.post(lambda_url, json=lambda_payload)
         cardInDBResult = True
-        print("This should have worked "+ str(response.text))
+        print("This should have worked " + str(response.text))
     except requests.exceptions.RequestException as e:
         print(str(e))
-	print("this didn't work")
+        print("this didn't work")
         cardInDBResult = False
+
 
 # Main body loop
 while(True):
@@ -348,7 +359,7 @@ while(True):
     cardID = scanCard()
     connectToAWS(cardID)
     if (args.hat_connected == "True"):
-	print("starting to check if cardID is in DB")
-	#changeScreens(cardID)
+        print("starting to check if cardID is in DB")
+        # changeScreens(cardID)
     callLambda(cardID)
     print("CardID is :" + str(cardID))
