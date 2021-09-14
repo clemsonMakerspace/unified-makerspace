@@ -85,7 +85,6 @@ class Visitor:
     visitor_id: str
 
 
-
 @dataclass
 class Visit:
     """
@@ -94,7 +93,7 @@ class Visit:
     `sign_in_time` and may be deprecated in the future.
     """
     visit_id: str
-    visitor_id:str
+    visitor_id: str
     first_visit: bool
     date_visited: int
     sign_in_time: int

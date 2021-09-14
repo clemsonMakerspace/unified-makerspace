@@ -25,26 +25,23 @@ Tasks = dynamodb.Table('Tasks')
 Machines = dynamodb.Table('Machines')
 
 
-
 def CreateTask(data):
     new_task = json.loads(data["body"])
-    
+
     machine_name = (new_task["tags"])[0]
 
     new_task = Task(str(uuid.uuid4().hex[:6]), new_task["task_name"], new_task["description"], new_task["person"],
                     int(time.time()), 0, new_task["tags"], 0)
 
-    
     machines = Machines.scan()
     machines_list = machines["Items"]
-    
-    
+
     if machine_name not in machines_list and machine_name != "*":
-        CreateMachine(machine_name,0)
-    
+        CreateMachine(machine_name, 0)
+
     # Put new task into the tasks eventbase
     Tasks.put_item(
-        Item = new_task.__dict__
+        Item=new_task.__dict__
     )
 
     return 1
@@ -76,7 +73,7 @@ def CreateTaskHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+            },
             'body': json.dumps(result)
         }
     except Exception as e:
@@ -88,7 +85,7 @@ def CreateTaskHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
+            },
             'body': json.dumps({
                 'Message': str(e)
             })

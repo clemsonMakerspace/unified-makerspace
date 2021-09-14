@@ -16,5 +16,5 @@ build_path = os.path.join("build", "latex", file_name)
 output_path = os.path.join('%', '..', 'build')
 
 # run
-c = Command(exec_path=["../","api", "docs"])
+c = Command(exec_path=["../", "api", "docs"])
 c([['make', output_type], ['mkdir', '-p', output_path], ['cp', build_path, output_path]])

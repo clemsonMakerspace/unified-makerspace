@@ -28,7 +28,7 @@ def UpdateTask(data):
     task_id = body["task_id"]
 
     response = Tasks.update_item(
-        Key = {
+        Key={
             'task_id': task_id
         },
         UpdateExpression="set #st=:s",
@@ -54,7 +54,7 @@ def UpdateTaskHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
-                },
+            },
             'body': json.dumps({
                 'Message': 'Failed to provide query string parameters.'
             })
@@ -72,7 +72,7 @@ def UpdateTaskHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
-                },
+            },
             'body': json.dumps({'Message': "Task successfully updated."})
         }
     except Exception as e:
@@ -84,7 +84,7 @@ def UpdateTaskHandler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PATCH'
-                },
+            },
             'body': json.dumps({
                 'Message': str(e)
             })

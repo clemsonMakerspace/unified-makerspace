@@ -74,7 +74,6 @@ def GetVisitorsHandler(event, context):
                 'body': json.dumps({'Message': "Visitor id does not exist in system."})
             }
 
-
     except Exception as e:
         return {
             'statusCode': 200,
@@ -87,8 +86,3 @@ def GetVisitorsHandler(event, context):
             },
             'body': json.dumps({'visitors': visitors}, cls=DecimalEncoder)
         }
-
-
-
-
-

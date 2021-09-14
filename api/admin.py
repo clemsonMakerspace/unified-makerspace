@@ -27,7 +27,6 @@ def generate_user_token(auth_token: str):
     """
 
 
-
 def reset_password(email: str):
     """
     Sends a password reset email.

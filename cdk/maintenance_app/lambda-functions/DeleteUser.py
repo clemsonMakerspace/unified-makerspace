@@ -17,7 +17,7 @@ def DeleteUserHandler(event, context):
     try:
         data = json.loads(event["body"])
         user_id = data['user_id']
-    except:
+    except BaseException:
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -26,12 +26,12 @@ def DeleteUserHandler(event, context):
         }
 
     try:
-        #Get username of user to delete
+        # Get username of user to delete
         response = table.query(
-            KeyConditionExpression = Key('user_id').eq(str(user_id))
+            KeyConditionExpression=Key('user_id').eq(str(user_id))
         )
         user = response['Items'][0]
-    except:
+    except BaseException:
         return {
             'statusCode': 401,
             'body': json.dumps({
@@ -40,8 +40,9 @@ def DeleteUserHandler(event, context):
         }
 
     try:
-        #Remove the user from cognito pool
-        response = client.admin_delete_user(UserPoolId=poolID, Username=user['email'])
+        # Remove the user from cognito pool
+        response = client.admin_delete_user(
+            UserPoolId=poolID, Username=user['email'])
     except Exception as e:
         # Return exception with response
         return {
@@ -51,13 +52,13 @@ def DeleteUserHandler(event, context):
             })
         }
 
-    #Remove user from database
+    # Remove user from database
     try:
         table.delete_item(
-                Key = {
-                    'user_id' : user_id,
-                }
-                )
+            Key={
+                'user_id': user_id,
+            }
+        )
     except Exception as e:
         # Return exception with response
         return {
@@ -67,12 +68,12 @@ def DeleteUserHandler(event, context):
             })
         }
 
-    #TODO:
-    #Depreciate any tasks assigned to the user
+    # TODO:
+    # Depreciate any tasks assigned to the user
 
     return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'Message': "User deleted"
-            })
-        }
+        'statusCode': 200,
+        'body': json.dumps({
+            'Message': "User deleted"
+        })
+    }

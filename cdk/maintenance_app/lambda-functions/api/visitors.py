@@ -34,6 +34,7 @@ def create_visitor(auth_token: str, visitor: Visitor, hardware_id: str):
     message: str
     """
 
+
 def get_visitors(auth_token: str, start_date: int, end_date: int):
     """
     Gets all MakerSpace visitors within a given timeframe.
