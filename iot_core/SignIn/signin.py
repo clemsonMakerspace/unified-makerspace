@@ -15,11 +15,11 @@ import requests
 from awscrt import io, mqtt, auth, http
 from awsiot import mqtt_connection_builder
 
-##########################################################################
-#                                                                        #
-#                            SOME INITIAL SETUP BELOW                    #
-#                                                                        #
-##########################################################################
+#######################################################################
+#                                                                     #
+#                         SOME INITIAL SETUP BELOW                    #
+#                                                                     #
+#######################################################################
 
 '''
 config = configparser.ConfigParser()
