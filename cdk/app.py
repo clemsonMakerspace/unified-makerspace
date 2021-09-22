@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-# test change
 from aws_cdk import core
 from maintenance_app.maintenance_app_stack import MaintenanceAppStack
 from Pipeline import Pipeline
