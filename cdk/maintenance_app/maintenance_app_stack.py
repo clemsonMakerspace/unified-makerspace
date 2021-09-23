@@ -103,7 +103,7 @@ class MaintenanceAppStack(core.Stack):
             ]
         )
 
-    # -------------------S3 Buckets------------------------------
+    # --------------------S3 Buckets------------------------------
 
         # Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
@@ -119,7 +119,7 @@ class MaintenanceAppStack(core.Stack):
                                   destination_bucket=FrontEndBucket
                                   )
 
-    # -------------------Cognito Pool------------------------------
+    # --------------------Cognito Pool------------------------------
         makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
                                                      user_pool_name="makerspace-user-userpool",
                                                      password_policy=cognito.PasswordPolicy(
