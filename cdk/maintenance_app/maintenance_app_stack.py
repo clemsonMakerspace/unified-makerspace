@@ -24,7 +24,12 @@ class MaintenanceAppStack(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-    # -------------------DynamoDB Tables-----------------------
+    # ----------------Dictionary for Buckets------------------- #
+    bucket_dict = {  "Clemson_prod"  : "admin.cumaker.space",
+                     "Clemson_beta"  : "beta.cumaker.space",
+                     "Clemson_gamma" : "gamma.cumaker.space"
+                  }
+    # -------------------DynamoDB Tables----------------------- #
 
         # Tasks, Machines, Visitors, Visits, Users, Permissions
 
@@ -107,43 +112,43 @@ class MaintenanceAppStack(core.Stack):
 
         # Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
-                                   website_index_document='index.html',
-                                   website_error_document='index.html',
-                                   bucket_name='admin.cumaker.space',
-                                   public_read_access=True
+                                   website_index_document = 'index.html',
+                                   website_error_document = 'index.html',   
+                                   bucket_name = bucket_dict['Clemson_prod'],    # <-- name pulled from the dictionary 
+                                   public_read_access = True                     # giving us the ability to use diferent buckets 
                                    )
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
-                                  sources=[
+                                  sources = [
                                       s3deploy.Source.asset('maintenance_app/front-end/')],
-                                  destination_bucket=FrontEndBucket
+                                  destination_bucket = FrontEndBucket
                                   )
 
     # -------------------Cognito Pool------------------------------
         makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
-                                                     user_pool_name="makerspace-user-userpool",
-                                                     password_policy=cognito.PasswordPolicy(
-                                                         min_length=6,
-                                                         require_digits=False,
-                                                         require_lowercase=False,
-                                                         require_symbols=False,
-                                                         require_uppercase=False
+                                                     user_pool_name = "makerspace-user-userpool",
+                                                     password_policy = cognito.PasswordPolicy(
+                                                         min_length = 6,
+                                                         require_digits = False,
+                                                         require_lowercase = False,
+                                                         require_symbols = False,
+                                                         require_uppercase = False
                                                      ),
-                                                     self_sign_up_enabled=True,
-                                                     user_verification={
+                                                     self_sign_up_enabled = True,
+                                                     user_verification = {
                                                          "email_subject": "Your Verification Link",
                                                          "email_body": "Please click the link below to verify your email address. {##Verify Email##}",
                                                          "email_style": cognito.VerificationEmailStyle.LINK,
                                                      },
-                                                     user_invitation={
+                                                     user_invitation = {
                                                          "email_subject": "Your temporary password",
                                                          "email_body": "Your username is {username} and temporary password is {####}.",
                                                          "sms_message": "Your username is {username} and temporary password is {####}. "
                                                      },
-                                                     sign_in_aliases={
+                                                     sign_in_aliases = {
                                                          "email": True
                                                      },
-                                                     custom_attributes={
+                                                     custom_attributes = {
                                                          "firstname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                                                          "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                                                          "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
