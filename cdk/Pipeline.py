@@ -25,6 +25,7 @@ class Pipeline(core.Stack):
         source_stage.add_action(aws_codepipeline_actions.GitHubSourceAction(
             oauth_token=oauth,
             output=source_output,
+            branch='mainline',
             owner='clemsonMakerspace',
             repo='unified-makerspace',
             action_name='GitHubSource'
