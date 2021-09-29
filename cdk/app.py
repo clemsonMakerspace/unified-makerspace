@@ -4,6 +4,7 @@ from aws_cdk import core
 from maintenance_app.maintenance_app_stack import MaintenanceAppStack
 from Pipeline import Pipeline
 
+bucket = {'desired_bucket' : 'Clemson_prod'}
 props = {'namespace': 'unified-makerspace'}
 app = core.App()
 
