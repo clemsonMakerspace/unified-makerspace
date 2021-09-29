@@ -19,6 +19,13 @@ import json
 from thingcert import createThing as create_thing
 
 
+class MaintenanceAppStage(core.Stage):
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
+
+        service = MaintenanceAppStack(self, 'MaintenanceAppStack')
+
+
 class MaintenanceAppStack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
