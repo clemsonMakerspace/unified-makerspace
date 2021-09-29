@@ -21,7 +21,7 @@ from thingcert import createThing as create_thing
 
 class MaintenanceAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, bucket, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
     # ----------------Dictionary for Buckets------------------- #
@@ -114,7 +114,7 @@ class MaintenanceAppStack(core.Stack):
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
                                    website_index_document = 'index.html',
                                    website_error_document = 'index.html',   
-                                   bucket_name = bucket_dict['Clemson_prod'],    # <-- name pulled from the dictionary 
+                                   bucket_name = bucket_dict[bucket['desired_bucket']],    # <-- name pulled from the dictionary 
                                    public_read_access = True                     # giving us the ability to use diferent buckets 
                                    )
 
