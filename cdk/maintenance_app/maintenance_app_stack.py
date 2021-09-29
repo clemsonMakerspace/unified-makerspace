@@ -24,6 +24,12 @@ class MaintenanceAppStack(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
+    # ----------------Dictionary for Buckets------------------- #
+    bucket_dict = {  "Clemson_prod"  : "admin.cumaker.space",
+                     "Clemson_beta"  : "beta.cumaker.space",
+                     "Clemson_gamma" : "gamma.cumaker.space"
+                  }
+
     # -------------------DynamoDB Tables-----------------------
 
         # Tasks, Machines, Visitors, Visits, Users, Permissions
