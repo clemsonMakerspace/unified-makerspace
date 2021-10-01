@@ -12,6 +12,7 @@ class Pipeline(core.Stack):
         super().__init__(app, id, **kwargs)
 
         # Define some variables
+        bucket = {'desired_bucket' : 'clemson_prod'}
         oauth = core.SecretValue.secrets_manager('github-token')
         source_output = aws_codepipeline.Artifact(artifact_name='source')
 

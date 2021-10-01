@@ -24,7 +24,11 @@ class MaintenanceAppStack(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-    # -------------------DynamoDB Tables-----------------------
+    # ------------------Bucket Dictionary---------------------- #
+    bucket_dict = { "clemson_prod" : "admin.cumaker.space",
+                    "clemson_beta" : "beta.cumaker.space"
+                  }
+    # -------------------DynamoDB Tables----------------------- #
 
         # Tasks, Machines, Visitors, Visits, Users, Permissions
 
@@ -109,7 +113,7 @@ class MaintenanceAppStack(core.Stack):
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
                                    website_index_document='index.html',
                                    website_error_document='index.html',
-                                   bucket_name='admin.cumaker.space',
+                                   bucket_name=bucket_dict[bucket['desired_bucket']],
                                    public_read_access=True
                                    )
 
