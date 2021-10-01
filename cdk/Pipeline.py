@@ -37,7 +37,7 @@ class Pipeline(core.Stack):
                                                           "cdk synth"
                                                           # TODO: "pytest unittest"
                                                           ],
-                                                primary_output_directory="cdk/"  # TODO: Remove when we deprecate `cdk/`
+                                                primary_output_directory="cdk/cdk.out"  # TODO: Remove when we deprecate `cdk/`
                                                 ), cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
                                 )
 
