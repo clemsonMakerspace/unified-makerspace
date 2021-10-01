@@ -25,7 +25,7 @@ class MaintenanceAppStack(core.Stack):
         super().__init__(scope, id, **kwargs)
 
     # ------------------Bucket Dictionary---------------------- #
-    bucket_dict = { "clemson_prod" : "admin.cumaker.space",
+        bucket_dict = { "clemson_prod" : "admin.cumaker.space",
                     "clemson_beta" : "beta.cumaker.space"
                   }
     # -------------------DynamoDB Tables----------------------- #
