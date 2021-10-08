@@ -12,7 +12,9 @@ from aws_cdk import (
     aws_iot as iot,
     aws_cognito as cognito,
     aws_secretsmanager as secrets,
-    aws_backup as backup
+    aws_backup as backup,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins
 )
 import json
 
@@ -114,10 +116,10 @@ class MaintenanceAppStack(core.Stack):
 
         # Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
-                                   website_index_document='index.html',
-                                   website_error_document='index.html',
-                                   bucket_name='admin.cumaker.space',
-                                   public_read_access=True
+                                   bucket_name='test.cumaker.space',
+                                   public_read_access=False,
+                                   removal_policy=core.RemovalPolicy.DESTROY,
+                                   auto_delete_objects=True
                                    )
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
@@ -125,6 +127,27 @@ class MaintenanceAppStack(core.Stack):
                                       s3deploy.Source.asset('maintenance_app/front-end/')],
                                   destination_bucket=FrontEndBucket
                                   )
+
+    # --------------------CloudFront------------------------------
+        oai = cloudfront.OriginAccessIdentity(self, 'FrontEndOAI')
+        FrontEndBucket.grant_read(oai)
+
+        # redirect to web app for internal routing
+        internalRedirect = cloudfront.ErrorResponse(http_status=404,
+                                                    response_http_status=200,
+                                                    response_page_path='/index.html')
+
+        cloudfront.Distribution(self, 'FrontEndDistribution',
+                                default_behavior=cloudfront.BehaviorOptions(
+                                    origin=origins.S3Origin(
+                                        bucket=FrontEndBucket,
+                                        origin_access_identity=oai,
+                                        ),
+                                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+                                    ),
+                                default_root_object='index.html',
+                                error_responses=[internalRedirect]
+                                )
 
     # --------------------Cognito Pool------------------------------
         makerspaceUserCognitoPool = cognito.UserPool(self, "user-userpool",
@@ -154,12 +177,13 @@ class MaintenanceAppStack(core.Stack):
                                                          "firstname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                                                          "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                                                          "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
-                                                     }
+                                                     },
+                                                     removal_policy=core.RemovalPolicy.DESTROY
                                                      )
 
         makerspaceUserCognitoPool.add_domain('admin-makerspace-user-cognitoDomain',
                                              cognito_domain=cognito.CognitoDomainOptions(
-                                                 domain_prefix='admin-makerspace-signup-users'
+                                                 domain_prefix='temp-admin-makerspace-signup-users'
                                              )
                                              )
 
@@ -194,12 +218,13 @@ class MaintenanceAppStack(core.Stack):
                                                         },
                                                         sign_in_aliases={
                                                             "email": True
-                                                        }
+                                                        },
+                                                        removal_policy=core.RemovalPolicy.DESTROY
                                                         )
 
         makerspaceVisitorCognitoPool.add_domain('admin-makerspace-visitor-cognitoDomain',
                                                 cognito_domain=cognito.CognitoDomainOptions(
-                                                    domain_prefix='admin-makerspace-signup-visitors'
+                                                    domain_prefix='temp-admin-makerspace-signup-visitors'
                                                 )
                                                 )
 

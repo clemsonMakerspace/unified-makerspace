@@ -12,6 +12,8 @@ aws-cdk.aws-s3-deployment==1.124.0
 aws-cdk.aws-ses==1.124.0
 aws-cdk.core==1.124.0
 aws-cdk.pipelines==1.124.0
+aws-cdk.aws-cloudfront==1.124.0
+aws-cdk.aws-cloudfront-origins==1.124.0
 awscli==1.18.179
 botocore==1.19.19
 cryptography
