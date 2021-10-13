@@ -41,6 +41,10 @@ class Pipeline(core.Stack):
                                                 ), cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
                                 )
 
+        # Parameters for the s3 bucket name
+        state  = "PROD"
+        school = "CLEMSON"
+
         # Now that our CodePipeline is created we can call `addStage` as many times as
         # necessary with any account and region (may be different from the
         # pipeline's).
@@ -50,7 +54,9 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="944207523762",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               state,
+                                               school,
                                                ))
 
         # TODO: Add a validation stage before deploying to Prod
@@ -60,5 +66,7 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="366442540808",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               state,
+                                               school,
                                                ))
