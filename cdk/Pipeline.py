@@ -7,7 +7,7 @@ from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
 from maintenance_app.maintenance_app_stack import MaintenanceAppStage
 
 # Parameters for the s3 bucket name
-state  = "PROD"
+state  = "DEV"
 school = "CLEMSON"
 
 class Pipeline(core.Stack):
@@ -54,7 +54,7 @@ class Pipeline(core.Stack):
                                                    account="944207523762",
                                                    region="us-east-1"
                                                ),
-                                               state = "PROD",
+                                               state = "DEV",
                                                school = "CLEMSON",
                                                ))
 
@@ -66,6 +66,6 @@ class Pipeline(core.Stack):
                                                    account="366442540808",
                                                    region="us-east-1"
                                                ),
-                                               state = "PROD",
+                                               state = "DEV",
                                                school = "CLEMSON",
                                                ))
