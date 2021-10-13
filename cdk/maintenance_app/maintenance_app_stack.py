@@ -20,33 +20,34 @@ from thingcert import createThing as create_thing
 
 
 class MaintenanceAppStage(core.Stage):
-    def __init__(self, scope: core.Construct, id: str, state, school, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, state = None, school = None, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         service = MaintenanceAppStack(self, 'MaintenanceAppStack')
 
-    def bucket_prefix(stage):
+
+
+class MaintenanceAppStack(core.Stack):
+
+    def __init__(self, scope: core.Construct, id: str, state = None, school = None, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
+
+    def bucket_prefix(state):
             # Important to throw an error here because the wrong bucket
             # name will cause erros on deploy rather than build-time
             return {
                     'PROD': 'admin',
                     'BETA': 'beta-admin',
                     'DEV' : f'{env["USER"]}-dev-admin',
-                    }[stage]
+                    }[state]
 
-            def bucket_stump(school):
-                return {
-                    'CLEMSON' : 'cumaker.space',
-                }[school]
+    def bucket_stump(school):
+        return {
+            'CLEMSON' : 'cumaker.space',
+        }[school]
 
-            def bucket_name(stage, school):
-                return f'{bucket_prefix(core.Stage)}.{bucket_stump(school)}'
-
-
-class MaintenanceAppStack(core.Stack):
-
-    def __init__(self, scope: core.Construct, id: str, state, school, **kwargs) -> None:
-        super().__init__(scope, id, **kwargs)
+    def get_bucket_name(state, school):
+        return f'{bucket_prefix(state)}.{bucket_stump(school)}'
 
     # -------------------DynamoDB Tables-----------------------
 
@@ -133,7 +134,7 @@ class MaintenanceAppStack(core.Stack):
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
                                    website_index_document='index.html',
                                    website_error_document='index.html',
-                                   bucket_name=bucket_name(state,school),
+                                   bucket_name=get_bucket_name(state,school),
                                    public_read_access=True
                                    )
 
@@ -176,7 +177,7 @@ class MaintenanceAppStack(core.Stack):
 
         makerspaceUserCognitoPool.add_domain('admin-makerspace-user-cognitoDomain',
                                              cognito_domain=cognito.CognitoDomainOptions(
-                                                 domain_prefix='ddejesu-admin-makerspace-signup-users'
+                                                 domain_prefix=f'{bucket_prefix(state)} admin-makerspace-signup-users'
                                              )
                                              )
 
@@ -216,7 +217,7 @@ class MaintenanceAppStack(core.Stack):
 
         makerspaceVisitorCognitoPool.add_domain('admin-makerspace-visitor-cognitoDomain',
                                                 cognito_domain=cognito.CognitoDomainOptions(
-                                                    domain_prefix='ddejesu-admin-makerspace-signup-visitors'
+                                                    domain_prefix=f'{bucket_prefix(state)}-admin-makerspace-signup-visitors'
                                                 )
                                                 )
 
