@@ -6,6 +6,9 @@ from aws_cdk import (
 from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
 from maintenance_app.maintenance_app_stack import MaintenanceAppStage
 
+# Parameters for the s3 bucket name
+stage  = "PROD"
+school = "clemson"
 
 class Pipeline(core.Stack):
     def __init__(self, app: core.App, id: str, **kwargs) -> None:
@@ -50,7 +53,9 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="944207523762",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               stage = "PROD",
+                                               school = "clemson",
                                                ))
 
         # TODO: Add a validation stage before deploying to Prod
@@ -60,5 +65,7 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="366442540808",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               stage = "PROD",
+                                               school = "clemson",
                                                ))

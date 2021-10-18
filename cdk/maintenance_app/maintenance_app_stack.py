@@ -22,16 +22,26 @@ from thingcert import createThing as create_thing
 
 
 class MaintenanceAppStage(core.Stage):
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, stage = None, school = None, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        service = MaintenanceAppStack(self, 'MaintenanceAppStack')
+        service = MaintenanceAppStack(self,'MaintenanceAppStack',stage,school)
 
 
 class MaintenanceAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, stage = None, school = None, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
+
+        def bucket_prefix(stage,school):
+                # Important to throw an error here because the wrong bucket
+                # name will cause erros on deploy rather than build-time
+                return {
+                        'PROD': f'{school}-admin',
+                        'BETA': f'{school}-beta-admin',
+                        'DEV' : f'{school}-dev-admin',
+                        }[stage]
+
 
     # -------------------DynamoDB Tables-----------------------
 
@@ -115,11 +125,11 @@ class MaintenanceAppStack(core.Stack):
     # --------------------S3 Buckets------------------------------
 
         # Create Public Front End S3 Bucket (will eventually not be public)
-        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
-                                   bucket_name='test.cumaker.space',
-                                   public_read_access=False,
-                                   # TODO: parameterize removal policy
-                                   )
+        FrontEndBucket = s3.Bucket(self, f'{bucket_prefix(stage,school)}-FrontEndBucket',
+                                    website_index_document='index.html',
+                                    website_error_document='index.html',
+                                    public_read_access=False
+                                    )
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
                                   sources=[
@@ -183,7 +193,7 @@ class MaintenanceAppStack(core.Stack):
         # TODO: rebase parameterization off of this branch
         makerspaceUserCognitoPool.add_domain('admin-makerspace-user-cognitoDomain',
                                              cognito_domain=cognito.CognitoDomainOptions(
-                                                 domain_prefix='temp-admin-makerspace-signup-users'
+                                                 domain_prefix=f'{bucket_prefix(stage,school)}-admin-makerspace-signup-users'
                                              )
                                              )
 
@@ -225,7 +235,7 @@ class MaintenanceAppStack(core.Stack):
         # TODO: rebase parameterization off of this branch
         makerspaceVisitorCognitoPool.add_domain('admin-makerspace-visitor-cognitoDomain',
                                                 cognito_domain=cognito.CognitoDomainOptions(
-                                                    domain_prefix='temp-admin-makerspace-signup-visitors'
+                                                    domain_prefix= f'{bucket_prefix(stage,school)}-admin-makerspace-signup-visitors'
                                                 )
                                                 )
 
