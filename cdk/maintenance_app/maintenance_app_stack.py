@@ -22,15 +22,15 @@ from thingcert import createThing as create_thing
 
 
 class MaintenanceAppStage(core.Stage):
-    def __init__(self, scope: core.Construct, id: str, stage, school, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        service = MaintenanceAppStack(self,'MaintenanceAppStack', stage, school, **kwargs)
+        service = MaintenanceAppStack(self,'MaintenanceAppStack', **kwargs)
 
 
 class MaintenanceAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, stage = None, school = None, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         cognito_prefix = str(random.randint(1111,9999))
@@ -116,7 +116,7 @@ class MaintenanceAppStack(core.Stack):
     # --------------------S3 Buckets------------------------------
 
         # Create Public Front End S3 Bucket (will eventually not be public)
-        FrontEndBucket = s3.Bucket(self, f'{stage}-{school}-FrontEndBucket',
+        FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
                                     website_index_document='index.html',
                                     website_error_document='index.html',
                                     public_read_access=False
