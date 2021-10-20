@@ -72,3 +72,11 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## Generating a component diagram
+
+The components of this system are described in [`makerspace.dot`](./makerspace.dot). You can re-generate the PNG using the below command:
+
+```
+dot makerspace.dot -Tpng > makerspace.png
+```
