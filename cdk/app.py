@@ -3,10 +3,10 @@
 from aws_cdk import core
 from maintenance_app.maintenance_app_stack import MaintenanceAppStack
 from Pipeline import Pipeline
-from visit import Visit
 from dns import MakerspaceDns
-from database import Database
 from accounts_config import accounts
+
+from makerspace import MakerspaceStack
 
 namespace = 'unified-makerspace'
 app = core.App()
@@ -28,7 +28,6 @@ all the child stacks. So, everything beta/prod goes here.
 maintenance_app = MaintenanceAppStack(
     app, f"{namespace}-maintenance-app")
 
-# todo: add Database and Visit to Pipeline...
 pipeline = Pipeline(app, f"{namespace}-pipeline", env=accounts['Prod'])
 # pipeline.add_dependency(maintenance_app)
 
@@ -44,8 +43,10 @@ only credentials that deploy to their own dev account. This loop
 generates a stack for each user that deploys to their own account.
 """
 for user in ['mhall6', 'kejiax']:
+
     stage = f'Dev-{user}'
-    database = Database(app, stage, env=accounts[stage])
-    Visit(app, stage, database.table.table_name, env=accounts[stage])
+    environment = accounts[stage]
+
+    MakerspaceStack(app, stage, environment).synth()
 
 app.synth()
