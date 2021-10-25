@@ -22,10 +22,10 @@ from thingcert import createThing as create_thing
 
 
 class MaintenanceAppStage(core.Stage):
-    def __init__(self, scope: core.Construct, id: str, stage = None, school = None, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, stage, school, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        service = MaintenanceAppStack(self,'MaintenanceAppStack', **kwargs)
+        service = MaintenanceAppStack(self,'MaintenanceAppStack', stage, school, **kwargs)
 
 
 class MaintenanceAppStack(core.Stack):
