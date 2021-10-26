@@ -12,7 +12,7 @@ props = {
 app = core.App()
 
 maintenance_app = MaintenanceAppStack(
-    app, f"{props['namespace']}-maintenance-app")
+    app, f"{props['namespace']}-maintenance-app", stage = "DEV")
 
 pipeline = Pipeline(app, f"{props['namespace']}-pipeline", env=props['env'])
 # pipeline.add_dependency(maintenance_app)

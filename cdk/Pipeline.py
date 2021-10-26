@@ -50,7 +50,9 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="944207523762",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               stage = "Beta",
+                                               school = "clemson",
                                                ))
 
         # TODO: Add a validation stage before deploying to Prod
@@ -60,5 +62,7 @@ class Pipeline(core.Stack):
                                                env=core.Environment(
                                                    account="366442540808",
                                                    region="us-east-1"
-                                               )
+                                               ),
+                                               stage = "Prod",
+                                               school = "clemson",
                                                ))
