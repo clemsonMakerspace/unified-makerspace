@@ -57,14 +57,14 @@ class Visit(core.Stack):
 
     def cloudfront_distribution(self):
 
-        aws_cloudfront.Distribution(self, 'VisitorsConsoleCache',
-                                    default_behavior=aws_cloudfront.BehaviorOptions(
-                                        origin=aws_cloudfront_origins.S3Origin(
-                                            bucket=self.bucket,
-                                            origin_access_identity=self.oai
-                                        ),
-                                        viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS),
-                                    default_root_object="index.html")
+        self.distribution = aws_cloudfront.Distribution(self, 'VisitorsConsoleCache',
+                                                        default_behavior=aws_cloudfront.BehaviorOptions(
+                                                            origin=aws_cloudfront_origins.S3Origin(
+                                                                bucket=self.bucket,
+                                                                origin_access_identity=self.oai
+                                                            ),
+                                                            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS),
+                                                        default_root_object="index.html")
 
     def register_visit_lambda(self, table_name: str):
 

@@ -4,6 +4,8 @@ from aws_cdk import (
     core
 )
 from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
+from dns import MakerspaceDns
+from makerspace import MakerspaceStage
 from maintenance_app.maintenance_app_stack import MaintenanceAppStage
 
 from accounts_config import accounts
@@ -47,14 +49,21 @@ class Pipeline(core.Stack):
         # necessary with any account and region (may be different from the
         # pipeline's).
 
-        # todo: replace maintenance app stage with MakerspaceStack
-
         # Create our Beta stage
-        pipeline.add_stage(MaintenanceAppStage(self, 'Beta',
-                                               env=accounts['Beta']))
+        self.beta = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
 
         # TODO: Add a validation stage before deploying to Prod
 
         # Create our Prod stage
-        pipeline.add_stage(MaintenanceAppStage(self, 'Prod',
-                                               env=accounts['Prod']))
+        self.prod = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
+
+
+        visits_domain = self.prod.service.visit.distribution
+
+        dns_stack = MakerspaceDns(self.prod,
+                                  'MakerspaceDns',
+                                  visits_domain,
+                                  env=accounts['Dns'])
+
+        pipeline.add_stage(self.beta)
+        pipeline.add_stage(self.prod)
