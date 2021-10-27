@@ -2,13 +2,12 @@
 
 from aws_cdk import core
 from maintenance_app.maintenance_app_stack import MaintenanceAppStack
-from Pipeline import Pipeline
+from pipeline import Pipeline
 from dns import MakerspaceDns
 from accounts_config import accounts
 
 from makerspace import MakerspaceStack
 
-namespace = 'unified-makerspace'
 app = core.App()
 
 """
@@ -25,13 +24,7 @@ Also, all Pipeline-related resources go here, because we don't deploy
 those directly. Instead, we use the Pipline's self-mutation to update
 all the child stacks. So, everything beta/prod goes here.
 """
-maintenance_app = MaintenanceAppStack(
-    app, f"{namespace}-maintenance-app")
-
-pipeline = Pipeline(app, f"{namespace}-pipeline", env=accounts['Prod'])
-# pipeline.add_dependency(maintenance_app)
-
-dns_stack = MakerspaceDns(app, 'MakerspaceDns', env=accounts['Dns'])
+pipeline = Pipeline(app, 'Pipeline', env=accounts['Prod'])
 
 
 """
@@ -42,11 +35,11 @@ these, we need to deploy each by hand, and each user should have the
 only credentials that deploy to their own dev account. This loop
 generates a stack for each user that deploys to their own account.
 """
-for user in ['mhall6', 'kejiax']:
+for user in ['mhall6', 'kejiax', 'ddejesu', 'dwball', 'weiminl']:
 
     stage = f'Dev-{user}'
     environment = accounts[stage]
 
-    MakerspaceStack(app, stage, environment).synth()
+    MakerspaceStack(app, stage, env=environment)
 
 app.synth()

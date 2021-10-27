@@ -1,6 +1,8 @@
 
 from aws_cdk import (
+    aws_cloudfront,
     aws_route53,
+    aws_route53_targets,
     core
 )
 
@@ -18,20 +20,27 @@ class MakerspaceDns(core.Stack):
     fewer steps.
     """
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs):
+    def __init__(self, scope: core.Construct, id: str,
+                 visitors_cf_domain: aws_cloudfront.Distribution, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        self.visitors_zone()
+        self.visitors_zone(visitors_cf_domain)
 
         self.maintenance_zone()
 
         # todo: deprecate this
         self.admin_zone()
 
-    def visitors_zone(self):
+    def visitors_zone(self, cf_domain):
 
-        aws_route53.PublicHostedZone(self, 'visit',
-                                     zone_name='visit.cumaker.space')
+        self.visits = aws_route53.PublicHostedZone(self, 'visit',
+                                                   zone_name='visit.cumaker.space')
+
+        aws_route53.ARecord(self, 'VisitRecord',
+                            zone=self.visits,
+                            target=aws_route53.RecordTarget(
+                                alias_target=aws_route53_targets.CloudFrontTarget(
+                                    cf_domain)))
 
     def maintenance_zone(self):
 

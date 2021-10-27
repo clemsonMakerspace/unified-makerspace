@@ -8,7 +8,6 @@ from aws_cdk import (
     aws_iam as iam,
     aws_events as events,
     aws_events_targets as targets,
-    aws_s3_deployment as s3deploy,
     aws_iot as iot,
     aws_cognito as cognito,
     aws_secretsmanager as secrets,
@@ -25,7 +24,8 @@ class MaintenanceAppStage(core.Stage):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        service = MaintenanceAppStack(self,'MaintenanceAppStack', **kwargs)
+        self.service = MaintenanceAppStack(
+            self, 'MaintenanceAppStack', **kwargs)
 
 
 class MaintenanceAppStack(core.Stack):
@@ -33,7 +33,7 @@ class MaintenanceAppStack(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        cognito_prefix = str(random.randint(1111,9999))
+        cognito_prefix = str(random.randint(1111, 9999))
     # -------------------DynamoDB Tables-----------------------
 
         # Tasks, Machines, Visitors, Visits, Users, Permissions
@@ -117,10 +117,10 @@ class MaintenanceAppStack(core.Stack):
 
         # Create Public Front End S3 Bucket (will eventually not be public)
         FrontEndBucket = s3.Bucket(self, 'FrontEndBucket',
-                                    website_index_document='index.html',
-                                    website_error_document='index.html',
-                                    public_read_access=False
-                                    )
+                                   website_index_document='index.html',
+                                   website_error_document='index.html',
+                                   public_read_access=False
+                                   )
 
         s3deploy.BucketDeployment(self, 'DeployWebsite',
                                   sources=[
@@ -142,9 +142,9 @@ class MaintenanceAppStack(core.Stack):
                                     origin=origins.S3Origin(
                                         bucket=FrontEndBucket,
                                         origin_access_identity=oai,
-                                        ),
-                                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
                                     ),
+                                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+                                ),
                                 default_root_object='index.html',
                                 error_responses=[internalRedirect]
                                 )
@@ -178,7 +178,8 @@ class MaintenanceAppStack(core.Stack):
                                                          "lastname": cognito.StringAttribute(min_len=1, max_len=256, mutable=True),
                                                          "role": cognito.StringAttribute(min_len=1, max_len=256, mutable=True)
                                                      },
-                                                     # TODO: parameterize removal policy
+                                                     # TODO: parameterize
+                                                     # removal policy
                                                      )
 
         # TODO: rebase parameterization off of this branch
@@ -220,13 +221,14 @@ class MaintenanceAppStack(core.Stack):
                                                         sign_in_aliases={
                                                             "email": True
                                                         },
-                                                        # TODO: parameterize removal policy
+                                                        # TODO: parameterize
+                                                        # removal policy
                                                         )
 
         # TODO: rebase parameterization off of this branch
         makerspaceVisitorCognitoPool.add_domain('admin-makerspace-visitor-cognitoDomain',
                                                 cognito_domain=cognito.CognitoDomainOptions(
-                                                    domain_prefix= f'{cognito_prefix}-admin-makerspace-signup-visitors'
+                                                    domain_prefix=f'{cognito_prefix}-admin-makerspace-signup-visitors'
                                                 )
                                                 )
 
