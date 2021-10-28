@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import os
+
 from aws_cdk import core
 from maintenance_app.maintenance_app_stack import MaintenanceAppStack
 from pipeline import Pipeline
-from dns import MakerspaceDns
 from accounts_config import accounts
 
 from makerspace import MakerspaceStack
@@ -35,11 +36,14 @@ these, we need to deploy each by hand, and each user should have the
 only credentials that deploy to their own dev account. This loop
 generates a stack for each user that deploys to their own account.
 """
-for user in ['mhall6', 'kejiax', 'ddejesu', 'dwball', 'weiminl']:
 
-    stage = f'Dev-{user}'
-    environment = accounts[stage]
+user = os.environ.get("USER")
+stage = f'Dev-{user}'
+dev_environment = accounts.get(stage)
 
-    MakerspaceStack(app, stage, env=environment)
+if dev_environment:
+    MakerspaceStack(app, 'Dev', env=accounts[stage])
+else:
+    print(f'Not creating dev stack: could not locate stage={stage} for user={user}')
 
 app.synth()
