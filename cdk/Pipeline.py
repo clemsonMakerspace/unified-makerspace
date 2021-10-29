@@ -4,16 +4,15 @@ from aws_cdk import (
     core
 )
 from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
-from dns import MakerspaceDns
 from makerspace import MakerspaceStage
-from maintenance_app.maintenance_app_stack import MaintenanceAppStage
 
 from accounts_config import accounts
 
 
 class Pipeline(core.Stack):
-    def __init__(self, app: core.App, id: str, **kwargs) -> None:
-        super().__init__(app, id, **kwargs)
+    def __init__(self, app: core.App, id: str, *,
+                 env: core.Environment) -> None:
+        super().__init__(app, id, env=env)
 
         # Define our pipeline
         #
@@ -56,15 +55,6 @@ class Pipeline(core.Stack):
 
         # Create our Prod stage
         self.prod = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
-
-        visits_domain = self.prod.service.visit.distribution
-        api_domain = self.prod.service.api_gateway.api
-
-        self.prod_dns_stack = MakerspaceDns(self.prod,
-                                            'MakerspaceDns',
-                                            visits_domain,
-                                            api_domain,
-                                            env=accounts['Dns'])
 
         pipeline.add_stage(self.beta)
         pipeline.add_stage(self.prod)
