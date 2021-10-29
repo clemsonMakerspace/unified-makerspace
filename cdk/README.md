@@ -80,3 +80,20 @@ The components of this system are described in [`makerspace.dot`](./makerspace.d
 ```
 dot makerspace.dot -Tpng > makerspace.png
 ```
+
+## Synthesizing the dev stack
+
+If you don't have an AWS account or haven't configured your workspace to create the dev stack (this might work automatically) then the only stack you'll see when synthesizing is the `Pipeline` stack, which works by creating a Beta and Prod stage and deploying the full makerspace stack.
+
+If dev stack setup worked for you automatically, then you can skip this next part. If it did not, then you can get it working with the following steps:
+
+1. Add your Clemson username to the `accounts_config` python module
+2. Set `USER=<you-username>` when synthesizing or deploying, for example:
+
+```
+USER=mhall6 cdk list
+```
+
+You'll need to have account permissions to the account you configure for your username.
+
+If you're trying to get an end-to-end example working in dev, you'll have to override the API URL and visit your cloudfront domains directly rather than, for example `beta-visit.cumaker.space` or `visit.cumaker.space`.
