@@ -6,9 +6,10 @@ from aws_cdk import (
 
 
 class Database(core.Stack):
-    def __init__(self, scope: core.Construct, stage: str, **kwargs):
+    def __init__(self, scope: core.Construct,
+                 stage: str, *, env: core.Environment):
         self.id = f'Database-{stage}'
-        super().__init__(scope, self.id, **kwargs)
+        super().__init__(scope, self.id, env=env)
 
         self.dynamodb_single_table()
 

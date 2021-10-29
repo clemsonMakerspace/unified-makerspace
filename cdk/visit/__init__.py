@@ -1,5 +1,6 @@
 
 from aws_cdk import (
+    aws_certificatemanager,
     aws_s3_deployment,
     core,
     aws_cloudfront,
@@ -7,6 +8,8 @@ from aws_cdk import (
     aws_lambda,
     aws_s3,
 )
+
+from dns import MakerspaceDns
 
 
 class Visit(core.Stack):
@@ -26,16 +29,20 @@ class Visit(core.Stack):
     """
 
     def __init__(self, scope: core.Construct,
-                 stage: str, table_name: str, **kwargs):
+                 stage: str,
+                 table_name: str,
+                 *,
+                 env: core.Environment,
+                 zones: MakerspaceDns = None):
 
-        super().__init__(scope, f'Visitors-{stage}', **kwargs)
+        super().__init__(scope, f'Visitors-{stage}', env=env)
 
         self.source_bucket()
 
         # todo: restrict visitors page to require employee sign-in
         # self.cognito_pool()
 
-        self.cloudfront_distribution()
+        self.cloudfront_distribution(zones)
 
         self.register_visit_lambda(table_name)
 
@@ -54,16 +61,26 @@ class Visit(core.Stack):
                                            ],
                                            destination_bucket=self.bucket)
 
-    def cloudfront_distribution(self):
+    def cloudfront_distribution(self, zones: MakerspaceDns):
 
-        self.distribution = aws_cloudfront.Distribution(self, 'VisitorsConsoleCache',
-                                                        default_behavior=aws_cloudfront.BehaviorOptions(
-                                                            origin=aws_cloudfront_origins.S3Origin(
-                                                                bucket=self.bucket,
-                                                                origin_access_identity=self.oai
-                                                            ),
-                                                            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS),
-                                                        default_root_object="index.html")
+        kwargs = {}
+        if zones:
+            domain_name = zones.visit.zone_name
+            kwargs['domain_names'] = [domain_name]
+            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(self, 'VisitorsCertificate',
+                                                                                   domain_name=domain_name,
+                                                                                   hosted_zone=zones.visit)
+
+        kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
+            origin=aws_cloudfront_origins.S3Origin(
+                bucket=self.bucket,
+                origin_access_identity=self.oai
+            ),
+            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
+        kwargs['default_root_object'] = "index.html"
+
+        self.distribution = aws_cloudfront.Distribution(
+            self, 'VisitorsConsoleCache', **kwargs)
 
     def register_visit_lambda(self, table_name: str):
 

@@ -6,6 +6,8 @@ from aws_cdk import (
     aws_apigateway,
 )
 
+from dns import Domains
+
 
 class SharedApiGateway(core.Stack):
     """
@@ -34,9 +36,11 @@ class SharedApiGateway(core.Stack):
     """
 
     def __init__(self, scope: core.Construct, stage: str,
-                 visitors: aws_lambda.Function, **kwargs):
+                 visitors: aws_lambda.Function, *, env: core.Environment, domains: Domains):
 
-        super().__init__(scope, f'SharedApiGateway-{stage}', **kwargs)
+        super().__init__(scope, f'SharedApiGateway-{stage}', env=env)
+
+        self.domains = domains
 
         self.create_rest_api()
 
@@ -45,13 +49,13 @@ class SharedApiGateway(core.Stack):
     def create_rest_api(self):
 
         certificate = aws_certificatemanager.Certificate(self, 'ApiGatewayCert',
-                                                         domain_name='api.cumaker.space')
+                                                         domain_name=self.domains.api)
 
         self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
 
         self.api.add_domain_name('ApiGatewayDomainName',
                                  certificate=certificate,
-                                 domain_name='api.cumaker.space')
+                                 domain_name=self.domains.api)
 
     def route_visitors(self, visitors: aws_lambda.Function):
 

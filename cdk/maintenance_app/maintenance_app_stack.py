@@ -21,17 +21,19 @@ from thingcert import createThing as create_thing
 
 
 class MaintenanceAppStage(core.Stage):
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-        super().__init__(scope, id, **kwargs)
+    def __init__(self, scope: core.Construct, id: str, *,
+                 env: core.Environment) -> None:
+        super().__init__(scope, id, env=env)
 
         self.service = MaintenanceAppStack(
-            self, 'MaintenanceAppStack', **kwargs)
+            self, 'MaintenanceAppStack', env=env)
 
 
 class MaintenanceAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-        super().__init__(scope, id, **kwargs)
+    def __init__(self, scope: core.Construct, id: str, *,
+                 env: core.Environment) -> None:
+        super().__init__(scope, id, env=env)
 
         cognito_prefix = str(random.randint(1111, 9999))
     # -------------------DynamoDB Tables-----------------------
