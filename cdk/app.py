@@ -3,7 +3,6 @@
 import os
 
 from aws_cdk import core
-from maintenance_app.maintenance_app_stack import MaintenanceAppStack
 from Pipeline import Pipeline
 from accounts_config import accounts
 
