@@ -1,6 +1,5 @@
 
 from aws_cdk import (
-    aws_apigateway,
     aws_s3_deployment,
     core,
     aws_cloudfront,

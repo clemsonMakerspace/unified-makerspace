@@ -57,13 +57,14 @@ class Pipeline(core.Stack):
         # Create our Prod stage
         self.prod = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
 
-
         visits_domain = self.prod.service.visit.distribution
+        api_domain = self.prod.service.api_gateway.api
 
-        dns_stack = MakerspaceDns(self.prod,
-                                  'MakerspaceDns',
-                                  visits_domain,
-                                  env=accounts['Dns'])
+        self.prod_dns_stack = MakerspaceDns(self.prod,
+                                            'MakerspaceDns',
+                                            visits_domain,
+                                            api_domain,
+                                            env=accounts['Dns'])
 
         pipeline.add_stage(self.beta)
         pipeline.add_stage(self.prod)

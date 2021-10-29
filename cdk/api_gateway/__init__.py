@@ -1,5 +1,6 @@
 
 from aws_cdk import (
+    aws_certificatemanager,
     core,
     aws_lambda,
     aws_apigateway,
@@ -43,7 +44,14 @@ class SharedApiGateway(core.Stack):
 
     def create_rest_api(self):
 
+        certificate = aws_certificatemanager.Certificate(self, 'ApiGatewayCert',
+                                                         domain_name='api.cumaker.space')
+
         self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+
+        self.api.add_domain_name('ApiGatewayDomainName',
+                                 certificate=certificate,
+                                 domain_name='api.cumaker.space')
 
     def route_visitors(self, visitors: aws_lambda.Function):
 
