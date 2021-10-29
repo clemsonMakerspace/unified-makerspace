@@ -1,5 +1,6 @@
 
 from aws_cdk import (
+    aws_apigateway,
     aws_cloudfront,
     aws_route53,
     aws_route53_targets,
@@ -21,10 +22,14 @@ class MakerspaceDns(core.Stack):
     """
 
     def __init__(self, scope: core.Construct, id: str,
-                 visitors_cf_domain: aws_cloudfront.Distribution, **kwargs):
+                 visitors_cf_domain: aws_cloudfront.Distribution,
+                 api_domain: aws_apigateway.RestApi,
+                 **kwargs):
         super().__init__(scope, id, **kwargs)
 
         self.visitors_zone(visitors_cf_domain)
+
+        self.api_zone(api_domain)
 
         self.maintenance_zone()
 
@@ -41,6 +46,17 @@ class MakerspaceDns(core.Stack):
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.CloudFrontTarget(
                                     cf_domain)))
+
+    def api_zone(self, api_domain: aws_apigateway.RestApi):
+
+        self.api = aws_route53.PublicHostedZone(self, 'api',
+                                                zone_name='api.cumaker.space')
+
+        aws_route53.ARecord(self, 'ApiRecordRecord',
+                            zone=self.api,
+                            target=aws_route53.RecordTarget(
+                                alias_target=aws_route53_targets.ApiGatewayDomain(
+                                    api_domain.domain_name)))
 
     def maintenance_zone(self):
 
