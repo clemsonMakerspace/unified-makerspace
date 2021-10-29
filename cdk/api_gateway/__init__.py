@@ -6,7 +6,7 @@ from aws_cdk import (
     aws_apigateway,
 )
 
-from dns import Domains
+from dns import MakerspaceDns
 
 
 class SharedApiGateway(core.Stack):
@@ -36,11 +36,12 @@ class SharedApiGateway(core.Stack):
     """
 
     def __init__(self, scope: core.Construct, stage: str,
-                 visitors: aws_lambda.Function, *, env: core.Environment, domains: Domains):
+                 visitors: aws_lambda.Function, *, env: core.Environment, create_dns: bool, zones: MakerspaceDns = None):
 
         super().__init__(scope, f'SharedApiGateway-{stage}', env=env)
 
-        self.domains = domains
+        self.create_dns = create_dns
+        self.zones = zones
 
         self.create_rest_api()
 
@@ -48,14 +49,17 @@ class SharedApiGateway(core.Stack):
 
     def create_rest_api(self):
 
-        certificate = aws_certificatemanager.Certificate(self, 'ApiGatewayCert',
-                                                         domain_name=self.domains.api)
-
         self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
 
-        self.api.add_domain_name('ApiGatewayDomainName',
-                                 certificate=certificate,
-                                 domain_name=self.domains.api)
+        if self.create_dns:
+            domain_name = self.zones.api.zone_name
+            certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
+                                                                         domain_name=domain_name,
+                                                                         hosted_zone=self.zones.api)
+
+            self.api.add_domain_name('ApiGatewayDomainName',
+                                     domain_name=domain_name,
+                                     certificate=certificate)
 
     def route_visitors(self, visitors: aws_lambda.Function):
 

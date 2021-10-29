@@ -19,7 +19,7 @@ class Domains:
             # We can use sub-domains with NS records if we replace this
             # with 'stage.' and point the domains in the prod account
             # at the beta account nameservers.
-            self.stage = f'stage-'
+            self.stage = f'{stage}-'
 
         self.api = self.domain('api')
         self.visit = self.domain('visit')
@@ -48,7 +48,7 @@ class MakerspaceDns(core.Stack):
                  stage: str, *, env: core.Environment):
         super().__init__(scope, f'MakerspaceDns-{stage}', env=env)
 
-        self.domains = Domains('Prod')
+        self.domains = Domains(stage)
 
         self.visitors_zone()
 
@@ -97,10 +97,20 @@ class MakerspaceDnsRecords(core.Stack):
 
         self.api_record(api_gateway)
 
+        self.visit_record(visit_distribution)
+
     def api_record(self, api_gateway: aws_apigateway.RestApi):
 
-        aws_route53.ARecord(self, 'ApiRecordRecord',
+        aws_route53.ARecord(self, 'ApiRecord',
                             zone=self.zones.api,
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.ApiGatewayDomain(
                                     api_gateway.domain_name)))
+
+    def visit_record(self, visit: aws_cloudfront.Distribution):
+
+        aws_route53.ARecord(self, 'VisitRecord',
+                            zone=self.zones.visit,
+                            target=aws_route53.RecordTarget(
+                                alias_target=aws_route53_targets.CloudFrontTarget(
+                                    distribution=visit)))

@@ -33,16 +33,20 @@ class Visit(core.Stack):
                  table_name: str,
                  *,
                  env: core.Environment,
+                 create_dns: bool,
                  zones: MakerspaceDns = None):
 
         super().__init__(scope, f'Visitors-{stage}', env=env)
+
+        self.create_dns = create_dns
+        self.zones = zones
 
         self.source_bucket()
 
         # todo: restrict visitors page to require employee sign-in
         # self.cognito_pool()
 
-        self.cloudfront_distribution(zones)
+        self.cloudfront_distribution()
 
         self.register_visit_lambda(table_name)
 
@@ -61,15 +65,15 @@ class Visit(core.Stack):
                                            ],
                                            destination_bucket=self.bucket)
 
-    def cloudfront_distribution(self, zones: MakerspaceDns):
+    def cloudfront_distribution(self):
 
         kwargs = {}
-        if zones:
-            domain_name = zones.visit.zone_name
+        if self.create_dns:
+            domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
             kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(self, 'VisitorsCertificate',
                                                                                    domain_name=domain_name,
-                                                                                   hosted_zone=zones.visit)
+                                                                                   hosted_zone=self.zones.visit)
 
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
             origin=aws_cloudfront_origins.S3Origin(
