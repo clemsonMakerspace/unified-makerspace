@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SignedInCountDown = (props) => {
+const SignInCountDown = (props) => {
     let sec = 3;
     const countDown = () => {
         if (sec >= 0) document.getElementById("timer").innerHTML = `Return To Homepage In ${sec--}`;
@@ -21,10 +21,10 @@ const SignedInCountDown = (props) => {
     }
     return (
         <div className="bg-white w-50 rounded text-center">
-            <p>Sign In Unsuccessful</p>
+            <p>Sign In Failed</p>
             <p id="timer"></p>
         </div>
     )
 }
  
-export default SignedInCountDown;
+export default SignInCountDown;
