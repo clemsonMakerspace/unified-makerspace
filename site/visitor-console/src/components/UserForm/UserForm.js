@@ -25,13 +25,13 @@ const UserForm = (props) => {
       }).then(data => {
         // success
         console.log("Success: ", data);
-        alert("Signed in!");
+        props.handleSignInMessage(true);
       }).catch(error => {
         // error
         console.log("Error: ", error);
         alert("Error signing in.");
+        props.handleSignInMessage(false);
       })
-      props.handleBack();
     }
     event.preventDefault()
     setUserName("");
