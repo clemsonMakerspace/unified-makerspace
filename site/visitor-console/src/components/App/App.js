@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
-import SignedInCountDown from '../SignedCountDown/SignInCountDown'
+import SignedInCountDown from '../SignInCountDown/SignInCountDown'
 
 export const STATES = {
   MAIN: 0,
