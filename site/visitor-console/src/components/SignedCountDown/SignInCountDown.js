@@ -10,8 +10,6 @@ const SignedInCountDown = (props) => {
         }
     }
     let interval = setInterval(countDown, 1000)
-
-    console.log(props.mode)
     
     if (props.mode === 3) {
         return (
