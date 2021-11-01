@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
-import SignedInCountDown from '../SignInCountDown/SignInCountDown'
+import SignInCountDown from '../SignInCountDown/SignInCountDown'
 
 export const STATES = {
   MAIN: 0,
@@ -55,11 +55,11 @@ const App = () => {
     )
   } else if (appMode === STATES["SIGN_IN"]) {
     render = (
-      <SignedInCountDown handleBack={handleBack} mode={appMode}></SignedInCountDown>
+      <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
   } else if (appMode === STATES["FAILED_SIGN_IN"]) {
     render = (
-      <SignedInCountDown handleBack={handleBack} mode={appMode}></SignedInCountDown>
+      <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
   }
 
