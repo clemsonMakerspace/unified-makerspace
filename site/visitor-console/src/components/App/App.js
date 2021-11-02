@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
+import SignInCountDown from '../SignInCountDown/SignInCountDown'
 
 export const STATES = {
   MAIN: 0,
   CLEMSON: 1,
-  GUEST: 2
+  GUEST: 2,
+  SIGN_IN: 3,
+  FAILED_SIGN_IN: 4
 }
 
 const App = () => {
@@ -22,9 +25,15 @@ const App = () => {
     setAppMode(STATES["GUEST"]);
   }
 
+  const handleSignInMessage = (isIn) => {
+    isIn ? setAppMode(STATES["SIGN_IN"]) : setAppMode(STATES["FAILED_SIGN_IN"])
+  }
+
   const handleBack = () => {
     setAppMode(STATES["MAIN"]);
   }
+
+
 
   let render;
   if (appMode === STATES["MAIN"]) {
@@ -36,11 +45,21 @@ const App = () => {
     )
   } else if (appMode === STATES["CLEMSON"]) {
     render = (
-      <UserForm handleBack={handleBack} mode={appMode}></UserForm>
+      <UserForm handleSignInMessage={handleSignInMessage}
+      handleBack={handleBack} mode={appMode}></UserForm>
     )
   } else if (appMode === STATES["GUEST"]) {
     render = (
-      <UserForm handleBack={handleBack} mode={appMode}></UserForm>
+      <UserForm handleSignInMessage={handleSignInMessage}
+      handleBack={handleBack} mode={appMode}></UserForm>
+    )
+  } else if (appMode === STATES["SIGN_IN"]) {
+    render = (
+      <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
+    )
+  } else if (appMode === STATES["FAILED_SIGN_IN"]) {
+    render = (
+      <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
   }
 
