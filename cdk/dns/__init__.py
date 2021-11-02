@@ -95,22 +95,39 @@ class MakerspaceDnsRecords(core.Stack):
 
         self.zones = zones
 
+        self.add_dependency(self.zones)
+
         self.api_record(api_gateway)
 
         self.visit_record(visit_distribution)
 
     def api_record(self, api_gateway: aws_apigateway.RestApi):
 
+        zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
+                                                                  'ApiHostedZoneRef',
+                                                                  hosted_zone_id=self.zones.api.hosted_zone_id,
+                                                                  zone_name=self.zones.api.zone_name)
+
         aws_route53.ARecord(self, 'ApiRecord',
-                            zone=self.zones.api,
+                            zone=zone,
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.ApiGatewayDomain(
                                     api_gateway.domain_name)))
 
     def visit_record(self, visit: aws_cloudfront.Distribution):
 
+        zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
+                                                                  'VisitHostedZoneRef',
+                                                                  hosted_zone_id=self.zones.visit.hosted_zone_id,
+                                                                  zone_name=self.zones.visit.zone_name)
+
+        distribution = aws_cloudfront.Distribution.from_distribution_attributes(self,
+                                                                                'VisitCloudFrontRef',
+                                                                                distribution_id=visit.distribution_id,
+                                                                                domain_name=visit.distribution_domain_name)
+
         aws_route53.ARecord(self, 'VisitRecord',
-                            zone=self.zones.visit,
+                            zone=zone,
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.CloudFrontTarget(
-                                    distribution=visit)))
+                                    distribution=distribution)))
