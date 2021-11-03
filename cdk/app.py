@@ -24,7 +24,7 @@ Also, all Pipeline-related resources go here, because we don't deploy
 those directly. Instead, we use the Pipline's self-mutation to update
 all the child stacks. So, everything beta/prod goes here.
 """
-pipeline = Pipeline(app, 'Pipeline', env=accounts['Prod'])
+pipeline = Pipeline(app, 'Pipeline', env=accounts['Beta'])
 
 
 """
