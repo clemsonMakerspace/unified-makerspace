@@ -1,30 +1,18 @@
 import React from 'react';
+import Countdown from 'react-countdown';
 
 const SignInCountDown = (props) => {
-    let sec = 3;
-    const countDown = () => {
-        if (sec >= 0) document.getElementById("timer").innerHTML = `Return To Homepage In ${sec--}`;
-        else {
-            clearInterval(interval)
-            props.handleBack();
-        }
-    }
-    let interval = setInterval(countDown, 1000)
-    
-    if (props.mode === 3) {
-        return (
-            <div className="bg-white w-50 rounded text-center">
-                <p>Sign In Successful</p>
-                <p id="timer"></p>
-            </div>
-        )
-    }
-    return (
+    const renderer = ({seconds}) => (
         <div className="bg-white w-50 rounded text-center">
-            <p>Sign In Failed</p>
-            <p id="timer"></p>
+        <p>Sign In {props.mode === 3 ? "Successful" : "Failed"}</p>
+        <button onClick={props.handleBack}>Return to Homepage Immediately</button>
+        <p>Return in {seconds}</p>
         </div>
-    )
+      );
+
+    return (
+        <Countdown date={Date.now() + 5000} renderer={renderer} onComplete={props.handleBack} on />
+    );
 }
  
 export default SignInCountDown;
