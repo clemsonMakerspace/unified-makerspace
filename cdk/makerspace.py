@@ -70,6 +70,8 @@ class MakerspaceStack(core.Stack):
 
         self.dns = MakerspaceDns(self.app, self.stage, env=self.env)
 
+        self.add_dependency(self.dns)
+
     def dns_records_stack(self):
 
         # Can only have cross-stack references in the same environment
@@ -83,3 +85,5 @@ class MakerspaceStack(core.Stack):
                                                 zones=self.dns,
                                                 api_gateway=self.api_gateway.api,
                                                 visit_distribution=self.visit.distribution)
+
+        self.add_dependency(self.dns_records)
