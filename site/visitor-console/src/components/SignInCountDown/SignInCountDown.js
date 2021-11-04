@@ -3,15 +3,14 @@ import Countdown from 'react-countdown';
 
 const SignInCountDown = (props) => {
     const renderer = ({seconds}) => (
-        <div className="bg-white w-50 rounded text-center">
-        <p>Sign In {props.mode === 3 ? "Successful" : "Failed"}</p>
-        <button onClick={props.handleBack}>Return to Homepage Immediately</button>
-        <p>Return in {seconds}</p>
+        <div className="container p-3 text-center">
+        <h3 className="text-light">Sign-in {props.mode === 3 ? "Successful" : "Failed"}</h3>
+        <button className="btn btn-secondary" onClick={props.handleBack}>Continue</button>
         </div>
       );
 
     return (
-        <Countdown date={Date.now() + 5000} renderer={renderer} onComplete={props.handleBack} on />
+        <Countdown date={Date.now() + 10000} renderer={renderer} onComplete={props.handleBack} on />
     );
 }
  

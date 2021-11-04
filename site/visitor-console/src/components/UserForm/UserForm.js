@@ -17,21 +17,28 @@ const UserForm = (props) => {
       setInputError(errorMessage);
     } else {
       setInputError("");
-      // TODO: API call, display sign-in message, redirect
-      // API endpoint here
-      fetch("https://p9r4g2xnw4.execute-api.us-east-1.amazonaws.com/prod/visit", {
-        method:"post"
+      const param = {username: userName};
+      fetch("https://44n7pmcbsa.execute-api.us-east-1.amazonaws.com/prod/visit", {
+        method:"post",
+        body:JSON.stringify(param)
       }).then(response => {
-        return response.json();
-      }).then(data => {
-        // success
-        console.log("Success: ", data);
-        props.handleSignInMessage(true);
-      }).catch(error => {
-        // error
-        console.log("Error: ", error);
-        props.handleSignInMessage(false);
-      })
+        if (response.ok) {
+          return response.json().then(data => ({status: response.status, body: data}))
+        } else {
+          throw new Error("Something went wrong.");
+        }
+      }).then((obj) => {
+        console.log(obj);
+        if (obj.status === 200) {
+          props.handleSignInMessage(true);
+        } else {
+          props.handleSignInMessage(false);
+        }
+      }).catch((error) => {
+          console.log(error)
+          props.handleSignInMessage(false);
+        }
+      )
       setIsLoading(true);
     }
     event.preventDefault()

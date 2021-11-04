@@ -34,6 +34,8 @@ class MakerspaceStack(core.Stack):
 
         self.visitors_stack()
 
+        self.database.table.grant_full_access(self.visit.lambda_)
+
         self.shared_api_gateway()
 
         if self.create_dns:
