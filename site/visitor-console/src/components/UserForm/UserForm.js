@@ -18,7 +18,7 @@ const UserForm = (props) => {
     } else {
       setInputError("");
       const param = {username: userName};
-      fetch("https://44n7pmcbsa.execute-api.us-east-1.amazonaws.com/prod/visit", {
+      fetch("https://api.cumaker.space/visit", {
         method:"post",
         body:JSON.stringify(param)
       }).then(response => {
@@ -28,14 +28,14 @@ const UserForm = (props) => {
           throw new Error("Something went wrong.");
         }
       }).then((obj) => {
-        console.log(obj);
+        // console.log(obj);
         if (obj.status === 200) {
           props.handleSignInMessage(true);
         } else {
           props.handleSignInMessage(false);
         }
       }).catch((error) => {
-          console.log(error)
+          // console.log(error)
           props.handleSignInMessage(false);
         }
       )
