@@ -7,12 +7,10 @@ const UserForm = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event) => {
-    // console.log(event);
     setUserName(event.target.value);
   }
 
   const handleSubmit = (event) => {
-    // console.log(event);
     if (userName.trim() === "") {
       setInputError(errorMessage);
     } else {
@@ -28,14 +26,12 @@ const UserForm = (props) => {
           throw new Error("Something went wrong.");
         }
       }).then((obj) => {
-        // console.log(obj);
         if (obj.status === 200) {
           props.handleSignInMessage(true);
         } else {
           props.handleSignInMessage(false);
         }
       }).catch((error) => {
-          // console.log(error)
           props.handleSignInMessage(false);
         }
       )
@@ -45,16 +41,16 @@ const UserForm = (props) => {
     setUserName("");
   }
 
-  let render;
+  let title;
   let placeholder;
   let errorMessage;
   
   if (props.mode === STATES["CLEMSON"]) {
-    render = <h3 className="text-light">Clemson User Login</h3>;
+    title = <h3 className="text-light">Clemson User Login</h3>;
     placeholder = "Username";
     errorMessage = "Please enter your username.";
   } else if (props.mode === STATES["GUEST"]) {
-    render = <h3 className="text-light">Guest User Login</h3>;
+    title = <h3 className="text-light">Guest User Login</h3>;
     placeholder = "Email Address"
     errorMessage = "Please enter an email address."
   }
@@ -62,7 +58,7 @@ const UserForm = (props) => {
   if (!isLoading) {
     return (
       <div>
-        {render}
+        {title}
         <form onSubmit={handleSubmit} className="">
           <div className="form-group mb-3">
             <input type={(props.mode === STATES["CLEMSON"] ? "text" : "email")} 

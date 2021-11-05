@@ -4,7 +4,7 @@ import Countdown from 'react-countdown';
 const SignInCountDown = (props) => {
     const renderer = ({seconds}) => (
         <div className="container p-3 text-center">
-        <h3 className="text-light">Sign-in {props.mode === 3 ? "Successful" : "Failed"}</h3>
+        <h3 className="text-light">Sign-in {props.mode === "SIGN_IN" ? "Successful" : "Failed"}</h3>
         <button className="btn btn-secondary" onClick={props.handleBack}>Continue</button>
         </div>
       );
