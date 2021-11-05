@@ -4,11 +4,11 @@ import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
 
 export const STATES = {
-  MAIN: 0,
-  CLEMSON: 1,
-  GUEST: 2,
-  SIGN_IN: 3,
-  FAILED_SIGN_IN: 4
+  MAIN: "MAIN",
+  CLEMSON: "CLEMSON",
+  GUEST: "GUEST",
+  SIGN_IN: "SIGN_IN",
+  FAILED_SIGN_IN: "FAILED_SIGN_IN"
 }
 
 const App = () => {
@@ -16,12 +16,10 @@ const App = () => {
   const [appMode, setAppMode] = useState(STATES["MAIN"])
 
   const handleClemsonUser = () => {
-    // console.log("Clemson User");
     setAppMode(STATES["CLEMSON"]);
   }
 
   const handleGuestUser = () => {
-    // console.log("Guest User");
     setAppMode(STATES["GUEST"]);
   }
 
