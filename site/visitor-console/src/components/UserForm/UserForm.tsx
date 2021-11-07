@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { STATES } from '../App/App'
+import { State, Props } from '../App/App'
 
-const UserForm = (props) => {
+
+const UserForm = (props: Props) => {
   const [userName, setUserName] = useState("");
   const [inputError, setInputError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (event) => {
-    setUserName(event.target.value);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserName(event.currentTarget.value);
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     if (userName.trim() === "") {
       setInputError(errorMessage);
     } else {
@@ -27,12 +28,12 @@ const UserForm = (props) => {
         }
       }).then((obj) => {
         if (obj.status === 200) {
-          props.handleSignInMessage(true);
+          if (props.handleSignInMessage) props.handleSignInMessage(true);
         } else {
-          props.handleSignInMessage(false);
+          if (props.handleSignInMessage) props.handleSignInMessage(false);
         }
       }).catch((error) => {
-          props.handleSignInMessage(false);
+        if (props.handleSignInMessage) props.handleSignInMessage(false);
         }
       )
       setIsLoading(true);
@@ -43,13 +44,13 @@ const UserForm = (props) => {
 
   let title;
   let placeholder;
-  let errorMessage;
+  let errorMessage: string;
   
-  if (props.mode === STATES["CLEMSON"]) {
+  if (props.mode === State.CLEMSON) {
     title = <h3 className="text-light">Clemson User Login</h3>;
     placeholder = "Username";
     errorMessage = "Please enter your username.";
-  } else if (props.mode === STATES["GUEST"]) {
+  } else if (props.mode === State.GUEST) {
     title = <h3 className="text-light">Guest User Login</h3>;
     placeholder = "Email Address"
     errorMessage = "Please enter an email address."
@@ -61,7 +62,7 @@ const UserForm = (props) => {
         {title}
         <form onSubmit={handleSubmit} className="">
           <div className="form-group mb-3">
-            <input type={(props.mode === STATES["CLEMSON"] ? "text" : "email")} 
+            <input type={(props.mode === State.CLEMSON ? "text" : "email")} 
             value={userName} 
             onChange={handleChange} 
             placeholder={placeholder}

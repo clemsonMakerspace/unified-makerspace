@@ -1,61 +1,68 @@
-import React, { useState } from 'react';
+import React, { MouseEventHandler, Provider, useState } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
 
-export const STATES = {
-  MAIN: "MAIN",
-  CLEMSON: "CLEMSON",
-  GUEST: "GUEST",
-  SIGN_IN: "SIGN_IN",
-  FAILED_SIGN_IN: "FAILED_SIGN_IN"
+export enum State {
+  MAIN,
+  CLEMSON,
+  GUEST,
+  SIGN_IN,
+  FAILED_SIGN_IN
+}
+
+export interface Props {
+  handleClemsonUser?: () => void;
+  handleGuestUser?: () => void;
+  handleSignInMessage?: (isIn: boolean) => void;
+  handleBack?: () => void;
+  mode?: State;
 }
 
 const App = () => {
 
-  const [appMode, setAppMode] = useState(STATES["MAIN"])
+  const [appMode, setAppMode] = useState(State.MAIN)
 
-  const handleClemsonUser = () => {
-    setAppMode(STATES["CLEMSON"]);
+  const handleClemsonUser = ():void => {
+    setAppMode(State.CLEMSON);
   }
 
-  const handleGuestUser = () => {
-    setAppMode(STATES["GUEST"]);
+  const handleGuestUser = ():void  => {
+    setAppMode(State.GUEST);
   }
 
-  const handleSignInMessage = (isIn) => {
-    isIn ? setAppMode(STATES["SIGN_IN"]) : setAppMode(STATES["FAILED_SIGN_IN"])
+  const handleSignInMessage = (isIn: boolean):void  => {
+    isIn ? setAppMode(State.SIGN_IN) : setAppMode(State.FAILED_SIGN_IN)
   }
 
-  const handleBack = () => {
-    setAppMode(STATES["MAIN"]);
+  const handleBack = ():void  => {
+    setAppMode(State.MAIN);
   }
 
 
 
   let render;
-  if (appMode === STATES["MAIN"]) {
+  if (appMode === State.MAIN) {
     render = (
       <ModeSelect 
         handleClemsonUser={handleClemsonUser} 
-        handleGuestUser={handleGuestUser}>
-      </ModeSelect>
+        handleGuestUser={handleGuestUser}/>
     )
-  } else if (appMode === STATES["CLEMSON"]) {
+  } else if (appMode === State.CLEMSON) {
     render = (
       <UserForm handleSignInMessage={handleSignInMessage}
       handleBack={handleBack} mode={appMode}></UserForm>
     )
-  } else if (appMode === STATES["GUEST"]) {
+  } else if (appMode === State.GUEST) {
     render = (
       <UserForm handleSignInMessage={handleSignInMessage}
       handleBack={handleBack} mode={appMode}></UserForm>
     )
-  } else if (appMode === STATES["SIGN_IN"]) {
+  } else if (appMode === State.SIGN_IN) {
     render = (
       <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
-  } else if (appMode === STATES["FAILED_SIGN_IN"]) {
+  } else if (appMode === State.FAILED_SIGN_IN) {
     render = (
       <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
