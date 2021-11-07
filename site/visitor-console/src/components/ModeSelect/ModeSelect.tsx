@@ -1,6 +1,6 @@
-import React from 'react';
+import { Props } from '../App/App';
 
-const ModeSelect = (props) => (
+const ModeSelect = (props: Props) => (
   <div>
       <button className="btn-lg btn-secondary mb-3 d-block" 
       style={{width: '250px'}} 

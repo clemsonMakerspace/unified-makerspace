@@ -1,5 +1,5 @@
 {
-  "usesTypeScript": false,
+  "usesTypeScript": true,
   "usesCssModule": false,
   "cssPreprocessor": "css",
   "testLibrary": "None",
