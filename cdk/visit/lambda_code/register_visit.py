@@ -7,12 +7,13 @@ import os
  # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 # Get the table name. 
-table_name = os.environ["TABLE_NAME"]
+TABLE_NAME = os.environ["TABLE_NAME"]
 # Get table objects
-visits = dynamodb.Table(table_name)
+visits = dynamodb.Table(TABLE_NAME)
 
 def addVisitEntry(data): 
     current_user = json.loads(data["body"])["username"]
+    
     # Get the current date at which the user logs in. 
     temp_date = datetime.datetime.now()
 
@@ -27,20 +28,6 @@ def addVisitEntry(data):
     # Add the item to the table. 
     visits.put_item(Item = new_visit)
 
-    # Confirm this item is in the table by running a query on it. 
-    response = visits.query(
-        KeyConditionExpression=Key('PK').eq(visit_date)
-    )
-
-    in_place = 1
-    for user in response['Items']:
-        if(user['PK'] == current_user):
-            in_place = 0
-
-    if in_place == 0:
-        return "Unverified"
-    else:
-        return "Verified"
 
 def handler(request, context):
     """
@@ -53,33 +40,42 @@ def handler(request, context):
     2. Trigger a registration workflow if this is the first time for that user
     3. Place a visit entry into the table
     """
-    res = addVisitEntry(request)
     
     # return client error if no string params
-    if (request is None):
-        return {
-            'headers': {
+
+    HEADERS = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin': 'visit.cumaker.space',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
+            }
+
+    if (request is None):
+        return {
+            'headers': HEADERS,
             'statusCode': 400,
             'body':json.dumps({
                 "Message": "Failed to provide parameters"
             })
         }
+    
+    try: 
+        # Call Function
+        res = addVisitEntry(request)
 
-    return {
-        'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-        'statusCode': 200,
-        'body':json.dumps({
-            "Message": "Success",
-            "Verification": res
-        })
-    }
+        # Send response
+        return {
+            'headers': HEADERS,
+            'statusCode': 200,
+            'body':json.dumps(res)
+        }
+
+    except Exception as e:
+        # Return exception with response
+        return {
+            'headers': HEADERS,
+            'statusCode': 500,
+            'body': json.dumps({
+                'Message': str(e)
+            })
+        }
