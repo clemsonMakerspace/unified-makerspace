@@ -46,7 +46,7 @@ def handler(request, context):
     HEADERS = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': 'visit.cumaker.space',
+                'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             }
 
