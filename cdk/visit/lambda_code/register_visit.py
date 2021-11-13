@@ -4,15 +4,14 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import os
 
- # Get the service resource.
+# Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 # Get the table name. 
 TABLE_NAME = os.environ["TABLE_NAME"]
 # Get table objects
 visits = dynamodb.Table(TABLE_NAME)
 
-def addVisitEntry(data): 
-    current_user = json.loads(data["body"])["username"]
+def addVisitEntry(current_user): 
     
     # Get the current date at which the user logs in. 
     temp_date = datetime.datetime.now()
@@ -20,13 +19,15 @@ def addVisitEntry(data):
     # Current date formatting MM/DD/YYYY.  
     visit_date = str((temp_date.month)) + "/" + str((temp_date.day)) + "/" + str((temp_date.year))
 
-    # Create the dynamodb item to put in the table. 
-    new_visit = {
-        "PK" : visit_date, 
-        "SK" : current_user
-    }
     # Add the item to the table. 
-    visits.put_item(Item = new_visit)
+    response = visits.put_item(
+        Item = {
+            'PK' : visit_date,
+            'SK' : current_user
+        },
+    )
+
+    return response['ResponseMetadata']['HTTPStatusCode']
 
 
 def handler(request, context):
@@ -49,6 +50,7 @@ def handler(request, context):
                 'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             }
+    
 
     if (request is None):
         return {
@@ -60,14 +62,15 @@ def handler(request, context):
         }
     
     try: 
+        # Get the username from the request body.
+        username = json.loads(request["body"])["username"]
         # Call Function
-        res = addVisitEntry(request)
+        res = addVisitEntry(username)
 
         # Send response
         return {
             'headers': HEADERS,
-            'statusCode': 200,
-            'body':json.dumps(res)
+            'statusCode': res,
         }
 
     except Exception as e:
