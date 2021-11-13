@@ -14,10 +14,7 @@ visits = dynamodb.Table(TABLE_NAME)
 def addVisitEntry(current_user): 
     
     # Get the current date at which the user logs in. 
-    temp_date = datetime.datetime.now()
-
-    # Current date formatting MM/DD/YYYY.  
-    visit_date = str((temp_date.month)) + "/" + str((temp_date.day)) + "/" + str((temp_date.year))
+    visit_date = datetime.datetime.now().timestamp()
 
     # Add the item to the table. 
     response = visits.put_item(
