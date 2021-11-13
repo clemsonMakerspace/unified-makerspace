@@ -22,20 +22,11 @@ const UserForm = (props: Props) => {
         body:JSON.stringify(param)
       }).then(response => {
         if (response.ok) {
-          return response.json().then(data => ({status: response.status, body: data}))
-        } else {
-          throw new Error("Something went wrong.");
-        }
-      }).then((obj) => {
-        if (obj.status === 200) {
           if (props.handleSignInMessage) props.handleSignInMessage(true);
         } else {
           if (props.handleSignInMessage) props.handleSignInMessage(false);
         }
-      }).catch((error) => {
-        if (props.handleSignInMessage) props.handleSignInMessage(false);
-        }
-      )
+      });
       setIsLoading(true);
     }
     event.preventDefault()
