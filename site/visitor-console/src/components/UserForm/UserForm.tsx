@@ -26,7 +26,7 @@ const UserForm = (props: Props) => {
         } else {
           if (props.handleSignInMessage) props.handleSignInMessage(false);
         }
-      });
+      }).catch(error => {if (props.handleSignInMessage) props.handleSignInMessage(false)});
       setIsLoading(true);
     }
     event.preventDefault()
