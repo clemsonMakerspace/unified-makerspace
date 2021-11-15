@@ -36,7 +36,7 @@ class SharedApiGateway(core.Stack):
     """
 
     def __init__(self, scope: core.Construct, stage: str,
-                 visitors: aws_lambda.Function, *, env: core.Environment, create_dns: bool, zones: MakerspaceDns = None):
+                 visitors: aws_lambda.Function, register: aws_lambda.Function, *, env: core.Environment, create_dns: bool, zones: MakerspaceDns = None):
 
         super().__init__(scope, f'SharedApiGateway-{stage}', env=env)
 
@@ -46,6 +46,7 @@ class SharedApiGateway(core.Stack):
         self.create_rest_api()
 
         self.route_visitors(visitors)
+        self.route_registration(register)
 
     def create_rest_api(self):
 
@@ -68,3 +69,11 @@ class SharedApiGateway(core.Stack):
         self.visit = self.api.root.add_resource('visit')
 
         self.visit.add_method('POST', register_visit)
+
+    def route_registration(self, register: aws_lambda.Function):
+
+        register_user = aws_apigateway.LambdaIntegration(register)
+
+        self.register = self.api.root.add_resource('register')
+
+        self.register.add_method('POST', register_user)

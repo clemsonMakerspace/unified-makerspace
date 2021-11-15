@@ -34,7 +34,8 @@ class MakerspaceStack(core.Stack):
 
         self.visitors_stack()
 
-        self.database.table.grant_write_data(self.visit.lambda_)
+        self.database.table.grant_read_write_data(self.visit.lambda_visit)
+        self.database.table.grant_write_data(self.visit.lambda_register)
 
         self.shared_api_gateway()
 
@@ -62,7 +63,7 @@ class MakerspaceStack(core.Stack):
     def shared_api_gateway(self):
 
         self.api_gateway = SharedApiGateway(
-            self.app, self.stage, self.visit.lambda_, env=self.env, zones=self.dns, create_dns=self.create_dns)
+            self.app, self.stage, self.visit.lambda_visit, self.visit.lambda_register, env=self.env, zones=self.dns, create_dns=self.create_dns)
 
         self.add_dependency(self.api_gateway)
 

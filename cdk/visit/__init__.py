@@ -49,6 +49,7 @@ class Visit(core.Stack):
         self.cloudfront_distribution()
 
         self.register_visit_lambda(table_name)
+        self.register_user_lambda(table_name)
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -88,7 +89,7 @@ class Visit(core.Stack):
 
     def register_visit_lambda(self, table_name: str):
 
-        self.lambda_ = aws_lambda.Function(self,
+        self.lambda_visit = aws_lambda.Function(self,
                                            'RegisterVisitLambda',
                                            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
                                            code=aws_lambda.Code.from_asset(
@@ -98,3 +99,16 @@ class Visit(core.Stack):
                                            },
                                            handler='register_visit.handler',
                                            runtime=aws_lambda.Runtime.PYTHON_3_9)
+
+    def register_user_lambda(self, table_name: str):
+
+        self.lambda_register = aws_lambda.Function(self,
+                                            'RegisterUserLambda',
+                                            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+                                            code=aws_lambda.Code.from_asset(
+                                                'visit/lambda_code'),
+                                            environment={
+                                                'TABLE_NAME': table_name,
+                                            },
+                                            handler='register_user.handler',
+                                            runtime=aws_lambda.Runtime.PYTHON_3_9)
