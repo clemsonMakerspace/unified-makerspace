@@ -120,11 +120,11 @@ def connectToAWS(cardID):
     arguments.
     """
 
-    ###############################################################################
+    ##########################################################################
     #                                                                             #
     #  BELOW IS CODE TO CONNECT TO THE IOT TOPIC AND SEND A MESSAGE TO THE TOPIC  #
     #                                                                             #
-    ###############################################################################
+    ##########################################################################
 
     print("Setting up AWS Connections...\n")
 
@@ -162,11 +162,11 @@ def connectToAWS(cardID):
     subscribe_result = subscribe_future.result()
     print("> Subscribed with {}\n".format(str(subscribe_result['qos'])))
 
-    ################################################################################
+    ##########################################################################
     #                                                                              #
     #  BELOW IS WHAT SHOULD BE EDITED TO CHANGE WHAT MESSAGE IS SENT TO THE TOPIC  #
     #                                                                              #
-    ################################################################################
+    ##########################################################################
 
     # Message JSON <<THIS IS WHAT GETS SENT TO THE TOPIC>>
     msg = {
