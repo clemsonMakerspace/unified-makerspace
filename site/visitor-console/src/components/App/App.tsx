@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, ReactElement } from 'react';
+import { useState } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
@@ -21,33 +21,34 @@ export interface Props {
 
 const App = () => {
 
-  const [appMode, setAppMode]: [State, Dispatch<SetStateAction<State>>] = useState<State>(State.MAIN)
+  const [appMode, setAppMode] = useState(State.MAIN)
 
-  const handleClemsonUser = (): void => {
+  const handleClemsonUser = ():void => {
     setAppMode(State.CLEMSON);
   }
 
-  const handleGuestUser = (): void  => {
+  const handleGuestUser = ():void  => {
     setAppMode(State.GUEST);
   }
 
-  const handleSignInMessage = (isIn: boolean): void  => {
+  const handleSignInMessage = (isIn: boolean):void  => {
     isIn ? setAppMode(State.SIGN_IN) : setAppMode(State.FAILED_SIGN_IN)
   }
 
-  const handleBack = (): void  => {
+  const handleBack = ():void  => {
     setAppMode(State.MAIN);
   }
 
 
 
-  let render: ReactElement = (
-    <ModeSelect 
-      handleClemsonUser={handleClemsonUser} 
-      handleGuestUser={handleGuestUser}/>
-  );
-
-  if (appMode === State.CLEMSON) {
+  let render;
+  if (appMode === State.MAIN) {
+    render = (
+      <ModeSelect 
+        handleClemsonUser={handleClemsonUser} 
+        handleGuestUser={handleGuestUser}/>
+    )
+  } else if (appMode === State.CLEMSON) {
     render = (
       <UserForm handleSignInMessage={handleSignInMessage}
       handleBack={handleBack} mode={appMode}></UserForm>
