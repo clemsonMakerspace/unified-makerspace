@@ -83,6 +83,8 @@ class Visit(core.Stack):
             viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
         kwargs['default_root_object'] = "index.html"
 
+        kwargs['price_class'] = aws_cloudfront.PriceClass.PRICE_CLASS_100
+
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
