@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { Dispatch, ReactElement, SetStateAction, useState } from 'react';
 import { State, Props } from '../App/App'
 
 
 const UserForm = (props: Props) => {
-  const [userName, setUserName] = useState("");
-  const [inputError, setInputError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [userName, setUserName]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
+  const [inputError, setInputError]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
+  const [isLoading, setIsLoading]: [boolean, Dispatch<SetStateAction<boolean>>] = useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setUserName(event.currentTarget.value);
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     if (userName.trim() === "") {
       setInputError(errorMessage);
     } else {
@@ -33,16 +33,17 @@ const UserForm = (props: Props) => {
     setUserName("");
   }
 
-  let title;
-  let placeholder;
-  let errorMessage: string;
+  let title: ReactElement = <h3 className="text-light">
+    {props.mode === State.CLEMSON ? "Clemson User Login" :
+    props.mode === State.GUEST ? "Guest User Login" : ''}
+    </h3>;
+  let placeholder: string = '';
+  let errorMessage: string = '';
   
   if (props.mode === State.CLEMSON) {
-    title = <h3 className="text-light">Clemson User Login</h3>;
     placeholder = "Username";
     errorMessage = "Please enter your username.";
   } else if (props.mode === State.GUEST) {
-    title = <h3 className="text-light">Guest User Login</h3>;
     placeholder = "Email Address"
     errorMessage = "Please enter an email address."
   }

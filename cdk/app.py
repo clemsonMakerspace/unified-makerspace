@@ -43,6 +43,7 @@ dev_environment = accounts.get(stage)
 if dev_environment:
     MakerspaceStack(app, 'Dev', env=accounts[stage])
 else:
-    print(f'Not creating dev stack: could not locate stage={stage} for user={user}')
+    print(
+        f'Not creating dev stack: could not locate stage={stage} for user={user}')
 
 app.synth()
