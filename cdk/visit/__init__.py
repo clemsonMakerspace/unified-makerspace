@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_cloudfront_origins,
     aws_lambda,
     aws_s3,
+    aws_iam,
 )
 
 from dns import MakerspaceDns
@@ -91,6 +92,10 @@ class Visit(core.Stack):
 
     def register_visit_lambda(self, table_name: str):
 
+        policy_statement = aws_iam.PolicyStatement(effect=aws_iam.Effect.ALLOW)
+        policy_statement.add_actions("ses:SendEmail")
+        policy_statement.add_all_resources()
+
         self.lambda_visit = aws_lambda.Function(self,
                                            'RegisterVisitLambda',
                                            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
@@ -101,6 +106,9 @@ class Visit(core.Stack):
                                            },
                                            handler='register_visit.handler',
                                            runtime=aws_lambda.Runtime.PYTHON_3_9)
+                                            # role = my_role)
+        
+        self.lambda_visit.role.add_to_policy(policy_statement)
 
     def register_user_lambda(self, table_name: str):
 

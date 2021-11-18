@@ -11,16 +11,39 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 users = dynamodb.Table(TABLE_NAME)
 
 def addUserInfo(user_info): 
+
+    # Get the current date at which the user registers. 
+    temp_date = datetime.datetime.now()
+
+    # Current date formatting is for semester therefore we'll need to calculate it by the month.
+    # One could get more granular and calculate it by the day but due to time constraints I will 
+    # calculate it by the month.   
+    semester = ""
+    register_month = temp_date.month
+    
+    # If it is before may it is Spring
+    if (register_month < 5): semester = f"Spring of {temp_date.year}"
+
+    # If it is after July it is Fall   
+    else if (register_month > 7): semester = f"Fall of {temp_date.year}"
+    
+    # If it is none of the above it is Summer
+    else: semester = f"Summer of {temp_date.year}"
+    
+    visit_date = str((temp_date.month)) + "/" + str((temp_date.day)) + "/" + str((temp_date.year))
+
     response = visits.put_item(
         Item = {
-            #'PK' : user_info['username'],
-            #'SK' : user_info['firstName'],
-            #'lastName' : user_info['lastName'],
-            #'Gender' : user_info['Gender'],
-            #'DOB' : user_info['DOB'],
-            #'Grad_date' : user_info['Grad_date']
-            #'Major' : user_info['Major']
-            #'Minor' : user_info['Minor']
+            'PK' : semester,
+            'SK' : user_info['username'],
+            'firstName' user_info['firstName'],
+            'lastName' : user_info['lastName'],
+            'Gender' : user_info['Gender'],
+            'DOB' : user_info['DOB'],
+            'Grad_date' : user_info['Grad_date'],
+            'Major' : user_info['Major'],
+            'Minor' : user_info['Minor']
+            
         },
     )
 
@@ -52,7 +75,7 @@ def handler(request, context):
         # Send response
         return { 
             'headers' : HEADERS,
-            'statusCode' : response,
+            'statusCode' : response
         }
 
     except Exception as e:
