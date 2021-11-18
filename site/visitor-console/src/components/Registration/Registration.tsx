@@ -1,6 +1,7 @@
 import { State, Props } from '../App/App';
 import React, { useState, Dispatch, SetStateAction } from 'react';
 import Select, { MultiValue } from 'react-select';
+import { Link } from 'react-router-dom';
 
 const Registration = (props: Props) => {
     const [firstname, setFirstname]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
@@ -105,6 +106,10 @@ const Registration = (props: Props) => {
     }
   
     return (
+        <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
+        <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
+        <div className="d-flex justify-content-center">
+
         <div className="text-light">{"Please FIll in Registration Information"}
             <form onSubmit={handleSubmit}>
                 <div>
@@ -157,10 +162,13 @@ const Registration = (props: Props) => {
                 </div>
                 <div className="d-flex justify-content-start">
                     <button type="submit" className="btn btn-secondary mr-5">Register</button>
-                    <button className="btn btn-link text-light" onClick={props.handleBack}>Cancel</button>
+                    <Link to="/"><button className="btn btn-link text-light">Cancel</button></Link>
                 </div>
             </form>
         </div>
+
+        </div>
+    </div>
     );
 }
  
