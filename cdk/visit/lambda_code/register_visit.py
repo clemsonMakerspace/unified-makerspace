@@ -19,7 +19,7 @@ def checkRegistration(current_user):
         KeyConditionExpression = Key('PK').eq(current_user)
     )
     return response
-
+"""
 # This code was written following the example from: 
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
 def registrationWorkflow(current_user):
@@ -75,7 +75,7 @@ def registrationWorkflow(current_user):
     # Display an error if something goes wrong.	
     except ClientError as e:
         print(e.response['Error']['Message'])
-
+"""
 
 def addVisitEntry(current_user): 
     
@@ -134,8 +134,8 @@ def handler(request, context):
         registration = checkRegistration(username)
 
         # If the user is not in the system, send a registration link. 
-        #if registration == False:
-        registrationWorkflow(username)
+        #if registration != 200:
+        #registrationWorkflow(username)
             # One could consider setting res = some other number here in order to 
             # bring up a page That lets the user know in order to sign in they 
             # have to check their email and register with the Makerspace. 
