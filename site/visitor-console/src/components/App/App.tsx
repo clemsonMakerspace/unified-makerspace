@@ -44,12 +44,14 @@ const App = () => {
 
 
   // let render: ReactElement = (
-  //   <ModeSelect 
-  //     handleClemsonUser={handleClemsonUser} 
-  //     handleGuestUser={handleGuestUser}/>
+    // <ModeSelect 
+    //   handleClemsonUser={handleClemsonUser} 
+    //   handleGuestUser={handleGuestUser}/>
   // );
   let render: ReactElement = (
-    <Registration/>
+    <ModeSelect 
+    handleClemsonUser={handleClemsonUser} 
+    handleGuestUser={handleGuestUser}/>
   );
   if (appMode === State.CLEMSON) {
     render = (
