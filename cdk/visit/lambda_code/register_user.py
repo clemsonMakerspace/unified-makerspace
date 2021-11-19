@@ -36,14 +36,13 @@ def addUserInfo(user_info):
         Item = {
             'PK' : semester,
             'SK' : user_info['username'],
-            'firstName' user_info['firstName'],
+            'firstName' : user_info['firstName'],
             'lastName' : user_info['lastName'],
             'Gender' : user_info['Gender'],
             'DOB' : user_info['DOB'],
             'Grad_date' : user_info['Grad_date'],
             'Major' : user_info['Major'],
-            'Minor' : user_info['Minor']
-            
+            'Minor' : user_info['Minor'] 
         },
     )
 
