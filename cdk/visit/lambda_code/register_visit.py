@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 import random
 import os
-
+import re
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
 # Get the table name. 
@@ -27,7 +27,8 @@ def registrationWorkflow(current_user):
     # This address must be verified with Amazon SES.
     SENDER = "ddejesu@g.clemson.edu"
     
-    if(len(current_user) < 8):
+    email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
+    if not email_regex.match(current_user):
         current_user = current_user + "@clemson.edu"
     
     RECIPIENT = current_user
