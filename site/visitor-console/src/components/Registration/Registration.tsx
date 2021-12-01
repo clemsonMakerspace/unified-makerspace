@@ -103,6 +103,34 @@ const Registration = (props: Props) => {
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+        const params = {
+            username: "username",
+            firstName: firstname,
+            lastName: lastname,
+            Gender: gender,
+            DOB: birthday,
+            Grad_Date: expGradDate,
+            Major: majors,
+            Minor: minors
+        };
+        fetch("https://api.cumaker.space/register", {
+            method:"post",
+            body:JSON.stringify(params)
+        }).then(response => {
+            if (response.ok) {
+                alert("Registration successful");
+            } else {
+                alert("Registration unsuccessful");
+            }
+        })
+        event.preventDefault();
+        setFirstname("");
+        setLastname("");
+        setGender("");
+        setBirthday("");
+        setExpGradDate("");
+        setMajors([]);
+        setMinors([]);
     }
   
     return (
