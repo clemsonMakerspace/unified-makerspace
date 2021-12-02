@@ -3,14 +3,14 @@ import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
 import Registration from '../Registration/Registration';
+import { Routes, Route } from "react-router-dom";
 
 export enum State {
   MAIN,
   CLEMSON,
   GUEST,
   SIGN_IN,
-  FAILED_SIGN_IN,
-  REGISTRATION
+  FAILED_SIGN_IN
 }
 
 export interface Props {
@@ -42,12 +42,6 @@ const App = () => {
   }
 
 
-
-  // let render: ReactElement = (
-    // <ModeSelect 
-    //   handleClemsonUser={handleClemsonUser} 
-    //   handleGuestUser={handleGuestUser}/>
-  // );
   let render: ReactElement = (
     <ModeSelect 
     handleClemsonUser={handleClemsonUser} 
@@ -74,12 +68,17 @@ const App = () => {
   }
   
   return (
-    <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
-      <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
-      <div className="d-flex justify-content-center">
-        {render}
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={
+        <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
+          <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
+          <div className="d-flex justify-content-center">
+            {render}
+          </div>
+        </div>
+      } />
+      <Route path="register" element={<Registration />} />
+    </Routes>
   )
 };
 

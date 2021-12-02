@@ -86,7 +86,7 @@ def addVisitEntry(current_user):
     # Add the item to the table. 
     response = visits.put_item(
         Item = {
-            'PK' : visit_date,
+            'PK' : str(visit_date),
             'SK' : current_user
         },
     )

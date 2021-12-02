@@ -4,8 +4,7 @@ import './styles/style.scss';
 import App from './components/App/App';
 import bg from './asset/background.webp'
 import logo from './asset/makerspace_logo.webp'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Registration from './components/Registration/Registration';
+import { BrowserRouter as Router} from 'react-router-dom';
 
 document.body.className="bg-dark";
 
@@ -14,10 +13,7 @@ ReactDOM.render(
     <div style={{backgroundImage: `url(${bg})`, height: "100%"}}>
     <img src={logo} />
     <Router>
-      <Routes>
-        <Route path="/register" element={<Registration />}/>
-        <Route path="*" element={<App />}/>
-      </Routes>
+      <App />
     </Router>
     </div>
   </React.StrictMode>,
