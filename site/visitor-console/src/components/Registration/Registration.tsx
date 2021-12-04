@@ -4,6 +4,7 @@ import Select, { MultiValue } from 'react-select';
 import { Link } from 'react-router-dom';
 
 const Registration = (props: Props) => {
+    const [username, setUsername]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [firstname, setFirstname]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [lastname, setLastname]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [gender, setGender]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
@@ -80,6 +81,9 @@ const Registration = (props: Props) => {
                     "Wildlife and Fisheries Biology", "Women's Leadership", "Writing", 
                     "Youth Development Studies"].map(d => {return {value: d, label: d}});;
 
+    const handleUsernameInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setUsername(event.currentTarget.value);
+    }
     const handleFirstnameInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setFirstname(event.currentTarget.value);
     }
@@ -104,7 +108,7 @@ const Registration = (props: Props) => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         const params = {
-            username: "username",
+            username: username,
             firstName: firstname,
             lastName: lastname,
             Gender: gender,
@@ -124,6 +128,8 @@ const Registration = (props: Props) => {
             }
         })
         event.preventDefault();
+
+        setUsername("");
         setFirstname("");
         setLastname("");
         setGender("");
@@ -131,16 +137,23 @@ const Registration = (props: Props) => {
         setExpGradDate("");
         setMajors([]);
         setMinors([]);
+
+
     }
   
     return (
-        <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
-        <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
+        <div className="container bg-primary p-5 rounded" style={{height: "500px"}}>
+        <h1 className="text-secondary fw-bold mb-4 text-center">Register to the Makerspace!</h1>
         <div className="d-flex justify-content-center">
 
         <div className="text-light">{"Please FIll in Registration Information"}
             <form onSubmit={handleSubmit}>
                 <div>
+                    <input type={"text"} 
+                    value={username} 
+                    onChange={handleUsernameInput} 
+                    placeholder={"username"}/>
+                    <br/>
                     <input type={"text"} 
                     value={firstname} 
                     onChange={handleFirstnameInput} 
