@@ -113,7 +113,7 @@ const Registration = (props: Props) => {
             Major: majors,
             Minor: minors
         };
-        fetch("https://api.cumaker.space/register", {
+        fetch("https://d1o39u66ph.execute-api.us-east-1.amazonaws.com/prod/register", {
             method:"post",
             body:JSON.stringify(params)
         }).then(response => {
@@ -151,7 +151,7 @@ const Registration = (props: Props) => {
                     placeholder={"lastname"}/>
                     <br/>
                     <label>Gender:
-                        <Select
+                        <Select className="text-black"
                         options={genderOptions}
                         onChange={handleGenderInput}
                         />
