@@ -172,7 +172,7 @@ const Registration = (props: Props) => {
                     </label>
                     <br/>
                     <label>Major(s):
-                        <Select
+                        <Select className="text-black"
                         options={majorOptions}
                         onChange={handleMajorInput}
                         isMulti
@@ -180,7 +180,7 @@ const Registration = (props: Props) => {
                         />
                     </label>
                     <label>Minor(s):
-                        <Select
+                        <Select className="text-black"
                         options={minorOptions}
                         onChange={handleMinorInput}
                         isMulti
