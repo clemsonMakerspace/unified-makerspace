@@ -12,6 +12,7 @@ const Registration = (props: Props) => {
     const [expGradDate, setExpGradDate]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [majors, setMajors]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
     const [minors, setMinors]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
+    const [registerSuccess, setRegisterSuccess]: [boolean, Dispatch<SetStateAction<boolean>>] = useState<boolean>(false);
 
     interface selectOption {
         value: string;
@@ -114,19 +115,22 @@ const Registration = (props: Props) => {
             Gender: gender,
             DOB: birthday,
             Grad_Date: expGradDate,
-            Major: majors,
-            Minor: minors
+            Major: majors.toString(),
+            Minor: minors.toString()
         };
-        fetch("https://d1o39u66ph.execute-api.us-east-1.amazonaws.com/prod/register", {
+        
+        fetch("https://api.cumaker.space/register", {
             method:"post",
             body:JSON.stringify(params)
         }).then(response => {
             if (response.ok) {
-                alert("Registration successful");
+                setRegisterSuccess(true);
             } else {
+                
                 alert("Registration unsuccessful");
             }
         })
+        
         event.preventDefault();
 
         setUsername("");
@@ -140,77 +144,88 @@ const Registration = (props: Props) => {
 
 
     }
-  
-    return (
-        <div className="container bg-primary p-5 rounded" style={{height: "500px"}}>
-        <h1 className="text-secondary fw-bold mb-4 text-center">Register to the Makerspace!</h1>
-        <div className="d-flex justify-content-center">
 
-        <div className="text-light">{"Please FIll in Registration Information"}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input type={"text"} 
-                    value={username} 
-                    onChange={handleUsernameInput} 
-                    placeholder={"username"}/>
-                    <br/>
-                    <input type={"text"} 
-                    value={firstname} 
-                    onChange={handleFirstnameInput} 
-                    placeholder={"firstname"}/>
-                    <input type={"text"} 
-                    value={lastname} 
-                    onChange={handleLastnameInput} 
-                    placeholder={"lastname"}/>
-                    <br/>
-                    <label>Gender:
-                        <Select className="text-black"
-                        options={genderOptions}
-                        onChange={handleGenderInput}
-                        />
-                    </label>
-                    <br/>
-                    <label>Birthday:
-                        <input type={"date"} 
-                        value={birthday} 
-                        onChange={handleBirthdayInput} 
-                        placeholder={"birthday"}/>
-                    </label>
-                    <br/>
-                    <label>Expected Graduation Date:
-                        <input type={"date"} 
-                        value={expGradDate} 
-                        onChange={handleExpGradDateInput} 
-                        placeholder={"expGradDate"}/>
-                    </label>
-                    <br/>
-                    <label>Major(s):
-                        <Select className="text-black"
-                        options={majorOptions}
-                        onChange={handleMajorInput}
-                        isMulti
-                        isSearchable
-                        />
-                    </label>
-                    <label>Minor(s):
-                        <Select className="text-black"
-                        options={minorOptions}
-                        onChange={handleMinorInput}
-                        isMulti
-                        isSearchable
-                        />
-                    </label>
+    if (registerSuccess) {
+        return (
+            <div className="container bg-primary p-5 rounded text-center" style={{height: "150px"}}>
+                <h1 className="text-secondary">
+                Registration Successful
+                </h1>
+            </div>
+          );
+    } else {
+        return (
+            <div className="container bg-primary p-5 rounded" style={{height: "500px"}}>
+                <h1 className="text-secondary fw-bold mb-4 text-center">Register to the Makerspace!</h1>
+                <div className="d-flex justify-content-center">
+                    <div className="text-light">{"Please FIll in Registration Information"}
+                        <form onSubmit={handleSubmit}>
+                            <div>
+                                <input type={"text"} 
+                                value={username} 
+                                onChange={handleUsernameInput} 
+                                placeholder={"username"}/>
+                                <br/>
+                                <input type={"text"} 
+                                value={firstname} 
+                                onChange={handleFirstnameInput} 
+                                placeholder={"firstname"}/>
+                                <input type={"text"} 
+                                value={lastname} 
+                                onChange={handleLastnameInput} 
+                                placeholder={"lastname"}/>
+                                <br/>
+                                <label>Gender:
+                                    <Select className="text-black"
+                                    value={{value: gender, label: gender}}
+                                    options={genderOptions}
+                                    onChange={handleGenderInput}
+                                    />
+                                </label>
+                                <br/>
+                                <label>Birthday:
+                                    <input type={"date"} 
+                                    value={birthday} 
+                                    onChange={handleBirthdayInput} 
+                                    placeholder={"birthday"}/>
+                                </label>
+                                <br/>
+                                <label>Expected Graduation Date:
+                                    <input type={"date"} 
+                                    value={expGradDate} 
+                                    onChange={handleExpGradDateInput} 
+                                    placeholder={"expGradDate"}/>
+                                </label>
+                                <br/>
+                                <label>Major(s):
+                                    <Select className="text-black"
+                                    value={majors.map(d => {return {value: d, label: d}})}
+                                    options={majorOptions}
+                                    onChange={handleMajorInput}
+                                    isMulti
+                                    isSearchable
+                                    />
+                                </label>
+                                <label>Minor(s):
+                                    <Select className="text-black"
+                                    value={minors.map(d => {return {value: d, label: d}})}
+                                    options={minorOptions}
+                                    onChange={handleMinorInput}
+                                    isMulti
+                                    isSearchable
+                                    />
+                                </label>
+                            </div>
+                            <div className="d-flex justify-content-start">
+                                <button type="submit" className="btn btn-secondary mr-5">Register</button>
+                                <Link to="/"><button className="btn btn-link text-light">Cancel</button></Link>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div className="d-flex justify-content-start">
-                    <button type="submit" className="btn btn-secondary mr-5">Register</button>
-                    <Link to="/"><button className="btn btn-link text-light">Cancel</button></Link>
-                </div>
-            </form>
-        </div>
-
-        </div>
-    </div>
-    );
+            </div>
+        );
+    }
 }
  
 export default Registration;
