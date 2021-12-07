@@ -73,19 +73,28 @@ class Visit(core.Stack):
         if self.create_dns:
             domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
-            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(self, 'VisitorsCertificate',
-                                                                                   domain_name=domain_name,
-                                                                                   hosted_zone=self.zones.visit)
+            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(
+                self, 'VisitorsCertificate', domain_name=domain_name, hosted_zone=self.zones.visit)
 
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
             origin=aws_cloudfront_origins.S3Origin(
                 bucket=self.bucket,
-                origin_access_identity=self.oai
-            ),
+                origin_access_identity=self.oai),
             viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
         kwargs['default_root_object'] = "index.html"
 
         kwargs['price_class'] = aws_cloudfront.PriceClass.PRICE_CLASS_100
+
+        # This error response redirect back to index.html because React handles everything in a page
+        # including routing. when you add /register after the domain, there would be such key avaliable
+        # in the static site. We need cloudfront redirect it back to index.html for React to
+        # handle the routing.
+        kwargs['error_responses'] = [aws_cloudfront.ErrorResponse(
+            http_status=404,
+            response_http_status=200,
+            response_page_path="/index.html",
+            ttl=core.Duration.seconds(10)
+        )]
 
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
@@ -96,29 +105,29 @@ class Visit(core.Stack):
         policy_statement.add_actions("ses:SendEmail")
         policy_statement.add_all_resources()
 
-        self.lambda_visit = aws_lambda.Function(self,
-                                           'RegisterVisitLambda',
-                                           function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-                                           code=aws_lambda.Code.from_asset(
-                                               'visit/lambda_code'),
-                                           environment={
-                                               'TABLE_NAME': table_name,
-                                           },
-                                           handler='register_visit.handler',
-                                           runtime=aws_lambda.Runtime.PYTHON_3_9)
-                                            # role = my_role)
-        
+        self.lambda_visit = aws_lambda.Function(
+            self,
+            'RegisterVisitLambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('visit/lambda_code'),
+            environment={
+                'TABLE_NAME': table_name,
+            },
+            handler='register_visit.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
+        # role = my_role)
+
         self.lambda_visit.role.add_to_policy(policy_statement)
 
     def register_user_lambda(self, table_name: str):
 
-        self.lambda_register = aws_lambda.Function(self,
-                                            'RegisterUserLambda',
-                                            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-                                            code=aws_lambda.Code.from_asset(
-                                                'visit/lambda_code'),
-                                            environment={
-                                                'TABLE_NAME': table_name,
-                                            },
-                                            handler='register_user.handler',
-                                            runtime=aws_lambda.Runtime.PYTHON_3_9)
+        self.lambda_register = aws_lambda.Function(
+            self,
+            'RegisterUserLambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('visit/lambda_code'),
+            environment={
+                'TABLE_NAME': table_name,
+            },
+            handler='register_user.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)

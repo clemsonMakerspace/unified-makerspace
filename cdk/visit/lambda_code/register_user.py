@@ -19,12 +19,12 @@ def addUserInfo(user_info):
     response = users.put_item(
         Item = {
             'PK' : user_info['username'],
-            'SK' : int(timestamp),
+            'SK' : str(timestamp),
             'firstName' : user_info['firstName'],
             'lastName' : user_info['lastName'],
             'Gender' : user_info['Gender'],
             'DOB' : user_info['DOB'],
-            'Grad_date' : user_info['Grad_date'],
+            'Grad_date' : user_info['Grad_Date'],
             'Major' : user_info['Major'],
             'Minor' : user_info['Minor'] 
         },
@@ -38,7 +38,7 @@ def handler(request, context):
     HEADERS = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': 'https://visit.cumaker.space/register',
+                'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             }
     if (request is None):
