@@ -17,7 +17,7 @@ const UserForm = (props: Props) => {
     } else {
       setInputError("");
       const param = {username: userName};
-      fetch("https://api.cumaker.space/visit", {
+      fetch("https://d1o39u66ph.execute-api.us-east-1.amazonaws.com/prod/visit", {
         method:"post",
         body:JSON.stringify(param)
       }).then(response => {
