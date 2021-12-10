@@ -141,8 +141,6 @@ const Registration = (props: Props) => {
         setExpGradDate("");
         setMajors([]);
         setMinors([]);
-
-
     }
 
     if (registerSuccess) {
