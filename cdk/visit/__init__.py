@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_cloudfront_origins,
     aws_lambda,
     aws_s3,
+    aws_iam,
 )
 
 from dns import MakerspaceDns
@@ -48,7 +49,8 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.register_visit_lambda(table_name)
+        self.log_visit_lambda(table_name)
+        self.register_user_lambda(table_name)
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -71,32 +73,58 @@ class Visit(core.Stack):
         if self.create_dns:
             domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
-            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(self, 'VisitorsCertificate',
-                                                                                   domain_name=domain_name,
-                                                                                   hosted_zone=self.zones.visit)
+            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(
+                self, 'VisitorsCertificate', domain_name=domain_name, hosted_zone=self.zones.visit)
 
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
             origin=aws_cloudfront_origins.S3Origin(
                 bucket=self.bucket,
-                origin_access_identity=self.oai
-            ),
+                origin_access_identity=self.oai),
             viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
         kwargs['default_root_object'] = "index.html"
 
         kwargs['price_class'] = aws_cloudfront.PriceClass.PRICE_CLASS_100
 
+        # This error response redirect back to index.html because React handles everything in a page
+        # including routing. when you add /register after the domain, there would be such key avaliable
+        # in the static site. We need cloudfront redirect it back to index.html for React to
+        # handle the routing.
+        kwargs['error_responses'] = [aws_cloudfront.ErrorResponse(
+            http_status=404,
+            response_http_status=200,
+            response_page_path="/index.html",
+            ttl=core.Duration.seconds(10)
+        )]
+
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def register_visit_lambda(self, table_name: str):
+    def log_visit_lambda(self, table_name: str):
 
-        self.lambda_ = aws_lambda.Function(self,
-                                           'RegisterVisitLambda',
-                                           function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-                                           code=aws_lambda.Code.from_asset(
-                                               'visit/lambda_code'),
-                                           environment={
-                                               'TABLE_NAME': table_name,
-                                           },
-                                           handler='register_visit.handler',
-                                           runtime=aws_lambda.Runtime.PYTHON_3_9)
+        sending_authorization_policy = aws_iam.PolicyStatement(effect=aws_iam.Effect.ALLOW)
+        sending_authorization_policy.add_actions("ses:SendEmail")
+        sending_authorization_policy.add_all_resources()
+
+        self.lambda_visit = aws_lambda.Function(
+            self,
+            'LogVisitLambda',
+            code=aws_lambda.Code.from_asset('visit/lambda_code'),
+            environment={
+                'TABLE_NAME': table_name,
+            },
+            handler='log_visit.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
+
+        self.lambda_visit.role.add_to_policy(sending_authorization_policy)
+
+    def register_user_lambda(self, table_name: str):
+
+        self.lambda_register = aws_lambda.Function(
+            self,
+            'RegisterUserLambda',
+            code=aws_lambda.Code.from_asset('visit/lambda_code'),
+            environment={
+                'TABLE_NAME': table_name,
+            },
+            handler='register_user.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)

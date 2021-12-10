@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction, ReactElement } from 'react';
 import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
+import Registration from '../Registration/Registration';
+import { Routes, Route } from "react-router-dom";
 
 export enum State {
   MAIN,
@@ -21,34 +23,31 @@ export interface Props {
 
 const App = () => {
 
-  const [appMode, setAppMode] = useState(State.MAIN)
+  const [appMode, setAppMode]: [State, Dispatch<SetStateAction<State>>] = useState<State>(State.MAIN)
 
-  const handleClemsonUser = ():void => {
+  const handleClemsonUser = (): void => {
     setAppMode(State.CLEMSON);
   }
 
-  const handleGuestUser = ():void  => {
+  const handleGuestUser = (): void  => {
     setAppMode(State.GUEST);
   }
 
-  const handleSignInMessage = (isIn: boolean):void  => {
+  const handleSignInMessage = (isIn: boolean): void  => {
     isIn ? setAppMode(State.SIGN_IN) : setAppMode(State.FAILED_SIGN_IN)
   }
 
-  const handleBack = ():void  => {
+  const handleBack = (): void  => {
     setAppMode(State.MAIN);
   }
 
 
-
-  let render;
-  if (appMode === State.MAIN) {
-    render = (
-      <ModeSelect 
-        handleClemsonUser={handleClemsonUser} 
-        handleGuestUser={handleGuestUser}/>
-    )
-  } else if (appMode === State.CLEMSON) {
+  let render: ReactElement = (
+    <ModeSelect 
+    handleClemsonUser={handleClemsonUser} 
+    handleGuestUser={handleGuestUser}/>
+  );
+  if (appMode === State.CLEMSON) {
     render = (
       <UserForm handleSignInMessage={handleSignInMessage}
       handleBack={handleBack} mode={appMode}></UserForm>
@@ -67,14 +66,19 @@ const App = () => {
       <SignInCountDown handleBack={handleBack} mode={appMode}></SignInCountDown>
     )
   }
-
+  
   return (
-    <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
-      <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
-      <div className="d-flex justify-content-center">
-        {render}
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={
+        <div className="container bg-primary p-5 rounded" style={{height: "400px"}}>
+          <h1 className="text-secondary fw-bold mb-4 text-center">Visit the Makerspace!</h1>
+          <div className="d-flex justify-content-center">
+            {render}
+          </div>
+        </div>
+      } />
+      <Route path="register" element={<Registration />} />
+    </Routes>
   )
 };
 
