@@ -49,24 +49,13 @@ def handler(request, context):
                 "Message": "Failed to provide parameters"
             })
         }
-    try: 
-
-        # Get all of the user information from the json file
-        user_info = json.loads(request["body"])
-        # Call Function
-        response = addUserInfo(user_info)
-        # Send response
-        return { 
-            'headers' : HEADERS,
-            'statusCode' : response
-        }
-
-    except Exception as e:
-        # Return exception with response
-        return {
-            'headers': HEADERS,
-            'statusCode': 500,
-            'body': json.dumps({
-                'Message': str(e)
-            })
-        }
+    
+    # Get all of the user information from the json file
+    user_info = json.loads(request["body"])
+    # Call Function
+    response = addUserInfo(user_info)
+    # Send response
+    return { 
+        'headers' : HEADERS,
+        'statusCode' : response
+    }

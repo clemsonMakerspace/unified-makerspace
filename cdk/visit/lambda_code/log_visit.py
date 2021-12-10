@@ -6,9 +6,10 @@ from botocore.exceptions import ClientError
 import random
 import os
 import re
+
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
-# Get the table name. 
+# Get the table name.
 TABLE_NAME = os.environ["TABLE_NAME"]
 # Get table objects
 visits = dynamodb.Table(TABLE_NAME)
@@ -18,15 +19,15 @@ def checkRegistration(current_user):
     response = visits.query(
         KeyConditionExpression = Key('PK').eq(current_user)
     )
-    return response
+    return response['Count']
 
 # This code was written following the example from: 
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
 def registrationWorkflow(current_user):
 
     # This address must be verified with Amazon SES.
-    SENDER = "ddejesu@g.clemson.edu"
-    
+    SENDER = "no-reply@visit.cumaker.space"
+
     email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
     if not email_regex.match(current_user):
         current_user = current_user + "@clemson.edu"
@@ -41,7 +42,7 @@ def registrationWorkflow(current_user):
     SUBJECT = "Clemson University Makerspace Registration"
     BODY_TEXT = ("Hello " + current_user + ",\n" 
     "Our records indicate that you have not registered as an existing user.\n"
-    "please go to <LINK> to register as an existing user.\n"
+    "please go to visit.cumaker.space/register to register as an existing user.\n"
     )
     # The character encoding for the email.
     CHARSET = "UTF-8"
@@ -68,6 +69,7 @@ def registrationWorkflow(current_user):
                     'Data' : SUBJECT,
                 },
             },
+            ReplyToAddresses = [ "makerspace@clemson.edu" ],
             Source = SENDER,
             # If we were using a configuration set we would need the following line. 
             # ConfigurationSetName=CONFIGURATION_SET,
@@ -83,7 +85,7 @@ def addVisitEntry(current_user):
     # Get the current date at which the user logs in. 
     visit_date = datetime.datetime.now().timestamp()
 
-    # Add the item to the table. 
+    # Add the item to the table.
     response = visits.put_item(
         Item = {
             'PK' : str(visit_date),
@@ -96,16 +98,15 @@ def addVisitEntry(current_user):
 
 def handler(request, context):
     """
-    Register the input of a user (namely, the username) from the makerspace console.
+    Log the input of a user (namely, the username) from the makerspace console.
     This should:
     1. Check whether this user has visited before by looking for a
        sentinel record in the table
     2. Trigger a registration workflow if this is the first time for that user
     3. Place a visit entry into the table
     """
-    
     # return client error if no string params
-
+    
     HEADERS = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Headers': 'Content-Type',
@@ -124,7 +125,6 @@ def handler(request, context):
         }
     
     try: 
-
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
 
@@ -132,7 +132,7 @@ def handler(request, context):
         registration = checkRegistration(username)
 
         # If the user is not in the system, send a registration link. 
-        if registration != 200:
+        if registration == 0:
             registrationWorkflow(username)
             # One could consider setting res = some other number here in order to 
             # bring up a page That lets the user know in order to sign in they 

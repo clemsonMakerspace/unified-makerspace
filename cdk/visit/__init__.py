@@ -49,7 +49,7 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.register_visit_lambda(table_name)
+        self.log_visit_lambda(table_name)
         self.register_user_lambda(table_name)
 
     def source_bucket(self):
@@ -99,32 +99,29 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def register_visit_lambda(self, table_name: str):
+    def log_visit_lambda(self, table_name: str):
 
-        policy_statement = aws_iam.PolicyStatement(effect=aws_iam.Effect.ALLOW)
-        policy_statement.add_actions("ses:SendEmail")
-        policy_statement.add_all_resources()
+        sending_authorization_policy = aws_iam.PolicyStatement(effect=aws_iam.Effect.ALLOW)
+        sending_authorization_policy.add_actions("ses:SendEmail")
+        sending_authorization_policy.add_all_resources()
 
         self.lambda_visit = aws_lambda.Function(
             self,
-            'RegisterVisitLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            'LogVisitLambda',
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
             },
-            handler='register_visit.handler',
+            handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
-        # role = my_role)
 
-        self.lambda_visit.role.add_to_policy(policy_statement)
+        self.lambda_visit.role.add_to_policy(sending_authorization_policy)
 
     def register_user_lambda(self, table_name: str):
 
         self.lambda_register = aws_lambda.Function(
             self,
             'RegisterUserLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,

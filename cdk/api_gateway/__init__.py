@@ -64,11 +64,11 @@ class SharedApiGateway(core.Stack):
 
     def route_visitors(self, visitors: aws_lambda.Function):
 
-        register_visit = aws_apigateway.LambdaIntegration(visitors)
+        log_visit = aws_apigateway.LambdaIntegration(visitors)
 
         self.visit = self.api.root.add_resource('visit')
 
-        self.visit.add_method('POST', register_visit)
+        self.visit.add_method('POST', log_visit)
 
     def route_registration(self, register: aws_lambda.Function):
 
