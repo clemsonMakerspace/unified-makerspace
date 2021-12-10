@@ -14,15 +14,19 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 # Get table objects
 visits = dynamodb.Table(TABLE_NAME)
 
-# This function just runs a query to see if the username is in the table. 
-def checkRegistration(current_user): 
+# This function just runs a query to see if the username is in the table.
+
+
+def checkRegistration(current_user):
     response = visits.query(
-        KeyConditionExpression = Key('PK').eq(current_user)
+        KeyConditionExpression=Key('PK').eq(current_user)
     )
     return response['Count']
 
-# This code was written following the example from: 
+# This code was written following the example from:
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
+
+
 def registrationWorkflow(current_user):
 
     # This address must be verified with Amazon SES.
@@ -31,65 +35,65 @@ def registrationWorkflow(current_user):
     email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
     if not email_regex.match(current_user):
         current_user = current_user + "@clemson.edu"
-    
+
     RECIPIENT = current_user
 
-    # One could consider using a configuration set here. 
-    # To learn more about them please visit: 
+    # One could consider using a configuration set here.
+    # To learn more about them please visit:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/using-configuration-sets.html
 
     AWS_REGION = os.environ['AWS_REGION']
     SUBJECT = "Clemson University Makerspace Registration"
-    BODY_TEXT = ("Hello " + current_user + ",\n" 
-    "Our records indicate that you have not registered as an existing user.\n"
-    "please go to visit.cumaker.space/register to register as an existing user.\n"
-    )
+    BODY_TEXT = ("Hello " + current_user + ",\n"
+                 "Our records indicate that you have not registered as an existing user.\n"
+                 "please go to visit.cumaker.space/register to register as an existing user.\n"
+                 )
     # The character encoding for the email.
     CHARSET = "UTF-8"
     # Create a new SES resource and specify a region.
-    client = boto3.client('ses', region_name = AWS_REGION)
+    client = boto3.client('ses', region_name=AWS_REGION)
 
-    # Try to send the email. 
-    try: 
+    # Try to send the email.
+    try:
         response = client.send_email(
-            Destination = {
-                'ToAddresses' : [
+            Destination={
+                'ToAddresses': [
                     RECIPIENT,
                 ],
             },
-            Message = {
-                'Body' : {
-                    'Text' : {
-                        'Charset' : CHARSET,
-                        'Data' : BODY_TEXT,
+            Message={
+                'Body': {
+                    'Text': {
+                        'Charset': CHARSET,
+                        'Data': BODY_TEXT,
                     },
                 },
                 'Subject': {
                     'Charset': CHARSET,
-                    'Data' : SUBJECT,
+                    'Data': SUBJECT,
                 },
             },
-            ReplyToAddresses = [ "makerspace@clemson.edu" ],
-            Source = SENDER,
-            # If we were using a configuration set we would need the following line. 
+            ReplyToAddresses=["makerspace@clemson.edu"],
+            Source=SENDER,
+            # If we were using a configuration set we would need the following line.
             # ConfigurationSetName=CONFIGURATION_SET,
         )
 
-    # Display an error if something goes wrong.	
+    # Display an error if something goes wrong.
     except ClientError as e:
         print(e.response['Error']['Message'])
 
 
-def addVisitEntry(current_user): 
-    
-    # Get the current date at which the user logs in. 
+def addVisitEntry(current_user):
+
+    # Get the current date at which the user logs in.
     visit_date = datetime.datetime.now().timestamp()
 
     # Add the item to the table.
     response = visits.put_item(
-        Item = {
-            'PK' : str(visit_date),
-            'SK' : current_user
+        Item={
+            'PK': str(visit_date),
+            'SK': current_user
         },
     )
 
@@ -106,37 +110,36 @@ def handler(request, context):
     3. Place a visit entry into the table
     """
     # return client error if no string params
-    
+
     HEADERS = {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            }
-    
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+    }
 
     if (request is None):
         return {
             'headers': HEADERS,
             'statusCode': 400,
-            'body':json.dumps({
+            'body': json.dumps({
                 "Message": "Failed to provide parameters"
             })
         }
-    
-    try: 
+
+    try:
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
 
-        # Check if this user has registered before. 
+        # Check if this user has registered before.
         registration = checkRegistration(username)
 
-        # If the user is not in the system, send a registration link. 
+        # If the user is not in the system, send a registration link.
         if registration == 0:
             registrationWorkflow(username)
-            # One could consider setting res = some other number here in order to 
-            # bring up a page That lets the user know in order to sign in they 
-            # have to check their email and register with the Makerspace. 
+            # One could consider setting res = some other number here in order to
+            # bring up a page That lets the user know in order to sign in they
+            # have to check their email and register with the Makerspace.
 
         # Call Function
         res = addVisitEntry(username)

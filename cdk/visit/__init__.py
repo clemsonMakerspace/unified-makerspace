@@ -101,7 +101,8 @@ class Visit(core.Stack):
 
     def log_visit_lambda(self, table_name: str):
 
-        sending_authorization_policy = aws_iam.PolicyStatement(effect=aws_iam.Effect.ALLOW)
+        sending_authorization_policy = aws_iam.PolicyStatement(
+            effect=aws_iam.Effect.ALLOW)
         sending_authorization_policy.add_actions("ses:SendEmail")
         sending_authorization_policy.add_all_resources()
 
