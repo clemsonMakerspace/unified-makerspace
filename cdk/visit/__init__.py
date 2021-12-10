@@ -108,7 +108,8 @@ class Visit(core.Stack):
 
         self.lambda_visit = aws_lambda.Function(
             self,
-            'LogVisitLambda',
+            'RegisterVisitLambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
@@ -123,6 +124,7 @@ class Visit(core.Stack):
         self.lambda_register = aws_lambda.Function(
             self,
             'RegisterUserLambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
