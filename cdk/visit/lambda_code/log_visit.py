@@ -46,7 +46,7 @@ def registrationWorkflow(current_user):
     SUBJECT = "Clemson University Makerspace Registration"
     BODY_TEXT = ("Hello " + current_user + ",\n"
                  "Our records indicate that you have not registered as an existing user.\n"
-                 "please go to visit.cumaker.space/register to register as an existing user.\n"
+                 "Please go to visit.cumaker.space/register to register as an existing user.\n"
                  )
     # The character encoding for the email.
     CHARSET = "UTF-8"
