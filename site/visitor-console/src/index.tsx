@@ -10,7 +10,7 @@ document.body.className="bg-dark";
 
 ReactDOM.render(
   <React.StrictMode>
-    <div style={{backgroundImage: `url(${background_image})`, backgroundSize: 'cover', height: "100%"}}>
+    <div className="pb-4" style={{backgroundImage: `url(${background_image})`, backgroundSize: 'cover', minHeight: "100%"}}>
       <div className="w-full p-4">
         <img src={logo} style={{maxWidth: '100%'}}/>
       </div>
