@@ -179,7 +179,7 @@ const Registration = (props: Props) => {
                             <input className="form-control col-md-6" type="text" id="firstname"
                                 value={firstname} 
                                 onChange={handleFirstnameInput} 
-                                placeholder="Firstname"/>
+                                placeholder="Firstname" />
                         </div>
                         
                         {/* lastname */}
@@ -188,7 +188,7 @@ const Registration = (props: Props) => {
                             <input className="form-control" type="text" id="firstname"
                                 value={lastname} 
                                 onChange={handleLastnameInput} 
-                                placeholder="Lastname"/>
+                                placeholder="Lastname" />
                         </div>
 
                         {/* gender */}
@@ -205,7 +205,7 @@ const Registration = (props: Props) => {
                         <div className="col-md-6 mb-2">
                             <label htmlFor="birthday" className="form-label">Birthday</label>
                             <input className="form-control" type={"date"} 
-                                value={birthday} 
+                                value={birthday} id="birthday"
                                 onChange={handleBirthdayInput} 
                                 placeholder="birthday" />
                         </div>
@@ -221,7 +221,7 @@ const Registration = (props: Props) => {
                         {/* major */}
                         <div className="col-12 mb-2">
                             <label htmlFor="major" className="form-label">Major(s)</label>
-                            <Select className="text-black"
+                            <Select className="text-black" id="major"
                                 value={majors.map(d => {return {value: d, label: d}})}
                                 options={majorOptions}
                                 onChange={handleMajorInput}
@@ -229,10 +229,10 @@ const Registration = (props: Props) => {
                                 isSearchable />
                         </div>
 
-                        {/* major */}
+                        {/* minor */}
                         <div className="col-12 mb-4">
-                            <label htmlFor="major" className="form-label">Minor(s)</label>
-                            <Select className="text-black"
+                            <label htmlFor="minor" className="form-label">Minor(s)</label>
+                            <Select className="text-black" id="minor"
                                 value={minors.map(d => {return {value: d, label: d}})}
                                 options={minorOptions}
                                 onChange={handleMinorInput}
