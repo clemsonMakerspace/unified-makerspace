@@ -40,12 +40,17 @@ Instructions for configuring AWS CLI:
 
 -   https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
 
-Sign in instructions for AWS accounts:
+In order to sign into your AWS account on the CLI, follow one of the 3 options below:
 
--   Navigate to https://clemson-makerspace.awsapps.com/start/ and sign in
--   Click on "AWS Account" and select the tab for your dev account. It should say "dev-{your-clemson-username}"
--   Select "Command line or programmatic access" on the row for "AdministratorAccess"
--   Copy and paste the block code that is shown into ~/.aws/credentials
+    1. Configure the AWS CLI to use AWS SSO. This will allow you to use the AWS CLI without having
+    to manually navigate to the login page. To do this, follow the instructions in [this guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-using-profile). Keep in mind that if you go this route, in order
+    to get emporary credentials you will need ot run `aws sso login --profile your-profile-name` before each command.
+
+    2. Export the credentials to your environment variables. To do this, follow the instructions above to log in
+    to the AWS SSO page. From there, Click on "AWS Account" and select the tab for your dev account.
+    It should say "dev-{your-clemson-username}". Lastly, select "Command line or programmatic access" on the row for "AdministratorAccess". Simply copy and paste what is in the option 1 box into your terminal, and the tokens should take effect.
+
+    3. Add the AWS account to your credentials file ~/.aws/credentials. This option is not reccomended because the credentials rotate every hour. Follow the same steps for option 2 to get access to the credentials for your dev account. From there, copy and paste the avlues in the option 2 box into `~/.aws/credentials` and the tokens should take effect.
 
 At this point you can now synthesize the CloudFormation template for this code.
 
