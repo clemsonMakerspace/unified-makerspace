@@ -2,9 +2,9 @@
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-This project is set up like a standard Python project.  The initialization
+This project is set up like a standard Python project. The initialization
 process also creates a virtualenv within this project, stored under the .env
-directory.  To create the virtualenv it assumes that there is a `python3`
+directory. To create the virtualenv it assumes that there is a `python3`
 (or `python` for Windows) executable in your path with access to the `venv`
 package. If for any reason the automatic creation of the virtualenv fails,
 you can create the virtualenv manually.
@@ -36,16 +36,27 @@ $ pip install -r requirements.txt
 
 You must now ensure that you are signed into AWS CLI:
 
-Instructions for configuring AWS CLI: 
-- https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
+Instructions for configuring AWS CLI:
 
-Sign in instructions for AWS Educate accounts:
-- Navigate to awseducate.com and sign in
-- Go to "My Classrooms" and select go to classroom for the class' account you wish to deploy to
-- Select "Account Details" and "Show" next to AWS CLI
-- Copy and paste the block code that is shown into ~/.aws/credentials
+-   https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
+
+In order to sign into your AWS account on the CLI, follow one of the 3 options below:
+
+    1. Configure the AWS CLI to use AWS SSO. This will allow you to use the AWS CLI without having
+    to manually navigate to the login page. To do this, follow the instructions in [this guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-using-profile). Keep in mind that if you go this route, in order
+    to get temporary credentials you will need to run `aws sso login` before each command.
+
+    2. Export the credentials to your environment variables. To do this, login to the [AWS SSO Page](https://clemson-makerspace.awsapps.com/start/) for the Makerspace.
+    From there, Click on "AWS Account" and select the tab for your dev account.
+    It should say "dev-{your-clemson-username}". Lastly, select "Command line or programmatic access" on the row for "AdministratorAccess". Simply copy and paste what is in the option 1 box into your terminal, and the tokens should take effect.
+
+    3. Add the AWS account to your credentials file ~/.aws/credentials. This option is not reccomended because the credentials rotate every hour. Follow the same steps for option 2 to get access to the credentials for your dev account. From there, copy and paste the values in the option 2 box into `~/.aws/credentials` and the tokens should take effect.
 
 At this point you can now synthesize the CloudFormation template for this code.
+
+Something important to keep in mind is that your AWS credentials will rotate every hour. If
+you are running into any access issues with your tokens, check the SSO and make sure your tokens
+match those that are there.
 
 ```
 $ cdk synth
@@ -65,11 +76,11 @@ command.
 
 ## Useful commands
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+-   `cdk ls` list all stacks in the app
+-   `cdk synth` emits the synthesized CloudFormation template
+-   `cdk deploy` deploy this stack to your default AWS account/region
+-   `cdk diff` compare deployed stack with current state
+-   `cdk docs` open CDK documentation
 
 Enjoy!
 
