@@ -1,5 +1,8 @@
 
-from aws_cdk import core
+from aws_cdk import (
+    core,
+    aws_backup
+)
 from visit import Visit
 from api_gateway import SharedApiGateway
 from database import Database
@@ -45,6 +48,13 @@ class MakerspaceStack(core.Stack):
     def database_stack(self):
 
         self.database = Database(self.app, self.stage, env=self.env)
+
+        self.plan = aws_backup.BackupPlan.daily_monthly1_year_retention(self, 'BackupPlan')
+        self.plan.add_selection("Selection",
+            resources=[
+                aws_backup.BackupResource.from_dynamo_db_table(self.database.table)
+            ]
+        )
 
         self.add_dependency(self.database)
 
