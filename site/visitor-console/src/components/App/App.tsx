@@ -4,6 +4,7 @@ import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
 import Registration from '../Registration/Registration';
 import { Routes, Route } from "react-router-dom";
+import Footer from '../Footer';
 
 export enum State {
   MAIN,
@@ -75,6 +76,7 @@ const App = () => {
           <div className="d-flex justify-content-center">
             {render}
           </div>
+          <Footer />
         </div>
       } />
       <Route path="register" element={<Registration />} />
