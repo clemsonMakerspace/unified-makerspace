@@ -18,6 +18,12 @@ accounts = {
         'account': '649319584955',
         'region': 'us-east-1'
     },
+
+    # Joshua Little, Capstone Spring 2022
+    'Dev-jlittl8': {
+        'account': '577283310524',
+        'region': 'us-east-1'
+    },
 }
 
 accounts = {
