@@ -3,6 +3,7 @@ import ModeSelect from '../ModeSelect/ModeSelect'
 import UserForm from '../UserForm/UserForm'
 import SignInCountDown from '../SignInCountDown/SignInCountDown'
 import Registration from '../Registration/Registration';
+import NotFoundPage from '../NotFoundPage/NotFoundPage';
 import { Routes, Route } from "react-router-dom";
 import Footer from '../Footer';
 
@@ -80,6 +81,7 @@ const App = () => {
         </div>
       } />
       <Route path="register" element={<Registration />} />
+      <Route path="*" element={<NotFoundPage />}/>
     </Routes>
   )
 };
