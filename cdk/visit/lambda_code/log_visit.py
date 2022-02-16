@@ -84,16 +84,18 @@ def registrationWorkflow(current_user):
         print(e.response['Error']['Message'])
 
 
-def addVisitEntry(current_user):
+def addVisitEntry(current_user, location):
 
     # Get the current date at which the user logs in.
     visit_date = datetime.datetime.now().timestamp()
 
     # Add the item to the table.
     response = visits.put_item(
+        # TODO: Why is the label PK and SK instead of visit_date and username?
         Item={
             'PK': str(visit_date),
-            'SK': current_user
+            'SK': current_user,
+            'location': location,
         },
     )
 
@@ -130,6 +132,7 @@ def handler(request, context):
     try:
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
+        location = json.loads(request["body"])["location"]
 
         # Check if this user has registered before.
         registration = checkRegistration(username)
@@ -142,7 +145,7 @@ def handler(request, context):
             # have to check their email and register with the Makerspace.
 
         # Call Function
-        res = addVisitEntry(username)
+        res = addVisitEntry(username, location)
 
         # Send response
         return {
