@@ -1,15 +1,15 @@
-@import '/node_modules/bootstrap/scss/functions';
-$primary: #232F3E;
-$secondary: #FF9900;
+@import "/node_modules/bootstrap/scss/functions";
+$primary: #232f3e;
+$secondary: #ff9900;
 $dark: #1d2029;
 
-@import '/node_modules/bootstrap/scss/variables';
+@import "/node_modules/bootstrap/scss/variables";
 $custom-colors: (
-    "accent": #522D80,
-    "dark-gray": #1d2029,
+  "accent": #522d80,
+  "dark-gray": #1d2029,
 );
 
 // Merge the maps
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
-@import 'bootstrap';
+@import "bootstrap";
