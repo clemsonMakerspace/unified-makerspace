@@ -95,11 +95,7 @@ def addVisitEntry(current_user, location):
         Item={
             'PK': str(visit_date),
             'SK': current_user,
-            << << << < Updated upstream
             'location': location,
-            == == == =
-            'location': location
-            >> >>>> > Stashed changes
         },
     )
 
