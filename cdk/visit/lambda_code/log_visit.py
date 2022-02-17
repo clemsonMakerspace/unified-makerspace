@@ -95,7 +95,11 @@ def addVisitEntry(current_user, location):
         Item={
             'PK': str(visit_date),
             'SK': current_user,
+            << << << < Updated upstream
             'location': location,
+            == == == =
+            'location': location
+            >> >>>> > Stashed changes
         },
     )
 
@@ -132,7 +136,11 @@ def handler(request, context):
     try:
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
-        location = json.loads(request["body"])["location"]
+        location = ""
+        try:
+            location = json.loads(request["body"])["location"]
+        except Exception as e:
+            print(e)
 
         # Check if this user has registered before.
         registration = checkRegistration(username)
