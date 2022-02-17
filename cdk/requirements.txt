@@ -68,7 +68,6 @@ colorama==0.4.3
 constructs==3.3.161
 cryptography==35.0.0
 docutils==0.15.2
-importlib-resources==5.4.0
 jmespath==0.10.0
 jsii==1.41.0
 publication==0.0.3
@@ -83,4 +82,3 @@ six==1.16.0
 toml==0.10.2
 typing-extensions==3.10.0.2
 urllib3==1.26.7
-zipp==3.7.0
