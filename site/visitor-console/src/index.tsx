@@ -1,24 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./styles/style.scss";
-import App from "./components/App/App";
-import background_image from "./asset/background.webp";
-import logo from "./asset/makerspace_logo.webp";
 import { BrowserRouter as Router } from "react-router-dom";
+
+import "./styles/style.scss";
+import App from "./pages/App";
+import background_image from "./assets/background.webp";
+import logo from "./assets/makerspace_logo.webp";
 
 document.body.className = "bg-dark";
 
 ReactDOM.render(
   <React.StrictMode>
     <div
-      className="pb-4"
+      className="pb-5"
       style={{
         backgroundImage: `url(${background_image})`,
         backgroundSize: "cover",
         minHeight: "100%",
       }}
     >
-      <div className="w-full p-4">
+      <div className="w-full pt-4 ps-4 pb-5">
         <img src={logo} style={{ maxWidth: "100%" }} />
       </div>
       <Router>
