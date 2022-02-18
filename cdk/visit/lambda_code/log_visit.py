@@ -4,8 +4,14 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 import random
+import logging
+import traceback
+import sys
 import os
 import re
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 # Get the service resource.
 dynamodb = boto3.resource('dynamodb')
@@ -91,7 +97,9 @@ def addVisitEntry(current_user, location):
 
     # Add the item to the table.
     response = visits.put_item(
-        # TODO: Why is the label PK and SK instead of visit_date and username?
+        # PK = Partition Key = Visit Date
+        # SK = Sort Key = Visit Date
+
         Item={
             'PK': str(visit_date),
             'SK': current_user,
@@ -136,7 +144,15 @@ def handler(request, context):
         try:
             location = json.loads(request["body"])["location"]
         except Exception as e:
-            print(e)
+            exception_type, exception_value, exception_traceback = sys.exc_info()
+            traceback_string = traceback.format_exception(
+                exception_type, exception_value, exception_traceback)
+            err_msg = json.dumps({
+                "errorType": "MissingParameter",
+                "errorMessage": "Missing parameter: location",
+                "errorTrace": traceback_string
+            })
+            logger.warn(err_msg)
 
         # Check if this user has registered before.
         registration = checkRegistration(username)
