@@ -1,9 +1,9 @@
 import type { MakerspaceLocation } from "./types";
 
 export const locations: MakerspaceLocation[] = [
-  { slug: "cooper", name: "Cooper Library" },
-  { slug: "watt", name: "The Watt Innovation Center" },
-  // { slug: "test", name: "Fake Location" },
+  { slug: "cooper_library", name: "Cooper Library" },
+  { slug: "watt_center", name: "Watt Family Innovation Center" },
+  { slug: "cook_lab", name: "Cook Laboratory" },
 ];
 
 export const genders = ["Male", "Female", "Other"];
