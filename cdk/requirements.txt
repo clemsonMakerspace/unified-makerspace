@@ -61,8 +61,7 @@ aws-cdk.cx-api==1.129.0
 aws-cdk.lambda-layer-awscli==1.129.0
 aws-cdk.pipelines==1.129.0
 aws-cdk.region-info==1.129.0
-awscli==1.18.179
-botocore==1.19.19
+botocore==1.24.0
 cattrs==1.8.0
 cffi==1.15.0
 colorama==0.4.3
@@ -78,7 +77,7 @@ pycparser==2.20
 python-dateutil==2.8.2
 PyYAML==5.3.1
 rsa==4.5
-s3transfer==0.3.7
+s3transfer==0.5.1
 six==1.16.0
 toml==0.10.2
 typing-extensions==3.10.0.2
