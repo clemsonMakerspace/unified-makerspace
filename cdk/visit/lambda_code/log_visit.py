@@ -98,7 +98,7 @@ def addVisitEntry(current_user, location):
     # Add the item to the table.
     response = visits.put_item(
         # PK = Partition Key = Visit Date
-        # SK = Sort Key = Visit Date
+        # SK = Sort Key = Username or Email Address
 
         Item={
             'PK': str(visit_date),
