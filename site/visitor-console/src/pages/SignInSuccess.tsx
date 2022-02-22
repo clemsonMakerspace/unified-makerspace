@@ -4,7 +4,7 @@ import PageCard from "../components/PageCard";
 
 const SignInSuccess = () => {
   const navigate = useNavigate();
-  let [searchParams, setSearchParams] = useSearchParams();
+  let [searchParams] = useSearchParams();
   const next_page = (searchParams.get("next") as string) || "/";
 
   const renderer = () => (

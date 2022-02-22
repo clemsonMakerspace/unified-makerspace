@@ -6,7 +6,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { SchemaOf } from "yup";
 import * as yup from "yup";
 
-import { genders, majors, minors } from "../library/constants";
+import {
+  genders,
+  majors,
+  minors,
+  api_endpoint,
+  format_date,
+} from "../library/constants";
 import FormSelect from "../components/FormSelect";
 import FormMultiselect from "../components/FormMultiselect";
 import PageCard from "../components/PageCard";
@@ -58,13 +64,13 @@ const Registration = () => {
       firstName: form_data.firstname,
       lastName: form_data.lastname,
       Gender: form_data.gender,
-      DOB: form_data.birthday,
-      Grad_Date: form_data.graddate,
+      DOB: format_date(form_data.birthday),
+      Grad_Date: format_date(form_data.graddate),
       Major: form_data.major,
       Minor: form_data.minor,
     };
 
-    fetch("https://api.cumaker.space/register", {
+    fetch(`${api_endpoint}/register`, {
       method: "post",
       body: JSON.stringify(body),
     }).then((response) => {

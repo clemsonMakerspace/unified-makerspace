@@ -20,7 +20,11 @@ ReactDOM.render(
       }}
     >
       <div className="w-full pt-4 ps-4 pb-5">
-        <img src={logo} style={{ maxWidth: "100%" }} />
+        <img
+          src={logo}
+          style={{ maxWidth: "100%" }}
+          alt="Clemson Makerspace Logo"
+        />
       </div>
       <Router>
         <App />

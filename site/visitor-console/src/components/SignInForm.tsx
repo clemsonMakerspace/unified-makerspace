@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { SchemaOf } from "yup";
 
+import { api_endpoint } from "../library/constants";
 import { MakerspaceLocation } from "../library/types";
 import PageCard from "./PageCard";
 
@@ -53,7 +54,7 @@ const SignInForm = ({
     };
 
     setLoading(true);
-    fetch("https://api.cumaker.space/visit", {
+    fetch(`${api_endpoint}/visit`, {
       method: "post",
       body: JSON.stringify(body),
     }).then((response) => {
