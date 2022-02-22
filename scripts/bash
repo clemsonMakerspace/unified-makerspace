@@ -1,5 +1,0 @@
-# general utility bash scripts
-
-
-# replaces all instances of MakerSpace to Makerspace
-grep -rl Makerspace . | xargs sed -i 's/MakerSpace/Makerspace/g'
