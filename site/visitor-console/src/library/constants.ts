@@ -1,11 +1,7 @@
 import type { MakerspaceLocation } from "./types";
 
-// ! eventually render this on build
-// something like `process.env.REACT_APP_API_ENDPOINT`
-// https://create-react-app.dev/docs/adding-custom-environment-variables/
-// I really want to switch to Vite before we do this though :)
-// (the same env build feature exists)
-export const api_endpoint = "https://api.cumaker.space";
+export const api_endpoint =
+  import.meta.env.VITE_API_ENDPOINT || "https://api.cumaker.space";
 
 // currently `YEAR-MONTH-DAY, YYYY-MM-DD`
 export const format_date = (date: Date) => date.toISOString().split("T")[0];
