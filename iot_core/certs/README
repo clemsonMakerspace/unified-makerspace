@@ -1,9 +1,0 @@
-MAKE SURE TO ADD THE APPROPRIATE CERTIFICATION FILES TO THIS DIRECTORY
-
-FILES IN THE FORM OF:
-
-PrivateKeyCUmakeit_XX.pem.key
-CertificateCUmakeit_XX.pem.crt
-root-CA.crt
-
-Make sure to add the names of the file to the appropriate start.sh script
