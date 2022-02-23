@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/static/css/main.5638437c.chunk.css",
-    "main.js": "/static/js/main.b1f5c7e5.chunk.js",
-    "main.js.map": "/static/js/main.b1f5c7e5.chunk.js.map",
+    "main.css": "/static/css/main.df4b2bf6.chunk.css",
+    "main.js": "/static/js/main.58037e57.chunk.js",
+    "main.js.map": "/static/js/main.58037e57.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.4065639c.js",
     "runtime-main.js.map": "/static/js/runtime-main.4065639c.js.map",
-    "static/js/2.80642caf.chunk.js": "/static/js/2.80642caf.chunk.js",
-    "static/js/2.80642caf.chunk.js.map": "/static/js/2.80642caf.chunk.js.map",
+    "static/js/2.967882ac.chunk.js": "/static/js/2.967882ac.chunk.js",
+    "static/js/2.967882ac.chunk.js.map": "/static/js/2.967882ac.chunk.js.map",
     "index.html": "/index.html",
-    "static/css/main.5638437c.chunk.css.map": "/static/css/main.5638437c.chunk.css.map",
-    "static/js/2.80642caf.chunk.js.LICENSE.txt": "/static/js/2.80642caf.chunk.js.LICENSE.txt",
+    "static/css/main.df4b2bf6.chunk.css.map": "/static/css/main.df4b2bf6.chunk.css.map",
+    "static/js/2.967882ac.chunk.js.LICENSE.txt": "/static/js/2.967882ac.chunk.js.LICENSE.txt",
     "static/media/background.8e298f13.webp": "/static/media/background.8e298f13.webp",
     "static/media/makerspace_logo.dfaddc13.webp": "/static/media/makerspace_logo.dfaddc13.webp"
   },
   "entrypoints": [
     "static/js/runtime-main.4065639c.js",
-    "static/js/2.80642caf.chunk.js",
-    "static/css/main.5638437c.chunk.css",
-    "static/js/main.b1f5c7e5.chunk.js"
+    "static/js/2.967882ac.chunk.js",
+    "static/css/main.df4b2bf6.chunk.css",
+    "static/js/main.58037e57.chunk.js"
   ]
 }
