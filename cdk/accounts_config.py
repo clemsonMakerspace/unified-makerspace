@@ -40,10 +40,12 @@ accounts = {
         'account': '577283310524',
         'region': 'us-east-1'
     },
-<<<<<<< Updated upstream
-=======
+    # Mike Brandin, Capstone Spring 2022
+    'Dev-mbrandi': {
+        'account': '123330062850',
+        'region': 'us-east-1'
+    },
 
->>>>>>> Stashed changes
 }
 
 accounts = {
