@@ -40,6 +40,10 @@ accounts = {
         'account': '577283310524',
         'region': 'us-east-1'
     },
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 }
 
 accounts = {
