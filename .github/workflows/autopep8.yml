@@ -35,11 +35,11 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: In-place lint autopep8
       run: |
-        autopep8 -ria api cdk iot_core scripts tests
+        autopep8 -ria cdk
     - name: Push code
       uses: actions-x/commit@v2
       with:
         name: makerspace-bot
         email: makerspace-bot@cumaker.space
         branch: mainline
-        files: api cdk iot_core scripts tests
+        files: cdk

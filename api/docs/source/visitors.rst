@@ -1,6 +1,0 @@
-=========
-Visitors
-=========
-
-.. automodule:: visitors
-   :members:
