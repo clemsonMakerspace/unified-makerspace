@@ -1,10 +1,5 @@
 from log_visit import *
-from aws_cdk import (
-    Stack,
-    aws_lambda as _lambda,
-    assertions
-)
-from moto import mock_dynamodb2
+from moto import mock_dynamodb2, mock_ses
 import pytest
 
 
@@ -17,8 +12,14 @@ test_log_visit_with_location = {
 }
 
 
-@mock_dynamodb2
-def test_lambda_handler():
+def create_dynamodb_table():
+    """
+    Create a dynamodb table for testing
+
+    Returns:
+        dynamodb.Table: A dynamodb table
+
+    """
     table_name = 'visits'
     dymanodb = boto3.resource('dynamodb', 'us-east-1')
 
@@ -32,6 +33,10 @@ def test_lambda_handler():
             {
                 'AttributeName': 'SK',
                 'KeyType': 'RANGE'  # Sort key
+            },
+            {
+                'AttributeName': 'location',
+                'KeyType': 'RANGE'
             }
         ],
         AttributeDefinitions=[
@@ -56,41 +61,28 @@ def test_lambda_handler():
 
     table.wait_until_exists()
 
-    """
-    log_visit_lambda = _lambda.Function(
-        self,
-        'LogVisit',
-        runtime=_lambda.Runtime.PYTHON_3_7,
-        handler='index.handler',
-        code=_lambda.Code.asset('log_visit'),
-        environment={
-            'TABLE_NAME': table_name
-        }
-    )
+    return table
 
-    # Add the Lambda Permission so that the log_visit_lambda can invoke
-    # the addVisitEntry function.
-    log_visit_lambda.add_permission(
-        'LogVisitPermission',
-        principal=_lambda.ServicePrincipal('logs.amazonaws.com'),
-        source_arn=log_visit_lambda.function_arn,
-        action_names=['lambda:InvokeFunction']
-    )
 
-    # Create a new SES resource and specify a region.
+def create_ses_client():
     client = boto3.client('ses', region_name='us-east-1')
 
-    # Try to send the email.
-    try:
-        response = client.send_email(
-            Destination={
-                'ToAddresses': ['
+    return client
 
 
-    stack=Stack()
-    """
-    try:
-        response = lambda_handler(test_log_visit_with_no_location, None)
-        assert response['statusCode'] == 200
-    except Exception as e:
-        print(e)
+@mock_dynamodb2
+@mock_ses
+def test_visit_with_location():
+    table = create_dynamodb_table()
+    client = create_ses_client()
+
+    response = handler(test_log_visit_with_location, None,
+                       table=table, client=client)
+    assert response['statusCode'] == 200
+
+
+@mock_dynamodb2
+def test_visit_with_no_location():
+    table = create_dynamodb_table()
+    response = handler(test_log_visit_with_no_location, None, table=table)
+    assert response['statusCode'] == 200
