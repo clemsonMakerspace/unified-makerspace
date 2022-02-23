@@ -1,5 +1,6 @@
 import json
 import datetime
+from xmlrpc import client
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
@@ -23,8 +24,8 @@ visits = dynamodb.Table(TABLE_NAME)
 # This function just runs a query to see if the username is in the table.
 
 
-def checkRegistration(current_user):
-    response = visits.query(
+def checkRegistration(current_user, table=visits):
+    response = table.query(
         KeyConditionExpression=Key('PK').eq(current_user)
     )
     return response['Count']
@@ -33,7 +34,7 @@ def checkRegistration(current_user):
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
 
 
-def registrationWorkflow(current_user):
+def registrationWorkflow(current_user, client=None):
 
     # This address must be verified with Amazon SES.
     SENDER = "no-reply@visit.cumaker.space"
@@ -57,7 +58,8 @@ def registrationWorkflow(current_user):
     # The character encoding for the email.
     CHARSET = "UTF-8"
     # Create a new SES resource and specify a region.
-    client = boto3.client('ses', region_name=AWS_REGION)
+    if not client:
+        client = boto3.client('ses', region_name=AWS_REGION)
 
     # Try to send the email.
     try:
@@ -90,13 +92,13 @@ def registrationWorkflow(current_user):
         print(e.response['Error']['Message'])
 
 
-def addVisitEntry(current_user, location):
+def addVisitEntry(current_user, location, table=visits):
 
     # Get the current date at which the user logs in.
     visit_date = datetime.datetime.now().timestamp()
 
     # Add the item to the table.
-    response = visits.put_item(
+    response = table.put_item(
         # PK = Partition Key = Visit Date
         # SK = Sort Key = Username or Email Address
 
@@ -110,7 +112,7 @@ def addVisitEntry(current_user, location):
     return response['ResponseMetadata']['HTTPStatusCode']
 
 
-def handler(request, context):
+def handler(request, context, table=visits, client=None):
     """
     Log the input of a user (namely, the username) from the makerspace console.
     This should:
@@ -140,7 +142,7 @@ def handler(request, context):
     try:
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
-        location = ""
+        location = ' '
         try:
             location = json.loads(request["body"])["location"]
         except Exception as e:
@@ -155,17 +157,17 @@ def handler(request, context):
             logger.warn(err_msg)
 
         # Check if this user has registered before.
-        registration = checkRegistration(username)
+        registration = checkRegistration(username, table=table)
 
         # If the user is not in the system, send a registration link.
         if registration == 0:
-            registrationWorkflow(username)
+            registrationWorkflow(username, client=client)
             # One could consider setting res = some other number here in order to
             # bring up a page That lets the user know in order to sign in they
             # have to check their email and register with the Makerspace.
 
-        # Call Function
-        res = addVisitEntry(username, location)
+            # Call Function
+        res = addVisitEntry(username, location, table)
 
         # Send response
         return {
