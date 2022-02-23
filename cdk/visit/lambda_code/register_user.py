@@ -8,6 +8,7 @@ import datetime
 dynamodb = boto3.resource('dynamodb')
 # Get the table name.
 TABLE_NAME = os.environ["TABLE_NAME"]
+# Get the appropriate domain variable
 DOMAIN_STAGE = os.environ["DOMAIN_STAGE"]
 # Get table objects
 users = dynamodb.Table(TABLE_NAME)
