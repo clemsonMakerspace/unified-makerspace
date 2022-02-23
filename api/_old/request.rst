@@ -1,6 +1,0 @@
-=========
-Requests
-=========
-
-.. automodule:: requests
-   :members:
