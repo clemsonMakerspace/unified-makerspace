@@ -28,21 +28,46 @@ class Pipeline(core.Stack):
         #                   Storage Service (Amazon S3) and all Docker images to Amazon Elastic Container Registry
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
+        deploy_cdk_shell_step = ShellStep("Synth",
+            # Use a connection created using the AWS console to authenticate to GitHub
+            # Other sources are available.
+            input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
+                connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
+            ),
+            commands=[
+
+                # build the frontend
+                "cd site/visitor-console",
+                "npm install",
+                "npm run build",
+                "cd ../..",
+
+                # deploy cdk
+                "cd cdk",  # TODO: Remove when we deprecate `cdk/`
+                "npm install -g aws-cdk && pip install -r requirements.txt",
+                "cdk synth"
+
+                # TODO: "pytest unittest"
+            ],
+            primary_output_directory="cdk/cdk.out", # TODO: Remove when we deprecate `cdk/`
+
+            # ! just for testing at the moment
+            # will see if the endpoint shows up in the cloudformation artifact bucket
+            # at minimum we could then just move this into place and not have to manually build the site
+            env={
+                "VITE_API_ENDPOINT": "FAKE_ENDPOINT"
+            }
+        )
+
+        # ! might be necessisary for building to this path
+        # build for vite outputs here
+        deploy_cdk_shell_step.add_output_directory("site/visitor-console/dist")
+        
         pipeline = CodePipeline(self, "Pipeline",
-                                synth=ShellStep("Synth",
-                                                # Use a connection created using the AWS console to authenticate to GitHub
-                                                # Other sources are available.
-                                                input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
-                                                                                    connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
-                                                                                    ),
-                                                commands=["cd cdk",  # TODO: Remove when we deprecate `cdk/`
-                                                          "npm install -g aws-cdk && pip install -r requirements.txt",
-                                                          "cdk synth"
-                                                          # TODO: "pytest unittest"
-                                                          ],
-                                                primary_output_directory="cdk/cdk.out"  # TODO: Remove when we deprecate `cdk/`
-                                                ), cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
-                                )
+            synth=deploy_cdk_shell_step,
+            cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
+        )
+        
 
         # Now that our CodePipeline is created we can call `addStage` as many times as
         # necessary with any account and region (may be different from the
