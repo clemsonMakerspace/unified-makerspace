@@ -1,4 +1,5 @@
 
+from distutils.command.build import build
 from aws_cdk import (
     aws_certificatemanager,
     aws_s3_deployment,
@@ -11,7 +12,6 @@ from aws_cdk import (
 )
 
 from dns import MakerspaceDns
-
 
 class Visit(core.Stack):
     """
@@ -39,6 +39,7 @@ class Visit(core.Stack):
 
         super().__init__(scope, f'Visitors-{stage}', env=env)
 
+        self.stage = stage
         self.create_dns = create_dns
         self.zones = zones
 
@@ -59,16 +60,14 @@ class Visit(core.Stack):
             self, 'VisitorsOriginAccessIdentity')
 
         self.bucket = aws_s3.Bucket(self, 'cumakerspace-visitors-console')
-
         self.bucket.grant_read(self.oai)
-
         aws_s3_deployment.BucketDeployment(self, 'VisitorsConsoleDeployment',
                                            sources=[
                                                aws_s3_deployment.Source.asset(
-                                                   'visit/console/')
+                                                   f'visit/console/{self.stage}/')
                                            ],
                                            destination_bucket=self.bucket)
-
+        
     def cloudfront_distribution(self):
 
         kwargs = {}
