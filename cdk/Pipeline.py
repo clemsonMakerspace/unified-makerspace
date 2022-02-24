@@ -28,21 +28,28 @@ class Pipeline(core.Stack):
         #                   Storage Service (Amazon S3) and all Docker images to Amazon Elastic Container Registry
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
+        deploy_cdk_shell_step = ShellStep("Synth",
+            # Use a connection created using the AWS console to authenticate to GitHub
+            # Other sources are available.
+            input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
+                connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
+            ),
+            commands=[
+                # deploy cdk
+                "cd cdk",  # TODO: Remove when we deprecate `cdk/`
+                "npm install -g aws-cdk && pip install -r requirements.txt",
+                "cdk synth"
+
+                # TODO: "pytest unittest"
+            ],
+            primary_output_directory="cdk/cdk.out", # TODO: Remove when we deprecate `cdk/`
+        )
+        
         pipeline = CodePipeline(self, "Pipeline",
-                                synth=ShellStep("Synth",
-                                                # Use a connection created using the AWS console to authenticate to GitHub
-                                                # Other sources are available.
-                                                input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
-                                                                                    connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
-                                                                                    ),
-                                                commands=["cd cdk",  # TODO: Remove when we deprecate `cdk/`
-                                                          "npm install -g aws-cdk && pip install -r requirements.txt",
-                                                          "cdk synth"
-                                                          # TODO: "pytest unittest"
-                                                          ],
-                                                primary_output_directory="cdk/cdk.out"  # TODO: Remove when we deprecate `cdk/`
-                                                ), cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
-                                )
+            synth=deploy_cdk_shell_step,
+            cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
+        )
+        
 
         # Now that our CodePipeline is created we can call `addStage` as many times as
         # necessary with any account and region (may be different from the
@@ -50,11 +57,11 @@ class Pipeline(core.Stack):
 
         # Create our Beta stage
         self.beta = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
+        pipeline.add_stage(self.beta)
 
         # TODO: Add a validation stage before deploying to Prod
 
         # Create our Prod stage
         self.prod = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
-
-        pipeline.add_stage(self.beta)
         pipeline.add_stage(self.prod)
+
