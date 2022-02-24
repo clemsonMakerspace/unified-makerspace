@@ -10,7 +10,7 @@ class MakerspaceStage(core.Stage):
     def __init__(self, scope: core.Construct, stage: str, *,
                  env: core.Environment) -> None:
         super().__init__(scope, stage, env=env)
-
+        
         self.service = MakerspaceStack(self, stage, env=env)
 
 
