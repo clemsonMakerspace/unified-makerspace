@@ -140,6 +140,8 @@ def handler(request, context):
     try:
         # Get the username from the request body.
         username = json.loads(request["body"])["username"]
+        username = username.lower()
+        
         location = ""
         try:
             location = json.loads(request["body"])["location"]
