@@ -9,7 +9,7 @@ dynamodb = boto3.resource('dynamodb')
 # Get the table name.
 TABLE_NAME = os.environ["TABLE_NAME"]
 # Get the appropriate domain variable
-DOMAIN_STAGE = os.environ["DOMAIN_STAGE"]
+API_ENDPOINT = os.environ["API_ENDPOINT"]
 # Get table objects
 users = dynamodb.Table(TABLE_NAME)
 
@@ -42,7 +42,7 @@ def handler(request, context):
     HEADERS = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': DOMAIN_STAGE,
+        'Access-Control-Allow-Origin': API_ENDPOINT,
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
     }
     if (request is None):
