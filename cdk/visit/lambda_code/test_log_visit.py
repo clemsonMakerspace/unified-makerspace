@@ -1,6 +1,8 @@
-from log_visit import *
 from moto import mock_dynamodb2, mock_ses
+import boto3
 import pytest
+
+from log_visit.log_visit import handler
 
 
 test_log_visit_with_no_location = {
