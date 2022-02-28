@@ -12,6 +12,8 @@ import {
   minors,
   api_endpoint,
   format_date,
+  gradsemesters,
+  gradyears,
 } from "../library/constants";
 import FormSelect from "../components/FormSelect";
 import FormMultiselect from "../components/FormMultiselect";
@@ -23,7 +25,9 @@ interface Schema {
   lastname: string;
   gender: string;
   birthday: Date;
-  graddate: Date;
+  gradsemester: string;
+  gradyear: string;
+  // graddate: Date;
   major: string[];
   minor?: string[];
 }
@@ -35,7 +39,8 @@ const schema: SchemaOf<Schema> = yup
     lastname: yup.string().required(),
     gender: yup.string().required(),
     birthday: yup.date().required(),
-    graddate: yup.date().required(),
+    gradsemester: yup.string().required(),
+    gradyear: yup.string().required(),
     major: yup.array().required(),
     minor: yup.array(),
   })
@@ -65,7 +70,8 @@ const Registration = () => {
       lastName: form_data.lastname,
       Gender: form_data.gender,
       DOB: format_date(form_data.birthday),
-      Grad_Date: format_date(form_data.graddate),
+      GradSemester: form_data.gradsemester,
+      GradYear: form_data.gradyear,
       Major: form_data.major,
       Minor: form_data.minor,
     };
@@ -156,17 +162,20 @@ const Registration = () => {
             />
           </div>
 
-          {/* grad date */}
-          <div className="col-12 mb-2">
-            <label htmlFor="graddate" className="form-label">
-              Expected Graduation Date
+          {/* Graduating Term */}
+          <div className="col-md-6">
+            <label htmlFor="gradsemester" className="form-label">
+              Expected Graduating Term
             </label>
-            <input
-              type={"date"}
-              className="form-control"
-              id="graddate"
-              {...register("graddate")}
-            />
+            <FormSelect control={control} name="gradsemester" values={gradsemesters} />
+          </div>
+
+          {/* Graduating Year */}
+          <div className="col-md-6">
+            <label htmlFor="gradyear" className="form-label">
+            Expected Graduating Year
+            </label>
+            <FormSelect control={control} name="gradyear" values={gradyears} />
           </div>
 
           {/* major */}

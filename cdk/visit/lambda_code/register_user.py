@@ -25,7 +25,8 @@ def addUserInfo(user_info):
             'lastName': user_info['lastName'],
             'Gender': user_info['Gender'],
             'DOB': user_info['DOB'],
-            'Grad_date': user_info['Grad_Date'],
+            'GradSemester': user_info['GradSemester'],
+            'GradYear': user_info['GradYear'],
             'Major': user_info['Major'],
             'Minor': user_info['Minor']
         },

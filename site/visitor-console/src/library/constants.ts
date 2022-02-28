@@ -18,6 +18,10 @@ export const locations: MakerspaceLocation[] = [
 
 export const genders = ["Male", "Female", "Other"];
 
+export const gradsemesters = ["Fall", "Spring", "Summer"];
+
+export const gradyears = Array.from({length:7}, (v,i) => String(i + new Date().getFullYear()));
+
 export const majors = [
   "Accounting",
   "Agribusiness",
