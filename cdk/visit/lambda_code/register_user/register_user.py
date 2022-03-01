@@ -12,12 +12,12 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 users = dynamodb.Table(TABLE_NAME)
 
 
-def addUserInfo(user_info):
+def addUserInfo(user_info, table=users):
 
     # Get the current date at which the user registers.
     timestamp = datetime.datetime.now()
 
-    response = users.put_item(
+    response = table.put_item(
         Item={
             'PK': user_info['username'],
             'SK': str(timestamp),
@@ -34,7 +34,7 @@ def addUserInfo(user_info):
     return response['ResponseMetadata']['HTTPStatusCode']
 
 
-def handler(request, context):
+def handler(request, context, table=users):
     # Register user information from the makerspace/register console
 
     HEADERS = {
@@ -55,7 +55,7 @@ def handler(request, context):
     # Get all of the user information from the json file
     user_info = json.loads(request["body"])
     # Call Function
-    response = addUserInfo(user_info)
+    response = addUserInfo(user_info, table)
     # Send response
     return {
         'headers': HEADERS,
