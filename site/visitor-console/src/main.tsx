@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import "./styles/style.scss";
+import "./styles/global.scss";
 import App from "./pages/App";
 import background_image from "./assets/background.webp";
 import logo from "./assets/makerspace_logo.webp";
