@@ -14,7 +14,7 @@ accounts = {
         'account': '944207523762',
         'region': 'us-east-1'
     },
-    'Dev-kellen' : {
+    'Dev-kellen': {
         'account': '649319584955',
         'region': 'us-east-1'
     },
