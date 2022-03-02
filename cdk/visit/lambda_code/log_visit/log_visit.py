@@ -1,10 +1,8 @@
 import json
 import datetime
-from xmlrpc import client
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
-import random
 import logging
 import traceback
 import sys
