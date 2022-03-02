@@ -18,7 +18,7 @@ class MakerspaceStack(core.Stack):
 
     def __init__(self, app: core.Construct, stage: str, *,
                  env: core.Environment):
-        super().__init__(app, f'MakerspaceStack-{stage}', env=env)
+        super().__init__(app, f'MakerspaceStack-{stage}', env=env, termination_protection=True)
 
         self.app = app
         self.stage = stage
