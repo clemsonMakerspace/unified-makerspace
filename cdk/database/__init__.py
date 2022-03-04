@@ -9,7 +9,7 @@ class Database(core.Stack):
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
         self.id = f'Database-{stage}'
-        super().__init__(scope, self.id, env=env)
+        super().__init__(scope, self.id, env=env, termination_protection=True)
 
         self.dynamodb_single_table()
 
@@ -54,6 +54,8 @@ class Database(core.Stack):
 
         self.table = aws_dynamodb.Table(self,
                                         self.id,
+                                        point_in_time_recovery=True,
+                                        removal_policy=core.RemovalPolicy.RETAIN,
                                         sort_key=aws_dynamodb.Attribute(
                                             name='SK',
                                             type=aws_dynamodb.AttributeType.STRING),
