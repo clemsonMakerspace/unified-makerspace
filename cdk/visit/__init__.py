@@ -44,16 +44,13 @@ class Visit(core.Stack):
 
         self.source_bucket()
 
-        # Retrieves the domain and its corresponding stage
-        self.api_endpoint = self.zones.domains.visit
-
         # todo: restrict visitors page to require employee sign-in
         # self.cognito_pool()
 
         self.cloudfront_distribution()
 
-        self.log_visit_lambda(table_name, self.api_endpoint)
-        self.register_user_lambda(table_name, self.api_endpoint)
+        self.log_visit_lambda(table_name)
+        self.register_user_lambda(table_name)
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -102,7 +99,7 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def log_visit_lambda(self, table_name: str, api_endpoint: str):
+    def log_visit_lambda(self, table_name: str):
 
         sending_authorization_policy = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW)
@@ -116,14 +113,14 @@ class Visit(core.Stack):
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
-                'API_ENDPOINT': api_endpoint,
+                'API_ENDPOINT': self.distribution.domain_name,
             },
             handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
 
         self.lambda_visit.role.add_to_policy(sending_authorization_policy)
 
-    def register_user_lambda(self, table_name: str, api_endpoint: str):
+    def register_user_lambda(self, table_name: str):
 
         self.lambda_register = aws_lambda.Function(
             self,
@@ -132,7 +129,7 @@ class Visit(core.Stack):
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
-                'API_ENDPOINT': api_endpoint,
+                'API_ENDPOINT': self.distribution.domain_name,
             },
             handler='register_user.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
