@@ -1,4 +1,4 @@
-from register_user.register_user import handler
+from register_user.register_user import RegisterUserFunction
 from responses import mock
 import pytest
 import os
@@ -17,7 +17,7 @@ test_register_user = {"body": json.dumps({
     "DOB": "01/02/2002",
     "Grad_Date": "05/01/2023",
     "Major": "Mathematical Sciences",
-    "Minor": "Business Administration"
+    "Minor": "Business Administration"  # TODO: Should we require minor?
 })}
 
 
@@ -61,5 +61,6 @@ def create_dynamodb_table():
 @mock_dynamodb2
 def test_visit_with_location():
     table = create_dynamodb_table()
-    response = handler(test_register_user, None, table=table)
+    response = RegisterUserFunction(
+        table).handle_register_user_request(test_register_user, None)
     assert response['statusCode'] == 200

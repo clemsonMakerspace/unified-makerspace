@@ -1,3 +1,4 @@
+from log_visit.log_visit import LogVisitFunction
 from moto import mock_dynamodb2, mock_ses
 import boto3
 import pytest
@@ -7,7 +8,6 @@ os.environ["TABLE_NAME"] = "visits"
 os.environ["AWS_REGION"] = "us-east-1"
 
 # This has to run afterwards for the mock to work
-from log_visit.log_visit import handler
 
 
 test_log_visit_with_no_location = {
@@ -83,13 +83,14 @@ def test_visit_with_location():
     table = create_dynamodb_table()
     client = create_ses_client()
 
-    response = handler(test_log_visit_with_location, None,
-                       table=table, client=client)
+    response = LogVisitFunction(table, client).handle_log_visit_request(
+        test_log_visit_with_location, None)
     assert response['statusCode'] == 200
 
 
 @mock_dynamodb2
 def test_visit_with_no_location():
     table = create_dynamodb_table()
-    response = handler(test_log_visit_with_no_location, None, table=table)
+    response = LogVisitFunction(table, None).handle_log_visit_request(
+        test_log_visit_with_no_location, None)
     assert response['statusCode'] == 200
