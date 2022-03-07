@@ -6,8 +6,18 @@ import datetime
 
 
 class RegisterUserFunction():
+    """
+    This class wraps the function of the lambda so we can more easily test
+    it with moto. In production, we will continue to pass the stood-up
+    dynamodb table to the handler itself. However, when initializing this class,
+    we can choose to instead initialize it with a mocked version of the
+    dynamodb table.
+    """
+
     def __init__(self, table):
+
         if table is None:
+            # Default Behavior in Prod
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
@@ -66,4 +76,5 @@ class RegisterUserFunction():
 
 def handler(request, context):
     # Register user information from the makerspace/register console
+    # Since this will be hit in prod, it will go ahead and hit our prod dynamodb table
     return RegisterUserFunction(None).handle_register_user_request(request, context)

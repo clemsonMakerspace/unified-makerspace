@@ -8,7 +8,6 @@ from moto import mock_dynamodb2
 
 os.environ["TABLE_NAME"] = "users"
 
-
 test_register_user = {"body": json.dumps({
     "username": "jmdanie234",
     "firstName": "John",
@@ -17,7 +16,7 @@ test_register_user = {"body": json.dumps({
     "DOB": "01/02/2002",
     "Grad_Date": "05/01/2023",
     "Major": "Mathematical Sciences",
-    "Minor": "Business Administration"  # TODO: Should we require minor?
+    "Minor": "Business Administration"
 })}
 
 

@@ -12,6 +12,11 @@ import re
 
 
 class LogVisitFunction():
+    """
+    This function will be used to wrap the functionality of the lambda
+    so we can more easily test with pytest.
+    """
+
     def __init__(self, table, client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
@@ -91,8 +96,7 @@ class LogVisitFunction():
 
         # Display an error if something goes wrong.
         except ClientError as e:
-            # TODO: Replace with a Logging Call
-            print(e.response['Error']['Message'])
+            self.logger.error(e.response['Error']['Message'])
 
     def addVisitEntry(self, current_user, location):
         # Get the current date at which the user logs in.
@@ -187,4 +191,6 @@ class LogVisitFunction():
 
 
 def handler(request, context):
+    # This will be hit in prod, and will connect to the stood-up dynamodb
+    # and Simple Email Service clients.
     return LogVisitFunction(None, None).handle_log_visit_request(request, context)
