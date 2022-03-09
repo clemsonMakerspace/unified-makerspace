@@ -1,4 +1,3 @@
-from register_user.register_user import RegisterUserFunction
 from responses import mock
 import pytest
 import os
@@ -7,6 +6,11 @@ import boto3
 from moto import mock_dynamodb2
 
 os.environ["TABLE_NAME"] = "users"
+
+# This needs to happen after we set the environment variable so
+# the cold start code doesn't break pytest.
+from register_user.register_user import RegisterUserFunction
+
 
 test_register_user = {"body": json.dumps({
     "username": "jmdanie234",

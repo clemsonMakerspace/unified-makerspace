@@ -1,4 +1,3 @@
-from log_visit.log_visit import LogVisitFunction
 from moto import mock_dynamodb2, mock_ses
 import boto3
 import pytest
@@ -7,7 +6,9 @@ import os
 os.environ["TABLE_NAME"] = "visits"
 os.environ["AWS_REGION"] = "us-east-1"
 
-# This has to run afterwards for the mock to work
+# This has to run after we set the environment variables
+# so we don't break pytest.
+from log_visit.log_visit import LogVisitFunction
 
 
 test_log_visit_with_no_location = {
