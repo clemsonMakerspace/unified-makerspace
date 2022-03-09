@@ -27,7 +27,6 @@ interface Schema {
   birthday: Date;
   gradsemester: string;
   gradyear: string;
-  // graddate: Date;
   major: string[];
   minor?: string[];
 }
