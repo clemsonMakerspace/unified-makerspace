@@ -17,7 +17,7 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, table, client):
+    def __init__(self, table, ses_client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
@@ -31,11 +31,11 @@ class LogVisitFunction():
         else:
             self.visits = table
 
-        if client is None:
+        if ses_client is None:
             AWS_REGION = os.environ['AWS_REGION']
             self.client = boto3.client('ses', region_name=AWS_REGION)
         else:
-            self.client = client
+            self.client = ses_client
 
     def checkRegistration(self, current_user):
         response = self.visits.query(
@@ -190,7 +190,10 @@ class LogVisitFunction():
             }
 
 
+log_visit_function = LogVisitFunction(None, None)
+
+
 def handler(request, context):
     # This will be hit in prod, and will connect to the stood-up dynamodb
     # and Simple Email Service clients.
-    return LogVisitFunction(None, None).handle_log_visit_request(request, context)
+    return log_visit_function.handle_log_visit_request(request, context)
