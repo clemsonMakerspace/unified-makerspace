@@ -11,7 +11,7 @@ class Database(core.Stack):
         self.id = f'Database-{stage}'
         super().__init__(scope, self.id, env=env, termination_protection=True)
 
-        self.dynamodb_single_table()
+        self.dynamodb_dual_tables()
 
     def dynamodb_single_table(self):
         """
@@ -62,3 +62,43 @@ class Database(core.Stack):
                                         partition_key=aws_dynamodb.Attribute(
                                             name='PK',
                                             type=aws_dynamodb.AttributeType.STRING))
+
+    def dynamodb_dual_tables(self):
+        """
+        This table design has us use multiple dyanmoDB tables for tracking
+        the visits and the users. Ideally, by separating the two, we can more
+        easily perform data analytics.
+
+        Visits:
+
+        - PK = `{date}`
+        - SK = `{username}`
+
+        Visitors:
+
+        - PK = username
+        - SK = `VISITOR_INFORMATION`
+        """
+        # TODO: This fails on an ID error. What is self.id? Do we need to make
+        # 2 stacks for the database? This just seems a little redundant.
+        self.visits_table = aws_dynamodb.Table(self,
+                                               self.id,
+                                               point_in_time_recovery=True,
+                                               removal_policy=core.RemovalPolicy.RETAIN,
+                                               sort_key=aws_dynamodb.Attribute(
+                                                   name='SK',
+                                                   type=aws_dynamodb.AttributeType.STRING),
+                                               partition_key=aws_dynamodb.Attribute(
+                                                   name='PK',
+                                                   type=aws_dynamodb.AttributeType.NUMBER))
+
+        self.users_table = aws_dynamodb.Table(self,
+                                              self.id,
+                                              point_in_time_recovery=True,
+                                              removal_policy=core.RemovalPolicy.RETAIN,
+                                              sort_key=aws_dynamodb.Attribute(
+                                                  name='SK',
+                                                  type=aws_dynamodb.AttributeType.STRING),
+                                              partition_key=aws_dynamodb.Attribute(
+                                                  name='PK',
+                                                  type=aws_dynamodb.AttributeType.STRING))

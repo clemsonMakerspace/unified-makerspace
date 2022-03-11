@@ -31,7 +31,8 @@ class Visit(core.Stack):
 
     def __init__(self, scope: core.Construct,
                  stage: str,
-                 table_name: str,
+                 visits_table_name: str,
+                 users_table_name: str,
                  *,
                  env: core.Environment,
                  create_dns: bool,
@@ -49,8 +50,8 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.log_visit_lambda(table_name)
-        self.register_user_lambda(table_name)
+        self.log_visit_lambda(visits_table_name)
+        self.register_user_lambda(users_table_name)
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
