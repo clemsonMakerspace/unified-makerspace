@@ -50,7 +50,7 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.log_visit_lambda(visits_table_name)
+        self.log_visit_lambda(visits_table_name, users_table_name)
         self.register_user_lambda(users_table_name)
 
     def source_bucket(self):
@@ -100,7 +100,7 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def log_visit_lambda(self, table_name: str):
+    def log_visit_lambda(self, visits_table_name: str, users_table_name: str):
 
         sending_authorization_policy = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW)
@@ -113,7 +113,9 @@ class Visit(core.Stack):
             function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/log_visit'),
             environment={
-                'TABLE_NAME': table_name,
+                'TABLE_NAME': visits_table_name,
+                'VISITS_TABLE_NAME': visits_table_name,
+                'USERS_TABLE_NAME': users_table_name
             },
             handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)

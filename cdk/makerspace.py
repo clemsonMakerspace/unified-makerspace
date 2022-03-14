@@ -40,7 +40,9 @@ class MakerspaceStack(core.Stack):
 
         self.database.visits_table.grant_read_write_data(
             self.visit.lambda_visit)
-        self.database.users_table.grant_write_data(self.visit.lambda_register)
+        self.database.users_table.grant_read_data(self.visit.lambda_visit)
+        self.database.users_table.grant_read_write_data(
+            self.visit.lambda_register)
 
         self.shared_api_gateway()
 

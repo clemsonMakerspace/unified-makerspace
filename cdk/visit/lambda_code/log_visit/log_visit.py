@@ -17,19 +17,29 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, table, ses_client):
+    def __init__(self, visits_table, users_table, ses_client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
-        if table is None:
+        if visits_table is None:
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
+            VISITS_TABLE_NAME = os.environ["VISITS_TABLE_NAME"]
             # Get table objects
-            self.visits = dynamodb.Table(TABLE_NAME)
+            self.visits = dynamodb.Table(VISITS_TABLE_NAME)
         else:
-            self.visits = table
+            self.visits = visits_table
+
+        if users_table is None:
+            # Get the service resource.
+            dynamodb = boto3.resource('dynamodb')
+            # Get the table name.
+            USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
+            # Get table objects
+            self.users = dynamodb.Table(USERS_TABLE_NAME)
+        else:
+            self.users = users_table
 
         if ses_client is None:
             AWS_REGION = os.environ['AWS_REGION']
@@ -38,8 +48,8 @@ class LogVisitFunction():
             self.client = ses_client
 
     def checkRegistration(self, current_user):
-        response = self.visits.query(
-            KeyConditionExpression=Key('PK').eq(current_user)
+        response = self.users.query(
+            KeyConditionExpression=Key('username').eq(current_user)
         )
         return response['Count']
 
@@ -108,8 +118,8 @@ class LogVisitFunction():
             # SK = Sort Key = Username or Email Address
 
             Item={
-                'PK': str(visit_date),
-                'SK': current_user,
+                'visit_time': str(visit_date),
+                'username': current_user,
                 'location': location,
             },
         )

@@ -8,10 +8,13 @@ from aws_cdk import (
 class Database(core.Stack):
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
-        self.id = f'Database-{stage}'
-        super().__init__(scope, self.id, env=env, termination_protection=True)
+        self.users_id = f'-users-{stage}'
+        self.visits_id = f'-visits-{stage}'
+        super().__init__(
+            scope, f'Database-{stage}', env=env, termination_protection=True)
 
-        self.dynamodb_dual_tables()
+        self.dynamodb_visits_table()
+        self.dynamodb_users_table()
 
     def dynamodb_single_table(self):
         """
@@ -63,42 +66,26 @@ class Database(core.Stack):
                                             name='PK',
                                             type=aws_dynamodb.AttributeType.STRING))
 
-    def dynamodb_dual_tables(self):
-        """
-        This table design has us use multiple dyanmoDB tables for tracking
-        the visits and the users. Ideally, by separating the two, we can more
-        easily perform data analytics.
-
-        Visits:
-
-        - PK = `{date}`
-        - SK = `{username}`
-
-        Visitors:
-
-        - PK = username
-        - SK = `VISITOR_INFORMATION`
-        """
-        # TODO: This fails on an ID error. What is self.id? Do we need to make
-        # 2 stacks for the database? This just seems a little redundant.
+    def dynamodb_visits_table(self):
         self.visits_table = aws_dynamodb.Table(self,
-                                               self.id,
+                                               self.visits_id,
                                                point_in_time_recovery=True,
                                                removal_policy=core.RemovalPolicy.RETAIN,
                                                sort_key=aws_dynamodb.Attribute(
-                                                   name='SK',
+                                                   name='username',
                                                    type=aws_dynamodb.AttributeType.STRING),
                                                partition_key=aws_dynamodb.Attribute(
-                                                   name='PK',
+                                                   name='visit_time',
                                                    type=aws_dynamodb.AttributeType.NUMBER))
 
+    def dynamodb_users_table(self):
         self.users_table = aws_dynamodb.Table(self,
-                                              self.id,
+                                              self.users_id,
                                               point_in_time_recovery=True,
                                               removal_policy=core.RemovalPolicy.RETAIN,
                                               sort_key=aws_dynamodb.Attribute(
-                                                  name='SK',
+                                                  name='last_name',
                                                   type=aws_dynamodb.AttributeType.STRING),
                                               partition_key=aws_dynamodb.Attribute(
-                                                  name='PK',
+                                                  name='username',
                                                   type=aws_dynamodb.AttributeType.STRING))

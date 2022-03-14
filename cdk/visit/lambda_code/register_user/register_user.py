@@ -33,15 +33,15 @@ class RegisterUserFunction():
 
         response = self.users.put_item(
             Item={
-                'PK': user_info['username'],
-                'SK': str(timestamp),
-                'firstName': user_info['firstName'],
-                'lastName': user_info['lastName'],
-                'Gender': user_info['Gender'],
-                'DOB': user_info['DOB'],
-                'Grad_date': user_info['Grad_Date'],
-                'Major': user_info['Major'],
-                'Minor': user_info['Minor']
+                'username': user_info['username'],
+                'register_time': str(timestamp),
+                'first_name': user_info['firstName'],
+                'last_name': user_info['lastName'],
+                'gender': user_info['Gender'],
+                'date_of_birth': user_info['DOB'],
+                'grad_date': user_info['Grad_Date'],
+                'major': user_info['Major'],
+                'minor': user_info['Minor']
             },
         )
 
