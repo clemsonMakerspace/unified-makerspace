@@ -27,7 +27,7 @@ class RegisterUserFunction():
         else:
             self.users = table
 
-    def addUserInfo(self, user_info):
+    def add_user_info(self, user_info):
         # Get the current date at which the user registers.
         timestamp = datetime.datetime.now()
 
@@ -35,13 +35,13 @@ class RegisterUserFunction():
             Item={
                 'username': user_info['username'],
                 'register_time': str(timestamp),
-                'first_name': user_info['firstName'],
-                'last_name': user_info['lastName'],
-                'gender': user_info['Gender'],
-                'date_of_birth': user_info['DOB'],
-                'grad_date': user_info['Grad_Date'],
-                'major': user_info['Major'],
-                'minor': user_info['Minor']
+                'first_name': user_info['first_name'],
+                'last_name': user_info['last_name'],
+                'gender': user_info['gender'],
+                'date_of_birth': user_info['date_of_birth'],
+                'grad_date': user_info['grad_date'],
+                'major': user_info['major'],
+                'minor': user_info['minor']
             },
         )
 
@@ -66,7 +66,7 @@ class RegisterUserFunction():
         # Get all of the user information from the json file
         user_info = json.loads(request["body"])
         # Call Function
-        response = self.addUserInfo(user_info)
+        response = self.add_user_info(user_info)
         # Send response
         return {
             'headers': HEADERS,
