@@ -3,17 +3,55 @@ from moto import mock_dynamodb2, mock_ses
 import boto3
 import pytest
 import os
+import logging
 
 test_log_visit_with_no_location = {
     "body": "{\"username\":\"jmdanie234\"}"
 }
 
 test_log_visit_with_location = {
-    "body": "{\"username\":\"jmdanie234\",\"location\":\"Watt Location\"}"
+    "body": "{\"username\":\"jmdanie234\",\"location\":\"Watt\"}"
 }
 
 
-def create_dynamodb_table():
+def create_test_users_table():
+    table_name = 'users'
+    dymanodb = boto3.resource('dynamodb', 'us-east-1')
+
+    table = dymanodb.create_table(
+        TableName=table_name,
+        KeySchema=[
+            {
+                'AttributeName': 'username',
+                'KeyType': 'HASH'  # Partition key
+            },
+            {
+                'AttributeName': 'last_name',
+                'KeyType': 'RANGE'  # Sort key
+            },
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'username',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'last_name',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
+        }
+    )
+
+    table.wait_until_exists()
+
+    return table
+
+
+def create_test_visit_table():
     """
     Create a dynamodb table for testing
 
@@ -28,11 +66,11 @@ def create_dynamodb_table():
         TableName=table_name,
         KeySchema=[
             {
-                'AttributeName': 'PK',
+                'AttributeName': 'visit_time',
                 'KeyType': 'HASH'  # Partition key
             },
             {
-                'AttributeName': 'SK',
+                'AttributeName': 'username',
                 'KeyType': 'RANGE'  # Sort key
             },
             {
@@ -42,11 +80,11 @@ def create_dynamodb_table():
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'PK',
-                'AttributeType': 'S'
+                'AttributeName': 'visit_time',
+                'AttributeType': 'N'
             },
             {
-                'AttributeName': 'SK',
+                'AttributeName': 'username',
                 'AttributeType': 'S'
             },
             {
@@ -74,17 +112,20 @@ def create_ses_client():
 @mock_dynamodb2
 @mock_ses
 def test_visit_with_location():
-    table = create_dynamodb_table()
+    visits_table = create_test_visit_table()
+    users_table = create_test_users_table()
     client = create_ses_client()
 
-    response = LogVisitFunction(table, client).handle_log_visit_request(
+    response = LogVisitFunction(visits_table, users_table, client).handle_log_visit_request(
         test_log_visit_with_location, None)
+
     assert response['statusCode'] == 200
 
 
 @mock_dynamodb2
 def test_visit_with_no_location():
-    table = create_dynamodb_table()
-    response = LogVisitFunction(table, None).handle_log_visit_request(
+    visits_table = create_test_visit_table()
+    users_table = create_test_users_table()
+    response = LogVisitFunction(visits_table, users_table, None).handle_log_visit_request(
         test_log_visit_with_no_location, None)
     assert response['statusCode'] == 200

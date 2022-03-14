@@ -9,13 +9,13 @@ from moto import mock_dynamodb2
 
 test_register_user = {"body": json.dumps({
     "username": "jmdanie234",
-    "firstName": "John",
-    "lastName": "Doe",
-    "Gender": "Male",
-    "DOB": "01/02/2002",
-    "Grad_Date": "05/01/2023",
-    "Major": "Mathematical Sciences",
-    "Minor": "Business Administration"
+    "first_name": "John",
+    "last_name": "Doe",
+    "gender": "Male",
+    "date_of_birth": "01/02/2002",
+    "grad_date": "05/01/2023",
+    "major": "Mathematical Sciences",
+    "minor": "Business Administration"
 })}
 
 
@@ -27,21 +27,21 @@ def create_dynamodb_table():
         TableName=table_name,
         KeySchema=[
             {
-                'AttributeName': 'PK',
+                'AttributeName': 'username',
                 'KeyType': 'HASH'  # Partition key
             },
             {
-                'AttributeName': 'SK',
+                'AttributeName': 'last_name',
                 'KeyType': 'RANGE'  # Sort key
             },
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'PK',
+                'AttributeName': 'username',
                 'AttributeType': 'S'
             },
             {
-                'AttributeName': 'SK',
+                'AttributeName': 'last_name',
                 'AttributeType': 'S'
             },
         ],

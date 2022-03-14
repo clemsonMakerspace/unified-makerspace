@@ -118,7 +118,7 @@ class LogVisitFunction():
             # SK = Sort Key = Username or Email Address
 
             Item={
-                'visit_time': str(visit_date),
+                'visit_time': int(visit_date),
                 'username': current_user,
                 'location': location,
             },
@@ -200,7 +200,7 @@ class LogVisitFunction():
             }
 
 
-log_visit_function = LogVisitFunction(None, None)
+log_visit_function = LogVisitFunction(None, None, None)
 
 
 def handler(request, context):
