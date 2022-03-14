@@ -113,7 +113,6 @@ class Visit(core.Stack):
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
-                'API_ENDPOINT': self.distribution.domain_name,
             },
             handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
@@ -129,7 +128,6 @@ class Visit(core.Stack):
             code=aws_lambda.Code.from_asset('visit/lambda_code'),
             environment={
                 'TABLE_NAME': table_name,
-                'API_ENDPOINT': self.distribution.domain_name,
             },
             handler='register_user.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
