@@ -17,8 +17,6 @@ logger.setLevel(logging.INFO)
 dynamodb = boto3.resource('dynamodb')
 # Get the table name.
 TABLE_NAME = os.environ["TABLE_NAME"]
-# Get the appropriate domain variable
-API_ENDPOINT = os.environ["API_ENDPOINT"]
 # Get table objects
 visits = dynamodb.Table(TABLE_NAME)
 
@@ -126,7 +124,7 @@ def handler(request, context):
     HEADERS = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': API_ENDPOINT,
+        'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
     }
 
