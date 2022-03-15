@@ -17,9 +17,18 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, visits_table, users_table, ses_client):
+    def __init__(self, visits_table, users_table, ses_client, pytest=False):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
+
+        self.pytest = pytest
+
+        # Get the service resource.
+        dynamodb = boto3.resource('dynamodb')
+        # Get the table name.
+        ORIGINAL_TABLE_NAME = os.environ["VISITS_TABLE_NAME"]
+        # Get table objects
+        self.original_table = dynamodb.Table(ORIGINAL_TABLE_NAME)
 
         if visits_table is None:
             # Get the service resource.
@@ -48,10 +57,18 @@ class LogVisitFunction():
             self.client = ses_client
 
     def checkRegistration(self, current_user):
-        response = self.users.query(
+        users_table_response = self.users.query(
             KeyConditionExpression=Key('username').eq(current_user)
         )
-        return response['Count']
+
+        # We are in prod. Check the OG table too.
+        original_table_response = self.original_table.query(
+            KeyConditionExpression=Key('PK').eq(current_user)
+        )
+
+        # This will return whichever value is greater, checking to see
+        # if we have their registration in the original table.
+        return users_table_response['Count'] or original_table_response['Count']
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html

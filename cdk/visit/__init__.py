@@ -33,6 +33,7 @@ class Visit(core.Stack):
                  stage: str,
                  visits_table_name: str,
                  users_table_name: str,
+                 original_table_name: str,  # This is the original combined db table
                  *,
                  env: core.Environment,
                  create_dns: bool,
@@ -50,8 +51,9 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.log_visit_lambda(visits_table_name, users_table_name)
-        self.register_user_lambda(users_table_name)
+        self.log_visit_lambda(
+            visits_table_name, users_table_name, original_table_name)
+        self.register_user_lambda(users_table_name, original_table_name)
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -100,7 +102,7 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def log_visit_lambda(self, visits_table_name: str, users_table_name: str):
+    def log_visit_lambda(self, visits_table_name: str, users_table_name: str, original_table_name: str):
 
         sending_authorization_policy = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW)
@@ -115,14 +117,15 @@ class Visit(core.Stack):
             environment={
                 'TABLE_NAME': visits_table_name,
                 'VISITS_TABLE_NAME': visits_table_name,
-                'USERS_TABLE_NAME': users_table_name
+                'USERS_TABLE_NAME': users_table_name,
+                'ORIGINAL_TABLE_NAME': original_table_name
             },
             handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
 
         self.lambda_visit.role.add_to_policy(sending_authorization_policy)
 
-    def register_user_lambda(self, table_name: str):
+    def register_user_lambda(self, table_name: str, original_table_name: str):
 
         self.lambda_register = aws_lambda.Function(
             self,
@@ -131,6 +134,7 @@ class Visit(core.Stack):
             code=aws_lambda.Code.from_asset('visit/lambda_code/register_user'),
             environment={
                 'TABLE_NAME': table_name,
+                'ORIGINAL_TABLE_NAME': original_table_name
             },
             handler='register_user.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
