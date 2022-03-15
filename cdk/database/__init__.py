@@ -78,7 +78,7 @@ class Database(core.Stack):
                                                    type=aws_dynamodb.AttributeType.STRING),
                                                partition_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
-                                                   type=aws_dynamodb.AttributeType.NUMBER))
+                                                   type=aws_dynamodb.AttributeType.STRING))
 
     def dynamodb_users_table(self):
         self.users_table = aws_dynamodb.Table(self,

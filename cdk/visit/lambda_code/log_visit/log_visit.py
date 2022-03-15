@@ -128,6 +128,9 @@ class LogVisitFunction():
     def addVisitEntry(self, current_user, location):
         # Get the current date at which the user logs in.
         visit_date = datetime.datetime.now().timestamp()
+        # Convert visit_date to human-readable format
+        visit_date = datetime.datetime.fromtimestamp(
+            visit_date).strftime('%Y-%m-%d %H:%M:%S')
 
         # Add the item to the table.
         response = self.visits.put_item(
@@ -135,7 +138,7 @@ class LogVisitFunction():
             # SK = Sort Key = Username or Email Address
 
             Item={
-                'visit_time': int(visit_date),
+                'visit_time': str(visit_date),
                 'username': current_user,
                 'location': location,
             },

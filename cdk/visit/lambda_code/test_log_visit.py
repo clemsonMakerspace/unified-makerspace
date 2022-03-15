@@ -81,7 +81,7 @@ def create_test_visit_table():
         AttributeDefinitions=[
             {
                 'AttributeName': 'visit_time',
-                'AttributeType': 'N'
+                'AttributeType': 'S'
             },
             {
                 'AttributeName': 'username',
