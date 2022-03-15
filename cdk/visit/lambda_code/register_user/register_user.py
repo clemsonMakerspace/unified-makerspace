@@ -79,5 +79,7 @@ register_user_function = RegisterUserFunction(None)
 
 def handler(request, context):
     # Register user information from the makerspace/register console
-    # Since this will be hit in prod, it will go ahead and hit our prod dynamodb table
-    return register_user_function.handle_register_user_request(request, context)
+    # Since this will be hit in prod, it will go ahead and hit our prod
+    # dynamodb table
+    return register_user_function.handle_register_user_request(
+        request, context)
