@@ -39,7 +39,8 @@ class RegisterUserFunction():
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
                 'DOB': user_info['DOB'],
-                'Grad_date': user_info['Grad_Date'],
+                'Grad_Semester': user_info['Grad_Semester'],
+                'Grad_Year': user_info['Grad_Year'],
                 'Major': user_info['Major'],
                 'Minor': user_info['Minor']
             },
