@@ -4,9 +4,6 @@ import boto3
 import pytest
 import os
 
-os.environ["TABLE_NAME"] = "visits"
-os.environ["AWS_REGION"] = "us-east-1"
-
 # This has to run after we set the environment variables
 # so we don't break pytest.
 

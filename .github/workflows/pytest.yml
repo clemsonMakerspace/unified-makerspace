@@ -24,3 +24,5 @@ jobs:
               run: pytest cdk/visit/lambda_code
               env:
                   AWS_DEFAULT_REGION: us-east-1
+                  AWS_REGION: us-east-1
+                  TABLE_NAME: visits
