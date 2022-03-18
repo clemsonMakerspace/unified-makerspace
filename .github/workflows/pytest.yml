@@ -25,4 +25,6 @@ jobs:
               env:
                   AWS_DEFAULT_REGION: us-east-1
                   AWS_REGION: us-east-1
-                  TABLE_NAME: visits
+                  VISITS_TABLE_NAME: visits
+                  ORIGINAL_TABLE_NAME: original
+                  USERS_TABLE_NAME: users
