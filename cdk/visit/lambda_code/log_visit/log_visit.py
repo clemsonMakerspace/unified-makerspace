@@ -26,7 +26,7 @@ class LogVisitFunction():
         # Get the service resource.
         dynamodb = boto3.resource('dynamodb')
         # Get the table name.
-        ORIGINAL_TABLE_NAME = os.environ["VISITS_TABLE_NAME"]
+        ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
         # Get table objects
         self.original_table = dynamodb.Table(ORIGINAL_TABLE_NAME)
 
