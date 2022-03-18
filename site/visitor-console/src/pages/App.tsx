@@ -5,9 +5,9 @@ import { locations } from "../library/constants";
 import Registration from "./Registration";
 import LocationSelection from "./LocationSelection";
 import SignInSuccess from "./SignInSuccess";
-import SignIn from "./SignIn";
 import SignInError from "./SignInError";
 import NotFoundPage from "./NotFoundPage";
+import VisitForm from "../components/VisitForm";
 
 const App = () => {
   return (
@@ -25,7 +25,7 @@ const App = () => {
           <Route
             path={`/${slug}`}
             key={slug}
-            element={<SignIn location={location} />}
+            element={<VisitForm location={location} />}
           />
         );
       })}
