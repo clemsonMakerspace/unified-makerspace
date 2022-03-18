@@ -22,7 +22,9 @@ const PageCard = ({ title, subtitle, children }: Props) => {
           <span className="text-light fw-bold fs-4">{subtitle}</span>
         )}
       </div>
-      <div className="d-flex justify-content-center text-white">{children}</div>
+      <div className="d-flex flex-column align-items-center justify-content-center text-white">
+        {children}
+      </div>
       <div className="flex-grow-1"></div>
       <Footer />
     </div>

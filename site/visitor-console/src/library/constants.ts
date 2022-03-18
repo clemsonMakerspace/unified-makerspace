@@ -7,9 +7,21 @@ export const api_endpoint =
 export const format_date = (date: Date) => date.toISOString().split("T")[0];
 
 export const locations: MakerspaceLocation[] = [
-  { slug: "cooper_library", name: "Cooper Library" },
-  { slug: "watt_center", name: "Watt Family Innovation Center" },
-  { slug: "cook_lab", name: "Cook Laboratory" },
+  {
+    slug: "watt_center",
+    name: "Watt Family Innovation Center",
+    tools: ["3D Printer", "Lazer Cutter", "Other"],
+  },
+  {
+    slug: "cooper_library",
+    name: "Cooper Library",
+    tools: ["3D Printer"],
+  },
+  {
+    slug: "cook_lab",
+    name: "Cook Laboratory",
+    tools: [],
+  },
 ];
 
 export const genders = ["Male", "Female", "Other"];
