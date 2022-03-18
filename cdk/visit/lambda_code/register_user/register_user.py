@@ -21,7 +21,7 @@ class RegisterUserFunction():
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
+            TABLE_NAME = os.environ["USERS_TABLE_NAME"]
             # Get table objects
             self.users = dynamodb.Table(TABLE_NAME)
         else:
