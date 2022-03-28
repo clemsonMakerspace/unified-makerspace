@@ -54,13 +54,14 @@ class LogVisitFunction():
         else:
             self.client = ses_client
 
-    def checkRegistration(self, current_user):
-        print("Checking registration for: " + current_user)
+    def isUserRegistered(self, current_user):
+        """
+        true if the user has registered
+        """
         original_table_response = self.original.query(
             KeyConditionExpression=Key('PK').eq(current_user)
         )
-
-        return original_table_response['Count']
+        return original_table_response['Count'] != 0
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
@@ -117,7 +118,7 @@ class LogVisitFunction():
         except ClientError as e:
             self.logger.error(e.response['Error']['Message'])
 
-    def addVisitEntry(self, current_user, location):
+    def addVisitEntry(self, current_user, location, tool):
         # Get the current date at which the user logs in.
         visit_date = datetime.datetime.now().timestamp()
         # Convert visit_date to human-readable format
@@ -133,6 +134,7 @@ class LogVisitFunction():
                 'visit_time': str(visit_date),
                 'username': current_user,
                 'location': location,
+                'tool': tool,
             },
         )
 
@@ -140,7 +142,8 @@ class LogVisitFunction():
             Item={
                 'PK': str(visit_date),
                 'SK': current_user,
-                'location': location,
+                'tool': tool or ' ',
+                'location': location or ' ',
             },
         )
 
@@ -148,14 +151,13 @@ class LogVisitFunction():
 
     def handle_log_visit_request(self, request, context):
         """
-            Log the input of a user (namely, the username) from the makerspace console.
-            This should:
-            1. Check whether this user has visited before by looking for a
-            sentinel record in the table
-            2. Trigger a registration workflow if this is the first time for that user
-            3. Place a visit entry into the table
-            """
-        # return client error if no string params
+        Log the input of a user (namely, the username) from the makerspace console.
+        This should:
+        1. Check whether this user has visited before by looking for a
+        sentinel record in the table
+        2. Trigger a registration workflow if this is the first time for that user
+        3. Place a visit entry into the table
+        """
 
         HEADERS = {
             'Content-Type': 'application/json',
@@ -164,64 +166,59 @@ class LogVisitFunction():
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         }
 
-        if (request is None):
+        def bad_request(body):
             return {
                 'headers': HEADERS,
                 'statusCode': 400,
-                'body': json.dumps({
-                    "Message": "Failed to provide parameters"
-                })
+                'body': json.dumps(body)
             }
 
+        # if no request is provided (should never be the case because of gateway evocation)
+        if (request is None):
+            return bad_request({'Message': 'No request provided'})
+        
+        # get the body of the request
+        body = json.loads(request.get('body', "{}"))
+
+        # get the users username
         try:
-            # Get the username from the request body.
-            username = json.loads(request["body"])["username"]
-            location = ' '
-            try:
-                location = json.loads(request["body"])["location"]
-            except Exception as e:
-                exception_type, exception_value, exception_traceback = sys.exc_info()
-                traceback_string = traceback.format_exception(
-                    exception_type, exception_value, exception_traceback)
-                err_msg = json.dumps({
-                    "errorType": "MissingParameter",
-                    "errorMessage": "Missing parameter: location",
-                    "errorTrace": traceback_string
-                })
-                self.logger.warn(err_msg)
+            username = body['username']
+        except KeyError:
+            return bad_request({'Message': 'Missing parameter: username'})
 
-            # Check if this user has registered before.
-            registration = self.checkRegistration(username)
+        # get the users location
+        location = None 
+        try:
+            location = body['location']
+        except KeyError:
+            self.logger.warn('location parameter was not provided')
+        
+        # get what tool the user is using
+        tool = None
+        try:
+            tool = body['tool']
+        except KeyError:
+            self.logger.warn('tool parameter was not provided')
 
-            # If the user is not in the system, send a registration link.
-            if registration == 0:
-                self.registrationWorkflow(username)
-                # One could consider setting res = some other number here in order to
-                # bring up a page That lets the user know in order to sign in they
-                # have to check their email and register with the Makerspace.
+        # send user the registration link if not registered
+        user_registered = self.isUserRegistered(username)
+        if not user_registered:
+            self.registrationWorkflow(username)
 
-                # Call Function
-            res = self.addVisitEntry(username, location)
+        # add the visit entry
+        status_code = self.addVisitEntry(username, location, tool)
 
-            # Send response
-            return {
-                'headers': HEADERS,
-                'statusCode': res
-            }
-
-        except Exception as e:
-            # Return exception with response
-            return {
-                'headers': HEADERS,
-                'statusCode': 500,
-                'body': json.dumps({
-                    'Message': str(e)
-                })
-            }
+        # Send response
+        return {
+            'headers': HEADERS,
+            'statusCode': status_code,
+            'body': json.dumps({
+                "was_user_registered": user_registered,                
+            })
+        }
 
 
 log_visit_function = LogVisitFunction(None, None, None, None)
-
 
 def handler(request, context):
     # This will be hit in prod, and will connect to the stood-up dynamodb
