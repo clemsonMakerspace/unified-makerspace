@@ -17,18 +17,21 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, visits_table, users_table, ses_client, pytest=False):
+    def __init__(self, visits_table, users_table, original_table, ses_client, pytest=False):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
         self.pytest = pytest
 
-        # Get the service resource.
-        dynamodb = boto3.resource('dynamodb')
-        # Get the table name.
-        ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
-        # Get table objects
-        self.original_table = dynamodb.Table(ORIGINAL_TABLE_NAME)
+        if original_table is not None:
+            # Get the service resource.
+            dynamodb = boto3.resource('dynamodb')
+            # Get the table name.
+            ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
+            # Get table objects
+            self.original_table = dynamodb.Table(ORIGINAL_TABLE_NAME)
+        else:
+            self.original_table = original_table
 
         if visits_table is None:
             # Get the service resource.
@@ -57,10 +60,10 @@ class LogVisitFunction():
             self.client = ses_client
 
     def checkRegistration(self, current_user):
+        print("Checking registration for: " + current_user)
         users_table_response = self.users.query(
             KeyConditionExpression=Key('username').eq(current_user)
         )
-
         # We are in prod. Check the OG table too.
         original_table_response = self.original_table.query(
             KeyConditionExpression=Key('PK').eq(current_user)
@@ -220,7 +223,7 @@ class LogVisitFunction():
             }
 
 
-log_visit_function = LogVisitFunction(None, None, None)
+log_visit_function = LogVisitFunction(None, None, None, None)
 
 
 def handler(request, context):
