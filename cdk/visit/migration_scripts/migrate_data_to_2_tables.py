@@ -14,7 +14,7 @@ def generate_role_arn() -> str:
     Returns:
         A role arn.
     """
-    return 'arn:aws:iam::{}:role/{}'.format(os.environ['AWS_ACCOUNT_ID'], 'migration-role')
+    return 'arn:aws:iam::{}:role/{}'.format(os.environ['AWS_ACCOUNT_ID'], 'data_migration_role')
 
 
 def get_table(table_name: str) -> boto3.resources.base.ServiceResource:
