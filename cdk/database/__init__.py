@@ -73,10 +73,10 @@ class Database(core.Stack):
                                                self.visits_id,
                                                point_in_time_recovery=True,
                                                removal_policy=core.RemovalPolicy.RETAIN,
-                                               sort_key=aws_dynamodb.Attribute(
+                                               partition_key=aws_dynamodb.Attribute(
                                                    name='username',
                                                    type=aws_dynamodb.AttributeType.STRING),
-                                               partition_key=aws_dynamodb.Attribute(
+                                               sort_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.STRING))
 
@@ -85,9 +85,6 @@ class Database(core.Stack):
                                               self.users_id,
                                               point_in_time_recovery=True,
                                               removal_policy=core.RemovalPolicy.RETAIN,
-                                              sort_key=aws_dynamodb.Attribute(
-                                                  name='last_name',
-                                                  type=aws_dynamodb.AttributeType.STRING),
                                               partition_key=aws_dynamodb.Attribute(
                                                   name='username',
                                                   type=aws_dynamodb.AttributeType.STRING))
