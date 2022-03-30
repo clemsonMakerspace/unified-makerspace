@@ -33,7 +33,7 @@ class RegisterUserFunction():
 
         response = self.users.put_item(
             Item={
-                'username': user_info['username'],
+                'username': user_info['username'].lower(),
                 'register_time': str(timestamp),
                 'first_name': user_info['first_name'],
                 'last_name': user_info['last_name'],
