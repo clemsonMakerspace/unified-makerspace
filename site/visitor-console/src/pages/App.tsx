@@ -7,7 +7,7 @@ import LocationSelection from "./LocationSelection";
 import SignInSuccess from "./SignInSuccess";
 import SignIn from "./SignIn";
 import SignInError from "./SignInError";
-import PageNotFound from "./PageNotFound";
+import NotFoundPage from "./NotFoundPage";
 
 const App = () => {
   return (
@@ -16,7 +16,7 @@ const App = () => {
       <Route path="/register" element={<Registration />} />
       <Route path="/success" element={<SignInSuccess />} />
       <Route path="/error" element={<SignInError />} />
-      <Route path="*" element={<PageNotFound />} />
+      <Route path="*" element={<NotFoundPage />} />
 
       {/* makerspace specific routes */}
       {locations.map((location) => {
