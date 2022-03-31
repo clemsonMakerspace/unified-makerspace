@@ -1,0 +1,22 @@
+# makes sure the frontend builds correctly
+# eslint will fail this if something is wrong
+
+name: Visitor Frontend Linting
+
+on:
+  pull_request:
+    branches: [ mainline ]
+
+jobs:
+  visitor_frontend_linting:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./site/visitor-console
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - run: npm install
+    - run: npm run build
