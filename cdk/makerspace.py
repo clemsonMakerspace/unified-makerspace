@@ -58,6 +58,8 @@ class MakerspaceStack(core.Stack):
             self.app,
             self.stage,
             self.database.table.table_name,
+            self.database.visits_table.table_name,
+            self.database.users_table.table_name,
             create_dns=self.create_dns,
             zones=self.dns,
             env=self.env)
