@@ -21,13 +21,13 @@ class RegisterUserFunction():
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
+            TABLE_NAME = os.environ["USERS_TABLE_NAME"]
             # Get table objects
             self.users = dynamodb.Table(TABLE_NAME)
         else:
             self.users = table
 
-    def addUserInfo(self, user_info):
+    def add_user_info(self, user_info):
         # Get the current date at which the user registers.
         timestamp = datetime.datetime.now()
 
@@ -66,7 +66,7 @@ class RegisterUserFunction():
         # Get all of the user information from the json file
         user_info = json.loads(request["body"])
         # Call Function
-        response = self.addUserInfo(user_info)
+        response = self.add_user_info(user_info)
         # Send response
         return {
             'headers': HEADERS,

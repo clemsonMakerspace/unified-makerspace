@@ -17,19 +17,31 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, table, ses_client):
+    def __init__(self, visits_table, users_table, ses_client, pytest=False):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
-        if table is None:
+        self.pytest = pytest
+
+        if visits_table is None:
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
+            VISITS_TABLE_NAME = os.environ["VISITS_TABLE_NAME"]
             # Get table objects
-            self.visits = dynamodb.Table(TABLE_NAME)
+            self.visits = dynamodb.Table(VISITS_TABLE_NAME)
         else:
-            self.visits = table
+            self.visits = visits_table
+
+        if users_table is None:
+            # Get the service resource.
+            dynamodb = boto3.resource('dynamodb')
+            # Get the table name.
+            USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
+            # Get table objects
+            self.users = dynamodb.Table(USERS_TABLE_NAME)
+        else:
+            self.users = users_table
 
         if ses_client is None:
             AWS_REGION = os.environ['AWS_REGION']
@@ -38,10 +50,14 @@ class LogVisitFunction():
             self.client = ses_client
 
     def checkRegistration(self, current_user):
-        response = self.visits.query(
-            KeyConditionExpression=Key('PK').eq(current_user)
+        print("Checking registration for: " + current_user)
+        users_table_response = self.users.query(
+            KeyConditionExpression=Key('username').eq(current_user)
         )
-        return response['Count']
+
+        # This will return whichever value is greater, checking to see
+        # if we have their registration in the original table.
+        return users_table_response['Count']
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
@@ -101,6 +117,9 @@ class LogVisitFunction():
     def addVisitEntry(self, current_user, location):
         # Get the current date at which the user logs in.
         visit_date = datetime.datetime.now().timestamp()
+        # Convert visit_date to human-readable format
+        visit_date = datetime.datetime.fromtimestamp(
+            visit_date).strftime('%Y-%m-%d %H:%M:%S')
 
         # Add the item to the table.
         response = self.visits.put_item(
@@ -108,8 +127,8 @@ class LogVisitFunction():
             # SK = Sort Key = Username or Email Address
 
             Item={
-                'PK': str(visit_date),
-                'SK': current_user,
+                'visit_time': str(visit_date),
+                'username': current_user,
                 'location': location,
             },
         )
@@ -190,7 +209,7 @@ class LogVisitFunction():
             }
 
 
-log_visit_function = LogVisitFunction(None, None)
+log_visit_function = LogVisitFunction(None, None, None)
 
 
 def handler(request, context):
