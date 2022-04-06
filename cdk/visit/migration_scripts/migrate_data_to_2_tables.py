@@ -2,7 +2,7 @@
 This script will migrate data from the original table to the two
 new tables.
 """
-
+from typing import Tuple
 import boto3
 import os
 
@@ -46,7 +46,7 @@ def get_all_data(table: boto3.resources.base.ServiceResource) -> list:
     return response['Items']
 
 
-def process_grad_date(grad_date: str) -> tuple(str, int):
+def process_grad_date(grad_date: str) -> Tuple[str, int]:
     """
     Infers the graduation semester and year from grad_date
 
@@ -58,11 +58,12 @@ def process_grad_date(grad_date: str) -> tuple(str, int):
     """
     year = grad_date[:4]
     month = grad_date[5:7]
+    print(month)
     if month in ['04', '05', '06']:
         semester = 'Spring'
-    elif month == ['07', '08', '09']:
+    elif month in ['07', '08', '09']:
         semester = 'Fall'
-    elif month == ['11', '12', '01']:
+    elif month in ['11', '12', '01']:
         semester = 'Winter'
     else:
         raise ValueError(
@@ -100,7 +101,7 @@ if __name__ == '__main__':
                     Item={'visit_time': int(row['PK']), 'username': row['SK'], 'location': ''})
         else:
             # TODO: Figure out what to do about potential excepton
-            grad_semester, grad_year = process_grad_date(row['grad_date'])
+            grad_semester, grad_year = process_grad_date(row['Grad_date'])
             users_table.put_item(
                 Item={'username': row['PK'].lower(), 'register_time': row['SK'],
                       'date_of_birth': row['DOB'], 'first_name': row['firstName'],
