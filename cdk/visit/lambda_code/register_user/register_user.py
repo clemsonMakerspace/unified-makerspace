@@ -41,7 +41,7 @@ class RegisterUserFunction():
                 'DOB': user_info['DOB'],
                 'Grad_date': user_info['Grad_Date'],
                 'Major': user_info['Major'],
-                'Minor': user_info['Minor']
+                'Minor': user_info.get('Minor', [])
             },
         )
 
