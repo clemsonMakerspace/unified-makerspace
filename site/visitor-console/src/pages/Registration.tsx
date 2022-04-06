@@ -12,6 +12,9 @@ import {
   minors,
   api_endpoint,
   format_date,
+  gradyears,
+  gradsemesters,
+  userPosition,
 } from "../library/constants";
 import FormSelect from "../components/FormSelect";
 import FormMultiselect from "../components/FormMultiselect";
@@ -23,8 +26,10 @@ interface Schema {
   lastname: string;
   gender: string;
   birthday: Date;
-  graddate: Date;
-  major: string[];
+  position: string;
+  gradsemester?: string;
+  gradyear?: string;
+  major?: string[];
   minor?: string[];
 }
 
@@ -35,8 +40,10 @@ const schema: SchemaOf<Schema> = yup
     lastname: yup.string().required(),
     gender: yup.string().required(),
     birthday: yup.date().required(),
-    graddate: yup.date().required(),
-    major: yup.array().required(),
+    position: yup.string().required(),
+    gradsemester: yup.string(),
+    gradyear: yup.string(),
+    major: yup.array(),
     minor: yup.array(),
   })
   .required();
@@ -48,6 +55,7 @@ const Registration = () => {
     handleSubmit,
     control,
     reset,
+    watch,
 
     // ! future, add validation display
     // formState: { errors },
@@ -65,7 +73,9 @@ const Registration = () => {
       lastName: form_data.lastname,
       Gender: form_data.gender,
       DOB: format_date(form_data.birthday),
-      Grad_Date: format_date(form_data.graddate),
+      UserPosition: form_data.position,
+      GradSemester: form_data.gradsemester,
+      GradYear: form_data.gradyear,
       Major: form_data.major,
       Minor: form_data.minor,
     };
@@ -84,6 +94,19 @@ const Registration = () => {
   };
 
   if (registered) return <PageCard title="Registration Successful" />;
+
+  let userRole = watch("position");
+  if (userRole && userRole === "Undergraduate Student") {
+    document.getElementById("userRole")!.className = "col-md-12 mb-2";
+    document.querySelectorAll("[id=undergradData]").forEach((element) => {
+      element.setAttribute("style", "display:block");
+    });
+  } else if (userRole && userRole !== "Undergraduate Student") {
+    document.getElementById("userRole")!.className = "col-md-12 mb-4";
+    document.querySelectorAll("[id=undergradData]").forEach((element) => {
+      element.setAttribute("style", "display:none");
+    });
+  }
 
   return (
     <PageCard
@@ -156,21 +179,52 @@ const Registration = () => {
             />
           </div>
 
-          {/* grad date */}
-          <div className="col-12 mb-2">
-            <label htmlFor="graddate" className="form-label">
-              Expected Graduation Date
+          {/* User Position */}
+          <div id="userRole" className="col-md-12 mb-4">
+            <label htmlFor="position" className="form-label">
+              Position
             </label>
-            <input
-              type={"date"}
-              className="form-control"
-              id="graddate"
-              {...register("graddate")}
+            <FormSelect
+              control={control}
+              name="position"
+              values={userPosition}
             />
           </div>
 
+          {/* Graduating Semester */}
+          <div
+            id="undergradData"
+            style={{ display: "none" }}
+            className="col-md-6 mb-2"
+          >
+            <label htmlFor="semester" className="form-label">
+              Graduating Semester
+            </label>
+            <FormSelect
+              control={control}
+              name="gradsemester"
+              values={gradsemesters}
+            />
+          </div>
+
+          {/* Graduating Year */}
+          <div
+            id="undergradData"
+            style={{ display: "none" }}
+            className="col-md-6 mb-2"
+          >
+            <label htmlFor="year" className="form-label">
+              Graduating Year
+            </label>
+            <FormSelect control={control} name="gradyear" values={gradyears} />
+          </div>
+
           {/* major */}
-          <div className="col-12 mb-2">
+          <div
+            id="undergradData"
+            style={{ display: "none" }}
+            className="col-12 mb-2"
+          >
             <label htmlFor="major" className="form-label">
               Major(s)
             </label>
@@ -183,7 +237,11 @@ const Registration = () => {
           </div>
 
           {/* minor */}
-          <div className="col-12 mb-4">
+          <div
+            id="undergradData"
+            style={{ display: "none" }}
+            className="col-12 mb-4"
+          >
             <label htmlFor="minor" className="form-label">
               Minor(s)
             </label>

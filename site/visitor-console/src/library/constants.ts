@@ -1,7 +1,8 @@
 import type { MakerspaceLocation } from "./types";
 
 export const api_endpoint =
-  import.meta.env.VITE_API_ENDPOINT || "https://api.cumaker.space";
+  import.meta.env.VITE_API_ENDPOINT ||
+  "https://m5k172xiw1.execute-api.us-east-1.amazonaws.com/prod";
 
 // currently `YEAR-MONTH-DAY, YYYY-MM-DD`
 export const format_date = (date: Date) => date.toISOString().split("T")[0];
@@ -13,6 +14,19 @@ export const locations: MakerspaceLocation[] = [
 ];
 
 export const genders = ["Male", "Female", "Other"];
+
+export const userPosition = [
+  "Undergraduate Student",
+  "Graduate Student",
+  "Faculty/Staff",
+  "Other",
+];
+
+export const gradsemesters = ["Fall", "Spring", "Summer"];
+
+export const gradyears = Array.from({ length: 7 }, (v, i) =>
+  String(i + new Date().getFullYear())
+);
 
 export const majors = [
   "Accounting",
