@@ -9,10 +9,10 @@ class Database(core.Stack):
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
         self.id = f'Database-{stage}'
-        self.users_id = f'-users-{stage}'
-        self.visits_id = f'-visits-{stage}'
+        self.users_id = f'Database-users-{stage}'
+        self.visits_id = f'Database-visits-{stage}'
         super().__init__(
-            scope, f'Database-{stage}', env=env, termination_protection=True)
+            scope, self.id, env=env, termination_protection=True)
 
         self.dynamodb_single_table()  # This is the original table.
         self.dynamodb_visits_table()
