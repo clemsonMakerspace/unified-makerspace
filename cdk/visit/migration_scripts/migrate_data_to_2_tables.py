@@ -46,6 +46,31 @@ def get_all_data(table: boto3.resources.base.ServiceResource) -> list:
     return response['Items']
 
 
+def process_grad_date(grad_date: str) -> tuple(str, int):
+    """
+    Infers the graduation semester and year from grad_date
+
+    grad_date: str
+        The graduation date in the format 'YYYY-MM-DD'
+
+    Returns:
+        A tuple of the semester and year.
+    """
+    year = grad_date[:4]
+    month = grad_date[5:7]
+    if month in ['04', '05', '06']:
+        semester = 'Spring'
+    elif month == ['07', '08', '09']:
+        semester = 'Fall'
+    elif month == ['11', '12', '01']:
+        semester = 'Winter'
+    else:
+        raise ValueError(
+            'Month passed was not April, May, June, July, August, September, November, December or January')
+
+    return semester, int(year)
+
+
 # This part runs the migration
 if __name__ == '__main__':
     client = boto3.client('sts')
@@ -74,11 +99,13 @@ if __name__ == '__main__':
                 visits_table.put_item(
                     Item={'visit_time': int(row['PK']), 'username': row['SK'], 'location': ''})
         else:
+            # TODO: Figure out what to do about potential excepton
+            grad_semester, grad_year = process_grad_date(row['grad_date'])
             users_table.put_item(
                 Item={'username': row['PK'].lower(), 'register_time': row['SK'],
                       'date_of_birth': row['DOB'], 'first_name': row['firstName'],
-                      'gender': row['Gender'], 'grad_date': row['Grad_date'],
-                      'last_name': row['lastName'], 'major': row['Major'],
+                      'gender': row['Gender'], 'grad_semester': grad_semester,
+                      'grad_year': grad_year, 'last_name': row['lastName'], 'major': row['Major'],
                       'minor': row['Minor']})
 
     print("Migration Done! :-)")
