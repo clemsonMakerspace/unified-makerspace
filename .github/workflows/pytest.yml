@@ -26,3 +26,4 @@ jobs:
                   AWS_DEFAULT_REGION: us-east-1
                   AWS_REGION: us-east-1
                   TABLE_NAME: visits
+                  DOMAIN_NAME: https://visit.cumaker.space

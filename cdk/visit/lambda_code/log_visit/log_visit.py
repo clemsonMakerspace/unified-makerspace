@@ -130,7 +130,7 @@ class LogVisitFunction():
         HEADERS = {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
+            'Access-Control-Allow-Origin': os.environ["DOMAIN_NAME"],
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         }
 
