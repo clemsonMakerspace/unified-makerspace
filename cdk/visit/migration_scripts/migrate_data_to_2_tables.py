@@ -62,9 +62,9 @@ def process_grad_date(grad_date: str) -> Tuple[str, int]:
     if month in ['04', '05', '06']:
         semester = 'Spring'
     elif month in ['07', '08', '09']:
-        semester = 'Fall'
+        semester = 'Summer'
     elif month in ['11', '12', '01']:
-        semester = 'Winter'
+        semester = 'Fall'
     else:
         raise ValueError(
             'Month passed was not April, May, June, July, August, September, November, December or January')
