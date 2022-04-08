@@ -95,10 +95,10 @@ if __name__ == '__main__':
         if row['PK'].isdigit():
             if 'location' in row:
                 visits_table.put_item(
-                    Item={'visit_time': int(row['PK']), 'username': row['SK'], 'location': row['location']})
+                    Item={'visit_time': int(row['PK']), 'username': row['SK'].lower(), 'location': row['location']})
             else:
                 visits_table.put_item(
-                    Item={'visit_time': int(row['PK']), 'username': row['SK'], 'location': ''})
+                    Item={'visit_time': int(row['PK']), 'username': row['SK'].lower(), 'location': ''})
         else:
             # TODO: Figure out what to do about potential excepton
             grad_semester, grad_year = process_grad_date(row['Grad_date'])
