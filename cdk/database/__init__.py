@@ -14,6 +14,7 @@ class Database(core.Stack):
         super().__init__(
             scope, self.id, env=env, termination_protection=True)
 
+        self.dynamodb_single_table()
         self.dynamodb_visits_table()
         self.dynamodb_users_table()
 
@@ -56,16 +57,16 @@ class Database(core.Stack):
         [1]: https://www.youtube.com/watch?v=KYy8X8t4MB8
         """
 
-        self.table = aws_dynamodb.Table(self,
-                                        self.id,
-                                        point_in_time_recovery=True,
-                                        removal_policy=core.RemovalPolicy.RETAIN,
-                                        sort_key=aws_dynamodb.Attribute(
-                                            name='SK',
-                                            type=aws_dynamodb.AttributeType.STRING),
-                                        partition_key=aws_dynamodb.Attribute(
-                                            name='PK',
-                                            type=aws_dynamodb.AttributeType.STRING))
+        self.original_table = aws_dynamodb.Table(self,
+                                                 self.id,
+                                                 point_in_time_recovery=True,
+                                                 removal_policy=core.RemovalPolicy.RETAIN,
+                                                 sort_key=aws_dynamodb.Attribute(
+                                                     name='SK',
+                                                     type=aws_dynamodb.AttributeType.STRING),
+                                                 partition_key=aws_dynamodb.Attribute(
+                                                     name='PK',
+                                                     type=aws_dynamodb.AttributeType.STRING))
 
     def dynamodb_visits_table(self):
         self.visits_table = aws_dynamodb.Table(self,

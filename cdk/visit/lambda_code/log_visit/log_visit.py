@@ -17,11 +17,16 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, visits_table, users_table, ses_client, pytest=False):
+    def __init__(self, original_table, visits_table, users_table, ses_client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
-        self.pytest = pytest
+        if original_table is None:
+            dynamodb = boto3.resource('dynamodb')
+            ORIGINAL_TABLE_NAME = os.environ['ORIGINAL_TABLE_NAME']
+            self.original = dynamodb.Table(ORIGINAL_TABLE_NAME)
+        else:
+            self.original = original_table
 
         if visits_table is None:
             # Get the service resource.
@@ -55,6 +60,7 @@ class LogVisitFunction():
             KeyConditionExpression=Key('username').eq(current_user)
         )
 
+        # TODO: Should we check in both tables.
         # This will return whichever value is greater, checking to see
         # if we have their registration in the original table.
         return users_table_response['Count']
@@ -122,7 +128,7 @@ class LogVisitFunction():
             visit_date).strftime('%Y-%m-%d %H:%M:%S')
 
         # Add the item to the table.
-        response = self.visits.put_item(
+        visits_resposne = self.visits.put_item(
             # PK = Partition Key = Visit Date
             # SK = Sort Key = Username or Email Address
 
@@ -133,7 +139,16 @@ class LogVisitFunction():
             },
         )
 
-        return response['ResponseMetadata']['HTTPStatusCode']
+        # TODO: Should we return this?
+        original_response = self.original.put_item(
+            Item={
+                'PK': str(visit_date),
+                'SK': current_user,
+                'location': location,
+            },
+        )
+
+        return visits_resposne['ResponseMetadata']['HTTPStatusCode']
 
     def handle_log_visit_request(self, request, context):
         """
@@ -209,7 +224,7 @@ class LogVisitFunction():
             }
 
 
-log_visit_function = LogVisitFunction(None, None, None)
+log_visit_function = LogVisitFunction(None, None, None, None)
 
 
 def handler(request, context):

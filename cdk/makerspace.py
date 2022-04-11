@@ -38,13 +38,15 @@ class MakerspaceStack(core.Stack):
 
         self.visitors_stack()
 
-        self.database.table.grant_read_write_data(self.visit.lambda_visit)
-        self.database.table.grant_write_data(self.visit.lambda_register)
+        self.database.original_table.grant_read_write_data(
+            self.visit.lambda_visit)
+        self.database.original_table.grant_write_data(
+            self.visit.lambda_register)
 
         self.database.visits_table.grant_read_write_data(
             self.visit.lambda_visit)
         self.database.users_table.grant_read_data(self.visit.lambda_visit)
-        self.database.visits_table.grant_read_write_data(
+        self.database.users_table.grant_read_write_data(
             self.visit.lambda_register)
 
         self.shared_api_gateway()
@@ -63,6 +65,7 @@ class MakerspaceStack(core.Stack):
         self.visit = Visit(
             self.app,
             self.stage,
+            self.database.original_table.table_name,
             self.database.users_table.table_name,
             self.database.visits_table.table_name,
             create_dns=self.create_dns,
