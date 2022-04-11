@@ -6,7 +6,7 @@ import json
 import boto3
 from moto import mock_dynamodb2
 
-from .test_utils.test_functions import create_test_users_table, create_original_table, create_test_visit_table, create_ses_client
+from test_utils.test_functions import create_test_users_table, create_original_table, create_test_visit_table, create_ses_client
 
 test_register_user = {"body": json.dumps({
     "username": "jmdanie234",
