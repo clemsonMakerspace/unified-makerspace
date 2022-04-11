@@ -13,7 +13,7 @@ def create_test_users_table():
                 'KeyType': 'HASH'  # Partition key
             },
             {
-                'AttributeName': 'last_name',
+                'AttributeName': 'lastName',
                 'KeyType': 'RANGE'  # Sort key
             },
         ],
