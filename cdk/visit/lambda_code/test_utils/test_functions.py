@@ -12,18 +12,10 @@ def create_test_users_table():
                 'AttributeName': 'username',
                 'KeyType': 'HASH'  # Partition key
             },
-            {
-                'AttributeName': 'lastName',
-                'KeyType': 'RANGE'  # Sort key
-            },
         ],
         AttributeDefinitions=[
             {
                 'AttributeName': 'username',
-                'AttributeType': 'S'
-            },
-            {
-                'AttributeName': 'last_name',
                 'AttributeType': 'S'
             },
         ],
@@ -60,10 +52,6 @@ def create_test_visit_table():
                 'AttributeName': 'username',
                 'KeyType': 'RANGE'  # Sort key
             },
-            {
-                'AttributeName': 'location',
-                'KeyType': 'RANGE'
-            }
         ],
         AttributeDefinitions=[
             {
@@ -74,10 +62,6 @@ def create_test_visit_table():
                 'AttributeName': 'username',
                 'AttributeType': 'S'
             },
-            {
-                'AttributeName': 'location',
-                'AttributeType': 'S'
-            }
         ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 5,
