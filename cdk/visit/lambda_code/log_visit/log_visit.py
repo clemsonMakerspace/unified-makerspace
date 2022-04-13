@@ -56,14 +56,11 @@ class LogVisitFunction():
 
     def checkRegistration(self, current_user):
         print("Checking registration for: " + current_user)
-        users_table_response = self.users.query(
-            KeyConditionExpression=Key('username').eq(current_user)
+        original_table_response = self.original.query(
+            KeyConditionExpression=Key('PK').eq(current_user)
         )
 
-        # TODO: Should we check in both tables.
-        # This will return whichever value is greater, checking to see
-        # if we have their registration in the original table.
-        return users_table_response['Count']
+        return original_table_response['Count']
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
@@ -127,8 +124,8 @@ class LogVisitFunction():
         visit_date = datetime.datetime.fromtimestamp(
             visit_date).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Add the item to the table.
-        visits_resposne = self.visits.put_item(
+        # Add the item to the tables.
+        visit_response = self.visits.put_item(
             # PK = Partition Key = Visit Date
             # SK = Sort Key = Username or Email Address
 
@@ -139,7 +136,6 @@ class LogVisitFunction():
             },
         )
 
-        # TODO: Should we return this?
         original_response = self.original.put_item(
             Item={
                 'PK': str(visit_date),
@@ -148,7 +144,7 @@ class LogVisitFunction():
             },
         )
 
-        return visits_resposne['ResponseMetadata']['HTTPStatusCode']
+        return original_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_log_visit_request(self, request, context):
         """

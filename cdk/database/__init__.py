@@ -14,7 +14,7 @@ class Database(core.Stack):
         super().__init__(
             scope, self.id, env=env, termination_protection=True)
 
-        self.dynamodb_single_table()
+        self.dynamodb_single_table()  # This is the original table
         self.dynamodb_visits_table()
         self.dynamodb_users_table()
 
