@@ -1,4 +1,5 @@
 import json
+import pdb
 import boto3
 from boto3.dynamodb.conditions import Key
 import os
@@ -84,6 +85,14 @@ class RegisterUserFunction():
             grad_sem = user_info['GradSemester']
             grad_year = user_info['GradYear']
 
+        majorList = []
+        for major in user_info['Major']:
+            majorList.append({'S': major})
+
+        minorList = []
+        for minor in user_info.get('Minor', []):
+            minorList.append({'S': minor})
+
         self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item={
@@ -95,8 +104,8 @@ class RegisterUserFunction():
                 'date_of_birth': {'S': user_info['DOB']},
                 'grad_semester': {'S': grad_sem},
                 'grad_year': {'N': grad_year},
-                'majors': {'L': user_info['Major']},
-                'minors': {'L': user_info.get('Minor', [])}
+                'majors': {'L': majorList},
+                'minors': {'L': minorList}
             })
 
         return original_response['ResponseMetadata']['HTTPStatusCode']
