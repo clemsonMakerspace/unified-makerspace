@@ -3,6 +3,31 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import os
 import datetime
+from typing import Tuple
+
+
+def process_grad_date(grad_date: str) -> Tuple[str, int]:
+    """
+    Infers the graduation semester and year from grad_date
+    grad_date: str
+        The graduation date in the format 'YYYY-MM-DD'
+    Returns:
+        A tuple of the semester and year.
+    """
+    year = grad_date[:4]
+    month = grad_date[5:7]
+    print(month)
+    if month in ['04', '05', '06']:
+        semester = 'Spring'
+    elif month in ['07', '08', '09']:
+        semester = 'Summer'
+    elif month in ['11', '12', '01']:
+        semester = 'Fall'
+    else:
+        raise ValueError(
+            'Month passed was not April, May, June, July, August, September, November, December or January')
+
+    return semester, int(year)
 
 
 class RegisterUserFunction():
@@ -52,22 +77,26 @@ class RegisterUserFunction():
             },
         )
 
-        # Add the user to the original table
-        new_table_response = self.users.put_item(
-            Item={
-                'username': user_info['username'],
-                'register_time': str(timestamp),
-                'firstName': user_info['firstName'],
-                'lastName': user_info['lastName'],
-                'Gender': user_info['Gender'],
-                'DOB': user_info['DOB'],
-                'Grad_date': user_info['Grad_Date'],
-                'Major': user_info['Major'],
-                'Minor': user_info.get('Minor', [])
-            },
-        )
+        if 'Grad_Date' in user_info:
+            # Add the user to the original table
+            grad_sem, grad_year = process_grad_date(user_info['Grad_Date'])
+        else:
+            grad_sem = user_info['GradSemester']
+            grad_year = user_info['GradYear']
 
-        # TODO: Decide between the response to return.
+        self.users.put_item(Item={
+            'username': {'S': user_info['username']},
+            'register_time': {'S': str(timestamp)},
+            'first_name': {'S': user_info['firstName']},
+            'last_name': {'S': user_info['lastName']},
+            'gender': {'S': user_info['Gender']},
+            'date_of_birth': {'S': user_info['DOB']},
+            'grad_semester': {'S': grad_sem},
+            'grad_year': {'N': grad_year},
+            'majors': {'L': user_info['Major']},
+            'minors': {'L': user_info.get('Minor', [])}
+        })
+
         return original_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_register_user_request(self, request, context):
