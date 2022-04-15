@@ -2,13 +2,15 @@ import boto3
 
 
 def create_dynamodb_client():
+
     return boto3.client('dynamodb', 'us-east-1')
 
 
-def create_test_users_table(client):
+def create_test_users_table():
     table_name = 'users'
+    resource = boto3.resource('dynamodb', region_name='us-east-1')
 
-    table = client.create_table(
+    table = resource.create_table(
         TableName=table_name,
         KeySchema=[
             {
@@ -43,7 +45,8 @@ def create_test_visit_table(client):
     """
     table_name = 'visits'
 
-    table = client.create_table(
+    resource = boto3.resource('dynamodb', region_name='us-east-1')
+    table = resource.create_table(
         TableName=table_name,
         KeySchema=[
             {
@@ -85,7 +88,8 @@ def create_ses_client():
 def create_original_table(client):
     table_name = 'ORIGINAL'
 
-    table = client.create_table(
+    resource = boto3.resource('dynamodb', region_name='us-east-1')
+    table = resource.create_table(
         TableName=table_name,
         KeySchema=[
             {
