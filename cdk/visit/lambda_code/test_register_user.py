@@ -6,7 +6,7 @@ import json
 import boto3
 from moto import mock_dynamodb2
 
-from test_utils.test_functions import create_test_users_table, create_original_table, create_test_visit_table, create_ses_client
+from test_utils.test_functions import *
 
 test_register_user = {"body": json.dumps({
     "username": "jmdanie234",
@@ -22,9 +22,10 @@ test_register_user = {"body": json.dumps({
 
 @mock_dynamodb2
 def test_visit_with_location():
+    client = create_dynamodb_client()
     table = create_original_table()
     users_table = create_test_users_table()
 
     response = RegisterUserFunction(
-        table, users_table).handle_register_user_request(test_register_user, None)
+        table, users_table, client).handle_register_user_request(test_register_user, None)
     assert response['statusCode'] == 200

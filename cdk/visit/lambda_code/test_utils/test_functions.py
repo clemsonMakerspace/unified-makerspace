@@ -1,11 +1,14 @@
 import boto3
 
 
-def create_test_users_table():
-    table_name = 'users'
-    dymanodb = boto3.resource('dynamodb', 'us-east-1')
+def create_dynamodb_client():
+    return boto3.resource('dynamodb', 'us-east-1')
 
-    table = dymanodb.create_table(
+
+def create_test_users_table(client):
+    table_name = 'users'
+
+    table = client.create_table(
         TableName=table_name,
         KeySchema=[
             {
@@ -30,7 +33,7 @@ def create_test_users_table():
     return table
 
 
-def create_test_visit_table():
+def create_test_visit_table(client):
     """
     Create a dynamodb table for testing
 
@@ -39,9 +42,8 @@ def create_test_visit_table():
 
     """
     table_name = 'visits'
-    dymanodb = boto3.resource('dynamodb', 'us-east-1')
 
-    table = dymanodb.create_table(
+    table = client.create_table(
         TableName=table_name,
         KeySchema=[
             {
@@ -80,11 +82,10 @@ def create_ses_client():
     return client
 
 
-def create_original_table():
+def create_original_table(client):
     table_name = 'ORIGINAL'
-    dymanodb = boto3.resource('dynamodb', 'us-east-1')
 
-    table = dymanodb.create_table(
+    table = client.create_table(
         TableName=table_name,
         KeySchema=[
             {
