@@ -23,8 +23,8 @@ test_register_user = {"body": json.dumps({
 @mock_dynamodb2
 def test_visit_with_location():
     client = create_dynamodb_client()
-    table = create_original_table()
-    users_table = create_test_users_table()
+    table = create_original_table(client)
+    users_table = create_test_users_table(client)
 
     response = RegisterUserFunction(
         table, users_table, client).handle_register_user_request(test_register_user, None)
