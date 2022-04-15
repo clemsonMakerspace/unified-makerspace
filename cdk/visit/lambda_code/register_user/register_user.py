@@ -27,7 +27,7 @@ def process_grad_date(grad_date: str) -> Tuple[str, int]:
         raise ValueError(
             'Month passed was not April, May, June, July, August, September, November, December or January')
 
-    return semester, int(year)
+    return semester, year
 
 
 class RegisterUserFunction():

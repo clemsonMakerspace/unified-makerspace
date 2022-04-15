@@ -15,8 +15,8 @@ test_register_user = {"body": json.dumps({
     "Gender": "Male",
     "DOB": "2002-01-02",
     "Grad_Date": "2023-05-02",
-    "Major": ["Mathematical Sciences"],
-    "Minor": ["Business Administration"]
+    "Major": [{'S': "Mathematical Sciences"}],
+    "Minor": [{'S': "Business Administration"}]
 })}
 
 
