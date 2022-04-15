@@ -46,14 +46,16 @@ class RegisterUserFunction():
             self.dynamodbclient = dynamodbclient
 
         if users_table is None:
+            dynamodbresource = boto3.resource('dynamodb')
             self.USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
-            self.users = self.dynamodbclient.Table(self.USERS_TABLE_NAME)
+            self.users = dynamodbresource.Table(self.USERS_TABLE_NAME)
         else:
             self.users = users_table
 
         if original_table is None:
             self.ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
-            self.original = self.dynamodbclient.Table(self.ORIGINAL_TABLE_NAME)
+            self.original = dynamodbresource.Table(
+                self.ORIGINAL_TABLE_NAME)
         else:
             self.original = original_table
 
