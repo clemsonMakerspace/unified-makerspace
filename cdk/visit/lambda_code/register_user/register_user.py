@@ -72,8 +72,8 @@ class RegisterUserFunction():
                 'Gender': user_info['Gender'],
                 'DOB': user_info['DOB'],
                 'Grad_date': user_info['Grad_Date'],
-                'Major': str(user_info['Major']),
-                'Minor': str(user_info.get('Minor', []))
+                'Major': ', '.join(sorted(user_info['Major'])),
+                'Minor': ', '.join(sorted(user_info.get('Minor', [])))
             },
         )
 
