@@ -6,7 +6,7 @@ def create_dynamodb_client():
     return boto3.client('dynamodb', 'us-east-1')
 
 
-def create_test_users_table():
+def create_test_users_table(client):
     table_name = 'users'
     resource = boto3.resource('dynamodb', region_name='us-east-1')
 
