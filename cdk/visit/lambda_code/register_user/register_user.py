@@ -41,7 +41,7 @@ class RegisterUserFunction():
 
     def __init__(self, original_table, users_table, dynamodbclient):
         if dynamodbclient is None:
-            self.dynamodbclient = boto3.resource('dynamodb')
+            self.dynamodbclient = boto3.client('dynamodb')
         else:
             self.dynamodbclient = dynamodbclient
 

@@ -2,7 +2,7 @@ import boto3
 
 
 def create_dynamodb_client():
-    return boto3.resource('dynamodb', 'us-east-1')
+    return boto3.client('dynamodb', 'us-east-1')
 
 
 def create_test_users_table(client):
