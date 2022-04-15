@@ -126,7 +126,7 @@ class RegisterUserFunction():
         }
 
 
-register_user_function = RegisterUserFunction(None, None)
+register_user_function = RegisterUserFunction(None, None, None)
 
 
 def handler(request, context):
