@@ -39,23 +39,21 @@ class RegisterUserFunction():
     dynamodb table.
     """
 
-    def __init__(self, original_table, users_table):
+    def __init__(self, original_table, users_table, dynamodbclient):
+        if dynamodbclient is None:
+            self.dynamodbclient = boto3.resource('dynamodb')
+        else:
+            self.dynamodbclient = dynamodbclient
 
         if users_table is None:
-            # Default Behavior in Prod
-            # Get the service resource.
-            dynamodb = boto3.resource('dynamodb')
-            # Get the table name.
-            USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
-            # Get table objects
-            self.users = dynamodb.Table(USERS_TABLE_NAME)
+            self.USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
+            self.users = self.dynamodbclient.Table(self.USERS_TABLE_NAME)
         else:
             self.users = users_table
 
         if original_table is None:
-            dynamodb = boto3.resource('dynamodb')
-            ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
-            self.original = dynamodb.Table(ORIGINAL_TABLE_NAME)
+            self.ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
+            self.original = self.dynamodbclient.Table(self.ORIGINAL_TABLE_NAME)
         else:
             self.original = original_table
 
@@ -84,18 +82,20 @@ class RegisterUserFunction():
             grad_sem = user_info['GradSemester']
             grad_year = user_info['GradYear']
 
-        self.users.put_item(Item={
-            'username': {'S': user_info['username']},
-            'register_time': {'S': str(timestamp)},
-            'first_name': {'S': user_info['firstName']},
-            'last_name': {'S': user_info['lastName']},
-            'gender': {'S': user_info['Gender']},
-            'date_of_birth': {'S': user_info['DOB']},
-            'grad_semester': {'S': grad_sem},
-            'grad_year': {'N': grad_year},
-            'majors': {'L': user_info['Major']},
-            'minors': {'L': user_info.get('Minor', [])}
-        })
+        self.dynamodbclient.put_item(
+            TableName=self.USERS_TABLE_NAME,
+            Item={
+                'username': {'S': user_info['username']},
+                'register_time': {'S': str(timestamp)},
+                'first_name': {'S': user_info['firstName']},
+                'last_name': {'S': user_info['lastName']},
+                'gender': {'S': user_info['Gender']},
+                'date_of_birth': {'S': user_info['DOB']},
+                'grad_semester': {'S': grad_sem},
+                'grad_year': {'N': grad_year},
+                'majors': {'L': user_info['Major']},
+                'minors': {'L': user_info.get('Minor', [])}
+            })
 
         return original_response['ResponseMetadata']['HTTPStatusCode']
 
