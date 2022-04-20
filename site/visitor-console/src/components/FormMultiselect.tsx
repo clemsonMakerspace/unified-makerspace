@@ -5,10 +5,11 @@ interface Props {
   control: Control;
   name: string;
   values: string[];
+  limit?: number;
   id?: string;
 }
 
-const FormMultiselect = ({ control, name, values, id }: Props) => {
+const FormMultiselect = ({ control, name, values, id, limit }: Props) => {
   // referenced: https://codesandbox.io/s/react-hook-form-react-select-u36uv
 
   const options = values.map((value) => ({
@@ -28,6 +29,7 @@ const FormMultiselect = ({ control, name, values, id }: Props) => {
           value={options.filter((v) => value?.includes(v.value))}
           onChange={(v) => onChange(v.map((e) => e.value))}
           onBlur={onBlur}
+          isOptionDisabled={() => (limit ? value?.length >= limit : false)}
           isMulti
           isSearchable
         />
