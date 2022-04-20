@@ -15,7 +15,7 @@ const ToolSurveyStage = ({ data, finalize, location }: FormStageProps) => {
       title="Tool Survey"
       subtitle="What tool will you use the most today?"
     >
-      <div className="d-flex gap-3">
+      <div className="d-flex gap-3 flex-wrap justify-content-center">
         {location.tools.map((tool, i) => (
           <button
             className="btn btn-secondary"

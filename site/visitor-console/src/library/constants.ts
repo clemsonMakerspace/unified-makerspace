@@ -10,17 +10,36 @@ export const locations: MakerspaceLocation[] = [
   {
     slug: "watt_center",
     name: "Watt Family Innovation Center",
-    tools: ["3D Printer", "Lazer Cutter", "Other"],
+    tools: [
+      "3D Print (FDM - Plastic)",
+      "3D Scanner",
+      "CNC Mills",
+      "Hand Tools",
+      "Laser Cutter/Engraver",
+      "Microelectronics & Soldering Supplies",
+      "Part Pickup",
+      "Resin Print (Formlabs Resin)",
+      "Visiting",
+    ],
   },
   {
     slug: "cooper_library",
     name: "Cooper Library",
-    tools: ["3D Printer"],
+    tools: [
+      "3D Print (FDM)",
+      "Button Maker",
+      "Embroidery/Sewing Machine",
+      "Fabric Printer",
+      "Hand Tools",
+      "Part Pickup",
+      "Vinyl Cutter",
+      "Visiting",
+    ],
   },
   {
     slug: "cook_lab",
     name: "Cook Laboratory",
-    tools: [],
+    tools: ["Waterjet", "Visiting"],
   },
 ];
 
