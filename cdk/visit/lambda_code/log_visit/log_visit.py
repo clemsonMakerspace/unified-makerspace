@@ -1,5 +1,6 @@
 import json
 import datetime
+import dateutil.tz
 from pydoc import cli
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -119,11 +120,13 @@ class LogVisitFunction():
             self.logger.error(e.response['Error']['Message'])
 
     def addVisitEntry(self, current_user, location, tool):
+        
         # Get the current date at which the user logs in.
-        visit_date = datetime.datetime.now().timestamp()
+        eastern_tz = dateutil.tz.gettz('US/Eastern')
+        visit_date = datetime.datetime.now(tz=eastern_tz)
+        
         # Convert visit_date to human-readable format
-        visit_date = datetime.datetime.fromtimestamp(
-            visit_date).strftime('%Y-%m-%d %H:%M:%S')
+        visit_date = visit_date.strftime('%Y-%m-%d %H:%M:%S')
 
         # Add the item to the tables.
         visit_response = self.visits.put_item(
