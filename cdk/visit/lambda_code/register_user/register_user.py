@@ -64,12 +64,12 @@ class RegisterUserFunction():
     def add_user_info(self, user_info):
         # Get the current date at which the user registers.
         eastern_tz = dateutil.tz.gettz('US/Eastern')
-        timestamp = datetime.datetime.now(tz=eastern_tz)
+        register_date = datetime.datetime.now(tz=eastern_tz)
 
         original_response = self.original.put_item(
             Item={
                 'PK': user_info['username'],
-                'SK': str(timestamp),
+                'SK': register_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'firstName': user_info['firstName'],
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
@@ -91,7 +91,7 @@ class RegisterUserFunction():
             TableName=self.USERS_TABLE_NAME,
             Item={
                 'username': {'S': user_info['username']},
-                'register_time': {'S': str(timestamp)},
+                'register_time': {'N': str(int(register_date.timestamp()))},
                 'first_name': {'S': user_info['firstName']},
                 'last_name': {'S': user_info['lastName']},
                 'gender': {'S': user_info['Gender']},
