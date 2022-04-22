@@ -2,9 +2,10 @@
 This script will migrate data from the original table to the two
 new tables.
 """
-from typing import Tuple
+from typing import Tuple, List
 import boto3
 import os
+import re
 
 
 def generate_role_arn() -> str:
@@ -58,7 +59,6 @@ def process_grad_date(grad_date: str) -> Tuple[str, int]:
     """
     year = grad_date[:4]
     month = grad_date[5:7]
-    print(month)
     if month in ['04', '05', '06']:
         semester = 'Spring'
     elif month in ['07', '08', '09']:
@@ -70,6 +70,28 @@ def process_grad_date(grad_date: str) -> Tuple[str, int]:
             'Month passed was not April, May, June, July, August, September, November, December or January')
 
     return semester, int(year)
+
+
+def get_cleaned_majors_or_minors(major_or_minor: str) -> List[str]:
+    """
+    Cleans the major or minor string.
+
+    Args:
+        major_or_minor: The major or minor string to clean.
+
+    Returns:
+        A cleaned major or minor string.
+    """
+    if major_or_minor is None or len(major_or_minor) == 0:
+        return []
+
+    if major_or_minor[0] == '[':
+        major_or_minor = major_or_minor[1:-1]
+        list_of_vals = [val.split(":")[1][1:-2]
+                        for val in major_or_minor.split(',')]
+        return list_of_vals
+    else:
+        return major_or_minor.split(',')
 
 
 # This part runs the migration
@@ -90,23 +112,37 @@ if __name__ == '__main__':
     # Get all users from the original_table
     original_data = get_all_data(original_table)
 
+    dynamodbclient = boto3.client('dynamodb', region_name='us-east-1')
     # Iterate over the table. If PK is a timestamp, this is a visit
     for row in original_data:
-        if row['PK'].isdigit():
+        if row['PK'][0].isdigit():
             if 'location' in row:
                 visits_table.put_item(
-                    Item={'visit_time': int(row['PK']), 'username': row['SK'].lower(), 'location': row['location']})
+                    Item={'visit_time': row['PK'], 'username': row['SK'].lower(), 'location': row['location']})
             else:
                 visits_table.put_item(
-                    Item={'visit_time': int(row['PK']), 'username': row['SK'].lower(), 'location': ''})
+                    Item={'visit_time': row['PK'], 'username': row['SK'].lower(), 'location': ''})
         else:
             # TODO: Figure out what to do about potential excepton
             grad_semester, grad_year = process_grad_date(row['Grad_date'])
-            users_table.put_item(
-                Item={'username': row['PK'].lower(), 'register_time': row['SK'],
-                      'date_of_birth': row['DOB'], 'first_name': row['firstName'],
-                      'gender': row['Gender'], 'grad_semester': grad_semester,
-                      'grad_year': grad_year, 'last_name': row['lastName'], 'major': row['Major'],
-                      'minor': row['Minor']})
+
+            majors = get_cleaned_majors_or_minors(
+                row['Major']) if 'Major' in row else None
+            minors = get_cleaned_majors_or_minors(
+                row['Minor']) if 'Minor' in row else None
+
+            dynamodbclient.put_item(
+                Item={'username': {'S': row['PK'].lower()},
+                      'register_time': {'S': row['SK']},
+                      'date_of_birth': {'S': row['DOB']},
+                      'first_name': {'S': row['firstName']},
+                      'gender': {'S': row['Gender']},
+                      'grad_semester': {'S': grad_semester},
+                      # TODO: Why do we have to cast grad_year?
+                      'grad_year': {'N': str(grad_year)},
+                      'last_name': {'S': row['lastName']},
+                      'major': {'L': [{'S': major} for major in majors]},
+                      'minor': {'L': [{'S': minor} for minor in minors]}},
+                TableName=users_table_name)
 
     print("Migration Done! :-)")
