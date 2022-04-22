@@ -69,7 +69,7 @@ class RegisterUserFunction():
         original_response = self.original.put_item(
             Item={
                 'PK': user_info['username'],
-                'SK': register_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'SK': str(register_date),
                 'firstName': user_info['firstName'],
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
