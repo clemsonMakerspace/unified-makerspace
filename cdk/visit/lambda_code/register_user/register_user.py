@@ -1,8 +1,34 @@
 import json
+import pdb
 import boto3
 from boto3.dynamodb.conditions import Key
 import os
 import datetime
+from typing import Tuple
+
+
+def process_grad_date(grad_date: str) -> Tuple[str, int]:
+    """
+    Infers the graduation semester and year from grad_date
+    grad_date: str
+        The graduation date in the format 'YYYY-MM-DD'
+    Returns:
+        A tuple of the semester and year.
+    """
+    year = grad_date[:4]
+    month = grad_date[5:7]
+    print(month)
+    if month in ['04', '05', '06']:
+        semester = 'Spring'
+    elif month in ['07', '08', '09']:
+        semester = 'Summer'
+    elif month in ['11', '12', '01']:
+        semester = 'Fall'
+    else:
+        raise ValueError(
+            'Month passed was not April, May, June, July, August, September, November, December or January')
+
+    return semester, year
 
 
 class RegisterUserFunction():
@@ -14,24 +40,31 @@ class RegisterUserFunction():
     dynamodb table.
     """
 
-    def __init__(self, table):
-
-        if table is None:
-            # Default Behavior in Prod
-            # Get the service resource.
-            dynamodb = boto3.resource('dynamodb')
-            # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
-            # Get table objects
-            self.users = dynamodb.Table(TABLE_NAME)
+    def __init__(self, original_table, users_table, dynamodbclient):
+        if dynamodbclient is None:
+            self.dynamodbclient = boto3.client('dynamodb')
         else:
-            self.users = table
+            self.dynamodbclient = dynamodbclient
 
-    def addUserInfo(self, user_info):
+        self.USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
+        if users_table is None:
+            dynamodbresource = boto3.resource('dynamodb')
+            self.users = dynamodbresource.Table(self.USERS_TABLE_NAME)
+        else:
+            self.users = users_table
+
+        self.ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
+        if original_table is None:
+            self.original = dynamodbresource.Table(
+                self.ORIGINAL_TABLE_NAME)
+        else:
+            self.original = original_table
+
+    def add_user_info(self, user_info):
         # Get the current date at which the user registers.
         timestamp = datetime.datetime.now()
 
-        response = self.users.put_item(
+        original_response = self.original.put_item(
             Item={
                 'PK': user_info['username'],
                 'SK': str(timestamp),
@@ -39,21 +72,52 @@ class RegisterUserFunction():
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
                 'DOB': user_info['DOB'],
-                'UserPosition': user_info['UserPosition'],
+                'Position': user_info['UserPosition'],
                 'GradSemester': user_info.get('GradSemester', ' '),
                 'GradYear': user_info.get('GradYear', ' '),
-                'Major': user_info.get('Major', []),
-                'Minor': user_info.get('Minor', [])
+                'Major': ', '.join(sorted(user_info.get('Major', []))),
+                'Minor': ', '.join(sorted(user_info.get('Minor', [])))
             },
         )
 
-        return response['ResponseMetadata']['HTTPStatusCode']
+        if 'Grad_Date' in user_info:
+            # Add the user to the original table
+            grad_sem, grad_year = process_grad_date(user_info['Grad_Date'])
+        else:
+            grad_sem = user_info.get('GradSemester', ' ')
+            grad_year = user_info.get('GradYear', ' ')
+
+        majorList = []
+        for major in user_info.get('Major', []):
+            majorList.append({'S': major})
+
+        minorList = []
+        for minor in user_info.get('Minor', []):
+            minorList.append({'S': minor})
+
+        self.dynamodbclient.put_item(
+            TableName=self.USERS_TABLE_NAME,
+            Item={
+                'username': {'S': user_info['username']},
+                'register_time': {'S': str(timestamp)},
+                'first_name': {'S': user_info['firstName']},
+                'last_name': {'S': user_info['lastName']},
+                'gender': {'S': user_info['Gender']},
+                'date_of_birth': {'S': user_info['DOB']},
+                'Position': {'S': user_info['UserPosition']},
+                'grad_semester': {'S': grad_sem},
+                'grad_year': {'S': grad_year},
+                'majors': {'L': majorList},
+                'minors': {'L': minorList}
+            })
+
+        return original_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_register_user_request(self, request, context):
         HEADERS = {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
+            'Access-Control-Allow-Origin': os.environ["DOMAIN_NAME"],
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         }
         if (request is None):
@@ -68,7 +132,7 @@ class RegisterUserFunction():
         # Get all of the user information from the json file
         user_info = json.loads(request["body"])
         # Call Function
-        response = self.addUserInfo(user_info)
+        response = self.add_user_info(user_info)
         # Send response
         return {
             'headers': HEADERS,
@@ -76,7 +140,7 @@ class RegisterUserFunction():
         }
 
 
-register_user_function = RegisterUserFunction(None)
+register_user_function = RegisterUserFunction(None, None, None)
 
 
 def handler(request, context):

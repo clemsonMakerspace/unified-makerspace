@@ -9,9 +9,14 @@ class Database(core.Stack):
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
         self.id = f'Database-{stage}'
-        super().__init__(scope, self.id, env=env, termination_protection=True)
+        self.users_id = f'Database-users-{stage}'
+        self.visits_id = f'Database-visits-{stage}'
+        super().__init__(
+            scope, self.id, env=env, termination_protection=True)
 
-        self.dynamodb_single_table()
+        self.dynamodb_single_table()  # This is the original table
+        self.dynamodb_visits_table()
+        self.dynamodb_users_table()
 
     def dynamodb_single_table(self):
         """
@@ -52,13 +57,34 @@ class Database(core.Stack):
         [1]: https://www.youtube.com/watch?v=KYy8X8t4MB8
         """
 
-        self.table = aws_dynamodb.Table(self,
-                                        self.id,
-                                        point_in_time_recovery=True,
-                                        removal_policy=core.RemovalPolicy.RETAIN,
-                                        sort_key=aws_dynamodb.Attribute(
-                                            name='SK',
-                                            type=aws_dynamodb.AttributeType.STRING),
-                                        partition_key=aws_dynamodb.Attribute(
-                                            name='PK',
-                                            type=aws_dynamodb.AttributeType.STRING))
+        self.original_table = aws_dynamodb.Table(self,
+                                                 self.id,
+                                                 point_in_time_recovery=True,
+                                                 removal_policy=core.RemovalPolicy.RETAIN,
+                                                 sort_key=aws_dynamodb.Attribute(
+                                                     name='SK',
+                                                     type=aws_dynamodb.AttributeType.STRING),
+                                                 partition_key=aws_dynamodb.Attribute(
+                                                     name='PK',
+                                                     type=aws_dynamodb.AttributeType.STRING))
+
+    def dynamodb_visits_table(self):
+        self.visits_table = aws_dynamodb.Table(self,
+                                               self.visits_id,
+                                               point_in_time_recovery=True,
+                                               removal_policy=core.RemovalPolicy.RETAIN,
+                                               partition_key=aws_dynamodb.Attribute(
+                                                   name='username',
+                                                   type=aws_dynamodb.AttributeType.STRING),
+                                               sort_key=aws_dynamodb.Attribute(
+                                                   name='visit_time',
+                                                   type=aws_dynamodb.AttributeType.STRING))
+
+    def dynamodb_users_table(self):
+        self.users_table = aws_dynamodb.Table(self,
+                                              self.users_id,
+                                              point_in_time_recovery=True,
+                                              removal_policy=core.RemovalPolicy.RETAIN,
+                                              partition_key=aws_dynamodb.Attribute(
+                                                  name='username',
+                                                  type=aws_dynamodb.AttributeType.STRING))

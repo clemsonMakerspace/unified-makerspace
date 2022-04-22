@@ -17,19 +17,36 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, table, ses_client):
+    def __init__(self, original_table, visits_table, users_table, ses_client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
-        if table is None:
+        if original_table is None:
+            dynamodb = boto3.resource('dynamodb')
+            ORIGINAL_TABLE_NAME = os.environ['ORIGINAL_TABLE_NAME']
+            self.original = dynamodb.Table(ORIGINAL_TABLE_NAME)
+        else:
+            self.original = original_table
+
+        if visits_table is None:
             # Get the service resource.
             dynamodb = boto3.resource('dynamodb')
             # Get the table name.
-            TABLE_NAME = os.environ["TABLE_NAME"]
+            VISITS_TABLE_NAME = os.environ["VISITS_TABLE_NAME"]
             # Get table objects
-            self.visits = dynamodb.Table(TABLE_NAME)
+            self.visits = dynamodb.Table(VISITS_TABLE_NAME)
         else:
-            self.visits = table
+            self.visits = visits_table
+
+        if users_table is None:
+            # Get the service resource.
+            dynamodb = boto3.resource('dynamodb')
+            # Get the table name.
+            USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
+            # Get table objects
+            self.users = dynamodb.Table(USERS_TABLE_NAME)
+        else:
+            self.users = users_table
 
         if ses_client is None:
             AWS_REGION = os.environ['AWS_REGION']
@@ -38,10 +55,12 @@ class LogVisitFunction():
             self.client = ses_client
 
     def checkRegistration(self, current_user):
-        response = self.visits.query(
+        print("Checking registration for: " + current_user)
+        original_table_response = self.original.query(
             KeyConditionExpression=Key('PK').eq(current_user)
         )
-        return response['Count']
+
+        return original_table_response['Count']
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
@@ -101,12 +120,23 @@ class LogVisitFunction():
     def addVisitEntry(self, current_user, location):
         # Get the current date at which the user logs in.
         visit_date = datetime.datetime.now().timestamp()
+        # Convert visit_date to human-readable format
+        visit_date = datetime.datetime.fromtimestamp(
+            visit_date).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Add the item to the table.
-        response = self.visits.put_item(
+        # Add the item to the tables.
+        visit_response = self.visits.put_item(
             # PK = Partition Key = Visit Date
             # SK = Sort Key = Username or Email Address
 
+            Item={
+                'visit_time': str(visit_date),
+                'username': current_user,
+                'location': location,
+            },
+        )
+
+        original_response = self.original.put_item(
             Item={
                 'PK': str(visit_date),
                 'SK': current_user,
@@ -114,7 +144,7 @@ class LogVisitFunction():
             },
         )
 
-        return response['ResponseMetadata']['HTTPStatusCode']
+        return original_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_log_visit_request(self, request, context):
         """
@@ -130,7 +160,7 @@ class LogVisitFunction():
         HEADERS = {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': 'https://visit.cumaker.space',
+            'Access-Control-Allow-Origin': os.environ["DOMAIN_NAME"],
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         }
 
@@ -190,7 +220,7 @@ class LogVisitFunction():
             }
 
 
-log_visit_function = LogVisitFunction(None, None)
+log_visit_function = LogVisitFunction(None, None, None, None)
 
 
 def handler(request, context):

@@ -3,11 +3,11 @@
 from aws_cdk import (
     core
 )
-from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
+from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep
 from makerspace import MakerspaceStage
 
 from accounts_config import accounts
-
+from dns import Domains
 
 class Pipeline(core.Stack):
     def __init__(self, app: core.App, id: str, *,
@@ -28,33 +28,48 @@ class Pipeline(core.Stack):
         #                   Storage Service (Amazon S3) and all Docker images to Amazon Elastic Container Registry
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
+        deploy_cdk_shell_step = ShellStep("Synth",
+            # use a connection created using the AWS console to authenticate to GitHub
+            input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
+                connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
+            ),
+            commands=[    
+                # install dependancies for frontend
+                'cd site/visitor-console',
+                'npm install',
+
+                # build for beta
+                f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',
+                'mkdir -p ../../cdk/visit/console/Beta',
+                'cp -r dist/* ../../cdk/visit/console/Beta',
+
+                # build for prod
+                f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" npm run build',
+                'mkdir -p ../../cdk/visit/console/Prod',
+                'cp -r dist/* ../../cdk/visit/console/Prod',
+                
+                'cd ../..',
+
+                # synth the app
+                "cd cdk",
+                "npm install -g aws-cdk && pip install -r requirements.txt",
+                "cdk synth"
+            ],
+            primary_output_directory="cdk/cdk.out",
+        )
+        
         pipeline = CodePipeline(self, "Pipeline",
-                                synth=ShellStep("Synth",
-                                                # Use a connection created using the AWS console to authenticate to GitHub
-                                                # Other sources are available.
-                                                input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
-                                                                                    connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
-                                                                                    ),
-                                                commands=["cd cdk",  # TODO: Remove when we deprecate `cdk/`
-                                                          "npm install -g aws-cdk && pip install -r requirements.txt",
-                                                          "cdk synth"
-                                                          # TODO: "pytest unittest"
-                                                          ],
-                                                primary_output_directory="cdk/cdk.out"  # TODO: Remove when we deprecate `cdk/`
-                                                ), cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
-                                )
+            synth=deploy_cdk_shell_step,
+            cross_account_keys=True  # necessary to allow the prod account to access our artifact bucket
+        )
+        
+        # create the stack for beta
+        self.beta_stage = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
+        pipeline.add_stage(self.beta_stage)
 
-        # Now that our CodePipeline is created we can call `addStage` as many times as
-        # necessary with any account and region (may be different from the
-        # pipeline's).
+        # create the stack for prod
+        self.prod_stage = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
+        pipeline.add_stage(self.prod_stage, 
+            pre=[ManualApprovalStep("PromoteBetaToProd")]
+        )
 
-        # Create our Beta stage
-        self.beta = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
-
-        # TODO: Add a validation stage before deploying to Prod
-
-        # Create our Prod stage
-        self.prod = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
-
-        pipeline.add_stage(self.beta)
-        pipeline.add_stage(self.prod)

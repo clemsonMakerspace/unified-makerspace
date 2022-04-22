@@ -10,7 +10,7 @@ class MakerspaceStage(core.Stage):
     def __init__(self, scope: core.Construct, stage: str, *,
                  env: core.Environment) -> None:
         super().__init__(scope, stage, env=env)
-
+        
         self.service = MakerspaceStack(self, stage, env=env)
 
 
@@ -38,8 +38,16 @@ class MakerspaceStack(core.Stack):
 
         self.visitors_stack()
 
-        self.database.table.grant_read_write_data(self.visit.lambda_visit)
-        self.database.table.grant_write_data(self.visit.lambda_register)
+        self.database.original_table.grant_read_write_data(
+            self.visit.lambda_visit)
+        self.database.original_table.grant_write_data(
+            self.visit.lambda_register)
+
+        self.database.visits_table.grant_read_write_data(
+            self.visit.lambda_visit)
+        self.database.users_table.grant_read_data(self.visit.lambda_visit)
+        self.database.users_table.grant_read_write_data(
+            self.visit.lambda_register)
 
         self.shared_api_gateway()
 
@@ -57,7 +65,9 @@ class MakerspaceStack(core.Stack):
         self.visit = Visit(
             self.app,
             self.stage,
-            self.database.table.table_name,
+            self.database.original_table.table_name,
+            self.database.users_table.table_name,
+            self.database.visits_table.table_name,
             create_dns=self.create_dns,
             zones=self.dns,
             env=self.env)

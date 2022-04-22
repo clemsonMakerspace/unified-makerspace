@@ -1,4 +1,5 @@
 
+from distutils.command.build import build
 from aws_cdk import (
     aws_certificatemanager,
     aws_s3_deployment,
@@ -11,7 +12,6 @@ from aws_cdk import (
 )
 
 from dns import MakerspaceDns
-
 
 class Visit(core.Stack):
     """
@@ -31,7 +31,9 @@ class Visit(core.Stack):
 
     def __init__(self, scope: core.Construct,
                  stage: str,
-                 table_name: str,
+                 original_table_name: str,
+                 users_table_name: str,
+                 visits_table_name: str,
                  *,
                  env: core.Environment,
                  create_dns: bool,
@@ -39,6 +41,7 @@ class Visit(core.Stack):
 
         super().__init__(scope, f'Visitors-{stage}', env=env)
 
+        self.stage = stage
         self.create_dns = create_dns
         self.zones = zones
 
@@ -49,24 +52,26 @@ class Visit(core.Stack):
 
         self.cloudfront_distribution()
 
-        self.log_visit_lambda(table_name)
-        self.register_user_lambda(table_name)
+        self.domain_name = self.distribution.domain_name if stage == 'Dev' else self.zones.visit.zone_name
+
+        self.log_visit_lambda(
+            original_table_name, visits_table_name, users_table_name, ("https://" + self.domain_name))
+        self.register_user_lambda(
+            original_table_name, users_table_name, ("https://" + self.domain_name))
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
             self, 'VisitorsOriginAccessIdentity')
 
         self.bucket = aws_s3.Bucket(self, 'cumakerspace-visitors-console')
-
         self.bucket.grant_read(self.oai)
-
         aws_s3_deployment.BucketDeployment(self, 'VisitorsConsoleDeployment',
                                            sources=[
                                                aws_s3_deployment.Source.asset(
-                                                   'visit/console/')
+                                                   f'visit/console/{self.stage}/')
                                            ],
                                            destination_bucket=self.bucket)
-
+        
     def cloudfront_distribution(self):
 
         kwargs = {}
@@ -99,7 +104,7 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def log_visit_lambda(self, table_name: str):
+    def log_visit_lambda(self, original_table_name: str, visits_table_name: str, users_table_name: str, domain_name: str):
 
         sending_authorization_policy = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW)
@@ -112,14 +117,17 @@ class Visit(core.Stack):
             function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/log_visit'),
             environment={
-                'TABLE_NAME': table_name,
+                'ORIGINAL_TABLE_NAME': original_table_name,
+                'DOMAIN_NAME': domain_name,
+                'VISITS_TABLE_NAME': visits_table_name,
+                'USERS_TABLE_NAME': users_table_name,
             },
             handler='log_visit.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
 
         self.lambda_visit.role.add_to_policy(sending_authorization_policy)
 
-    def register_user_lambda(self, table_name: str):
+    def register_user_lambda(self, original_table_name: str, users_table_name: str, domain_name: str):
 
         self.lambda_register = aws_lambda.Function(
             self,
@@ -127,7 +135,9 @@ class Visit(core.Stack):
             function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/register_user'),
             environment={
-                'TABLE_NAME': table_name,
+                'ORIGINAL_TABLE_NAME': original_table_name,
+                'DOMAIN_NAME': domain_name,
+                'USERS_TABLE_NAME': users_table_name
             },
             handler='register_user.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
