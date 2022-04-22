@@ -140,7 +140,7 @@ class LogVisitFunction():
 
         original_response = self.original.put_item(
             Item={
-                'PK': visit_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'PK': str(visit_date.timestamp()),
                 'SK': current_user,
                 'tool': tool or ' ',
                 'location': location or ' ',
