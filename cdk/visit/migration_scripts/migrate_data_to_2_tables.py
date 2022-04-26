@@ -149,8 +149,8 @@ if __name__ == '__main__':
                           'grad_semester': {'S': grad_semester},
                           'grad_year': {'S': str(grad_year)},
                           'last_name': {'S': row['lastName']},
-                          'major': {'L': [{'S': major} for major in majors]},
-                          'minor': {'L': [{'S': minor} for minor in minors]}})
+                          'majors': {'L': [{'S': major} for major in majors]},
+                          'minors': {'L': [{'S': minor} for minor in minors]}})
 
     for visit in visits:
         dynamodbclient.put_item(Item=visit, TableName=visits_table_name)
