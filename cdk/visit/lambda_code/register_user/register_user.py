@@ -87,6 +87,11 @@ class RegisterUserFunction():
             grad_sem = user_info['GradSemester']
             grad_year = user_info['GradYear']
 
+
+        marshal_item = lambda s: {"S": s}
+        majors = list(map(marshal_item, user_info['Major']))
+        minors = list(map(marshal_item, user_info.get('Minor', [])))
+
         self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item={
@@ -98,8 +103,8 @@ class RegisterUserFunction():
                 'date_of_birth': {'S': user_info['DOB']},
                 'grad_semester': {'S': grad_sem},
                 'grad_year': {'N': grad_year},
-                'majors': {'SS': user_info['Major']},
-                'minors': {'SS': user_info.get('Minor', [])}
+                'majors': {'L': majors},
+                'minors': {'L': minors}
             })
 
         return original_response['ResponseMetadata']['HTTPStatusCode']
