@@ -5,7 +5,7 @@ new tables.
 from typing import Tuple, List
 import boto3
 import os
-import re
+import datetime
 
 
 def generate_role_arn() -> str:
@@ -66,10 +66,17 @@ def process_grad_date(grad_date: str) -> Tuple[str, int]:
     elif month in ['11', '12', '01']:
         semester = 'Fall'
     else:
-        raise ValueError(
-            'Month passed was not April, May, June, July, August, September, November, December or January')
+        semester = "None"
 
     return semester, int(year)
+
+
+def process_timestamp(timestamp: str) -> str:
+    """
+    Convert timestamp from ISO Format to Seconds Since Epoch
+    Example: 2022-04-11 03:14:50.800970
+    """
+    return str(datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f").timestamp())
 
 
 def get_cleaned_majors_or_minors(major_or_minor: str) -> List[str]:
@@ -84,6 +91,8 @@ def get_cleaned_majors_or_minors(major_or_minor: str) -> List[str]:
     """
     if major_or_minor is None or len(major_or_minor) == 0:
         return []
+
+    print(major_or_minor)
 
     if major_or_minor[0] == '[':
         major_or_minor = major_or_minor[1:-1]
@@ -112,37 +121,42 @@ if __name__ == '__main__':
     # Get all users from the original_table
     original_data = get_all_data(original_table)
 
+    visits = []
+    users = []
+
     dynamodbclient = boto3.client('dynamodb', region_name='us-east-1')
     # Iterate over the table. If PK is a timestamp, this is a visit
     for row in original_data:
         if row['PK'][0].isdigit():
-            if 'location' in row:
-                visits_table.put_item(
-                    Item={'visit_time': row['PK'], 'username': row['SK'].lower(), 'location': row['location']})
-            else:
-                visits_table.put_item(
-                    Item={'visit_time': row['PK'], 'username': row['SK'].lower(), 'location': ''})
+            location = row['location'] if 'location' in row else 'watt'
+            visits.append(
+                {'visit_time': {'S': row['PK']}, 'username': {'S': row['SK'].lower()}, 'location': {'S': location}})
         else:
-            # TODO: Figure out what to do about potential excepton
             grad_semester, grad_year = process_grad_date(row['Grad_date'])
-
             majors = get_cleaned_majors_or_minors(
-                row['Major']) if 'Major' in row else None
-            minors = get_cleaned_majors_or_minors(
-                row['Minor']) if 'Minor' in row else None
+                row['Major']) if 'Major' in row else ["a", "b"]
 
-            dynamodbclient.put_item(
-                Item={'username': {'S': row['PK'].lower()},
-                      'register_time': {'S': row['SK']},
-                      'date_of_birth': {'S': row['DOB']},
-                      'first_name': {'S': row['firstName']},
-                      'gender': {'S': row['Gender']},
-                      'grad_semester': {'S': grad_semester},
-                      # TODO: Why do we have to cast grad_year?
-                      'grad_year': {'N': str(grad_year)},
-                      'last_name': {'S': row['lastName']},
-                      'major': {'L': [{'S': major} for major in majors]},
-                      'minor': {'L': [{'S': minor} for minor in minors]}},
-                TableName=users_table_name)
+            minors = get_cleaned_majors_or_minors(
+                row['Minor']) if 'Minor' in row else ["a", "b"]
+
+            updated_registration_time = process_timestamp(row['SK'])
+
+            users.append({'username': {'S': row['PK'].lower()},
+                          'register_time': {'N': updated_registration_time},
+                          'date_of_birth': {'S': row['DOB']},
+                          'first_name': {'S': row['firstName']},
+                          'gender': {'S': row['Gender']},
+                          'grad_semester': {'S': grad_semester},
+                          'grad_year': {'S': str(grad_year)},
+                          'last_name': {'S': row['lastName']},
+                          'major': {'L': [{'S': major} for major in majors]},
+                          'minor': {'L': [{'S': minor} for minor in minors]}})
+
+    for visit in visits:
+        dynamodbclient.put_item(Item=visit, TableName=visits_table_name)
+
+    for user in users:
+        print(user)
+        dynamodbclient.put_item(Item=user, TableName=users_table_name)
 
     print("Migration Done! :-)")
