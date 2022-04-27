@@ -1,6 +1,5 @@
 import json
-import datetime
-import dateutil.tz
+import time
 from pydoc import cli
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -121,29 +120,28 @@ class LogVisitFunction():
 
     def addVisitEntry(self, current_user, location, tool):
         
-        # Get the current date at which the user logs in.
-        eastern_tz = dateutil.tz.gettz('US/Eastern')
-        visit_date = datetime.datetime.now(tz=eastern_tz)
+        timestamp = int(time.time())
 
-        # Add the item to the tables.
-        visit_response = self.visits.put_item(
-            # PK = Partition Key = Visit Date
-            # SK = Sort Key = Username or Email Address
-
-            Item={
-                'visit_time': int(visit_date.timestamp()),
-                'username': current_user,
-                'location': location,
-                'tool': tool,
-            },
-        )
-
+        # record the visit in the old combined table
         original_response = self.original.put_item(
             Item={
-                'PK': str(visit_date.timestamp()),
+                'PK': str(timestamp),
                 'SK': current_user,
                 'tool': tool or ' ',
                 'location': location or ' ',
+            },
+        )
+
+        # record the visit in the visits table
+        visit_response = self.visits.put_item(
+            # PK / Partition Key = Visit Date
+            # SK / Sort Key = Username or Email Address
+
+            Item={
+                'visit_time': timestamp,
+                'username': current_user,
+                'location': location,
+                'tool': tool,
             },
         )
 
@@ -173,7 +171,7 @@ class LogVisitFunction():
                 'body': json.dumps(body)
             }
 
-        # if no request is provided (should never be the case because of gateway evocation)
+        # if no request is provided (should never be the case because of gateway invocation)
         if (request is None):
             return bad_request({'Message': 'No request provided'})
         

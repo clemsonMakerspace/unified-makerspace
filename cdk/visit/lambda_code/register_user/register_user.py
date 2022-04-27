@@ -5,6 +5,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import os
 import datetime
+import time
 from typing import Tuple
 
 
@@ -62,14 +63,12 @@ class RegisterUserFunction():
             self.original = original_table
 
     def add_user_info(self, user_info):
-        # Get the current date at which the user registers.
-        eastern_tz = dateutil.tz.gettz('US/Eastern')
-        register_date = datetime.datetime.now(tz=eastern_tz)
 
+        # register the user in the old combined table
         original_response = self.original.put_item(
             Item={
                 'PK': user_info['username'],
-                'SK': str(register_date),
+                'SK': str(datetime.datetime.now()),
                 'firstName': user_info['firstName'],
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
@@ -80,6 +79,7 @@ class RegisterUserFunction():
             },
         )
 
+        # format Grad_Date if the frontend does not provide the new format
         if 'Grad_Date' in user_info:
             # Add the user to the original table
             grad_sem, grad_year = process_grad_date(user_info['Grad_Date'])
@@ -87,16 +87,18 @@ class RegisterUserFunction():
             grad_sem = user_info['GradSemester']
             grad_year = user_info['GradYear']
 
+        # type marshall all majors/minors to be strings
+        # https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
+        majors = [{"S": s} for s in user_info['Major']]
+        minors = [{"S": s} for s in user_info.get('Minor', [])]
 
-        marshal_item = lambda s: {"S": s}
-        majors = list(map(marshal_item, user_info['Major']))
-        minors = list(map(marshal_item, user_info.get('Minor', [])))
+        timestamp = int(time.time())
 
         self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item={
                 'username': {'S': user_info['username']},
-                'register_time': {'N': str(int(register_date.timestamp()))},
+                'register_time': {'N': str(timestamp)},
                 'first_name': {'S': user_info['firstName']},
                 'last_name': {'S': user_info['lastName']},
                 'gender': {'S': user_info['Gender']},
