@@ -81,6 +81,8 @@ class Database(core.Stack):
                                                sort_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.STRING))
+       
+        self.export_value(self.visits_table.table_name) #! remove in next pr
 
         #! new table used to swap the type of the sk, as the
         #! visitor stack is dependent on this database stack
