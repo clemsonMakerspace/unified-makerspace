@@ -44,6 +44,8 @@ class MakerspaceStack(core.Stack):
             self.visit.lambda_register)
 
         self.database.visits_table.grant_read_write_data(
+            self.visit.lambda_visit) #! remove in next pr
+        self.database.new_visits_table.grant_read_write_data(
             self.visit.lambda_visit)
         self.database.users_table.grant_read_data(self.visit.lambda_visit)
         self.database.users_table.grant_read_write_data(
@@ -67,7 +69,7 @@ class MakerspaceStack(core.Stack):
             self.stage,
             self.database.original_table.table_name,
             self.database.users_table.table_name,
-            self.database.visits_table.table_name,
+            self.database.new_visits_table.table_name,
             create_dns=self.create_dns,
             zones=self.dns,
             env=self.env)
