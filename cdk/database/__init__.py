@@ -12,7 +12,7 @@ class Database(core.Stack):
         # todo: remove the stage out of the id string, cloudformation already prefixes all dependancies with the stack that its part of and that contains the stack stage
         self.id = f'Database-{stage}'
         self.users_id = f'Database-users-{stage}'
-        self.old_visits_id = f'Database-visits-{stage}' #! remove in next pr
+        
         self.visits_id = 'visits'
         
         super().__init__(
@@ -73,24 +73,6 @@ class Database(core.Stack):
                                                      type=aws_dynamodb.AttributeType.STRING))
 
     def dynamodb_visits_table(self):
-
-        #! remove in next pr
-        self.old_visits_table = aws_dynamodb.Table(self,
-                                               self.old_visits_id,
-                                               point_in_time_recovery=True,
-                                               removal_policy=core.RemovalPolicy.RETAIN,
-                                               partition_key=aws_dynamodb.Attribute(
-                                                   name='username',
-                                                   type=aws_dynamodb.AttributeType.STRING),
-                                               sort_key=aws_dynamodb.Attribute(
-                                                   name='visit_time',
-                                                   type=aws_dynamodb.AttributeType.STRING))
-       
-        #! remove in next pr
-        self.export_value(self.old_visits_table.table_name)
-        self.export_value(self.old_visits_table.table_arn)
-
-
         self.visits_table = aws_dynamodb.Table(self,
                                                self.visits_id,
                                                point_in_time_recovery=True,
