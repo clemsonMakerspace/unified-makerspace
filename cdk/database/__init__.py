@@ -8,19 +8,21 @@ from aws_cdk import (
 class Database(core.Stack):
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
+
+        # todo: remove the stage out of the id string, cloudformation already prefixes all dependancies with the stack that its part of and that contains the stack stage
         self.id = f'Database-{stage}'
         self.users_id = f'Database-users-{stage}'
-        self.visits_id = f'Database-visits-{stage}'
-        self.new_visits_id = 'visits'
-
+        self.old_visits_id = f'Database-visits-{stage}' #! remove in next pr
+        self.visits_id = 'visits'
+        
         super().__init__(
             scope, self.id, env=env, termination_protection=True)
 
-        self.dynamodb_single_table()  # This is the original table
+        self.dynamodb_old_table()  # This is the original table
         self.dynamodb_visits_table()
         self.dynamodb_users_table()
 
-    def dynamodb_single_table(self):
+    def dynamodb_old_table(self):
         """
         A single-table design DynamoDB table for all makerspace data.
 
@@ -59,7 +61,7 @@ class Database(core.Stack):
         [1]: https://www.youtube.com/watch?v=KYy8X8t4MB8
         """
 
-        self.original_table = aws_dynamodb.Table(self,
+        self.old_table = aws_dynamodb.Table(self,
                                                  self.id,
                                                  point_in_time_recovery=True,
                                                  removal_policy=core.RemovalPolicy.RETAIN,
@@ -71,8 +73,10 @@ class Database(core.Stack):
                                                      type=aws_dynamodb.AttributeType.STRING))
 
     def dynamodb_visits_table(self):
-        self.visits_table = aws_dynamodb.Table(self,
-                                               self.visits_id,
+
+        #! remove in next pr
+        self.old_visits_table = aws_dynamodb.Table(self,
+                                               self.old_visits_id,
                                                point_in_time_recovery=True,
                                                removal_policy=core.RemovalPolicy.RETAIN,
                                                partition_key=aws_dynamodb.Attribute(
@@ -82,12 +86,13 @@ class Database(core.Stack):
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.STRING))
        
-        self.export_value(self.visits_table.table_name) #! remove in next pr
+        #! remove in next pr
+        self.export_value(self.old_visits_table.table_name)
+        self.export_value(self.old_visits_table.table_arn)
 
-        #! new table used to swap the type of the sk, as the
-        #! visitor stack is dependent on this database stack
-        self.new_visits_table = aws_dynamodb.Table(self,
-                                               self.new_visits_id,
+
+        self.visits_table = aws_dynamodb.Table(self,
+                                               self.visits_id,
                                                point_in_time_recovery=True,
                                                removal_policy=core.RemovalPolicy.RETAIN,
                                                partition_key=aws_dynamodb.Attribute(
