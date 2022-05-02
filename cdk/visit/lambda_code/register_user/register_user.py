@@ -1,9 +1,11 @@
 import json
 import pdb
+import dateutil.tz
 import boto3
 from boto3.dynamodb.conditions import Key
 import os
 import datetime
+import time
 from typing import Tuple
 
 
@@ -61,13 +63,12 @@ class RegisterUserFunction():
             self.original = original_table
 
     def add_user_info(self, user_info):
-        # Get the current date at which the user registers.
-        timestamp = datetime.datetime.now()
 
+        # register the user in the old combined table
         original_response = self.original.put_item(
             Item={
                 'PK': user_info['username'],
-                'SK': str(timestamp),
+                'SK': str(datetime.datetime.now()),
                 'firstName': user_info['firstName'],
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
@@ -80,6 +81,7 @@ class RegisterUserFunction():
             },
         )
 
+        # format Grad_Date if the frontend does not provide the new format
         if 'Grad_Date' in user_info:
             # Add the user to the original table
             grad_sem, grad_year = process_grad_date(user_info['Grad_Date'])
@@ -87,19 +89,18 @@ class RegisterUserFunction():
             grad_sem = user_info.get('GradSemester', ' ')
             grad_year = user_info.get('GradYear', ' ')
 
-        majorList = []
-        for major in user_info.get('Major', []):
-            majorList.append({'S': major})
+        # type marshall all majors/minors to be strings
+        # https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
+        majors = [{"S": s} for s in user_info.get('Major', [])]
+        minors = [{"S": s} for s in user_info.get('Minor', [])]
 
-        minorList = []
-        for minor in user_info.get('Minor', []):
-            minorList.append({'S': minor})
+        timestamp = int(time.time())
 
         self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item={
                 'username': {'S': user_info['username']},
-                'register_time': {'S': str(timestamp)},
+                'register_time': {'N': str(timestamp)},
                 'first_name': {'S': user_info['firstName']},
                 'last_name': {'S': user_info['lastName']},
                 'gender': {'S': user_info['Gender']},
@@ -107,8 +108,8 @@ class RegisterUserFunction():
                 'Position': {'S': user_info['UserPosition']},
                 'grad_semester': {'S': grad_sem},
                 'grad_year': {'S': grad_year},
-                'majors': {'L': majorList},
-                'minors': {'L': minorList}
+                'majors': {'L': majors},
+                'minors': {'L': minors}
             })
 
         return original_response['ResponseMetadata']['HTTPStatusCode']

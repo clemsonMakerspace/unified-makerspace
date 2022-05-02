@@ -231,6 +231,7 @@ const Registration = () => {
             <FormMultiselect
               id="major"
               name="major"
+              limit={2}
               control={control}
               values={majors}
             />
@@ -248,6 +249,7 @@ const Registration = () => {
             <FormMultiselect
               id="minor"
               name="minor"
+              limit={2}
               control={control}
               values={minors}
             />

@@ -1,5 +1,14 @@
 # Welcome to the Unified Makerspace Project
 
+
+## Basic Service Layout
+
+This does not include all of the services that are stood up in each stack, but it details the relationship between major parts.
+
+![AWS services for the project](Services%20Diagram%20Overview.png)
+
+## Configuring the CDK
+
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project. The initialization
@@ -74,7 +83,7 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Useful commands
+### Useful commands
 
 -   `cdk ls` list all stacks in the app
 -   `cdk synth` emits the synthesized CloudFormation template
@@ -84,7 +93,7 @@ command.
 
 Enjoy!
 
-## Generating a component diagram
+### Generating a component diagram
 
 The components of this system are described in [`makerspace.dot`](./makerspace.dot). You can re-generate the PNG using the below command:
 
@@ -92,7 +101,7 @@ The components of this system are described in [`makerspace.dot`](./makerspace.d
 dot makerspace.dot -Tpng > makerspace.png
 ```
 
-## Synthesizing the dev stack
+### Synthesizing the dev stack
 
 If you don't have an AWS account or haven't configured your workspace to create the dev stack (this might work automatically) then the only stack you'll see when synthesizing is the `Pipeline` stack, which works by creating a Beta and Prod stage and deploying the full makerspace stack.
 

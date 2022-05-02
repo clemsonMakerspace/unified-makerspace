@@ -11,6 +11,8 @@ class Database(core.Stack):
         self.id = f'Database-{stage}'
         self.users_id = f'Database-users-{stage}'
         self.visits_id = f'Database-visits-{stage}'
+        self.new_visits_id = 'visits'
+
         super().__init__(
             scope, self.id, env=env, termination_protection=True)
 
@@ -79,6 +81,21 @@ class Database(core.Stack):
                                                sort_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.STRING))
+       
+        self.export_value(self.visits_table.table_name) #! remove in next pr
+
+        #! new table used to swap the type of the sk, as the
+        #! visitor stack is dependent on this database stack
+        self.new_visits_table = aws_dynamodb.Table(self,
+                                               self.new_visits_id,
+                                               point_in_time_recovery=True,
+                                               removal_policy=core.RemovalPolicy.RETAIN,
+                                               partition_key=aws_dynamodb.Attribute(
+                                                   name='username',
+                                                   type=aws_dynamodb.AttributeType.STRING),
+                                               sort_key=aws_dynamodb.Attribute(
+                                                   name='visit_time',
+                                                   type=aws_dynamodb.AttributeType.NUMBER))
 
     def dynamodb_users_table(self):
         self.users_table = aws_dynamodb.Table(self,

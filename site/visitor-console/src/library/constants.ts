@@ -7,9 +7,40 @@ export const api_endpoint =
 export const format_date = (date: Date) => date.toISOString().split("T")[0];
 
 export const locations: MakerspaceLocation[] = [
-  { slug: "cooper_library", name: "Cooper Library" },
-  { slug: "watt_center", name: "Watt Family Innovation Center" },
-  { slug: "cook_lab", name: "Cook Laboratory" },
+  {
+    slug: "watt_center",
+    name: "Watt Family Innovation Center",
+    tools: [
+      "3D Printer (FDM - Plastic)",
+      "3D Scanner",
+      "CNC Mills",
+      "Hand Tools",
+      "Laser Cutter/Engraver",
+      "Microelectronics & Soldering Supplies",
+      "Part Pickup",
+      "Resin Printer (Formlabs Resin)",
+      "Visiting",
+    ],
+  },
+  {
+    slug: "cooper_library",
+    name: "Cooper Library",
+    tools: [
+      "3D Printer (FDM)",
+      "Button Maker",
+      "Embroidery/Sewing Machine",
+      "Fabric Printer",
+      "Hand Tools",
+      "Part Pickup",
+      "Vinyl Cutter",
+      "Visiting",
+    ],
+  },
+  {
+    slug: "cook_lab",
+    name: "Cook Laboratory",
+    tools: ["Waterjet", "Visiting"],
+  },
 ];
 
 export const genders = ["Male", "Female", "Other"];
