@@ -41,9 +41,18 @@ const schema: SchemaOf<Schema> = yup
     gender: yup.string().required(),
     birthday: yup.date().required(),
     position: yup.string().required(),
-    gradsemester: yup.string(),
-    gradyear: yup.string(),
-    major: yup.array(),
+    gradsemester: yup.string().when("position", {
+      is: "Undergraduate Student",
+      then: yup.string().required(),
+    }),
+    gradyear: yup.string().when("position", {
+      is: "Undergraduate Student",
+      then: yup.string().required(),
+    }),
+    major: yup.array().when("position", {
+      is: "Undergraduate Student",
+      then: yup.array().required(),
+    }),
     minor: yup.array(),
   })
   .required();

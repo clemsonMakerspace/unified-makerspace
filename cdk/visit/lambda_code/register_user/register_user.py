@@ -105,7 +105,7 @@ class RegisterUserFunction():
                 'last_name': {'S': user_info['lastName']},
                 'gender': {'S': user_info['Gender']},
                 'date_of_birth': {'S': user_info['DOB']},
-                'Position': {'S': user_info['UserPosition']},
+                'position': {'S': user_info['UserPosition']},
                 'grad_semester': {'S': grad_sem},
                 'grad_year': {'S': grad_year},
                 'majors': {'L': majors},
