@@ -73,8 +73,10 @@ class RegisterUserFunction():
                 'lastName': user_info['lastName'],
                 'Gender': user_info['Gender'],
                 'DOB': user_info['DOB'],
-                'Grad_date': user_info['Grad_Date'],
-                'Major': ', '.join(sorted(user_info['Major'])),
+                'Position': user_info['UserPosition'],
+                'GradSemester': user_info.get('GradSemester', ' '),
+                'GradYear': user_info.get('GradYear', ' '),
+                'Major': ', '.join(sorted(user_info.get('Major', []))),
                 'Minor': ', '.join(sorted(user_info.get('Minor', [])))
             },
         )
@@ -84,12 +86,12 @@ class RegisterUserFunction():
             # Add the user to the original table
             grad_sem, grad_year = process_grad_date(user_info['Grad_Date'])
         else:
-            grad_sem = user_info['GradSemester']
-            grad_year = user_info['GradYear']
+            grad_sem = user_info.get('GradSemester', ' ')
+            grad_year = user_info.get('GradYear', ' ')
 
         # type marshall all majors/minors to be strings
         # https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
-        majors = [{"S": s} for s in user_info['Major']]
+        majors = [{"S": s} for s in user_info.get('Major', [])]
         minors = [{"S": s} for s in user_info.get('Minor', [])]
 
         timestamp = int(time.time())
@@ -103,8 +105,9 @@ class RegisterUserFunction():
                 'last_name': {'S': user_info['lastName']},
                 'gender': {'S': user_info['Gender']},
                 'date_of_birth': {'S': user_info['DOB']},
+                'position': {'S': user_info['UserPosition']},
                 'grad_semester': {'S': grad_sem},
-                'grad_year': {'N': grad_year},
+                'grad_year': {'S': grad_year},
                 'majors': {'L': majors},
                 'minors': {'L': minors}
             })
