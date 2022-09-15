@@ -26,6 +26,11 @@ To run the Makerspace, it’s helpful to track the machines and the individuals 
 <a href="https://github.com/arlindohall"><img src="https://github.com/arlindohall.png" title="Miller Hall" width="50" height="50" style="border-radius: 50%"></a>
 
 **Students**
+<!-- Fall 2022 -->
+<a href="https://github.com/DillonRanwala"><img src="https://github.com/DillonRanwala.png" title="Dillon Ranwala" width="50" height="50" style="border-radius: 50%"></a>
+<a href="https://github.com/awgonza"><img src="https://github.com/awgonza.png" title="Aaron Gonzales" width="50" height="50" style="border-radius: 50%"></a>
+<a href="https://github.com/jpascoe32fb"><img src="https://github.com/jpascoe32fb.png" title="John Pascoe" width="50" height="50" style="border-radius: 50%"></a>
+<a href="https://github.com/ltn7130"><img src="https://github.com/ltn7130.png" title="Le Nguyen" width="50" height="50" style="border-radius: 50%"></a>
 
 <!-- Spring 2022 -->
 <a href="https://github.com/0brandy0"><img src="https://github.com/0brandy0.png" title="Brandy Barfield" width="50" height="50" style="border-radius: 50%"></a>
