@@ -39,6 +39,26 @@ accounts = {
         'account': '123330062850',
         'region': 'us-east-1'
     },
+    # Dillon Ranwala, Capstone Fall 2022
+    'Dev-dranwal': {
+        'account': '149497240198',
+        'region': 'us-east-1'
+    },
+    # Le Nguyen, Capstone Fall 2022
+    'Dev-ltn': {
+        'account': '446249877359',
+        'region': 'us-east-1'
+    },
+    # John Pascoe, Capstone Fall 2022
+    'Dev-jepasco': {
+        'account': '810878154118',
+        'region': 'us-east-1'
+    },
+    # Aaron Gonzales, Capstone Fall 2022
+    'Dev-awgonza': {
+        'account': '684082786745',
+        'region': 'us-east-1'
+    },
 }
 
 accounts = {
