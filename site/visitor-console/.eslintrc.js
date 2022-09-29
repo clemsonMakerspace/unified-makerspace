@@ -20,5 +20,11 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": "off",
 
     eqeqeq: ["error", "always"],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      },
+    ],
   },
 };
