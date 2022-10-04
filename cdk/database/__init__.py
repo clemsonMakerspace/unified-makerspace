@@ -70,7 +70,8 @@ class Database(core.Stack):
                                                      type=aws_dynamodb.AttributeType.STRING),
                                                  partition_key=aws_dynamodb.Attribute(
                                                      name='PK',
-                                                     type=aws_dynamodb.AttributeType.STRING))
+                                                     type=aws_dynamodb.AttributeType.STRING),
+                                                 billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
 
     def dynamodb_visits_table(self):
 
@@ -84,7 +85,8 @@ class Database(core.Stack):
                                                    type=aws_dynamodb.AttributeType.STRING),
                                                sort_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
-                                                   type=aws_dynamodb.AttributeType.STRING))
+                                                   type=aws_dynamodb.AttributeType.STRING),
+                                                billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
        
         #! remove in next pr
         self.export_value(self.old_visits_table.table_name)
@@ -100,7 +102,8 @@ class Database(core.Stack):
                                                    type=aws_dynamodb.AttributeType.STRING),
                                                sort_key=aws_dynamodb.Attribute(
                                                    name='visit_time',
-                                                   type=aws_dynamodb.AttributeType.NUMBER))
+                                                   type=aws_dynamodb.AttributeType.NUMBER),
+                                                billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
 
     def dynamodb_users_table(self):
         self.users_table = aws_dynamodb.Table(self,
@@ -109,4 +112,5 @@ class Database(core.Stack):
                                               removal_policy=core.RemovalPolicy.RETAIN,
                                               partition_key=aws_dynamodb.Attribute(
                                                   name='username',
-                                                  type=aws_dynamodb.AttributeType.STRING))
+                                                  type=aws_dynamodb.AttributeType.STRING),
+                                              billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
