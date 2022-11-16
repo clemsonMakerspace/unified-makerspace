@@ -1,5 +1,5 @@
 
-from aws_cdk import core
+from aws_cdk import Environment
 
 accounts = {
     'Dns': {
@@ -62,7 +62,7 @@ accounts = {
 }
 
 accounts = {
-    domain: core.Environment(
+    domain: Environment(
         account=accounts[domain]['account'],
         region=accounts[domain]['region'],
     )

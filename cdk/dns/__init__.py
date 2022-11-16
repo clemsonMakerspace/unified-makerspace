@@ -5,9 +5,9 @@ from aws_cdk import (
     aws_cloudfront,
     aws_route53,
     aws_route53_targets,
-    core
 )
-
+from aws_cdk import App, Stack, Stage, Environment
+from constructs import Construct
 
 class Domains:
     def __init__(self, stage: str):
@@ -31,7 +31,7 @@ class Domains:
         return f'{self.stage}{prefix}.cumaker.space'
 
 
-class MakerspaceDns(core.Stack):
+class MakerspaceDns(Stack):
     """
     Register the DNS used by the portions of the makerspace website owned by
     the capstone in Route53.
@@ -44,8 +44,8 @@ class MakerspaceDns(core.Stack):
     fewer steps.
     """
 
-    def __init__(self, scope: core.Construct,
-                 stage: str, *, env: core.Environment):
+    def __init__(self, scope: Construct,
+                 stage: str, *, env: Environment):
         super().__init__(scope, f'MakerspaceDns-{stage}', env=env)
 
         self.domains = Domains(stage)
@@ -80,12 +80,12 @@ class MakerspaceDns(core.Stack):
                                      zone_name=self.domains.admin)
 
 
-class MakerspaceDnsRecords(core.Stack):
+class MakerspaceDnsRecords(Stack):
 
-    def __init__(self, scope: core.Construct,
+    def __init__(self, scope: Construct,
                  stage: str,
                  *,
-                 env: core.Environment,
+                 env: Environment,
                  zones: MakerspaceDns,
                  api_gateway: aws_apigateway.RestApi,
                  visit_distribution: aws_cloudfront.Distribution):

@@ -6,20 +6,21 @@ with open("README.md") as fp:
 
 
 setuptools.setup(
-    name="maintenance_app",
+    name="cdk",
     version="0.0.1",
 
-    description="An empty CDK Python app",
+    description="A sample CDK Python app",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
     author="author",
 
-    package_dir={"": "maintenance_app"},
-    packages=setuptools.find_packages(where="maintenance_app"),
+    package_dir={"": "cdk"},
+    packages=setuptools.find_packages(where="cdk"),
 
     install_requires=[
-        "aws-cdk.core==1.124.0",
+        "aws-cdk-lib==2.47.0",
+        "constructs>=10.0.0,<11.0.0",
     ],
 
     python_requires=">=3.6",
@@ -28,8 +29,6 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
 
         "Intended Audience :: Developers",
-
-        "License :: OSI Approved :: Apache Software License",
 
         "Programming Language :: JavaScript",
         "Programming Language :: Python :: 3 :: Only",
