@@ -1,15 +1,15 @@
 
 from aws_cdk import (
     aws_certificatemanager,
-    core,
     aws_lambda,
     aws_apigateway,
 )
-
+from aws_cdk import App, Stack, Stage, Environment
+from constructs import Construct
 from dns import MakerspaceDns
 
 
-class SharedApiGateway(core.Stack):
+class SharedApiGateway(Stack):
     """
     Amazon API Gateway for all Lambdas, will be fronted by `api.cumaker.space`.
 
@@ -35,8 +35,8 @@ class SharedApiGateway(core.Stack):
     that far in the design yet.
     """
 
-    def __init__(self, scope: core.Construct, stage: str,
-                 visitors: aws_lambda.Function, register: aws_lambda.Function, *, env: core.Environment, create_dns: bool, zones: MakerspaceDns = None):
+    def __init__(self, scope: Construct, stage: str,
+                 visitors: aws_lambda.Function, register: aws_lambda.Function, *, env: Environment, create_dns: bool, zones: MakerspaceDns = None):
 
         super().__init__(scope, f'SharedApiGateway-{stage}', env=env)
 
@@ -51,7 +51,6 @@ class SharedApiGateway(core.Stack):
     def create_rest_api(self):
 
         self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
-
         if self.create_dns:
             domain_name = self.zones.api.zone_name
             certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
@@ -77,3 +76,6 @@ class SharedApiGateway(core.Stack):
         self.register = self.api.root.add_resource('register')
 
         self.register.add_method('POST', register_user)
+
+    def get_api(self):
+        return self.api

@@ -58,10 +58,10 @@ class LogVisitFunction():
         """
         true if the user has registered
         """
-        user_table_response = self.users.query(
-            KeyConditionExpression=Key('username').eq(current_user)
+        original_table_response = self.original.query(
+            KeyConditionExpression=Key('PK').eq(current_user)
         )
-        return user_table_response['Count'] != 0
+        return original_table_response['Count'] != 0
 
     # This code was written following the example from:
     # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-python.html
