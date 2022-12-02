@@ -27,6 +27,7 @@ class Visit(core.Stack):
     4. The Lambda function records a visit in DynamoDB
     5. The registration email contains a federated link to another webpage
         (register.cumaker.space) which will be a different stack
+
     """
 
     def __init__(self, scope: core.Construct,
@@ -58,6 +59,9 @@ class Visit(core.Stack):
             original_table_name, visits_table_name, users_table_name, ("https://" + self.domain_name))
         self.register_user_lambda(
             original_table_name, users_table_name, ("https://" + self.domain_name))
+        self.test_api_lambda(env=stage)
+
+        
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -140,4 +144,17 @@ class Visit(core.Stack):
                 'USERS_TABLE_NAME': users_table_name
             },
             handler='register_user.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
+        
+    def test_api_lambda(self, env: str):
+
+        self.lambda_api_test = aws_lambda.Function(
+            self,
+            'TestAPILambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('visit/lambda_code/test_api'),
+            environment={
+                'ENV': env
+            },
+            handler='test_api.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
