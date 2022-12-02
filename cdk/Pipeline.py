@@ -65,11 +65,32 @@ class Pipeline(core.Stack):
         
         # create the stack for beta
         self.beta_stage = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
-        pipeline.add_stage(self.beta_stage)
+        beta_deploy_stage = pipeline.add_stage(self.beta_stage)
+
+
+        # curl beta frontend
+        beta_deploy_stage.add_post(
+            ShellStep(
+                "TestBetaCloudfrontEndpoint",
+                commands=[
+                    "curl https://beta-visit.cumaker.space/",
+                ],
+            )
+        )
 
         # create the stack for prod
         self.prod_stage = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
-        pipeline.add_stage(self.prod_stage, 
+        prod_deploy_stage = pipeline.add_stage(self.prod_stage, 
             pre=[ManualApprovalStep("PromoteBetaToProd")]
+        )
+
+        # curl prod frontend
+        prod_deploy_stage.add_post(
+            ShellStep(
+                "TestingProdCloudfrontEndpoint",
+                commands=[
+                    "curl https://visit.cumaker.space/",
+                ],
+            )
         )
 
