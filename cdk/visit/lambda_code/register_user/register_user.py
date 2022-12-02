@@ -64,6 +64,12 @@ class RegisterUserFunction():
 
     def add_user_info(self, user_info):
 
+        # get ttl_expiration from test users if they exist
+        try:
+            ttl_expiration = {"N":str(user_info['ttl_expiration'])}
+        except:
+            ttl_expiration = {"S":""}
+
         # register the user in the old combined table
         original_response = self.original.put_item(
             Item={
@@ -77,7 +83,8 @@ class RegisterUserFunction():
                 'GradSemester': user_info.get('GradSemester', ' '),
                 'GradYear': user_info.get('GradYear', ' '),
                 'Major': ', '.join(sorted(user_info.get('Major', []))),
-                'Minor': ', '.join(sorted(user_info.get('Minor', [])))
+                'Minor': ', '.join(sorted(user_info.get('Minor', []))),
+                'ttl_expiration':ttl_expiration,
             },
         )
 
@@ -96,7 +103,7 @@ class RegisterUserFunction():
 
         timestamp = int(time.time())
 
-        self.dynamodbclient.put_item(
+        user_table_response = self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item={
                 'username': {'S': user_info['username']},
@@ -109,8 +116,13 @@ class RegisterUserFunction():
                 'grad_semester': {'S': grad_sem},
                 'grad_year': {'S': grad_year},
                 'majors': {'L': majors},
-                'minors': {'L': minors}
+                'minors': {'L': minors},
+                'ttl_expiration':ttl_expiration,
+
             })
+
+        if original_response['ResponseMetadata']['HTTPStatusCode'] != user_table_response['ResponseMetadata']['HTTPStatusCode']:
+            raise Exception("One of Original Table or User Table update failed.")
 
         return original_response['ResponseMetadata']['HTTPStatusCode']
 
