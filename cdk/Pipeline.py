@@ -28,11 +28,13 @@ class Pipeline(core.Stack):
         #                   Storage Service (Amazon S3) and all Docker images to Amazon Elastic Container Registry
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
+        
+        codestar_source = CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
+                connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
+            )
         deploy_cdk_shell_step = ShellStep("Synth",
             # use a connection created using the AWS console to authenticate to GitHub
-            input=CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
-                connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
-            ),
+            input=codestar_source,
             commands=[    
                 # install dependancies for frontend
                 'cd site/visitor-console',
@@ -78,6 +80,16 @@ class Pipeline(core.Stack):
             )
         )
 
+        beta_deploy_stage.add_post(
+            ShellStep(
+                "TestBetaAPIEndpoints",
+                input=codestar_source, # pass entire codestar connection to repo
+                commands=[
+                    "ENV=Beta python3 cdk/visit/lambda_code/test_api/testing_script.py",
+                ],
+            )
+        )
+
         # create the stack for prod
         self.prod_stage = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
         prod_deploy_stage = pipeline.add_stage(self.prod_stage, 
@@ -90,6 +102,16 @@ class Pipeline(core.Stack):
                 "TestingProdCloudfrontEndpoint",
                 commands=[
                     "curl https://visit.cumaker.space/",
+                ],
+            )
+        )
+
+        prod_deploy_stage.add_post(
+            ShellStep(
+                "TestProdAPIEndpoints",
+                input=codestar_source, # pass entire codestar connection to repo
+                commands=[
+                    "ENV=Prod python3 cdk/visit/lambda_code/test_api/testing_script.py",
                 ],
             )
         )
