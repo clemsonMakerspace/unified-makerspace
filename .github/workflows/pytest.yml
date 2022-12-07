@@ -29,3 +29,4 @@ jobs:
                   USERS_TABLE_NAME: users
                   VISITS_TABLE_NAME: visits
                   DOMAIN_NAME: https://visit.cumaker.space
+                  ENV: Prod

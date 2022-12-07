@@ -64,12 +64,6 @@ class RegisterUserFunction():
 
     def add_user_info(self, user_info):
 
-        # get ttl_expiration from test users if they exist
-        try:
-            ttl_expiration = {"N":str(user_info['ttl_expiration'])}
-        except:
-            ttl_expiration = {"S":""}
-
         # register the user in the old combined table
         original_response = self.original.put_item(
             Item={
@@ -84,7 +78,7 @@ class RegisterUserFunction():
                 'GradYear': user_info.get('GradYear', ' '),
                 'Major': ', '.join(sorted(user_info.get('Major', []))),
                 'Minor': ', '.join(sorted(user_info.get('Minor', []))),
-                'ttl_expiration':ttl_expiration,
+                'last_updated':user_info.get('last_updated','')
             },
         )
 
@@ -100,6 +94,8 @@ class RegisterUserFunction():
         # https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
         majors = [{"S": s} for s in user_info.get('Major', [])]
         minors = [{"S": s} for s in user_info.get('Minor', [])]
+        
+        
 
         timestamp = int(time.time())
 
@@ -117,7 +113,8 @@ class RegisterUserFunction():
                 'grad_year': {'S': grad_year},
                 'majors': {'L': majors},
                 'minors': {'L': minors},
-                'ttl_expiration':ttl_expiration,
+                'last_updated':{"N":str(user_info.get('last_updated',''))},   # get last_updated from test users, set empty field for non-test users
+
 
             })
 

@@ -72,7 +72,7 @@ class Database(core.Stack):
                                                      name='PK',
                                                      type=aws_dynamodb.AttributeType.STRING),
                                                  billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
-                                                 time_to_live_attribute="ttl_expiration")
+                                                 time_to_live_attribute="last_updated")
 
     def dynamodb_visits_table(self):
 
@@ -88,7 +88,7 @@ class Database(core.Stack):
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.STRING),
                                                 billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
-                                                time_to_live_attribute="ttl_expiration")
+                                                time_to_live_attribute="last_updated")
        
         #! remove in next pr
         self.export_value(self.old_visits_table.table_name)
@@ -106,7 +106,7 @@ class Database(core.Stack):
                                                    name='visit_time',
                                                    type=aws_dynamodb.AttributeType.NUMBER),
                                                 billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
-                                                time_to_live_attribute="ttl_expiration")
+                                                time_to_live_attribute="last_updated")
 
     def dynamodb_users_table(self):
         self.users_table = aws_dynamodb.Table(self,
@@ -117,4 +117,4 @@ class Database(core.Stack):
                                                   name='username',
                                                   type=aws_dynamodb.AttributeType.STRING),
                                               billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
-                                              time_to_live_attribute="ttl_expiration")
+                                              time_to_live_attribute="last_updated")
