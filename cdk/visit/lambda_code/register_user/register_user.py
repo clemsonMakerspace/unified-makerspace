@@ -99,24 +99,43 @@ class RegisterUserFunction():
 
         timestamp = int(time.time())
 
-        user_table_response = self.dynamodbclient.put_item(
-            TableName=self.USERS_TABLE_NAME,
-            Item={
-                'username': {'S': user_info['username']},
-                'register_time': {'N': str(timestamp)},
-                'first_name': {'S': user_info['firstName']},
-                'last_name': {'S': user_info['lastName']},
-                'gender': {'S': user_info['Gender']},
-                'date_of_birth': {'S': user_info['DOB']},
-                'position': {'S': user_info['UserPosition']},
-                'grad_semester': {'S': grad_sem},
-                'grad_year': {'S': grad_year},
-                'majors': {'L': majors},
-                'minors': {'L': minors},
-                'last_updated':{"N":str(user_info.get('last_updated',''))},   # get last_updated from test users, set empty field for non-test users
+        # if the json is from a test request it will have this ttl attribute
+        if "last_updated" in user_info:
+            user_table_response = self.dynamodbclient.put_item(
+                TableName=self.USERS_TABLE_NAME,
+                Item={
+                    'username': {'S': user_info['username']},
+                    'register_time': {'N': str(timestamp)},
+                    'first_name': {'S': user_info['firstName']},
+                    'last_name': {'S': user_info['lastName']},
+                    'gender': {'S': user_info['Gender']},
+                    'date_of_birth': {'S': user_info['DOB']},
+                    'position': {'S': user_info['UserPosition']},
+                    'grad_semester': {'S': grad_sem},
+                    'grad_year': {'S': grad_year},
+                    'majors': {'L': majors},
+                    'minors': {'L': minors},
+                    'last_updated':{"N":str(user_info['last_updated'])},   # get last_updated from test users, will set empty field for non-test users
+                })
 
+        # non-testing requests, will not set last_updated attribute
+        else:
+            user_table_response = self.dynamodbclient.put_item(
+                TableName=self.USERS_TABLE_NAME,
+                Item={
+                    'username': {'S': user_info['username']},
+                    'register_time': {'N': str(timestamp)},
+                    'first_name': {'S': user_info['firstName']},
+                    'last_name': {'S': user_info['lastName']},
+                    'gender': {'S': user_info['Gender']},
+                    'date_of_birth': {'S': user_info['DOB']},
+                    'position': {'S': user_info['UserPosition']},
+                    'grad_semester': {'S': grad_sem},
+                    'grad_year': {'S': grad_year},
+                    'majors': {'L': majors},
+                    'minors': {'L': minors},
+                })
 
-            })
 
         if original_response['ResponseMetadata']['HTTPStatusCode'] != user_table_response['ResponseMetadata']['HTTPStatusCode']:
             raise Exception("One of Original Table or User Table update failed.")
