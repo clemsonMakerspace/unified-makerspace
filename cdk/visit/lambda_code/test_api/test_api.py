@@ -70,7 +70,7 @@ class TestAPIFunction():
             raise Exception("Visit API Call Failed")
 
         # testing register api endpoint
-        register_data = {
+        register_data_dict = {
             "username": "CANARY_TEST_"+dt_string,
             "firstName": "TEST",
             "lastName": "USER",
@@ -84,12 +84,15 @@ class TestAPIFunction():
             "last_updated":(unix_timestamp_for_ttl)
         }
 
-        register_data = json.dumps(register_data)
+        register_data = json.dumps(register_data_dict)
 
         reg_response = http.request('POST', str(api_url)+"register",body=register_data)
 
         if reg_response.status != 200: 
             raise Exception("Register API Call Failed")
+
+
+        print("Canary Successful at " + str(dt_string) + " for username: " + str(register_data_dict["username"]))
 
 
         return visit_response.status == 200 and reg_response.status== 200 and frontend_response.status==200
