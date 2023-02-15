@@ -92,7 +92,7 @@ class TestAPIFunction():
             raise Exception("Register API Call Failed")
 
 
-        print("Canary Successful at " + str(dt_string) + " for username: " + str(register_data_dict["username"]))
+        print("Canary Successful for Canary test with username: " + str(register_data_dict["username"]))
 
 
         return visit_response.status == 200 and reg_response.status== 200 and frontend_response.status==200
