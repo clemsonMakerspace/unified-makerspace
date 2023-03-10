@@ -64,7 +64,7 @@ aws-cdk.region-info==1.129.0
 boto3==1.21.9
 botocore==1.24.9
 cattrs==1.8.0
-certifi==2021.10.8
+certifi==2022.12.7
 cffi==1.15.0
 charset-normalizer==2.0.12
 colorama==0.4.3
