@@ -18,6 +18,7 @@ class LogStorage(core.Stack):
         self.log_bucket = aws_s3.Bucket(self, 'quicksight-log-data',
                         block_public_access=aws_s3.BlockPublicAccess.BLOCK_ALL,
                         encryption=aws_s3.BucketEncryption.S3_MANAGED,
-                        versioned=True,
+                        versioned=False,
+                        enforce_ssl=True,
                         removal_policy=core.RemovalPolicy.DESTROY)
 
