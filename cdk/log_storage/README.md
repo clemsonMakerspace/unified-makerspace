@@ -10,6 +10,7 @@ This folder contain all relevant code and objects needed for the storage of Make
 
 ## Script Usage
 - The apps script can only be used in a Google Apps Script Project (https://script.google.com/home/start)
+- All three scripts should be added to a project with log_upload_to_s3.gs as the bottom file in the file order (allows usage of other file's functions)
 - The account running this script must have Google access to Makerspace's Log (in Google Sheets)
 - Edit sheetId and sheetName variables with the Log's data
 - Need to edit file to include an Access key and Secret Access key from an IAM User with access to your S3 bucket
