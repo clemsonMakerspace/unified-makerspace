@@ -78,7 +78,14 @@ class Pipeline(Stack):
         deploy_stage = pipeline.add_stage(deploy)
 
 
-
+        deploy_stage.add_post(
+            ShellStep(
+                "TestingCloudfrontEndpoint",
+                commands=[
+                    "curl https://visit.cumaker.space/",
+                ],
+            )
+        )
   
         deploy_stage.add_post(
             ShellStep(
