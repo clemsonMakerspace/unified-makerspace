@@ -2,13 +2,13 @@
 
 import os
 
-from aws_cdk import core
+import aws_cdk as cdk
 from Pipeline import Pipeline
 from accounts_config import accounts
 
 from makerspace import MakerspaceStack
 
-app = core.App()
+app = cdk.App()
 
 """
 Section 1: Global resources that exist in only one account
@@ -25,7 +25,7 @@ those directly. Instead, we use the Pipline's self-mutation to update
 all the child stacks. So, everything beta/prod goes here.
 """
 
-pipeline = Pipeline(app, 'Pipeline', env=accounts['Beta'])
+pipeline = Pipeline(app, 'Pipeline-v2', env=accounts['Dev-dranwal'])
 
 """
 Section 2: Resources that exist within the same account
@@ -35,15 +35,5 @@ these, we need to deploy each by hand, and each user should have the
 only credentials that deploy to their own dev account. This loop
 generates a stack for each user that deploys to their own account.
 """
-
-user = os.environ.get("USER")
-stage = f'Dev-{user}'
-dev_environment = accounts.get(stage)
-
-if dev_environment:
-    MakerspaceStack(app, 'Dev', env=accounts[stage])
-else:
-    print(
-        f'Not creating dev stack: could not locate stage={stage} for user={user}')
 
 app.synth()

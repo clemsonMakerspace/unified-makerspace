@@ -19,7 +19,8 @@ setuptools.setup(
     packages=setuptools.find_packages(where="maintenance_app"),
 
     install_requires=[
-        "aws-cdk.core==1.124.0",
+        "aws-cdk-lib==2.74.0",
+        "constructs>=10.0.0,<11.0.0",
     ],
 
     python_requires=">=3.6",
