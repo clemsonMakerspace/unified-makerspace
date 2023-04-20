@@ -74,7 +74,7 @@ class Pipeline(Stack):
         )
         
          # create the stack for dev
-        deploy = MakerspaceStage(self, 'Dev2', env=accounts['Dev-dranwal'])
+        deploy = MakerspaceStage(self, 'Dev', env=accounts['Dev-dranwal'])
         deploy_stage = pipeline.add_stage(deploy)
 
 
