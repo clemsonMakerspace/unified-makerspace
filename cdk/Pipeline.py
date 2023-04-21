@@ -95,7 +95,7 @@ class Pipeline(Stack):
                     "ls",
                     "pwd",
                     "ls ..",
-                    "python3 cdk/visit/lambda_code/test_api/testing_script.py",
+                    "ENV=Dev python3 cdk/visit/lambda_code/test_api/testing_script.py",
 
                 ],
             )
