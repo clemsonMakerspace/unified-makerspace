@@ -44,7 +44,7 @@ class Pipeline(Stack):
                 'npm install',
 
                 # build for dev
-                f'VITE_API_ENDPOINT="https://{Domains("Dev").api}" npm run build', #Edit domain?
+                f'VITE_API_ENDPOINT="https://rz2fj41ba6.execute-api.us-east-1.amazonaws.com/prod" npm run build', #Edit domain?
                 'mkdir -p ../../cdk/visit/console/Dev',
                 'cp -r dist/* ../../cdk/visit/console/Dev',
 

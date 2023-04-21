@@ -23,6 +23,7 @@ elif env == "Prod":
     frontend_url = "https://visit.cumaker.space/"
     api_url = "https://api.cumaker.space/"
 else:
+    print("In testing_script, env is not Prod or Beta")
     raise Exception("Couldn't find Stage")
 
 
