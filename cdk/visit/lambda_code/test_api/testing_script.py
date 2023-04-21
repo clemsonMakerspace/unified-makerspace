@@ -16,12 +16,19 @@ http = urllib3.PoolManager()
 frontend_url = ""
 api_url = ""
 
+try:
+    print("env= " + str(env))
+except:
+    print("couldn't find an env in test script")
 if env == "Beta":
     frontend_url = "https://beta-visit.cumaker.space/"
     api_url = "https://beta-api.cumaker.space/"
 elif env == "Prod":
     frontend_url = "https://visit.cumaker.space/"
     api_url = "https://api.cumaker.space/"
+elif env == "Dev":
+    frontend_url = "https://d1h8gyr3kspj27.cloudfront.net/"
+    api_url = "https://rz2fj41ba6.execute-api.us-east-1.amazonaws.com/prod/"
 else:
     print("In testing_script, env is not Prod or Beta")
     raise Exception("Couldn't find Stage")

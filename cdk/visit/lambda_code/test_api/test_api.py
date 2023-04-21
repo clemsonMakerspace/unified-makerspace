@@ -33,7 +33,10 @@ class TestAPIFunction():
         elif self.env == "Prod":
             frontend_url = "https://visit.cumaker.space/"
             api_url = "https://api.cumaker.space/"
-        else:
+        elif self.env == "Dev":
+            frontend_url = "https://d1h8gyr3kspj27.cloudfront.net/"
+            api_url = "https://rz2fj41ba6.execute-api.us-east-1.amazonaws.com/prod/"
+        else: 
             raise Exception("Couldn't find Stage")
             
        
