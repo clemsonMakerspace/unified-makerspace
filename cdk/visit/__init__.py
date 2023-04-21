@@ -3,17 +3,23 @@ from distutils.command.build import build
 from aws_cdk import (
     aws_certificatemanager,
     aws_s3_deployment,
-    core,
     aws_cloudfront,
     aws_cloudfront_origins,
     aws_lambda,
     aws_s3,
     aws_iam,
+    App,
+    Stack,
+    Stage,
+    Environment,
+    Duration,
+    PhysicalName,
 )
+from constructs import Construct
 
 from dns import MakerspaceDns
 
-class Visit(core.Stack):
+class Visit(Stack):
     """
     Track visitors to the makerspace via a simple web console.
 
@@ -30,13 +36,13 @@ class Visit(core.Stack):
 
     """
 
-    def __init__(self, scope: core.Construct,
+    def __init__(self, scope: Construct,
                  stage: str,
                  original_table_name: str,
                  users_table_name: str,
                  visits_table_name: str,
                  *,
-                 env: core.Environment,
+                 env: Environment,
                  create_dns: bool,
                  zones: MakerspaceDns = None):
 
@@ -102,7 +108,7 @@ class Visit(core.Stack):
             http_status=404,
             response_http_status=200,
             response_page_path="/index.html",
-            ttl=core.Duration.seconds(10)
+            ttl=Duration.seconds(10)
         )]
 
         self.distribution = aws_cloudfront.Distribution(
@@ -118,7 +124,7 @@ class Visit(core.Stack):
         self.lambda_visit = aws_lambda.Function(
             self,
             'RegisterVisitLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/log_visit'),
             environment={
                 'ORIGINAL_TABLE_NAME': original_table_name,
@@ -136,7 +142,7 @@ class Visit(core.Stack):
         self.lambda_register = aws_lambda.Function(
             self,
             'RegisterUserLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/register_user'),
             environment={
                 'ORIGINAL_TABLE_NAME': original_table_name,
@@ -151,7 +157,7 @@ class Visit(core.Stack):
         self.lambda_api_test = aws_lambda.Function(
             self,
             'TestAPILambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/test_api'),
             environment={
                 'ENV': env

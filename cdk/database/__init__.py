@@ -1,9 +1,5 @@
-
-from aws_cdk import (
-    core,
-    aws_dynamodb
-)
-
+from aws_cdk import Stack, Environment, RemovalPolicy, aws_dynamodb
+from constructs import Construct
 
 class Database(core.Stack):
     def __init__(self, scope: core.Construct,

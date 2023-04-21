@@ -1,12 +1,13 @@
 from aws_cdk import (
-    core,
     aws_s3,
-    aws_iam
+    aws_iam,
+    App, Stack, Stage, Environment, RemovalPolicy
 )
+from constructs import Construct
 
-class LogStorage(core.Stack):
-    def __init__(self, scope: core.Construct,
-                 stage: str, *, env: core.Environment):  
+class LogStorage(Stack):
+    def __init__(self, scope: Construct,
+                 stage: str, *, env: Environment):  
               
         super().__init__(scope, f'LogStorage-{stage}', env=env)
 
@@ -21,7 +22,7 @@ class LogStorage(core.Stack):
                         encryption=aws_s3.BucketEncryption.S3_MANAGED,
                         versioned=False,
                         enforce_ssl=True,
-                        removal_policy=core.RemovalPolicy.DESTROY)
+                        removal_policy=RemovalPolicy.DESTROY)
         
     def log_access_user(self):
         # Create an IAM user 
