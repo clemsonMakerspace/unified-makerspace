@@ -1,23 +1,28 @@
 
-from aws_cdk import core
+
+from aws_cdk import CfnOutput, Environment, Stack, Stage
+from constructs import Construct
+
 from visit import Visit
 from api_gateway import SharedApiGateway
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
+from log_storage import LogStorage
 
 
-class MakerspaceStage(core.Stage):
-    def __init__(self, scope: core.Construct, stage: str, *,
-                 env: core.Environment) -> None:
+
+class MakerspaceStage(Stage):
+    def __init__(self, scope: Construct, stage: str, *,
+                 env: Environment) -> None:
         super().__init__(scope, stage, env=env)
         
         self.service = MakerspaceStack(self, stage, env=env)
 
 
-class MakerspaceStack(core.Stack):
+class MakerspaceStack(Stack):
 
-    def __init__(self, app: core.Construct, stage: str, *,
-                 env: core.Environment):
+    def __init__(self, app: Construct, stage: str, *,
+                 env: Environment):
         super().__init__(
             app,
             f'MakerspaceStack-{stage}',
@@ -54,6 +59,8 @@ class MakerspaceStack(core.Stack):
 
         if self.create_dns:
             self.dns_records_stack()
+
+        self.log_storage_stack()
 
     def database_stack(self):
 
@@ -103,3 +110,9 @@ class MakerspaceStack(core.Stack):
                                                 visit_distribution=self.visit.distribution)
 
         self.add_dependency(self.dns_records)
+    
+    def log_storage_stack(self):
+        self.log_bucket = LogStorage(self.app, self.stage, env=self.env)
+    
+        self.add_dependency(self.log_bucket)
+

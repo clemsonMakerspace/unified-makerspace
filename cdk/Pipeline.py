@@ -1,7 +1,7 @@
 # This stack is based on the following blog post:
 # https://aws.amazon.com/blogs/developer/cdk-pipelines-continuous-delivery-for-aws-cdk-applications/
 from aws_cdk import (
-    core
+    Environment, App, Stack
 )
 from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep
 from makerspace import MakerspaceStage
@@ -9,9 +9,9 @@ from makerspace import MakerspaceStage
 from accounts_config import accounts
 from dns import Domains
 
-class Pipeline(core.Stack):
-    def __init__(self, app: core.App, id: str, *,
-                 env: core.Environment) -> None:
+class Pipeline(Stack):
+    def __init__(self, app: App, id: str, *,
+                 env: Environment) -> None:
         super().__init__(app, id, env=env)
 
         # Define our pipeline

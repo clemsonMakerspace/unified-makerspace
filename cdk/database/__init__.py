@@ -1,13 +1,9 @@
+from aws_cdk import Stack, Environment, RemovalPolicy, aws_dynamodb
+from constructs import Construct
 
-from aws_cdk import (
-    core,
-    aws_dynamodb
-)
-
-
-class Database(core.Stack):
-    def __init__(self, scope: core.Construct,
-                 stage: str, *, env: core.Environment):
+class Database(Stack):
+    def __init__(self, scope: Construct,
+                 stage: str, *, env: Environment):
 
         # todo: remove the stage out of the id string, cloudformation already prefixes all dependancies with the stack that its part of and that contains the stack stage
         self.id = f'Database-{stage}'
@@ -64,7 +60,7 @@ class Database(core.Stack):
         self.old_table = aws_dynamodb.Table(self,
                                                  self.id,
                                                  point_in_time_recovery=True,
-                                                 removal_policy=core.RemovalPolicy.RETAIN,
+                                                 removal_policy=RemovalPolicy.RETAIN,
                                                  sort_key=aws_dynamodb.Attribute(
                                                      name='SK',
                                                      type=aws_dynamodb.AttributeType.STRING),
@@ -80,7 +76,7 @@ class Database(core.Stack):
         self.old_visits_table = aws_dynamodb.Table(self,
                                                self.old_visits_id,
                                                point_in_time_recovery=True,
-                                               removal_policy=core.RemovalPolicy.RETAIN,
+                                               removal_policy=RemovalPolicy.RETAIN,
                                                partition_key=aws_dynamodb.Attribute(
                                                    name='username',
                                                    type=aws_dynamodb.AttributeType.STRING),
@@ -98,7 +94,7 @@ class Database(core.Stack):
         self.visits_table = aws_dynamodb.Table(self,
                                                self.visits_id,
                                                point_in_time_recovery=True,
-                                               removal_policy=core.RemovalPolicy.RETAIN,
+                                               removal_policy=RemovalPolicy.RETAIN,
                                                partition_key=aws_dynamodb.Attribute(
                                                    name='username',
                                                    type=aws_dynamodb.AttributeType.STRING),
@@ -112,7 +108,7 @@ class Database(core.Stack):
         self.users_table = aws_dynamodb.Table(self,
                                               self.users_id,
                                               point_in_time_recovery=True,
-                                              removal_policy=core.RemovalPolicy.RETAIN,
+                                              removal_policy=RemovalPolicy.RETAIN,
                                               partition_key=aws_dynamodb.Attribute(
                                                   name='username',
                                                   type=aws_dynamodb.AttributeType.STRING),
