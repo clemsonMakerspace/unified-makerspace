@@ -42,7 +42,7 @@ class RegisterUserFunction():
     dynamodb table.
     """
 
-    def __init__(self, original_table, users_table, dynamodbclient):
+    def __init__(self, users_table, dynamodbclient):
         if dynamodbclient is None:
             self.dynamodbclient = boto3.client('dynamodb')
         else:
@@ -55,32 +55,7 @@ class RegisterUserFunction():
         else:
             self.users = users_table
 
-        self.ORIGINAL_TABLE_NAME = os.environ["ORIGINAL_TABLE_NAME"]
-        if original_table is None:
-            self.original = dynamodbresource.Table(
-                self.ORIGINAL_TABLE_NAME)
-        else:
-            self.original = original_table
-
     def add_user_info(self, user_info):
-
-        # register the user in the old combined table
-        original_response = self.original.put_item(
-            Item={
-                'PK': user_info['username'],
-                'SK': str(datetime.datetime.now()),
-                'firstName': user_info['firstName'],
-                'lastName': user_info['lastName'],
-                'Gender': user_info['Gender'],
-                'DOB': user_info['DOB'],
-                'Position': user_info['UserPosition'],
-                'GradSemester': user_info.get('GradSemester', ' '),
-                'GradYear': user_info.get('GradYear', ' '),
-                'Major': ', '.join(sorted(user_info.get('Major', []))),
-                'Minor': ', '.join(sorted(user_info.get('Minor', []))),
-                'last_updated':user_info.get('last_updated','')
-            },
-        )
 
         # format Grad_Date if the frontend does not provide the new format
         if 'Grad_Date' in user_info:
@@ -94,8 +69,6 @@ class RegisterUserFunction():
         # https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
         majors = [{"S": s} for s in user_info.get('Major', [])]
         minors = [{"S": s} for s in user_info.get('Minor', [])]
-        
-        
 
         timestamp = int(time.time())
 
@@ -116,19 +89,15 @@ class RegisterUserFunction():
 
         # if the json is from a test request it will have this ttl attribute
         if "last_updated" in user_info:
-            user_table_item['last_updated'] = {"N":str(user_info['last_updated'])}
+            user_table_item['last_updated'] = {
+                "N": str(user_info['last_updated'])}
 
         user_table_response = self.dynamodbclient.put_item(
             TableName=self.USERS_TABLE_NAME,
             Item=user_table_item
-            )
+        )
 
-
-
-        if original_response['ResponseMetadata']['HTTPStatusCode'] != user_table_response['ResponseMetadata']['HTTPStatusCode']:
-            raise Exception("One of Original Table or User Table update failed.")
-
-        return original_response['ResponseMetadata']['HTTPStatusCode']
+        return user_table_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_register_user_request(self, request, context):
         HEADERS = {

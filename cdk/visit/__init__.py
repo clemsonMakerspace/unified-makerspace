@@ -13,6 +13,7 @@ from aws_cdk import (
 
 from dns import MakerspaceDns
 
+
 class Visit(core.Stack):
     """
     Track visitors to the makerspace via a simple web console.
@@ -32,7 +33,6 @@ class Visit(core.Stack):
 
     def __init__(self, scope: core.Construct,
                  stage: str,
-                 original_table_name: str,
                  users_table_name: str,
                  visits_table_name: str,
                  *,
@@ -56,12 +56,10 @@ class Visit(core.Stack):
         self.domain_name = self.distribution.domain_name if stage == 'Dev' else self.zones.visit.zone_name
 
         self.log_visit_lambda(
-            original_table_name, visits_table_name, users_table_name, ("https://" + self.domain_name))
+            visits_table_name, users_table_name, ("https://" + self.domain_name))
         self.register_user_lambda(
-            original_table_name, users_table_name, ("https://" + self.domain_name))
+            users_table_name, ("https://" + self.domain_name))
         self.test_api_lambda(env=stage)
-
-        
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -75,7 +73,7 @@ class Visit(core.Stack):
                                                    f'visit/console/{self.stage}/')
                                            ],
                                            destination_bucket=self.bucket)
-        
+
     def cloudfront_distribution(self):
 
         kwargs = {}
@@ -108,7 +106,7 @@ class Visit(core.Stack):
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
 
-    def log_visit_lambda(self, original_table_name: str, visits_table_name: str, users_table_name: str, domain_name: str):
+    def log_visit_lambda(self, visits_table_name: str, users_table_name: str, domain_name: str):
 
         sending_authorization_policy = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW)
@@ -121,7 +119,6 @@ class Visit(core.Stack):
             function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/log_visit'),
             environment={
-                'ORIGINAL_TABLE_NAME': original_table_name,
                 'DOMAIN_NAME': domain_name,
                 'VISITS_TABLE_NAME': visits_table_name,
                 'USERS_TABLE_NAME': users_table_name,
@@ -131,7 +128,7 @@ class Visit(core.Stack):
 
         self.lambda_visit.role.add_to_policy(sending_authorization_policy)
 
-    def register_user_lambda(self, original_table_name: str, users_table_name: str, domain_name: str):
+    def register_user_lambda(self, users_table_name: str, domain_name: str):
 
         self.lambda_register = aws_lambda.Function(
             self,
@@ -139,13 +136,12 @@ class Visit(core.Stack):
             function_name=core.PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('visit/lambda_code/register_user'),
             environment={
-                'ORIGINAL_TABLE_NAME': original_table_name,
                 'DOMAIN_NAME': domain_name,
                 'USERS_TABLE_NAME': users_table_name
             },
             handler='register_user.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
-        
+
     def test_api_lambda(self, env: str):
 
         self.lambda_api_test = aws_lambda.Function(

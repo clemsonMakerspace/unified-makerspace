@@ -59,6 +59,11 @@ accounts = {
         'account': '684082786745',
         'region': 'us-east-1'
     },
+    # Lucas Boyer, Capstone Fall 2023
+    'Dev-lrboyer': {
+        'account': '744918461173',
+        'region': 'us-east-1'
+    },
 }
 
 accounts = {

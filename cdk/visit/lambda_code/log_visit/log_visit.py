@@ -17,16 +17,9 @@ class LogVisitFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self, original_table, visits_table, users_table, ses_client):
+    def __init__(self, visits_table, users_table, ses_client):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
-
-        if original_table is None:
-            dynamodb = boto3.resource('dynamodb')
-            ORIGINAL_TABLE_NAME = os.environ['ORIGINAL_TABLE_NAME']
-            self.original = dynamodb.Table(ORIGINAL_TABLE_NAME)
-        else:
-            self.original = original_table
 
         if visits_table is None:
             # Get the service resource.
@@ -118,20 +111,9 @@ class LogVisitFunction():
         except ClientError as e:
             self.logger.error(e.response['Error']['Message'])
 
-    def addVisitEntry(self, current_user, location, tool,last_updated):
-        
-        timestamp = int(time.time())
+    def addVisitEntry(self, current_user, location, tool, last_updated):
 
-        # record the visit in the old combined table
-        original_response = self.original.put_item(
-            Item={
-                'PK': str(timestamp),
-                'SK': current_user,
-                'tool': tool or ' ',
-                'location': location or ' ',
-                'last_updated':last_updated,
-            },
-        )
+        timestamp = int(time.time())
 
         # record the visit in the visits table
         visit_response = self.visits.put_item(
@@ -143,14 +125,11 @@ class LogVisitFunction():
                 'username': current_user,
                 'location': location,
                 'tool': tool,
-                'last_updated':last_updated,
+                'last_updated': last_updated,
             },
         )
 
-        if original_response['ResponseMetadata']['HTTPStatusCode'] != visit_response['ResponseMetadata']['HTTPStatusCode']:
-            raise Exception("One of Original Table or Visit Table update failed.")
-
-        return original_response['ResponseMetadata']['HTTPStatusCode']
+        return visit_response['ResponseMetadata']['HTTPStatusCode']
 
     def handle_log_visit_request(self, request, context):
         """
@@ -179,7 +158,7 @@ class LogVisitFunction():
         # if no request is provided (should never be the case because of gateway invocation)
         if (request is None):
             return bad_request({'Message': 'No request provided'})
-        
+
         # get the body of the request
         body = json.loads(request.get('body', "{}"))
 
@@ -190,12 +169,12 @@ class LogVisitFunction():
             return bad_request({'Message': 'Missing parameter: username'})
 
         # get the users location
-        location = None 
+        location = None
         try:
             location = body['location']
         except KeyError:
             self.logger.warn('location parameter was not provided')
-        
+
         # get what tool the user is using
         tool = None
         try:
@@ -208,26 +187,27 @@ class LogVisitFunction():
         except:
             last_updated = ""
 
-
         # send user the registration link if not registered
         user_registered = self.isUserRegistered(username)
         if not user_registered:
             self.registrationWorkflow(username)
 
         # add the visit entry
-        status_code = self.addVisitEntry(username, location, tool,last_updated)
+        status_code = self.addVisitEntry(
+            username, location, tool, last_updated)
 
         # Send response
         return {
             'headers': HEADERS,
             'statusCode': status_code,
             'body': json.dumps({
-                "was_user_registered": user_registered,                
+                "was_user_registered": user_registered,
             })
         }
 
 
 log_visit_function = LogVisitFunction(None, None, None, None)
+
 
 def handler(request, context):
     # This will be hit in prod, and will connect to the stood-up dynamodb

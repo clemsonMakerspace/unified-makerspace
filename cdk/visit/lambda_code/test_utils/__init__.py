@@ -13,8 +13,6 @@
         create_test_visit_table() - Creates a DynamoDB table that mocks the visits
             table.
 
-        create_original_table() - Creates a DynamoDB table that mocks the original
-            table.
 
         create_ses_client() - Creates a mock SES client. 
         
