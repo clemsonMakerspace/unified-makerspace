@@ -49,6 +49,11 @@ class MakerspaceStack(core.Stack):
         self.database.users_table.grant_read_data(self.visit.lambda_visit)
         self.database.users_table.grant_read_write_data(
             self.visit.lambda_register)
+        
+        self.database.quiz_list_table.grant_read_write_data(
+            self.visit.lambda_quiz_submit)
+        self.database.quiz_progress_table.grant_read_write_data(
+            self.visit.lambda_quiz_submit)
 
         self.shared_api_gateway()
 
@@ -69,6 +74,8 @@ class MakerspaceStack(core.Stack):
             self.database.old_table.table_name,
             self.database.users_table.table_name,
             self.database.visits_table.table_name,
+            self.database.quiz_list_table.table_name,
+            self.database.quiz_progress_table.table_name,
             create_dns=self.create_dns,
             zones=self.dns,
             env=self.env)
@@ -78,7 +85,7 @@ class MakerspaceStack(core.Stack):
     def shared_api_gateway(self):
 
         self.api_gateway = SharedApiGateway(
-            self.app, self.stage, self.visit.lambda_visit, self.visit.lambda_register, env=self.env, zones=self.dns, create_dns=self.create_dns)
+            self.app, self.stage, self.visit.lambda_visit, self.visit.lambda_register, self.visit.lambda_quiz_submit, env=self.env, zones=self.dns, create_dns=self.create_dns)
 
         self.add_dependency(self.api_gateway)
 
