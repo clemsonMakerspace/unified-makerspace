@@ -6,7 +6,7 @@ import time
 from typing import Tuple
 
 
-class SubmitQuizFunction():
+class QuizFunction():
     """
     This class wraps the function of the lambda so we can more easily test
     it with moto. In production, we will continue to pass the stood-up
@@ -46,7 +46,7 @@ class SubmitQuizFunction():
 
         return None
 
-    def handle_submit_quiz_request(self, request, context):
+    def handle_quiz_request(self, request, context):
         HEADERS = {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Headers': 'Content-Type',
@@ -73,12 +73,12 @@ class SubmitQuizFunction():
         }
 
 
-submit_quiz_function = SubmitQuizFunction(None, None, None)
+quiz_function = QuizFunction(None, None, None)
 
 
 def handler(request, context):
     # Register quiz information from the makerspace/register console
     # Since this will be hit in prod, it will go ahead and hit our prod
     # dynamodb table
-    return submit_quiz_function.handle_submit_quiz_request(
+    return quiz_function.handle_quiz_request(
         request, context)
