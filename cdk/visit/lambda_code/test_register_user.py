@@ -28,5 +28,5 @@ def test_visit_with_location():
     users_table = create_test_users_table(client)
 
     response = RegisterUserFunction(
-        table, users_table, client).handle_register_user_request(test_register_user, None)
+        users_table, client).handle_register_user_request(test_register_user, None)
     assert response['statusCode'] == 200
