@@ -206,7 +206,7 @@ class LogVisitFunction():
         }
 
 
-log_visit_function = LogVisitFunction(None, None, None, None)
+log_visit_function = LogVisitFunction(None, None, None)
 
 
 def handler(request, context):
