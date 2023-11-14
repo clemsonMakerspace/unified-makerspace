@@ -1,0 +1,38 @@
+# This workflow on pr will install all dependencies and cdk synth to make sure the code will generate valid cloudformation templates  
+# Uses https://github.com/marketplace/actions/aws-cdk-github-actions for cdk synth
+
+name: CDK Synth
+
+on:
+  pull_request:
+    branches: [ mainline ]
+
+jobs:
+  cdk_synth:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r cdk/requirements.txt
+
+      - name: CDK Synth
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'synth'
+          cdk_version: '1.129.0'
+          working_dir: 'cdk'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
