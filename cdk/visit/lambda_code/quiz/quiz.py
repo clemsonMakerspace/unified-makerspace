@@ -76,17 +76,21 @@ class QuizFunction():
         """
 
         if not self.does_quiz_exist(quiz_info['quiz_id']):
+            quiz_list_item = {
+                'quiz_id': quiz_info['quiz_id']
+            }
+            # if the json is from a test request it will have this ttl attribute
+            if "last_updated" in quiz_info:
+                quiz_list_item['last_updated'] = {"N":str(quiz_info['last_updated'])}
+            
             quiz_list_response = self.quiz_list.put_item(
-                Item={
-                    'quiz_id': quiz_info['quiz_id']
-                }
+                Item=quiz_list_item
             )
 
         timestamp = int(time.time())
         username = self.get_username(quiz_info['email'])
         state = self.get_quiz_state(quiz_info['score'])
 
-        # dict for entry into the quiz_progress table
         quiz_progress_item = {
             'quiz_id': quiz_info['quiz_id'],
             'username': username,
