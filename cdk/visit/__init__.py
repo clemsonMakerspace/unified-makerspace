@@ -35,6 +35,8 @@ class Visit(core.Stack):
                  original_table_name: str,
                  users_table_name: str,
                  visits_table_name: str,
+                 quiz_list_table_name: str,
+                 quiz_progress_table_name: str,
                  *,
                  env: core.Environment,
                  create_dns: bool,
@@ -59,6 +61,8 @@ class Visit(core.Stack):
             original_table_name, visits_table_name, users_table_name, ("https://" + self.domain_name))
         self.register_user_lambda(
             original_table_name, users_table_name, ("https://" + self.domain_name))
+        self.quiz_lambda(
+            quiz_list_table_name, quiz_progress_table_name, ("https://" + self.domain_name))
         self.test_api_lambda(env=stage)
 
         
@@ -144,6 +148,21 @@ class Visit(core.Stack):
                 'USERS_TABLE_NAME': users_table_name
             },
             handler='register_user.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
+        
+    def quiz_lambda(self, quiz_list_table_name: str, quiz_progress_table_name: str, domain_name: str):
+
+        self.lambda_quiz = aws_lambda.Function(
+            self,
+            'QuizLambda',
+            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('visit/lambda_code/quiz'),
+            environment={
+                'DOMAIN_NAME': domain_name,
+                'QUIZ_LIST_TABLE_NAME': quiz_list_table_name,
+                'QUIZ_PROGRESS_TABLE_NAME': quiz_progress_table_name
+            },
+            handler='quiz.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_9)
         
     def test_api_lambda(self, env: str):

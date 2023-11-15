@@ -12,15 +12,19 @@ class Database(core.Stack):
         # todo: remove the stage out of the id string, cloudformation already prefixes all dependancies with the stack that its part of and that contains the stack stage
         self.id = f'Database-{stage}'
         self.users_id = f'Database-users-{stage}'
-        self.old_visits_id = f'Database-visits-{stage}' #! remove in next pr
+        self.old_visits_id = f'Database-visits-{stage}'  # ! remove in next pr
         self.visits_id = 'visits'
-        
+        self.quiz_progress_id = 'quiz_progress'
+        self.quiz_list_id = "quiz_list"
+
         super().__init__(
             scope, self.id, env=env, termination_protection=True)
 
         self.dynamodb_old_table()  # This is the original table
         self.dynamodb_visits_table()
         self.dynamodb_users_table()
+        self.dynamodb_quiz_progress_table()
+        self.dynamodb_quiz_list_table()
 
     def dynamodb_old_table(self):
         """
@@ -118,3 +122,49 @@ class Database(core.Stack):
                                                   type=aws_dynamodb.AttributeType.STRING),
                                               billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
                                               time_to_live_attribute="last_updated")
+
+    def dynamodb_quiz_progress_table(self):
+        """
+        This table will hold all users quiz progression.
+
+        Reason for using 2 tables for quiz data (quiz progression and quiz_list): 
+            - Easier to add new quizzes in the future
+            - Makes retrieving all quiz data for a user easier
+
+        schema:
+        - PK = clemson-username
+        - SK = quiz_id
+
+        """
+        self.quiz_progress_table = aws_dynamodb.Table(self,
+                                                      self.quiz_progress_id,
+                                                      point_in_time_recovery=True,
+                                                      removal_policy=core.RemovalPolicy.RETAIN,
+                                                      partition_key=aws_dynamodb.Attribute(
+                                                          name="username",
+                                                          type=aws_dynamodb.AttributeType.STRING
+                                                      ),
+                                                      sort_key=aws_dynamodb.Attribute(
+                                                          name="quiz_id",
+                                                          type=aws_dynamodb.AttributeType.STRING
+                                                      ),
+                                                      billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
+                                                      time_to_live_attribute="last_updated")
+
+    def dynamodb_quiz_list_table(self):
+        """
+        This table will hold all quizzes used by the makerspace by quiz_id
+
+        schema:
+        - PK = quiz_id
+        """
+        self.quiz_list_table = aws_dynamodb.Table(self,
+                                                  self.quiz_list_id,
+                                                  point_in_time_recovery=True,
+                                                  removal_policy=core.RemovalPolicy.RETAIN,
+                                                  partition_key=aws_dynamodb.Attribute(
+                                                      name="quiz_id",
+                                                      type=aws_dynamodb.AttributeType.STRING
+                                                  ),
+                                                  billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST,
+                                                  time_to_live_attribute="last_updated")
