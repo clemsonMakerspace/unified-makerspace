@@ -45,6 +45,44 @@ class QuizFunction():
         """
 
         return None
+    
+    def get_quiz_progress(self, username):
+        """
+            Steps for getting user quiz progress:
+                1. Get all quiz_id's from quiz_list
+                2. Retrieve all quiz entries for the user from quiz_progress
+                3. Return list of all quizzes with quiz state
+        """
+        
+        # Step 1
+        quiz_list_response = self.quiz_list.scan()
+        all_quizzes = quiz_list_response['Items']
+
+        # Step 2
+        user_quiz_states = {}
+        for quiz in all_quizzes:
+            quiz_id = quiz['quiz_id']
+            quiz_progress_response = self.quiz_progress.query(
+                KeyConditionExpression=Key('username').eq(username) & Key('quiz_id').eq(quiz_id)
+            )
+            if quiz_progress_response['Items']:
+                quiz_data = quiz_progress_response['Items'][0]
+                user_quiz_states[quiz_id] = int(quiz_data['state'])
+            else:
+                # User has not taken this quiz
+                user_quiz_states[quiz_id] = -1
+
+        # Step 3
+        user_quiz_progress = []
+        for quiz in all_quizzes:
+            quiz_id = quiz['quiz_id']
+            quiz_info = {
+                'quiz_id': quiz_id,
+                'state': user_quiz_states.get(quiz_id)
+            }
+            user_quiz_progress.append(quiz_info)
+
+        return user_quiz_progress
 
     def handle_quiz_request(self, request, context):
         HEADERS = {
@@ -61,17 +99,42 @@ class QuizFunction():
                     "Message": "Failed to provide parameters"
                 })
             }
+            
+        method = request.get('httpMethod')
 
-        # Get all of the user information from the json file
-        quiz_info = json.loads(request["body"])
-        # Call Function
-        response = self.add_quiz_info(quiz_info)
-        # Send response
-        return {
-            'headers': HEADERS,
-            'statusCode': response
-        }
+        if method == 'POST':
+            quiz_info = json.loads(request["body"])
+            response = self.add_quiz_info(quiz_info)
+            return {
+                'headers': HEADERS,
+                'statusCode': response
+            }
+        elif method == 'GET':
+            username = request.get('pathParameters', {}).get('username')
+            if not username:
+                return {
+                    'headers': HEADERS,
+                    'statusCode': 400,
+                    'body': json.dumps({
+                        "Message": "Username parameter is missing"
+                    })
+                }
 
+            user_quiz_progress = self.get_quiz_progress(username)
+            return {
+                'headers': HEADERS,
+                'statusCode': 200,
+                'body':  json.dumps(user_quiz_progress)
+            }
+        else:
+            return {
+                'headers': HEADERS,
+                'statusCode': 405,
+                'body': json.dumps({
+                    "Message": "Method not allowed"
+                })
+            }
+            
 
 quiz_function = QuizFunction(None, None, None)
 

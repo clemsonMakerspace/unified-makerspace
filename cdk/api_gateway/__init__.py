@@ -48,6 +48,7 @@ class SharedApiGateway(core.Stack):
         self.route_visitors(visitors)
         self.route_registration(register)
         self.route_quiz(quiz)
+        self.route_quiz_username(quiz)
 
     def create_rest_api(self):
 
@@ -86,3 +87,12 @@ class SharedApiGateway(core.Stack):
         self.quiz = self.api.root.add_resource('quiz')
 
         self.quiz.add_method('POST', quiz)
+        
+    def route_quiz_username(self, quiz: aws_lambda.Function):
+        
+        quiz_username = aws_apigateway.LambdaIntegration(quiz)
+
+        # adds a path parameter '{username}' to /quiz
+        self.quiz_username = self.quiz.add_resource('{username}')
+
+        self.quiz_username.add_method('GET', quiz_username)
