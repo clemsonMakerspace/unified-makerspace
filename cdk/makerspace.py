@@ -4,6 +4,8 @@ from visit import Visit
 from api_gateway import SharedApiGateway
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
+from setups.analytics_setup import setup_analytics
+from setups.cognito_setup import setup_cognito
 
 
 class MakerspaceStage(core.Stage):
@@ -59,6 +61,10 @@ class MakerspaceStack(core.Stack):
 
         if self.create_dns:
             self.dns_records_stack()
+        
+        setup_analytics(self)
+
+        setup_cognito(self)
 
     def database_stack(self):
 
