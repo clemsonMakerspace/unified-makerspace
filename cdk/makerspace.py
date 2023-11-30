@@ -4,8 +4,8 @@ from visit import Visit
 from api_gateway import SharedApiGateway
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
-from setups.analytics_setup import setup_analytics
-from setups.cognito_setup import setup_cognito
+from construct.cognito_construct import CognitoConstruct
+from construct.quicksight_embed import QuickSightEmbedConstruct
 
 
 class MakerspaceStage(core.Stage):
@@ -62,9 +62,9 @@ class MakerspaceStack(core.Stack):
         if self.create_dns:
             self.dns_records_stack()
         
-        setup_analytics(self)
+        self.cognito_setup()
 
-        setup_cognito(self)
+        self.quicksight_setup()
 
     def database_stack(self):
 
@@ -116,3 +116,24 @@ class MakerspaceStack(core.Stack):
                                                 visit_distribution=self.visit.distribution)
 
         self.add_dependency(self.dns_records)
+
+    def cognito_setup(self):
+
+        self.cognito = CognitoConstruct(
+            self,
+            "CognitoSetup",
+            user_pool_name="MakerspaceUserPool",
+            domain_prefix="cumakerspace",  
+            callback_uris=["https://visit.cumaker.space/callback"],
+            logout_uris=["https://visit.cumaker.space/signout"]
+        )
+    
+    def quicksight_setup(self):
+
+        self.quicksight = QuickSightEmbedConstruct(
+            self,
+            "QuickSightEmbedSetup",
+            aws_account_id = core.Aws.ACCOUNT_ID,
+            dashboard_id="b153dda9-d2f2-4829-9f5d-df80daddda2d",
+            quicksight_user_arn = f"arn:aws:quicksight:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user/default/AWSReservedSSO_AdministratorAccess_426a747d415eaabe/todds"
+        )
