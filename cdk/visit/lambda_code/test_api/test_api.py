@@ -13,6 +13,12 @@ logger.setLevel(logging.INFO)
 env = os.environ["ENV"]
 http = urllib3.PoolManager()
 
+# Triggers ttl removal 2 minutes in future
+unix_timestamp_for_ttl = int(time.time()+120)
+now = datetime.now()
+
+dt_string = now.strftime("%d-%m-%Y_%H:%M:%S")
+
 frontend_url = ""
 api_url = ""
 
@@ -26,145 +32,121 @@ else:
     raise Exception("Couldn't find Stage")
 
 
-class TestAPIFunction():
-    """
-    This function will be used to wrap the functionality of the lambda
-    so we can more easily test with pytest.
-    """
+def test_frontend():
+    # Simulates "curl <makerspace_frontend_url> | grep Makerspace Visitor Console" command
+    frontend_response = http.request('GET', str(frontend_url))
 
-    @pytest.fixture
-    def unix_timestamp_for_ttl(self):
-        return int(time.time()+120)
-
-    @pytest.fixture
-    def dt_string(self):
-        now = datetime.now()
-        return now.strftime("%d/%m/%Y_%H:%M:%S")
-
-    def test_frontend(self):
-        # Simulates "curl <makerspace_frontend_url> | grep Makerspace Visitor Console" command
-        frontend_response = http.request('GET', str(frontend_url))
-
-        assert frontend_response.status == 200
-        assert b"Makerspace Sign-in" in frontend_response.data
-
-    def test_visit_api(self, unix_timestamp_for_ttl, dt_string):
-        visit_data = {"username": "CANARY_TEST_"+dt_string, "location": "Watt Family Innovation Center",
-                      "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
-        visit_data = json.dumps(visit_data)
-
-        visit_response = http.request(
-            'POST', str(api_url)+"visit", body=visit_data)
-
-        visit_data_unregistered = {"username": "CANARY_TEST_UNREGISTERED"+dt_string,
-                                   "location": "Watt Family Innovation Center", "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
-        visit_data_unregistered = json.dumps(visit_data_unregistered)
-
-        visit_response = http.request(
-            'POST', str(api_url)+"visit", body=visit_data)
-        visit_response_unregistered = http.request(
-            'POST', str(api_url)+"visit", body=visit_data_unregistered)
-
-        assert visit_response.status == 200
-        assert visit_response_unregistered.status == 200
-
-    def test_register_api(self, unix_timestamp_for_ttl, dt_string):
-        register_data_dict = {
-            "username": "CANARY_TEST_"+dt_string,
-            "firstName": "TEST",
-            "lastName": "USER",
-            "Gender": "Male",
-            "DOB": "01/01/2000",
-            "UserPosition": "Undergraduate Student",
-            "GradSemester": "Fall",
-            "GradYear": "2023",
-            "Major": ["Mathematical Sciences"],
-            "Minor": ["Business Administration"],
-            "last_updated": (unix_timestamp_for_ttl)
-        }
-
-        register_data = json.dumps(register_data_dict)
-
-        reg_response = http.request('POST', str(
-            api_url)+"register", body=register_data)
-
-        print("Canary Successful for Canary test with username: " +
-              str(register_data_dict["username"]))
-
-        assert reg_response.status == 200
-
-    def test_quiz_api_post(self, unix_timestamp_for_ttl, dt_string):
-        quiz_data_dict = {
-            "quiz_id": "3dPrinterTesting",
-            "username": "CANARY_TEST_"+dt_string,
-            "email": "CANARY_TEST_@clemson.edu",
-            "score": "10 / 10",
-            "last_updated": (unix_timestamp_for_ttl),
-        }
-
-        quiz_data = json.dumps(quiz_data_dict)
-
-        quiz_post_response = http.request(
-            'POST', str(api_url) + "quiz", body=quiz_data)
-
-        assert quiz_post_response.status == 200
-
-    def test_quiz_api_get(self, unix_timestamp_for_ttl, dt_string):
-        # The username is created with dt_string and used as a path parameter. dt_string has / so we replace them with -
-        dt_string = dt_string.replace('/', '-')
-
-        quiz_data_dict_1 = {
-            "quiz_id": "3dPrinterTesting1",
-            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
-            "score": "10 / 10",
-            "last_updated": (unix_timestamp_for_ttl),
-        }
-        quiz_data_dict_2 = {
-            "quiz_id": "3dPrinterTesting2",
-            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
-            "score": "10 / 10",
-            "last_updated": (unix_timestamp_for_ttl),
-        }
-        quiz_data_dict_3 = {
-            "quiz_id": "3dPrinterTesting3",
-            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
-            "score": "5 / 10",
-            "last_updated": (unix_timestamp_for_ttl),
-        }
-
-        username = "CANARY_TEST_" + dt_string
-
-        quiz_post_response_1 = http.request(
-            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_1))
-        quiz_post_response_2 = http.request(
-            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_2))
-        quiz_post_response_3 = http.request(
-            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_3))
-
-        assert quiz_post_response_1.status == 200 and quiz_post_response_2.status == 200 and quiz_post_response_3.status == 200
-
-        quiz_get_response = http.request(
-            'GET', str(api_url) + "quiz/" + username)
-
-        assert quiz_get_response.status == 200
-
-        expected_response = [
-            {"quiz_id": "3dPrinterTesting1", "state": 1},
-            {"quiz_id": "3dPrinterTesting2", "state": 1},
-            {"quiz_id": "3dPrinterTesting3", "state": 0}
-        ]
-
-        quiz_progress = json.loads(quiz_get_response.data)
-
-        assert expected_response[0] in quiz_progress and expected_response[
-            1] in quiz_progress and expected_response[2] in quiz_progress
+    assert frontend_response.status == 200
+    assert b"Makerspace Sign-in" in frontend_response.data
 
 
-def handler(unix_timestamp_for_ttl, dt_string):
-    test_api_function = TestAPIFunction()
+def test_visit_api():
+    visit_data = {"username": "CANARY_TEST_"+dt_string, "location": "Watt Family Innovation Center",
+                  "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
+    visit_data = json.dumps(visit_data)
 
-    test_api_function.test_frontend()
-    test_api_function.test_visit_api(unix_timestamp_for_ttl, dt_string)
-    test_api_function.test_register_api(unix_timestamp_for_ttl, dt_string)
-    test_api_function.test_quiz_api_get(unix_timestamp_for_ttl, dt_string)
-    test_api_function.test_quiz_api_post(unix_timestamp_for_ttl, dt_string)
+    visit_response = http.request(
+        'POST', str(api_url)+"visit", body=visit_data)
+
+    visit_data_unregistered = {"username": "CANARY_TEST_UNREGISTERED"+dt_string,
+                               "location": "Watt Family Innovation Center", "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
+    visit_data_unregistered = json.dumps(visit_data_unregistered)
+
+    visit_response = http.request(
+        'POST', str(api_url)+"visit", body=visit_data)
+    visit_response_unregistered = http.request(
+        'POST', str(api_url)+"visit", body=visit_data_unregistered)
+
+    assert visit_response.status == 200
+    assert visit_response_unregistered.status == 200
+
+
+def test_register_api():
+    register_data_dict = {
+        "username": "CANARY_TEST_"+dt_string,
+        "firstName": "TEST",
+        "lastName": "USER",
+        "Gender": "Male",
+        "DOB": "01/01/2000",
+        "UserPosition": "Undergraduate Student",
+        "GradSemester": "Fall",
+        "GradYear": "2023",
+        "Major": ["Mathematical Sciences"],
+        "Minor": ["Business Administration"],
+        "last_updated": (unix_timestamp_for_ttl)
+    }
+
+    register_data = json.dumps(register_data_dict)
+
+    reg_response = http.request('POST', str(
+        api_url)+"register", body=register_data)
+
+    print("Canary Successful for Canary test with username: " +
+          str(register_data_dict["username"]))
+
+    assert reg_response.status == 200
+
+
+def test_quiz_api_post():
+    quiz_data_dict = {
+        "quiz_id": "3dPrinterTesting",
+        "username": "CANARY_TEST_"+dt_string,
+        "email": "CANARY_TEST_@clemson.edu",
+        "score": "10 / 10",
+        "last_updated": (unix_timestamp_for_ttl),
+    }
+
+    quiz_data = json.dumps(quiz_data_dict)
+
+    quiz_post_response = http.request(
+        'POST', str(api_url) + "quiz", body=quiz_data)
+
+    assert quiz_post_response.status == 200
+
+
+def test_quiz_api_get():
+    quiz_data_dict_1 = {
+        "quiz_id": "3dPrinterTesting1",
+        "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+        "score": "10 / 10",
+        "last_updated": (unix_timestamp_for_ttl),
+    }
+    quiz_data_dict_2 = {
+        "quiz_id": "3dPrinterTesting2",
+        "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+        "score": "10 / 10",
+        "last_updated": (unix_timestamp_for_ttl),
+    }
+    quiz_data_dict_3 = {
+        "quiz_id": "3dPrinterTesting3",
+        "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+        "score": "5 / 10",
+        "last_updated": (unix_timestamp_for_ttl),
+    }
+
+    username = "CANARY_TEST_" + dt_string
+
+    quiz_post_response_1 = http.request(
+        'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_1))
+    quiz_post_response_2 = http.request(
+        'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_2))
+    quiz_post_response_3 = http.request(
+        'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_3))
+
+    assert quiz_post_response_1.status == 200 and quiz_post_response_2.status == 200 and quiz_post_response_3.status == 200
+
+    quiz_get_response = http.request(
+        'GET', str(api_url) + "quiz/" + username)
+
+    assert quiz_get_response.status == 200
+
+    expected_response = [
+        {"quiz_id": "3dPrinterTesting1", "state": 1},
+        {"quiz_id": "3dPrinterTesting2", "state": 1},
+        {"quiz_id": "3dPrinterTesting3", "state": 0}
+    ]
+
+    quiz_progress = json.loads(quiz_get_response.data)
+
+    assert expected_response[0] in quiz_progress and expected_response[
+        1] in quiz_progress and expected_response[2] in quiz_progress

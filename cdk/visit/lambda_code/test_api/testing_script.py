@@ -35,9 +35,7 @@ if frontend_response.data.find(b"Makerspace Visitor Console") == -1:
     raise Exception("HTML from Front End Error")
 
 now = datetime.now()
-dt_string = now.strftime("%d/%m/%Y_%H:%M:%S")
-# The username is created with dt_string and used as a path parameter in GET /quiz/:username. dt_string has / so we replace them with -
-dt_string = dt_string.replace('/', '-')
+dt_string = now.strftime("%d-%m-%Y_%H:%M:%S")
 
 # Triggers ttl removal 2 minutes in future
 unix_timestamp_for_ttl = int(time.time()+120)
