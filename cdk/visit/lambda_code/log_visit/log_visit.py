@@ -118,8 +118,8 @@ class LogVisitFunction():
         except ClientError as e:
             self.logger.error(e.response['Error']['Message'])
 
-    def addVisitEntry(self, current_user, location, tool,last_updated):
-        
+    def addVisitEntry(self, current_user, location, tool, last_updated):
+
         timestamp = int(time.time())
 
         # record the visit in the old combined table
@@ -129,7 +129,7 @@ class LogVisitFunction():
                 'SK': current_user,
                 'tool': tool or ' ',
                 'location': location or ' ',
-                'last_updated':last_updated,
+                'last_updated': last_updated,
             },
         )
 
@@ -143,12 +143,13 @@ class LogVisitFunction():
                 'username': current_user,
                 'location': location,
                 'tool': tool,
-                'last_updated':last_updated,
+                'last_updated': last_updated,
             },
         )
 
         if original_response['ResponseMetadata']['HTTPStatusCode'] != visit_response['ResponseMetadata']['HTTPStatusCode']:
-            raise Exception("One of Original Table or Visit Table update failed.")
+            raise Exception(
+                "One of Original Table or Visit Table update failed.")
 
         return original_response['ResponseMetadata']['HTTPStatusCode']
 
@@ -179,7 +180,7 @@ class LogVisitFunction():
         # if no request is provided (should never be the case because of gateway invocation)
         if (request is None):
             return bad_request({'Message': 'No request provided'})
-        
+
         # get the body of the request
         body = json.loads(request.get('body', "{}"))
 
@@ -190,24 +191,23 @@ class LogVisitFunction():
             return bad_request({'Message': 'Missing parameter: username'})
 
         # get the users location
-        location = None 
+        location = None
         try:
             location = body['location']
         except KeyError:
-            self.logger.warn('location parameter was not provided')
-        
+            self.logger.warning('location parameter was not provided')
+
         # get what tool the user is using
         tool = None
         try:
             tool = body['tool']
         except KeyError:
-            self.logger.warn('tool parameter was not provided')
+            self.logger.warning('tool parameter was not provided')
 
         try:
             last_updated = body['last_updated']
         except:
             last_updated = ""
-
 
         # send user the registration link if not registered
         user_registered = self.isUserRegistered(username)
@@ -215,19 +215,21 @@ class LogVisitFunction():
             self.registrationWorkflow(username)
 
         # add the visit entry
-        status_code = self.addVisitEntry(username, location, tool,last_updated)
+        status_code = self.addVisitEntry(
+            username, location, tool, last_updated)
 
         # Send response
         return {
             'headers': HEADERS,
             'statusCode': status_code,
             'body': json.dumps({
-                "was_user_registered": user_registered,                
+                "was_user_registered": user_registered,
             })
         }
 
 
 log_visit_function = LogVisitFunction(None, None, None, None)
+
 
 def handler(request, context):
     # This will be hit in prod, and will connect to the stood-up dynamodb

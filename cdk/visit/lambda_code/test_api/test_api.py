@@ -1,4 +1,3 @@
-
 import os
 import logging
 from botocore.vendored import requests
@@ -7,6 +6,25 @@ from datetime import datetime
 import json
 import urllib3
 import time
+import pytest
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+env = os.environ["ENV"]
+http = urllib3.PoolManager()
+
+frontend_url = ""
+api_url = ""
+
+if env == "Beta":
+    frontend_url = "https://beta-visit.cumaker.space/"
+    api_url = "https://beta-api.cumaker.space/"
+elif env == "Prod":
+    frontend_url = "https://visit.cumaker.space/"
+    api_url = "https://api.cumaker.space/"
+else:
+    raise Exception("Couldn't find Stage")
+
 
 class TestAPIFunction():
     """
@@ -14,62 +32,43 @@ class TestAPIFunction():
     so we can more easily test with pytest.
     """
 
-    def __init__(self):
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.INFO)
-        self.env = os.environ["ENV"]
+    @pytest.fixture
+    def unix_timestamp_for_ttl(self):
+        return int(time.time()+120)
 
+    @pytest.fixture
+    def dt_string(self):
+        now = datetime.now()
+        return now.strftime("%d/%m/%Y_%H:%M:%S")
 
-    def handle_test_api(self):
-        http = urllib3.PoolManager()  
-
-        # Setting up endpoints based on stage
-        frontend_url = ""
-        api_url = ""
-
-        if self.env == "Beta":
-            frontend_url = "https://beta-visit.cumaker.space/"
-            api_url = "https://beta-api.cumaker.space/"
-        elif self.env == "Prod":
-            frontend_url = "https://visit.cumaker.space/"
-            api_url = "https://api.cumaker.space/"
-        else:
-            raise Exception("Couldn't find Stage")
-            
-       
-
+    def test_frontend(self):
         # Simulates "curl <makerspace_frontend_url> | grep Makerspace Visitor Console" command
         frontend_response = http.request('GET', str(frontend_url))
 
-        if frontend_response.status != 200:
-            raise Exception("Front End Curl Failed")
+        assert frontend_response.status == 200
+        assert b"Makerspace Sign-in" in frontend_response.data
 
-        if frontend_response.data.find(b"Makerspace Visitor Console") == -1:
-            raise Exception("HTML from Front End Error")
-
-
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y_%H:%M:%S")
-        
-        unix_timestamp_for_ttl = int(time.time()+120) # Triggers ttl removal 2 minutes in future 
-
-        # testing visit api endpoint
-        visit_data = {"username":"CANARY_TEST_"+dt_string,"location":"Watt Family Innovation Center","tool":"Visiting","last_updated":(unix_timestamp_for_ttl)}
+    def test_visit_api(self, unix_timestamp_for_ttl, dt_string):
+        visit_data = {"username": "CANARY_TEST_"+dt_string, "location": "Watt Family Innovation Center",
+                      "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
         visit_data = json.dumps(visit_data)
 
-        visit_response = http.request('POST', str(api_url)+"visit",body=visit_data)
+        visit_response = http.request(
+            'POST', str(api_url)+"visit", body=visit_data)
 
+        visit_data_unregistered = {"username": "CANARY_TEST_UNREGISTERED"+dt_string,
+                                   "location": "Watt Family Innovation Center", "tool": "Visiting", "last_updated": (unix_timestamp_for_ttl)}
+        visit_data_unregistered = json.dumps(visit_data_unregistered)
 
-        visit_data_unregistered = {"username":"CANARY_TEST_UNREGISTERED"+dt_string,"location":"Watt Family Innovation Center","tool":"Visiting","last_updated":(unix_timestamp_for_ttl)}
-        visit_data_unregistered  = json.dumps(visit_data_unregistered )
+        visit_response = http.request(
+            'POST', str(api_url)+"visit", body=visit_data)
+        visit_response_unregistered = http.request(
+            'POST', str(api_url)+"visit", body=visit_data_unregistered)
 
-        visit_response = http.request('POST', str(api_url)+"visit",body=visit_data)
-        visit_response_unregistered = http.request('POST', str(api_url)+"visit",body=visit_data_unregistered)
+        assert visit_response.status == 200
+        assert visit_response_unregistered.status == 200
 
-        if visit_response.status != 200 or visit_response_unregistered.status != 200:
-            raise Exception("Visit API Call Failed")
-
-        # testing register api endpoint
+    def test_register_api(self, unix_timestamp_for_ttl, dt_string):
         register_data_dict = {
             "username": "CANARY_TEST_"+dt_string,
             "firstName": "TEST",
@@ -81,27 +80,91 @@ class TestAPIFunction():
             "GradYear": "2023",
             "Major": ["Mathematical Sciences"],
             "Minor": ["Business Administration"],
-            "last_updated":(unix_timestamp_for_ttl)
+            "last_updated": (unix_timestamp_for_ttl)
         }
 
         register_data = json.dumps(register_data_dict)
 
-        reg_response = http.request('POST', str(api_url)+"register",body=register_data)
+        reg_response = http.request('POST', str(
+            api_url)+"register", body=register_data)
 
-        if reg_response.status != 200: 
-            raise Exception("Register API Call Failed")
+        print("Canary Successful for Canary test with username: " +
+              str(register_data_dict["username"]))
+
+        assert reg_response.status == 200
+
+    def test_quiz_api_post(self, unix_timestamp_for_ttl, dt_string):
+        quiz_data_dict = {
+            "quiz_id": "3dPrinterTesting",
+            "username": "CANARY_TEST_"+dt_string,
+            "email": "CANARY_TEST_@clemson.edu",
+            "score": "10 / 10",
+            "last_updated": (unix_timestamp_for_ttl),
+        }
+
+        quiz_data = json.dumps(quiz_data_dict)
+
+        quiz_post_response = http.request(
+            'POST', str(api_url) + "quiz", body=quiz_data)
+
+        assert quiz_post_response.status == 200
+
+    def test_quiz_api_get(self, unix_timestamp_for_ttl, dt_string):
+        # The username is created with dt_string and used as a path parameter. dt_string has / so we replace them with -
+        dt_string = dt_string.replace('/', '-')
+
+        quiz_data_dict_1 = {
+            "quiz_id": "3dPrinterTesting1",
+            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+            "score": "10 / 10",
+            "last_updated": (unix_timestamp_for_ttl),
+        }
+        quiz_data_dict_2 = {
+            "quiz_id": "3dPrinterTesting2",
+            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+            "score": "10 / 10",
+            "last_updated": (unix_timestamp_for_ttl),
+        }
+        quiz_data_dict_3 = {
+            "quiz_id": "3dPrinterTesting3",
+            "email": "CANARY_TEST_"+dt_string + "@clemson.edu",
+            "score": "5 / 10",
+            "last_updated": (unix_timestamp_for_ttl),
+        }
+
+        username = "CANARY_TEST_" + dt_string
+
+        quiz_post_response_1 = http.request(
+            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_1))
+        quiz_post_response_2 = http.request(
+            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_2))
+        quiz_post_response_3 = http.request(
+            'POST', str(api_url) + "quiz", body=json.dumps(quiz_data_dict_3))
+
+        assert quiz_post_response_1.status == 200 and quiz_post_response_2.status == 200 and quiz_post_response_3.status == 200
+
+        quiz_get_response = http.request(
+            'GET', str(api_url) + "quiz/" + username)
+
+        assert quiz_get_response.status == 200
+
+        expected_response = [
+            {"quiz_id": "3dPrinterTesting1", "state": 1},
+            {"quiz_id": "3dPrinterTesting2", "state": 1},
+            {"quiz_id": "3dPrinterTesting3", "state": 0}
+        ]
+
+        quiz_progress = json.loads(quiz_get_response.data)
+
+        assert expected_response[0] in quiz_progress and expected_response[
+            1] in quiz_progress and expected_response[2] in quiz_progress
 
 
-        print("Canary Successful for Canary test with username: " + str(register_data_dict["username"]))
+def handler(unix_timestamp_for_ttl, dt_string):
+    test_api_function = TestAPIFunction()
 
-
-        return visit_response.status == 200 and reg_response.status== 200 and frontend_response.status==200
-        
-
-
-test_api_function = TestAPIFunction()
-
-def handler(request, context):
-    return test_api_function.handle_test_api()
-
-
+    test_api_function.test_frontend()
+    test_api_function.test_visit_api(unix_timestamp_for_ttl, dt_string)
+    test_api_function.test_register_api(unix_timestamp_for_ttl, dt_string)
+    test_api_function.test_quiz_api_get(unix_timestamp_for_ttl, dt_string)
+    test_api_function.test_quiz_api_post(unix_timestamp_for_ttl, dt_string)
