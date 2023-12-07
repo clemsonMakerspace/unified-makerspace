@@ -55,7 +55,7 @@ class QuizFunction():
             input: a string like of the quiz score "9 / 10" or "3 / 3"
             return: 1 if all questions are correct and a 0 if otherwise
         """
-        
+
         score = score.split('/')
 
         userScore = int(score[0].strip())
@@ -81,8 +81,8 @@ class QuizFunction():
             }
             # if the json is from a test request it will have this ttl attribute
             if "last_updated" in quiz_info:
-                quiz_list_item['last_updated'] = {"N":str(quiz_info['last_updated'])}
-            
+                quiz_list_item['last_updated'] = quiz_info['last_updated']
+
             quiz_list_response = self.quiz_list.put_item(
                 Item=quiz_list_item
             )
@@ -97,10 +97,10 @@ class QuizFunction():
             'timestamp': timestamp,
             'state': state
         }
-        
+
         # if the json is from a test request it will have this ttl attribute
         if "last_updated" in quiz_info:
-            quiz_progress_item['last_updated'] = {"N":str(quiz_info['last_updated'])}
+            quiz_progress_item['last_updated'] = quiz_info['last_updated']
 
         quiz_progress_table_response = self.quiz_progress.put_item(
             Item=quiz_progress_item
