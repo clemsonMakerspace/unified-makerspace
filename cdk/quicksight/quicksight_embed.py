@@ -1,4 +1,3 @@
-# analytics_construct.py
 from aws_cdk import core, aws_lambda as _lambda, aws_iam, aws_apigateway as apigateway
 
 class QuickSightEmbedConstruct(core.Construct):
@@ -53,7 +52,7 @@ class QuickSightEmbedConstruct(core.Construct):
         )
 
 
-        # Lambda integration
+        # Lambda API integration
         lambda_integration = apigateway.LambdaIntegration(
             lambda_dashboard_generator,
             request_templates={"application/json": '{ "statusCode": "200" }'}
