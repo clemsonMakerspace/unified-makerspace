@@ -4,7 +4,8 @@ from visit import Visit
 from api_gateway import SharedApiGateway
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
-
+from cognito.cognito_construct import CognitoConstruct
+from quicksight.quicksight_embed import QuickSightEmbedConstruct
 
 class MakerspaceStage(core.Stage):
     def __init__(self, scope: core.Construct, stage: str, *,
@@ -110,3 +111,21 @@ class MakerspaceStack(core.Stack):
                                                 visit_distribution=self.visit.distribution)
 
         self.add_dependency(self.dns_records)
+
+    def cognito_setup(self):
+
+        self.cognito = CognitoConstruct(
+            self,
+            "MakerspaceCognito",
+            user_pool_name="MakerspaceAuth"
+        )
+    
+    def quicksight_setup(self):
+
+        self.quicksight = QuickSightEmbedConstruct(
+            self,
+            "QuickSightEmbedSetup",
+            aws_account_id = core.Aws.ACCOUNT_ID,
+            dashboard_id="b153dda9-d2f2-4829-9f5d-df80daddda2d",
+            quicksight_user_arn = f"arn:aws:quicksight:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user/default/cumakerspace@gmail.com"
+        )
