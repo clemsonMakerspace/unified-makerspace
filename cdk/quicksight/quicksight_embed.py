@@ -52,7 +52,7 @@ class QuickSightEmbedConstruct(core.Construct):
         )
 
 
-        # Lambda integration
+        # Lambda API integration
         lambda_integration = apigateway.LambdaIntegration(
             lambda_dashboard_generator,
             request_templates={"application/json": '{ "statusCode": "200" }'}
