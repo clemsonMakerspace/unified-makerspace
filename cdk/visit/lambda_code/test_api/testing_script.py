@@ -82,8 +82,7 @@ if reg_response.status != 200:
 # testing quiz Post request
 quiz_data_dict = {
     "quiz_id": "3dPrinterTesting",
-    "username": "CANARY_TEST_"+dt_string,
-    "email": "CANARY_TEST_@clemson.edu",
+    "email": "CANARY_TEST_" + dt_string + "@clemson.edu",
     "score": "10 / 10",
     "last_updated": (unix_timestamp_for_ttl),
 }
