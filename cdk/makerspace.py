@@ -39,6 +39,10 @@ class MakerspaceStack(core.Stack):
 
         self.visitors_stack()
 
+        self.cognito_setup()
+
+        self.quicksight_setup()
+
         self.database.old_table.grant_read_write_data(
             self.visit.lambda_visit)
         self.database.old_table.grant_write_data(

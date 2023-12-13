@@ -1,4 +1,3 @@
-# analytics_construct.py
 from aws_cdk import core, aws_lambda as _lambda, aws_iam, aws_apigateway as apigateway
 
 class QuickSightEmbedConstruct(core.Construct):
