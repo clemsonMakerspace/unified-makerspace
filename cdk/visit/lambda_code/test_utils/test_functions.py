@@ -120,3 +120,69 @@ def create_original_table(client):
     table.wait_until_exists()
 
     return table
+
+
+def create_test_quiz_list_table(client):
+    table_name = 'quiz_list'
+    resource = boto3.resource('dynamodb', region_name='us-east-1')
+
+    table = resource.create_table(
+        TableName=table_name,
+        KeySchema=[
+            {
+                'AttributeName': 'quiz_id',
+                'KeyType': 'HASH'  # Partition key
+            },
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'quiz_id',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
+        }
+    )
+
+    table.wait_until_exists()
+
+    return table
+
+
+def create_test_quiz_progress_table(client):
+    table_name = 'quiz_progress'
+    resource = boto3.resource('dynamodb', region_name='us-east-1')
+
+    table = resource.create_table(
+        TableName=table_name,
+        KeySchema=[
+            {
+                'AttributeName': 'username',
+                'KeyType': 'HASH'  # Partition key
+            },
+            {
+                'AttributeName': 'quiz_id',
+                'KeyType': 'RANGE'  # Sort key
+            },
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'username',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'quiz_id',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
+        }
+    )
+
+    table.wait_until_exists()
+
+    return table
