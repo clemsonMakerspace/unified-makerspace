@@ -44,8 +44,39 @@ class QuizFunction():
                 3. Insert quiz_info into quiz_progress_table
         """
 
-        return None
-    
+        if not self.does_quiz_exist(quiz_info['quiz_id']):
+            quiz_list_item = {
+                'quiz_id': quiz_info['quiz_id']
+            }
+            # if the json is from a test request it will have this ttl attribute
+            if "last_updated" in quiz_info:
+                quiz_list_item['last_updated'] = quiz_info['last_updated']
+
+            quiz_list_response = self.quiz_list.put_item(
+                Item=quiz_list_item
+            )
+
+        timestamp = int(time.time())
+        username = self.get_username(quiz_info['email'])
+        state = self.get_quiz_state(quiz_info['score'])
+
+        quiz_progress_item = {
+            'quiz_id': quiz_info['quiz_id'],
+            'username': username,
+            'timestamp': timestamp,
+            'state': state
+        }
+
+        # if the json is from a test request it will have this ttl attribute
+        if "last_updated" in quiz_info:
+            quiz_progress_item['last_updated'] = quiz_info['last_updated']
+
+        quiz_progress_table_response = self.quiz_progress.put_item(
+            Item=quiz_progress_item
+        )
+
+        return quiz_progress_table_response['ResponseMetadata']['HTTPStatusCode']
+
     def get_quiz_progress(self, username):
         """
             Steps for getting user quiz progress:
@@ -53,7 +84,7 @@ class QuizFunction():
                 2. Retrieve all quiz entries for the user from quiz_progress
                 3. Return list of all quizzes with quiz state
         """
-        
+
         # Step 1
         quiz_list_response = self.quiz_list.scan()
         all_quizzes = quiz_list_response['Items']
@@ -63,7 +94,8 @@ class QuizFunction():
         for quiz in all_quizzes:
             quiz_id = quiz['quiz_id']
             quiz_progress_response = self.quiz_progress.query(
-                KeyConditionExpression=Key('username').eq(username) & Key('quiz_id').eq(quiz_id)
+                KeyConditionExpression=Key('username').eq(
+                    username) & Key('quiz_id').eq(quiz_id)
             )
             if quiz_progress_response['Items']:
                 quiz_data = quiz_progress_response['Items'][0]
@@ -99,7 +131,7 @@ class QuizFunction():
                     "Message": "Failed to provide parameters"
                 })
             }
-            
+
         method = request.get('httpMethod')
 
         if method == 'POST':
@@ -134,7 +166,7 @@ class QuizFunction():
                     "Message": "Method not allowed"
                 })
             }
-            
+
 
 quiz_function = QuizFunction(None, None, None)
 
