@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import "./styles/global.scss";
 import App from "./pages/App";
-import background_image from "./assets/background.webp";
+import background_image from "./assets/background.png";
 import logo from "./assets/makerspace_logo.webp";
 
 document.body.className = "bg-dark";
@@ -26,9 +26,7 @@ ReactDOM.render(
           alt="Clemson Makerspace Logo"
         />
       </div>
-      <Router>
-        <App />
-      </Router>
+      <App />
     </div>
   </React.StrictMode>,
   document.getElementById("root")
