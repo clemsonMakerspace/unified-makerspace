@@ -28,5 +28,7 @@ jobs:
                   ORIGINAL_TABLE_NAME: original
                   USERS_TABLE_NAME: users
                   VISITS_TABLE_NAME: visits
+                  QUIZ_LIST_TABLE_NAME: quiz_list
+                  QUIZ_PROGRESS_TABLE_NAME: quiz_progress
                   DOMAIN_NAME: https://visit.cumaker.space
                   ENV: Prod
