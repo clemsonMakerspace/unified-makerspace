@@ -1,7 +1,7 @@
 from aws_cdk import core, aws_lambda as _lambda, aws_iam, aws_apigateway as apigateway
 
 class QuickSightEmbedConstruct(core.Construct):
-    def __init__(self, scope: core.Construct, id: str, aws_account_id: str, dashboard_id: str, quicksight_user_arn: str, shared_api_gateway: apigateway.RestApi, **kwargs):
+    def __init__(self, scope: core.Construct, id: str, aws_account_id: str, dashboard_id: str, quicksight_user_arn: str, shared_api_gateway: apigateway.RestApi, api_resource_name: str = 'dashboard', **kwargs):
         super().__init__(scope, id, **kwargs)
 
         # IAM Role for Lambda
@@ -44,7 +44,7 @@ class QuickSightEmbedConstruct(core.Construct):
         )
 
         # Define a new resource for the shared API Gateway
-        dashboard_resource = shared_api_gateway.root.add_resource('dashboard')
+        dashboard_resource = shared_api_gateway.root.add_resource(api_resource_name)
 
          # Add GET method to the dashboard resource
         dashboard_resource.add_method('GET', lambda_integration)
@@ -53,6 +53,6 @@ class QuickSightEmbedConstruct(core.Construct):
         core.CfnOutput(
             self,
             "QSDashboardAPIUrl",
-            value=shared_api_gateway.url_for_path('/dashboard'),
+            value=shared_api_gateway.url_for_path(f'/{api_resource_name}'),
             description="URL for the QuickSight Dashboard Embed URL API"
         )
