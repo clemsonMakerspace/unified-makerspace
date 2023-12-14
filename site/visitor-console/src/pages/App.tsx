@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Amplify } from "aws-amplify";
 import { locations } from "../library/constants";
+import { getAmplifyConfig } from "../config/getAmplifyConfig";
 
 import LocationSelection from "./LocationSelection";
 import Registration from "./Registration";
@@ -10,7 +11,6 @@ import NotFoundPage from "./NotFoundPage";
 import VisitForm from "../components/VisitForm";
 import Admin from "./Admin";
 import Quizzes from "./QuizStatus";
-import { getAmplifyConfig } from "../config/getAmplifyConfig";
 
 const config = getAmplifyConfig();
 
