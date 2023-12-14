@@ -10,14 +10,17 @@ import NotFoundPage from "./NotFoundPage";
 import VisitForm from "../components/VisitForm";
 import Admin from "./Admin";
 import Quizzes from "./QuizStatus";
+import { getAmplifyConfig } from "../config/getAmplifyConfig";
+
+const config = getAmplifyConfig();
 
 Amplify.configure({
   Auth: {
     Cognito: {
       //  Amazon Cognito User Pool ID
-      userPoolId: "us-east-1_TQ9FwRJ44",
+      userPoolId: config.userPoolId,
       // Amazon Cognito Web Client ID
-      userPoolClientId: "58lututlkaggp6h8tu9oauqp5p",
+      userPoolClientId: config.userPoolClientId,
     },
   },
 });
