@@ -5,7 +5,6 @@ from api_gateway import SharedApiGateway
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
 from cognito.cognito_construct import CognitoConstruct
-from quicksight.quicksight_embed import QuickSightEmbedConstruct
 
 class MakerspaceStage(core.Stage):
     def __init__(self, scope: core.Construct, stage: str, *,
@@ -40,8 +39,6 @@ class MakerspaceStack(core.Stack):
         self.visitors_stack()
 
         self.cognito_setup()
-
-        self.quicksight_setup()
 
         self.database.old_table.grant_read_write_data(
             self.visit.lambda_visit)
@@ -92,6 +89,8 @@ class MakerspaceStack(core.Stack):
         self.api_gateway = SharedApiGateway(
             self.app, self.stage, self.visit.lambda_visit, self.visit.lambda_register, self.visit.lambda_quiz, env=self.env, zones=self.dns, create_dns=self.create_dns)
 
+        self.api_gateway.route_quicksight()
+
         self.add_dependency(self.api_gateway)
 
     def hosted_zones_stack(self):
@@ -122,17 +121,4 @@ class MakerspaceStack(core.Stack):
             self,
             "MakerspaceCognito",
             user_pool_name="MakerspaceAuth"
-        )
-    
-    def quicksight_setup(self):
-        resource_name = 'dashboard'
-
-        self.quicksight = QuickSightEmbedConstruct(
-            self,
-            "QuickSightEmbedSetup",
-            aws_account_id = core.Aws.ACCOUNT_ID,
-            dashboard_id="b153dda9-d2f2-4829-9f5d-df80daddda2d",
-            quicksight_user_arn = f"arn:aws:quicksight:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user/default/cumakerspace@gmail.com",
-            shared_api_gateway=self.api_gateway.api,  # Passing the shared API Gateway
-            api_resource_name=resource_name
         )
