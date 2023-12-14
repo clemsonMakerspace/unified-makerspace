@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Amplify } from "aws-amplify";
 import { locations } from "../library/constants";
 import { getAmplifyConfig } from "../config/getAmplifyConfig";
+import React, { useEffect } from "react";
 
 import LocationSelection from "./LocationSelection";
 import Registration from "./Registration";
@@ -12,20 +13,18 @@ import VisitForm from "../components/VisitForm";
 import Admin from "./Admin";
 import Quizzes from "./QuizStatus";
 
-const config = getAmplifyConfig();
-
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      //  Amazon Cognito User Pool ID
-      userPoolId: config.userPoolId,
-      // Amazon Cognito Web Client ID
-      userPoolClientId: config.userPoolClientId,
-    },
-  },
-});
-
 const App = () => {
+  useEffect(() => {
+    const config = getAmplifyConfig();
+    Amplify.configure({
+      Auth: {
+        Cognito: {
+          userPoolId: config.userPoolId,
+          userPoolClientId: config.userPoolClientId,
+        },
+      },
+    });
+  }, []);
   return (
     <Router>
       <Routes>
