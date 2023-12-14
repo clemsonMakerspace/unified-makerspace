@@ -125,11 +125,14 @@ class MakerspaceStack(core.Stack):
         )
     
     def quicksight_setup(self):
+        resource_name = 'dashboard'
 
         self.quicksight = QuickSightEmbedConstruct(
             self,
             "QuickSightEmbedSetup",
             aws_account_id = core.Aws.ACCOUNT_ID,
             dashboard_id="b153dda9-d2f2-4829-9f5d-df80daddda2d",
-            quicksight_user_arn = f"arn:aws:quicksight:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user/default/cumakerspace@gmail.com"
+            quicksight_user_arn = f"arn:aws:quicksight:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user/default/cumakerspace@gmail.com",
+            shared_api_gateway=self.api_gateway.api,  # Passing the shared API Gateway
+            api_resource_name=resource_name
         )

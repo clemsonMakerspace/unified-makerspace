@@ -1,7 +1,7 @@
 from aws_cdk import core, aws_lambda as _lambda, aws_iam, aws_apigateway as apigateway
 
 class QuickSightEmbedConstruct(core.Construct):
-    def __init__(self, scope: core.Construct, id: str, aws_account_id: str, dashboard_id: str, quicksight_user_arn: str, **kwargs):
+    def __init__(self, scope: core.Construct, id: str, aws_account_id: str, dashboard_id: str, quicksight_user_arn: str, shared_api_gateway: apigateway.RestApi, api_resource_name: str = 'dashboard', **kwargs):
         super().__init__(scope, id, **kwargs)
 
         # IAM Role for Lambda
@@ -37,33 +37,22 @@ class QuickSightEmbedConstruct(core.Construct):
             }
         )
 
-        # API Gateway REST API
-        allowed_origins = ['https://visit.cumaker.space']
-
-        api = apigateway.RestApi(
-            self,
-            'DashboardAPI',
-            rest_api_name='QSDashboardEmbedAPI',
-            description='API for generating QuickSight dashboard embed URLs.',
-             default_cors_preflight_options=apigateway.CorsOptions(
-                 allow_origins = allowed_origins,
-                 allow_methods = ['GET']             
-                 )
-        )
-
-
         # Lambda API integration
         lambda_integration = apigateway.LambdaIntegration(
             lambda_dashboard_generator,
             request_templates={"application/json": '{ "statusCode": "200" }'}
         )
 
-        api.root.add_method('GET', lambda_integration)
+        # Define a new resource for the shared API Gateway
+        dashboard_resource = shared_api_gateway.root.add_resource(api_resource_name)
+
+         # Add GET method to the dashboard resource
+        dashboard_resource.add_method('GET', lambda_integration)
 
         # Outputs
         core.CfnOutput(
             self,
             "QSDashboardAPIUrl",
-            value=api.url,
+            value=shared_api_gateway.url_for_path(f'/{api_resource_name}'),
             description="URL for the QuickSight Dashboard Embed URL API"
         )
