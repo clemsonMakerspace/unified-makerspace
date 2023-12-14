@@ -59,6 +59,10 @@ accounts = {
         'account': '684082786745',
         'region': 'us-east-1'
     },
+        'Dev-soll': {
+        'account': '104308618712',
+        'region': 'us-east-1'
+    },
 }
 
 accounts = {
