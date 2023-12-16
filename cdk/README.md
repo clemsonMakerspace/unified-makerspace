@@ -1,6 +1,5 @@
 # Welcome to the Unified Makerspace Project
 
-
 ## Basic Service Layout
 
 This does not include all of the services that are stood up in each stack, but it details the relationship between major parts.
@@ -8,6 +7,8 @@ This does not include all of the services that are stood up in each stack, but i
 ![AWS services for the project](Services%20Diagram%20Overview.png)
 
 ## Configuring the CDK
+
+Python version 3.9 is required (or some version of it since Windows and Mac worked with different versions)
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -47,7 +48,7 @@ You must now ensure that you are signed into AWS CLI:
 
 Instructions for configuring AWS CLI:
 
--   https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
+- https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
 
 In order to sign into your AWS account on the CLI, follow one of the 3 options below:
 
@@ -85,21 +86,13 @@ command.
 
 ### Useful commands
 
--   `cdk ls` list all stacks in the app
--   `cdk synth` emits the synthesized CloudFormation template
--   `cdk deploy` deploy this stack to your default AWS account/region
--   `cdk diff` compare deployed stack with current state
--   `cdk docs` open CDK documentation
+- `cdk ls` list all stacks in the app
+- `cdk synth` emits the synthesized CloudFormation template
+- `cdk deploy` deploy this stack to your default AWS account/region
+- `cdk diff` compare deployed stack with current state
+- `cdk docs` open CDK documentation
 
 Enjoy!
-
-### Generating a component diagram
-
-The components of this system are described in [`makerspace.dot`](./makerspace.dot). You can re-generate the PNG using the below command:
-
-```
-dot makerspace.dot -Tpng > makerspace.png
-```
 
 ### Synthesizing the dev stack
 
@@ -117,3 +110,33 @@ USER=mhall6 cdk list
 You'll need to have account permissions to the account you configure for your username.
 
 If you're trying to get an end-to-end example working in dev, you'll have to override the API URL and visit your cloudfront domains directly rather than, for example `beta-visit.cumaker.space` or `visit.cumaker.space`.
+
+### Local Testing with Pytest
+
+Activate the virtualenv
+
+Set all of these env variables (you can change ENV to Beta or Prod)
+
+```
+AWS_DEFAULT_REGION: us-east-1
+AWS_REGION: us-east-1
+ORIGINAL_TABLE_NAME: original
+USERS_TABLE_NAME: users
+VISITS_TABLE_NAME: visits
+QUIZ_LIST_TABLE_NAME: quiz_list
+QUIZ_PROGRESS_TABLE_NAME: quiz_progress
+DOMAIN_NAME: https://visit.cumaker.space
+ENV: Beta
+```
+
+Run this in the unified-makerspace folder (on Windows)
+
+```
+pytest cdk/visit/lambda_code
+```
+
+You can also run the testing_script.py which doesn't use Pytest (on Windows)
+
+```
+python ./cdk/visit/lambda_code/test_api/testing_script.py
+```
