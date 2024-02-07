@@ -1,0 +1,24 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/python:3.10-bookworm",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers-contrib/features/aws-cdk:2": {},
+    "ghcr.io/devcontainers/features/git-lfs:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+  },
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "pip install -r cdk/requirements.txt && cd site/visitor-console && npm install",
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "GitHub.vscode-pull-request-github",
+        "ms-python.python"
+      ]
+    }
+  }
+}
