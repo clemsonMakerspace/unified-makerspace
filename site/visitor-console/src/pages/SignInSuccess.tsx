@@ -1,6 +1,7 @@
 import Countdown from "react-countdown";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PageCard from "../components/PageCard";
+import QuizProgress from "../components/QuizProgress";
 
 const SignInSuccess = () => {
   const navigate = useNavigate();
@@ -8,7 +9,9 @@ const SignInSuccess = () => {
   const next_page = (searchParams.get("next") as string) || "/";
 
   const renderer = () => (
-    <PageCard title="Sign-In Sucessful">
+    <PageCard title="Sign-In Successful">
+      <h1>Your Safety Quiz Progress</h1>
+      <QuizProgress />
       <Link to={next_page} className="btn btn-secondary">
         Continue
       </Link>

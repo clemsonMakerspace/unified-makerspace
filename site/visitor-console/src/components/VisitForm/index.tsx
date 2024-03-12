@@ -46,7 +46,7 @@ const VisitForm = ({ location }: VisitFormProps) => {
     }).then((response) => {
       setLoading(false);
       if (response.ok) {
-        navigate(`/success?next=/${location.slug}`);
+        navigate(`/success?next=/${location.slug}&username=${data.username}`);
       } else {
         navigate(`/error?next=/${location.slug}`);
       }
