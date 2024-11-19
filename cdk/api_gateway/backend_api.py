@@ -88,7 +88,7 @@ class BackendApi(core.Stack):
                 'USERS_TABLE_NAME': users_table_name,
             },
             handler='visits_handler.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_12)
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
 
     
     def users_handler_lambda(self, users_table_name: str, domain_name: str):
@@ -103,7 +103,7 @@ class BackendApi(core.Stack):
                 'USERS_TABLE_NAME': users_table_name,
             },
             handler='users_handler.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_12)
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
 
     
     def qualifications_handler_lambda(self, qualifications_table_name: str, users_table_name: str, domain_name: str):
@@ -118,7 +118,7 @@ class BackendApi(core.Stack):
                 'QUALIFICATIONS_TABLE_NAME': qualifications_table_name,
             },
             handler='qualifications_handler.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_12)
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
 
     
     def equipment_handler_lambda(self, equipment_table_name: str, users_table_name: str, domain_name: str):
@@ -133,7 +133,7 @@ class BackendApi(core.Stack):
                 'EQUIPMENT_TABLE_NAME': equipment_table_name,
             },
             handler='equipment_handler.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_12)
+            runtime=aws_lambda.Runtime.PYTHON_3_9)
     
     
     #! Recreate Testing Lambda Function
