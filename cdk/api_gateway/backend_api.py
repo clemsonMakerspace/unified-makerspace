@@ -53,10 +53,10 @@ class BackendApi(core.Stack):
         self.endpoint: str = "https://" + self.domain_name
 
         # Provision lambda functions
-        self.visits_handler_lambda(visits_table_name, users_table_name, self.endpoint)
-        self.users_handler_lambda(users_table_name, self.endpoint)
-        self.qualifications_handler_lambda(qualifications_table_name, self.endpoint)
-        self.equipment_handler_lambda(equipment_table_name, self.endpoint)
+        self.visits_handler_lambda(visits_table_name, users_table_name, ("https://" + self.domain_name))
+        self.users_handler_lambda(users_table_name, ("https://" + self.domain_name))
+        self.qualifications_handler_lambda(qualifications_table_name, ("https://" + self.domain_name))
+        self.equipment_handler_lambda(equipment_table_name, ("https://" + self.domain_name))
 
         # Give AmazonAPIGatewayInvokeFullAccess to required lambda functions
         # Defining IAM policy
@@ -106,7 +106,7 @@ class BackendApi(core.Stack):
             runtime=aws_lambda.Runtime.PYTHON_3_9)
 
     
-    def qualifications_handler_lambda(self, qualifications_table_name: str, users_table_name: str, domain_name: str):
+    def qualifications_handler_lambda(self, qualifications_table_name: str, domain_name: str):
         
         self.lambda_qualifications_handler = aws_lambda.Function(
             self,
@@ -121,7 +121,7 @@ class BackendApi(core.Stack):
             runtime=aws_lambda.Runtime.PYTHON_3_9)
 
     
-    def equipment_handler_lambda(self, equipment_table_name: str, users_table_name: str, domain_name: str):
+    def equipment_handler_lambda(self, equipment_table_name: str, domain_name: str):
         
         self.lambda_equipment_handler = aws_lambda.Function(
             self,
