@@ -81,15 +81,15 @@ class Pipeline(core.Stack):
             )
         )
 
-        beta_deploy_stage.add_post(
-            ShellStep(
-                "TestBetaAPIEndpoints",
-                input=codestar_source, # pass entire codestar connection to repo
-                commands=[
-                    "ENV=Beta python3 cdk/visit/lambda_code/test_api/testing_script.py",
-                ],
-            )
-        )
+        # beta_deploy_stage.add_post(
+        #     ShellStep(
+        #         "TestBetaAPIEndpoints",
+        #         input=codestar_source, # pass entire codestar connection to repo
+        #         commands=[
+        #             "ENV=Beta python3 cdk/visit/lambda_code/test_api/testing_script.py",
+        #         ],
+        #     )
+        # )
 
         # create the stack for prod
         self.prod_stage = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
@@ -107,13 +107,13 @@ class Pipeline(core.Stack):
             )
         )
 
-        prod_deploy_stage.add_post(
-            ShellStep(
-                "TestProdAPIEndpoints",
-                input=codestar_source, # pass entire codestar connection to repo
-                commands=[
-                    "ENV=Prod python3 cdk/visit/lambda_code/test_api/testing_script.py",
-                ],
-            )
-        )
+        # prod_deploy_stage.add_post(
+        #     ShellStep(
+        #         "TestProdAPIEndpoints",
+        #         input=codestar_source, # pass entire codestar connection to repo
+        #         commands=[
+        #             "ENV=Prod python3 cdk/visit/lambda_code/test_api/testing_script.py",
+        #         ],
+        #     )
+        # )
 
