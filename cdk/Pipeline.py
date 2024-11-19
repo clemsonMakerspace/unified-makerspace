@@ -29,6 +29,7 @@ class Pipeline(core.Stack):
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
         
+        #! Add this back -- Removed in the case of accidental startup of resources
         codestar_source = CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
                 connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
             )

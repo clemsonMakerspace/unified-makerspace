@@ -6,43 +6,37 @@ from aws_cdk import (
     core,
     aws_cloudfront,
     aws_cloudfront_origins,
-    aws_lambda,
     aws_s3,
-    aws_iam,
 )
 
 from dns import MakerspaceDns
+import logging
 
 class Visit(core.Stack):
     """
-    Track visitors to the makerspace via a simple web console.
+    Track visitors to the makerspace via a simple web console. This
+    exists as a backup in case the hardware scanner is not functional.
 
-    This stack contains a few primary parts:
+    This stack contains one primary part and the following workflow:
 
     1. A static web page asks for a Clemson username (visit.cumaker.space)
-    2. An API Gateway routes requests to AWS Lambda
-    3. The lambda function checks if the user has registered before
-        a. If the user has registered, we just continue
-        b. If the user hasn't registered, we send them an email
-    4. The Lambda function records a visit in DynamoDB
-    5. The registration email contains a federated link to another webpage
-        (register.cumaker.space) which will be a different stack
-
+    2. An api call to the backend api is made to log the visit.
+    3. The visits handler will consider any additional registration logic.
+    4. The user has successfully logged a visit.
     """
 
     def __init__(self, scope: core.Construct,
                  stage: str,
-                 original_table_name: str,
-                 users_table_name: str,
-                 visits_table_name: str,
-                 quiz_list_table_name: str,
-                 quiz_progress_table_name: str,
                  *,
                  env: core.Environment,
                  create_dns: bool,
                  zones: MakerspaceDns = None):
 
-        super().__init__(scope, f'Visitors-{stage}', env=env)
+        super().__init__(scope, 'Visitors', env=env)
+        
+        # Sets up CloudWatch logs and sets level to INFO
+        # self.logger = logging.getLogger()
+        # self.logger.setLevel(logging.INFO)
 
         self.stage = stage
         self.create_dns = create_dns
@@ -50,22 +44,8 @@ class Visit(core.Stack):
 
         self.source_bucket()
 
-        # todo: restrict visitors page to require employee sign-in
-        # self.cognito_pool()
-
         self.cloudfront_distribution()
 
-        self.domain_name = self.distribution.domain_name if stage == 'Dev' else self.zones.visit.zone_name
-
-        self.log_visit_lambda(
-            original_table_name, visits_table_name, users_table_name, ("https://" + self.domain_name))
-        self.register_user_lambda(
-            original_table_name, users_table_name, ("https://" + self.domain_name))
-        self.quiz_lambda(
-            quiz_list_table_name, quiz_progress_table_name, ("https://" + self.domain_name))
-        self.test_api_lambda(env=stage)
-
-        
 
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
@@ -111,69 +91,3 @@ class Visit(core.Stack):
 
         self.distribution = aws_cloudfront.Distribution(
             self, 'VisitorsConsoleCache', **kwargs)
-
-    def log_visit_lambda(self, original_table_name: str, visits_table_name: str, users_table_name: str, domain_name: str):
-
-        sending_authorization_policy = aws_iam.PolicyStatement(
-            effect=aws_iam.Effect.ALLOW)
-        sending_authorization_policy.add_actions("ses:SendEmail")
-        sending_authorization_policy.add_all_resources()
-
-        self.lambda_visit = aws_lambda.Function(
-            self,
-            'RegisterVisitLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-            code=aws_lambda.Code.from_asset('visit/lambda_code/log_visit'),
-            environment={
-                'ORIGINAL_TABLE_NAME': original_table_name,
-                'DOMAIN_NAME': domain_name,
-                'VISITS_TABLE_NAME': visits_table_name,
-                'USERS_TABLE_NAME': users_table_name,
-            },
-            handler='log_visit.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_9)
-
-        self.lambda_visit.role.add_to_policy(sending_authorization_policy)
-
-    def register_user_lambda(self, original_table_name: str, users_table_name: str, domain_name: str):
-
-        self.lambda_register = aws_lambda.Function(
-            self,
-            'RegisterUserLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-            code=aws_lambda.Code.from_asset('visit/lambda_code/register_user'),
-            environment={
-                'ORIGINAL_TABLE_NAME': original_table_name,
-                'DOMAIN_NAME': domain_name,
-                'USERS_TABLE_NAME': users_table_name
-            },
-            handler='register_user.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_9)
-        
-    def quiz_lambda(self, quiz_list_table_name: str, quiz_progress_table_name: str, domain_name: str):
-
-        self.lambda_quiz = aws_lambda.Function(
-            self,
-            'QuizLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-            code=aws_lambda.Code.from_asset('visit/lambda_code/quiz'),
-            environment={
-                'DOMAIN_NAME': domain_name,
-                'QUIZ_LIST_TABLE_NAME': quiz_list_table_name,
-                'QUIZ_PROGRESS_TABLE_NAME': quiz_progress_table_name
-            },
-            handler='quiz.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_9)
-        
-    def test_api_lambda(self, env: str):
-
-        self.lambda_api_test = aws_lambda.Function(
-            self,
-            'TestAPILambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
-            code=aws_lambda.Code.from_asset('visit/lambda_code/test_api'),
-            environment={
-                'ENV': env
-            },
-            handler='test_api.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_9)

@@ -23,6 +23,8 @@ class Domains:
 
         self.api = self.domain('api')
         self.visit = self.domain('visit')
+        
+        #! There isn't a maintenance or admin domain? 
         self.maintenance = self.domain('maintenance')
         self.admin = self.domain('admin')
 
@@ -46,36 +48,30 @@ class MakerspaceDns(core.Stack):
 
     def __init__(self, scope: core.Construct,
                  stage: str, *, env: core.Environment):
-        super().__init__(scope, f'MakerspaceDns-{stage}', env=env)
+        super().__init__(scope, 'MakerspaceDns', env=env)
 
         self.domains = Domains(stage)
 
         self.visitors_zone()
-
         self.api_zone()
 
+        #! Should we remove these since we're not using them? 
         self.maintenance_zone()
-
-        # todo: deprecate this
         self.admin_zone()
 
     def visitors_zone(self):
-
         self.visit = aws_route53.PublicHostedZone(self, 'visit',
                                                   zone_name=self.domains.visit)
 
     def api_zone(self):
-
         self.api = aws_route53.PublicHostedZone(self, 'api',
                                                 zone_name=self.domains.api)
 
     def maintenance_zone(self):
-
         aws_route53.PublicHostedZone(self, 'maintenance',
                                      zone_name=self.domains.maintenance)
 
     def admin_zone(self):
-
         aws_route53.PublicHostedZone(self, 'admin',
                                      zone_name=self.domains.admin)
 
@@ -90,7 +86,7 @@ class MakerspaceDnsRecords(core.Stack):
                  api_gateway: aws_apigateway.RestApi,
                  visit_distribution: aws_cloudfront.Distribution):
 
-        id = f'MakerspaceDnsRecords-{stage}'
+        id = 'MakerspaceDnsRecords'
         super().__init__(scope, id, env=env)
 
         self.zones = zones
