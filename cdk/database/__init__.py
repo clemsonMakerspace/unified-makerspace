@@ -12,8 +12,6 @@ class Database(core.Stack):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
 
-        #! remove the stage out of the id string, cloudformation already prefixes all 
-        #! dependancies with the stack that its part of and that contains the stack stage
         self.id = 'Database'        
         self.users_id = 'users'
         self.visits_id = 'visits'

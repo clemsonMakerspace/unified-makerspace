@@ -58,22 +58,22 @@ class BackendApi(core.Stack):
         self.qualifications_handler_lambda(qualifications_table_name, ("https://" + self.domain_name))
         self.equipment_handler_lambda(equipment_table_name, ("https://" + self.domain_name))
 
-        # Give AmazonAPIGatewayInvokeFullAccess to required lambda functions
-        # Defining IAM policy
-        api_invoke_full_access_policy = aws_iam.PolicyStatement(
-            effect=aws_iam.Effect.ALLOW,
-            principals=["AmazonAPIGatewayInvokeFullAccess"],
-            resources=["*"]
+        # Create IAM Role for Lambda function and attach the AmazonAPIGatewayInvokeFullAccess policy
+        self.lambda_role = aws_iam.Role(self, "LambdaApiInvokeRole",
+            assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),  # Lambda service principal
+            managed_policies=[
+                aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonAPIGatewayInvokeFullAccess") 
+            ]
         )
-
-        # Giving lambda functions the invoke full access policy
-        self.lambda_visits_handler.role.add_to_policy(api_invoke_full_access_policy)
-        self.lambda_users_handler.role.add_to_policy(api_invoke_full_access_policy)
-        self.lambda_qualifications_handler.role.add_to_policy(api_invoke_full_access_policy)
-        self.lambda_equipment_handler.role.add_to_policy(api_invoke_full_access_policy)
         
-        # Prepare lambda testing suite
-        self.test_api_lambda(env=stage)
+        # Giving lambda functions the invoke full access policy
+        self.lambda_visits_handler.role.add_to_policy(self.lambda_role)
+        self.lambda_users_handler.role.add_to_policy(self.lambda_role)
+        self.lambda_qualifications_handler.role.add_to_policy(self.lambda_role)
+        self.lambda_equipment_handler.role.add_to_policy(self.lambda_role)
+        
+        # Prepare lambda testing suite #! Must recreate testing
+        # self.test_api_lambda(env=stage)
 
     def visits_handler_lambda(self, visits_table_name: str, users_table_name: str, domain_name: str):
 
