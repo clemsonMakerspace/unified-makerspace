@@ -46,18 +46,19 @@ class MakerspaceStack(core.Stack):
 
         # Set permissions for each lambda function to respective DDB table
         self.database.visits_table.grant_read_write_data(
-            self.visit.lambda_visit)
+            self.backend_api.lambda_visits_handler)
 
-        # Needed to allow lambdas to verify user
-        self.database.users_table.grant_read_data(self.visit.lambda_visit)
-        self.database.users_table.grant_read_data(self.visit.lambda_equipment)
+        self.database.users_table.grant_read_data(self.backend_api.lambda_visits_handler)
+        self.database.users_table.grant_read_data(self.backend_api.lambda_equipment_handler)
+        self.database.users_table.grant_read_write_data(self.backend_api.lambda_users_handler)
         
-        self.database.users_table.grant_read_write_data(
-            self.visit.lambda_register)
+        #! Do not have a lambda register handler
+        # self.database.users_table.grant_read_write_data(
+        #     self.backend_api.lambda_register_handler)
         
-        self.database.equipment_table.grant_read_write_data(self.visit.lambda_equipment)
+        self.database.equipment_table.grant_read_write_data(self.backend_api.lambda_equipment_handler)
         
-        self.database.qualifications_table.grant_read_write_data(self.visit.lambda_qualifications)
+        self.database.qualifications_table.grant_read_write_data(self.backend_api.lambda_qualifications_handler)
 
         self.shared_api_gateway()
 
