@@ -6,7 +6,7 @@ from api_gateway.backend_api import BackendApi
 from database import Database
 from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
 from cognito.cognito_construct import CognitoConstruct
-from data_migration import DataMigrationStack
+# from data_migration import DataMigrationStack
 
 class MakerspaceStage(core.Stage):
     def __init__(self, scope: core.Construct, stage: str, *,
@@ -67,11 +67,11 @@ class MakerspaceStack(core.Stack):
         # if self.stage.lower() == 'prod':
         #     self.data_migration_stack()
             
-    def data_migration_stack(self):
+    # def data_migration_stack(self):
         
-        self.migration = DataMigrationStack(self.app, self.stage, env=self.env)
+    #     self.migration = DataMigrationStack(self.app, self.stage, env=self.env)
         
-        self.add_dependency(self.migration)
+    #     self.add_dependency(self.migration)
         
 
     def database_stack(self):
