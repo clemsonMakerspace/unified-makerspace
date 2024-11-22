@@ -100,7 +100,7 @@ class SharedApiGateway(core.Stack):
     def deploy_api_stage(self, stage_name: str = "prod"):
         self.stage = aws_apigateway.Stage(
             self, id=stage_name,
-            deployment=self.api.latestDeployment,
+            deployment=self.api.latest_deployment,
             stage_name=stage_name,
         )
 

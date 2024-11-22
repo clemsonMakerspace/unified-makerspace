@@ -36,14 +36,14 @@ only credentials that deploy to their own dev account. This loop
 generates a stack for each user that deploys to their own account.
 """
 
-user = os.environ.get("USER")
-stage = f'Dev-{user}'
-dev_environment = accounts.get(stage)
+# user = os.environ.get("USER")
+# stage = f'Dev-{user}'
+# dev_environment = accounts.get(stage)
 
-if dev_environment:
-    MakerspaceStack(app, 'Dev', env=accounts[stage])
-else:
-    print(
-        f'Not creating dev stack: could not locate stage={stage} for user={user}')
+# if dev_environment:
+#     MakerspaceStack(app, 'Dev', env=accounts[stage])
+# else:
+#     print(
+#         f'Not creating dev stack: could not locate stage={stage} for user={user}')
 
 app.synth()
