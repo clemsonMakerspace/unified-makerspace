@@ -50,7 +50,7 @@ class Visit(core.Stack):
     def source_bucket(self):
         self.oai = aws_cloudfront.OriginAccessIdentity(
             self, 'VisitorsOriginAccessIdentity')
-
+ 
         self.bucket = aws_s3.Bucket(self, 'cumakerspace-visitors-console')
         self.bucket.grant_read(self.oai)
         aws_s3_deployment.BucketDeployment(self, 'VisitorsConsoleDeployment',
