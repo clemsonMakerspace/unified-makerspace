@@ -58,10 +58,7 @@ class Visit(core.Stack):
                                                aws_s3_deployment.Source.asset(
                                                    f'visit/console/{self.stage}/')
                                            ],
-                                           destination_bucket=self.bucket,
-                                           custom_resource_provider={
-                                                "lambda_function_runtime": "python3.9"
-                                            })
+                                           destination_bucket=self.bucket)
         
     def cloudfront_distribution(self):
 
