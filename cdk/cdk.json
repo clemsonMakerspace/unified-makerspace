@@ -5,6 +5,7 @@
     "@aws-cdk/core:enableStackNameDuplicates": "true",
     "@aws-cdk/core:newStyleStackSynthesis": true,
     "@aws-cdk/core:stackRelativeExports": "true",
-    "@aws-cdk/aws-certificatemanager:defaultDnsValidatedCertificateFunctionRuntime": "nodejs18.x"
+    "@aws-cdk/aws-certificatemanager:defaultDnsValidatedCertificateFunctionRuntime": "nodejs18.x",
+    "@aws-cdk/aws-s3-deployment:defaultBucketDeploymentFunctionRuntime": "python3.9"
   }
 }
