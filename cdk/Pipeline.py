@@ -40,6 +40,9 @@ class Pipeline(core.Stack):
                 # Clear the CDK context cache
                 'rm -f .cdk.context.json || echo "No context cache to clear"',
                 
+                # Add context to enforce runtime
+                'cdk synth --context @aws-cdk/aws-s3-deployment:defaultFunctionRuntime=python3.9',
+                
                 # install dependancies for frontend
                 'cd site/visitor-console',
                 'npm install',
