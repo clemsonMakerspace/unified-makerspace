@@ -43,7 +43,7 @@ class Pipeline(core.Stack):
                 # install dependancies for frontend
                 'cd site/visitor-console',
                 'npm install',
-
+ 
                 # build for beta
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',
                 'mkdir -p ../../cdk/visit/console/Beta',
