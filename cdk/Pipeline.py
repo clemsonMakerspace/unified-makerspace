@@ -38,6 +38,7 @@ class Pipeline(core.Stack):
             input=codestar_source,
             commands=[    
                 # Clear the CDK context cache and remove old cdk.out file
+                'rm -rf /tmp/* || echo "No /tmp/ folder present"',
                 'rm -f .cdk.context.json || echo "No context cache to clear"',
                 'rm -rf cdk.out || echo "No output directory to clear"',
                 
