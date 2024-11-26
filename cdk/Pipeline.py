@@ -37,8 +37,9 @@ class Pipeline(core.Stack):
             # use a connection created using the AWS console to authenticate to GitHub
             input=codestar_source,
             commands=[    
-                # Clear the CDK context cache
+                # Clear the CDK context cache and remove old cdk.out file
                 'rm -f .cdk.context.json || echo "No context cache to clear"',
+                'rm -rf cdk.out || echo "No output directory to clear"',
                 
                 # install dependancies for frontend
                 'cd site/visitor-console',
