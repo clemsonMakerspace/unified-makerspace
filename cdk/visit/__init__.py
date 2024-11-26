@@ -7,7 +7,6 @@ from aws_cdk import (
     aws_cloudfront,
     aws_cloudfront_origins,
     aws_s3,
-    aws_route53,
 )
 
 from dns import MakerspaceDns
@@ -67,8 +66,8 @@ class Visit(core.Stack):
         if self.create_dns:
             domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
-            # kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(
-            #     self, 'VisitorsCertificate', domain_name=domain_name, hosted_zone=self.zones.visit)
+            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(
+                self, 'VisitorsCertificate', domain_name=domain_name, hosted_zone=self.zones.visit)
             
             # Create a new CNAME
             # kwargs['certificate'] = aws_certificatemanager.Certificate(
@@ -78,10 +77,10 @@ class Visit(core.Stack):
             # )
             
             # Obtain certificate from existing certificate
-            existing_certificate_arn = "arn:aws:acm:us-east-1:944207523762:certificate/f53fd3eb-7791-407c-9458-50abea7ff9ce"
-            kwargs['certificate'] = aws_certificatemanager.Certificate.from_certificate_arn(
-                self, 'VisitorsCertificate', existing_certificate_arn
-            )
+            # existing_certificate_arn = "arn:aws:acm:us-east-1:944207523762:certificate/f53fd3eb-7791-407c-9458-50abea7ff9ce"
+            # kwargs['certificate'] = aws_certificatemanager.Certificate.from_certificate_arn(
+            #     self, 'VisitorsCertificate', existing_certificate_arn
+            # )
 
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
             origin=aws_cloudfront_origins.S3Origin(
@@ -104,16 +103,16 @@ class Visit(core.Stack):
         )]
 
         # Creates a new CloudFront Distribution
-        # self.distribution = aws_cloudfront.Distribution(
-        #     self, 'VisitorsConsoleCache', **kwargs)
+        self.distribution = aws_cloudfront.Distribution(
+            self, 'VisitorsConsoleCache', **kwargs)
         
         # Reference the existing CloudFront distribution
-        self.distribution = aws_cloudfront.Distribution.from_distribution_attributes(
-            self, 
-            "ExistingCloudFrontDistribution",
-            distribution_id="E1RWW3RYQYP7C",  # Replace with your CloudFront Distribution ID
-            domain_name="d3jh19seg4qmka.cloudfront.net" 
-        )
+        # self.distribution = aws_cloudfront.Distribution.from_distribution_attributes(
+        #     self, 
+        #     "ExistingCloudFrontDistribution",
+        #     distribution_id="E1RWW3RYQYP7C",  # Replace with your CloudFront Distribution ID
+        #     domain_name="d3jh19seg4qmka.cloudfront.net" 
+        # )
          
         # Create a Route 53 alias record pointing to the distribution
         # if self.create_dns:
