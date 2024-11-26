@@ -103,8 +103,17 @@ class Visit(core.Stack):
             ttl=core.Duration.seconds(10)
         )]
 
-        self.distribution = aws_cloudfront.Distribution(
-            self, 'VisitorsConsoleCache', **kwargs)
+        # Creates a new CloudFront Distribution
+        # self.distribution = aws_cloudfront.Distribution(
+        #     self, 'VisitorsConsoleCache', **kwargs)
+        
+        # Reference the existing CloudFront distribution
+        self.distribution = aws_cloudfront.Distribution.from_distribution_attributes(
+            self, 
+            "ExistingCloudFrontDistribution",
+            distribution_id="E1RWW3RYQYP7C",  # Replace with your CloudFront Distribution ID
+            domain_name="d3jh19seg4qmka.cloudfront.net" 
+        )
         
         # Create a Route 53 alias record pointing to the distribution
         # if self.create_dns:
