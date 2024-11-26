@@ -43,7 +43,7 @@ aws-cdk.aws-route53
 aws-cdk.aws-route53-targets
 aws-cdk.aws-s3
 aws-cdk.aws-s3-assets
-aws-cdk.aws-s3-deployment==1.199.0
+aws-cdk.aws-s3-deployment
 aws-cdk.aws-sam
 aws-cdk.aws-secretsmanager
 aws-cdk.aws-servicediscovery
