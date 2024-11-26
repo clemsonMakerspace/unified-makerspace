@@ -114,7 +114,7 @@ class Visit(core.Stack):
             distribution_id="E1RWW3RYQYP7C",  # Replace with your CloudFront Distribution ID
             domain_name="d3jh19seg4qmka.cloudfront.net" 
         )
-        
+         
         # Create a Route 53 alias record pointing to the distribution
         # if self.create_dns:
         #     aws_route53.ARecord(
