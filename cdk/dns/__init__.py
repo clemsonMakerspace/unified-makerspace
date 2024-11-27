@@ -106,11 +106,19 @@ class MakerspaceDnsRecords(Stack):
                                                                   hosted_zone_id=self.zones.api.hosted_zone_id,
                                                                   zone_name=self.zones.api.zone_name)
 
+        # aws_route53.ARecord(self, 'ApiRecord',
+        #                     zone=zone,
+        #                     target=aws_route53.RecordTarget(
+        #                         alias_target=aws_route53_targets.ApiGatewayDomain(
+        #                             api_gateway.domain_name)))
+        
         aws_route53.ARecord(self, 'ApiRecord',
-                            zone=zone,
-                            target=aws_route53.RecordTarget(
-                                alias_target=aws_route53_targets.ApiGatewayDomain(
-                                    api_gateway.domain_name)))
+                    zone=zone,
+                    target=aws_route53.RecordTarget.from_alias(
+                        aws_route53_targets.ApiGatewayDomain(
+                            domain_name=api_gateway.domain_name
+                        )
+                    ))
 
     def visit_record(self, visit: aws_cloudfront.Distribution):
 
