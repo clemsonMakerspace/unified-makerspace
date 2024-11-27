@@ -85,7 +85,8 @@ class SharedApiGateway(Stack):
     def create_rest_api(self):
 
         # Create the Rest API
-        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway',
+                                          domain_name=self.zones.api.zone_name)
 
         # Handle dns integration
         if self.create_dns:
@@ -105,7 +106,7 @@ class SharedApiGateway(Stack):
             #                          certificate=certificate)
             
             # Add a domain name to the API
-            self.api.domain_name = aws_apigateway.DomainName(
+            self.api_domain_name = aws_apigateway.DomainName(
                 self,
                 "ExistingApiDomainName",
                 domain_name=domain_name,
@@ -125,7 +126,7 @@ class SharedApiGateway(Stack):
             aws_apigateway.BasePathMapping(
                 self,
                 "BasePathMapping",
-                domain_name=self.api.domain_name,
+                domain_name=self.api_domain_name,
                 rest_api=self.api,
             )
 
