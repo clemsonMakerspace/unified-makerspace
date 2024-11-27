@@ -2,13 +2,13 @@
 
 import os
 
-from aws_cdk import core
+import os
+from aws_cdk import App
 from Pipeline import Pipeline
 from accounts_config import accounts
-
 from makerspace import MakerspaceStack
 
-app = core.App()
+app = App()
 
 """
 Section 1: Global resources that exist in only one account

@@ -1,13 +1,16 @@
+
 import logging
 from aws_cdk import (
-    core,
-    aws_dynamodb
+    Stack,
+    aws_dynamodb,
+    RemovalPolicy,
+    Environment
 )
+from constructs import Construct
 
-
-class Database(core.Stack):
-    def __init__(self, scope: core.Construct,
-                 stage: str, *, env: core.Environment):
+class Database(Stack):
+    def __init__(self, scope: Construct,
+                 stage: str, *, env: Environment):
         # Sets up CloudWatch logs and sets level to INFO
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
@@ -46,7 +49,7 @@ class Database(core.Stack):
         self.users_table = aws_dynamodb.Table(self,
                                               self.users_id,
                                               point_in_time_recovery=True,
-                                              removal_policy=core.RemovalPolicy.RETAIN,
+                                              removal_policy=RemovalPolicy.RETAIN,
                                               partition_key=aws_dynamodb.Attribute(
                                                   name='user_id',
                                                   type=aws_dynamodb.AttributeType.STRING),
@@ -86,7 +89,7 @@ class Database(core.Stack):
         self.visits_table = aws_dynamodb.Table(self,
                                                 self.visits_id,
                                                 point_in_time_recovery=True,
-                                                removal_policy=core.RemovalPolicy.RETAIN,
+                                                removal_policy=RemovalPolicy.RETAIN,
                                                 sort_key=aws_dynamodb.Attribute(
                                                     name='user_id',
                                                     type=aws_dynamodb.AttributeType.STRING),
@@ -139,7 +142,7 @@ class Database(core.Stack):
         self.equipment_table = aws_dynamodb.Table(self,
                                                 self.equipment_id,
                                                 point_in_time_recovery=True,
-                                                removal_policy=core.RemovalPolicy.RETAIN,
+                                                removal_policy=RemovalPolicy.RETAIN,
                                                 sort_key=aws_dynamodb.Attribute(
                                                     name='user_id',
                                                     type=aws_dynamodb.AttributeType.STRING),
@@ -192,7 +195,7 @@ class Database(core.Stack):
         self.qualifications_table = aws_dynamodb.Table(self,
                                                 self.qualifications_id,
                                                 point_in_time_recovery=True,
-                                                removal_policy=core.RemovalPolicy.RETAIN,
+                                                removal_policy=RemovalPolicy.RETAIN,
                                                 sort_key=aws_dynamodb.Attribute(
                                                     name='user_id',
                                                     type=aws_dynamodb.AttributeType.STRING),

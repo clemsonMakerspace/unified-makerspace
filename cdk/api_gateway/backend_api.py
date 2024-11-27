@@ -1,20 +1,16 @@
-
 # from distutils.command.build import build
 from aws_cdk import (
-    aws_certificatemanager,
-    aws_s3_deployment,
-    core,
-    aws_cloudfront,
-    aws_cloudfront_origins,
+    Stack,
+    Environment,
     aws_lambda,
-    aws_s3,
     aws_iam,
+    PhysicalName
 )
-
+from constructs import Construct
 from dns import MakerspaceDns
 import logging
 
-class BackendApi(core.Stack):
+class BackendApi(Stack):
     """
     Consolidates all api methods for storing and retrieving data to and from
     the chosen storage solution.
@@ -29,14 +25,14 @@ class BackendApi(core.Stack):
         d. Handling user completion of trainings, waivers, etc.
     """
 
-    def __init__(self, scope: core.Construct,
+    def __init__(self, scope: Construct,
                  stage: str,
                  users_table_name: str,
                  visits_table_name: str,
                  equipment_table_name: str,
                  qualifications_table_name: str,
                  *,
-                 env: core.Environment,
+                 env: Environment,
                  zones: MakerspaceDns = None):
 
         super().__init__(scope, 'BackendApi', env=env)
@@ -78,7 +74,7 @@ class BackendApi(core.Stack):
         self.lambda_visits_handler = aws_lambda.Function(
             self,
             'VisitsHandlerLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/visits_handler'),
             environment={
                 'DOMAIN_NAME': domain_name,
@@ -94,7 +90,7 @@ class BackendApi(core.Stack):
         self.lambda_users_handler = aws_lambda.Function(
             self,
             'UsersHandlerLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/users_handler'),
             environment={
                 'DOMAIN_NAME': domain_name,
@@ -109,7 +105,7 @@ class BackendApi(core.Stack):
         self.lambda_qualifications_handler = aws_lambda.Function(
             self,
             'QualificationsHandlerLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/qualifications_handler'),
             environment={
                 'DOMAIN_NAME': domain_name,
@@ -124,7 +120,7 @@ class BackendApi(core.Stack):
         self.lambda_equipment_handler = aws_lambda.Function(
             self,
             'EquipmentHandlerLambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/equipment_handler'),
             environment={
                 'DOMAIN_NAME': domain_name,
@@ -140,7 +136,7 @@ class BackendApi(core.Stack):
         self.lambda_backend_api_test = aws_lambda.Function(
             self,
             'TestBackendAPILambda',
-            function_name=core.PhysicalName.GENERATE_IF_NEEDED,
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/test_backend_api'),
             environment={
                 'ENV': env

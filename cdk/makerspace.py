@@ -1,5 +1,11 @@
 
-from aws_cdk import core
+from aws_cdk import (
+    Stage,
+    Stack,
+    Environment
+)
+from constructs import Construct
+
 from visit import Visit
 from api_gateway.shared_api_gateway import SharedApiGateway
 from api_gateway.backend_api import BackendApi
@@ -8,18 +14,18 @@ from dns import (MakerspaceDnsRecords, MakerspaceDns, Domains)
 from cognito.cognito_construct import CognitoConstruct
 # from data_migration import DataMigrationStack
 
-class MakerspaceStage(core.Stage):
-    def __init__(self, scope: core.Construct, stage: str, *,
-                 env: core.Environment) -> None:
+class MakerspaceStage(Stage):
+    def __init__(self, scope: Construct, stage: str, *,
+                 env: Environment) -> None:
         super().__init__(scope, stage, env=env)
         
         self.service = MakerspaceStack(self, stage, env=env)
 
 
-class MakerspaceStack(core.Stack):
+class MakerspaceStack(Stack):
 
-    def __init__(self, app: core.Construct, stage: str, *,
-                 env: core.Environment):
+    def __init__(self, app: Construct, stage: str, *,
+                 env: Environment):
         super().__init__(
             app,
             'MakerspaceStack',

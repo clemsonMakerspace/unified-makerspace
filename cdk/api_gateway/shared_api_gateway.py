@@ -1,14 +1,15 @@
 
 from aws_cdk import (
+    Stack,
+    Environment,
     aws_certificatemanager,
-    core,
     aws_lambda,
     aws_apigateway,
 )
-
+from constructs import Construct
 from dns import MakerspaceDns
 
-class SharedApiGateway(core.Stack):
+class SharedApiGateway(Stack):
     """
     Amazon API Gateway for all Lambdas, will be fronted by `api.cumaker.space`.
 
@@ -34,10 +35,10 @@ class SharedApiGateway(core.Stack):
     that keeps track of makerspace employees (and CUCourse).
     """
 
-    def __init__(self, scope: core.Construct, stage: str,
+    def __init__(self, scope: Construct, stage: str,
                 user: aws_lambda.Function, visits: aws_lambda.Function,
                  qualifications: aws_lambda.Function, equipment: aws_lambda.Function,
-                 *, env: core.Environment, create_dns: bool, 
+                 *, env: Environment, create_dns: bool, 
                 zones: MakerspaceDns = None):
 
         super().__init__(scope, 'SharedApiGateway', env=env)

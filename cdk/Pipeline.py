@@ -1,17 +1,20 @@
+
 # This stack is based on the following blog post:
 # https://aws.amazon.com/blogs/developer/cdk-pipelines-continuous-delivery-for-aws-cdk-applications/
 from aws_cdk import (
-    core
+    App,
+    Stack,
+    Environment
 )
 from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep
 from makerspace import MakerspaceStage
-
-from accounts_config import accounts
 from dns import Domains
+# from constructs import Construct
+from accounts_config import accounts
 
-class Pipeline(core.Stack):
-    def __init__(self, app: core.App, id: str, *,
-                 env: core.Environment) -> None:
+class Pipeline(Stack):
+    def __init__(self, app: App, id: str, *,
+                 env: Environment) -> None:
         super().__init__(app, id, env=env)
 
         # Define our pipeline
@@ -42,6 +45,9 @@ class Pipeline(core.Stack):
                 'rm -f .cdk.context.json || echo "No context cache to clear"',
                 'rm -rf cdk.out || echo "No output directory to clear"',
                 
+                # Uninstall all AWS CDK V1 packages
+                "pip uninstall -y 'aws-cdk.*' || echo 'No CDK V1 packages found'",
+                
                 # install dependancies for frontend
                 'cd site/visitor-console',
                 'npm install',
@@ -60,7 +66,7 @@ class Pipeline(core.Stack):
 
                 # synth the app
                 "cd cdk",
-                "npm install -g aws-cdk && pip install -r requirements.txt",
+                "npm install -g aws-cdk && pip install -r requirements.txt --force-reinstall",
                 "cdk synth"
             ],
             primary_output_directory="cdk/cdk.out",

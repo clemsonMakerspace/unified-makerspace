@@ -1,18 +1,20 @@
 
 # from distutils.command.build import build
 from aws_cdk import (
+    Stack,
+    Environment,
     aws_certificatemanager,
     aws_s3_deployment,
-    core,
     aws_cloudfront,
     aws_cloudfront_origins,
     aws_s3,
+    Duration
 )
-
+from constructs import Construct
 from dns import MakerspaceDns
 import logging
 
-class Visit(core.Stack):
+class Visit(Stack):
     """
     Track visitors to the makerspace via a simple web console. This
     exists as a backup in case the hardware scanner is not functional.
@@ -25,10 +27,10 @@ class Visit(core.Stack):
     4. The user has successfully logged a visit.
     """
 
-    def __init__(self, scope: core.Construct,
+    def __init__(self, scope: Construct,
                  stage: str,
                  *,
-                 env: core.Environment,
+                 env: Environment,
                  create_dns: bool,
                  zones: MakerspaceDns = None):
 
@@ -99,7 +101,7 @@ class Visit(core.Stack):
             http_status=404,
             response_http_status=200,
             response_page_path="/index.html",
-            ttl=core.Duration.seconds(10)
+            ttl=Duration.seconds(10)
         )]
 
         # Creates a new CloudFront Distribution

@@ -1,7 +1,12 @@
-from aws_cdk import core, aws_cognito as cognito
 
-class CognitoConstruct(core.Construct):
-    def __init__(self, scope: core.Construct, id: str, user_pool_name: str, **kwargs):
+from aws_cdk import (
+    aws_cognito as cognito,
+    CfnOutput
+)
+from constructs import Construct
+
+class CognitoConstruct(Construct):
+    def __init__(self, scope: Construct, id: str, user_pool_name: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
         # Cognito User Pool
@@ -30,5 +35,5 @@ class CognitoConstruct(core.Construct):
         self.user_pool_client = self.user_pool.add_client("AppClient")
 
         # Outputs
-        core.CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id)
-        core.CfnOutput(self, "UserPoolClientId", value=self.user_pool_client.user_pool_client_id)
+        CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id)
+        CfnOutput(self, "UserPoolClientId", value=self.user_pool_client.user_pool_client_id)

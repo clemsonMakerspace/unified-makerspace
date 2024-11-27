@@ -1,15 +1,22 @@
-from aws_cdk import core
-from aws_cdk import aws_lambda as lambda_
-from aws_cdk import aws_iam as iam
-from aws_cdk import aws_s3 as s3
-from aws_cdk import aws_glue as glue
-from aws_cdk import aws_logs as logs
-from aws_cdk import custom_resources as cr
+
+from aws_cdk import (
+    Stack,
+    Environment,
+    aws_lambda as lambda_,
+    aws_iam as iam,
+    aws_s3 as s3,
+    aws_glue as glue,
+    aws_logs as logs,
+    custom_resources as cr,
+    Aws,
+    CfnOutput
+)
 import json
+from constructs import Construct
 
 #! WIP
-class DataMigrationStack(core.Stack):
-    def __init__(self, scope: core.Construct, id: str, *, env: core.Environment) -> None:
+class DataMigrationStack(Stack):
+    def __init__(self, scope: Construct, id: str, *, env: Environment) -> None:
         super().__init__(scope, id, env=env)
 
         # 1. Use an already existing S3 bucket for input files (CSV files)
@@ -59,7 +66,7 @@ class DataMigrationStack(core.Stack):
         trigger_glue_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 actions=["glue:StartJobRun"],
-                resources=[f"arn:aws:glue:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:job/beta-S3Pull-CSVParse-DDBStore"]
+                resources=[f"arn:aws:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:job/beta-S3Pull-CSVParse-DDBStore"]
             )
         )
 
@@ -76,7 +83,7 @@ class DataMigrationStack(core.Stack):
                             {
                                 "Effect": "Allow",
                                 "Principal": {
-                                    "AWS": f"arn:aws:iam::{core.Aws.ACCOUNT_ID}:role/{trigger_glue_lambda.role.role_name}"  # Referencing the Lambda role in Prod
+                                    "AWS": f"arn:aws:iam::{Aws.ACCOUNT_ID}:role/{trigger_glue_lambda.role.role_name}"  # Referencing the Lambda role in Prod
                                 },
                                 "Action": "s3:GetObject",
                                 "Resource": f"arn:aws:s3:::{input_bucket.bucket_name}/*"
@@ -95,5 +102,5 @@ class DataMigrationStack(core.Stack):
         )
 
         # 8. Output Lambda ARN and Glue Job ARN for reference
-        core.CfnOutput(self, "TriggerGlueLambdaARN", value=trigger_glue_lambda.function_arn)
-        core.CfnOutput(self, "GlueJobName", value=glue_job.name)
+        CfnOutput(self, "TriggerGlueLambdaARN", value=trigger_glue_lambda.function_arn)
+        CfnOutput(self, "GlueJobName", value=glue_job.name)
