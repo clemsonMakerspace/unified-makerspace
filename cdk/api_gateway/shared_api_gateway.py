@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_certificatemanager,
     aws_lambda,
     aws_apigateway,
+    Aws
 )
 from constructs import Construct
 from dns import MakerspaceDns
@@ -89,13 +90,36 @@ class SharedApiGateway(Stack):
         # Handle dns integration
         if self.create_dns:
             domain_name = self.zones.api.zone_name
-            certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
-                                                                         domain_name=domain_name,
-                                                                         hosted_zone=self.zones.api)
+            # certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
+            #                                                              domain_name=domain_name,
+            #                                                              hosted_zone=self.zones.api)
+            
+            # Reference an existing certificate
+            existing_certificate_arn = f"arn:aws:acm:{Aws.REGION}:{Aws.ACCOUNT_ID}:certificate/f002de99-9a60-48c4-8744-4a1e18424840"
+            certificate = aws_certificatemanager.Certificate.from_certificate_arn(
+                self, 'ExistingApiCertificate', existing_certificate_arn
+            )
 
-            self.api.add_domain_name('ApiGatewayDomainName',
-                                     domain_name=domain_name,
-                                     certificate=certificate)
+            # self.api.add_domain_name('ApiGatewayDomainName',
+            #                          domain_name=domain_name,
+            #                          certificate=certificate)
+
+            # Reference the existing API Gateway Domain Name
+            self.api_domain_name = aws_apigateway.DomainName.from_domain_name_attributes(
+                self,
+                "ExistingApiDomainName",
+                domain_name=domain_name,
+                domain_name_alias_hosted_zone_id="Z02880721JJ9EMQ8VFEV3",
+                domain_name_alias_target=f"d-6fxcutcsv0.execute-api.{Aws.REGION}.amazonaws.com."
+            )
+            
+            # Associate the existing domain with the new Rest API using BasePathMapping
+            aws_apigateway.BasePathMapping(
+                self,
+                "BasePathMapping",
+                domain_name=self.api_domain_name,
+                rest_api=self.api,
+            )
 
 
     def deploy_api_stage(self, stage_name: str = "prod"):
