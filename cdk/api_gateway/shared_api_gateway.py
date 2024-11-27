@@ -105,7 +105,7 @@ class SharedApiGateway(Stack):
             #                          certificate=certificate)
             
             # Add a domain name to the API
-            self.api_domain_name = aws_apigateway.DomainName(
+            self.api.domain_name = aws_apigateway.DomainName(
                 self,
                 "ExistingApiDomainName",
                 domain_name=domain_name,
@@ -125,7 +125,7 @@ class SharedApiGateway(Stack):
             aws_apigateway.BasePathMapping(
                 self,
                 "BasePathMapping",
-                domain_name=self.api_domain_name,
+                domain_name=self.api.domain_name,
                 rest_api=self.api,
             )
 
