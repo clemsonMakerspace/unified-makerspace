@@ -103,15 +103,23 @@ class SharedApiGateway(Stack):
             # self.api.add_domain_name('ApiGatewayDomainName',
             #                          domain_name=domain_name,
             #                          certificate=certificate)
-
-            # Reference the existing API Gateway Domain Name
-            self.api_domain_name = aws_apigateway.DomainName.from_domain_name_attributes(
+            
+            # Add a domain name to the API
+            self.api_domain_name = aws_apigateway.DomainName(
                 self,
                 "ExistingApiDomainName",
                 domain_name=domain_name,
-                domain_name_alias_hosted_zone_id="Z02880721JJ9EMQ8VFEV3",
-                domain_name_alias_target=f"d-6fxcutcsv0.execute-api.{Aws.REGION}.amazonaws.com."
+                certificate=certificate
             )
+
+            # Reference the existing API Gateway Domain Name
+            # self.api_domain_name = aws_apigateway.DomainName.from_domain_name_attributes(
+            #     self,
+            #     "ExistingApiDomainName",
+            #     domain_name=domain_name,
+            #     domain_name_alias_hosted_zone_id="Z02880721JJ9EMQ8VFEV3",
+            #     domain_name_alias_target=f"d-6fxcutcsv0.execute-api.{Aws.REGION}.amazonaws.com."
+            # )
             
             # Associate the existing domain with the new Rest API using BasePathMapping
             aws_apigateway.BasePathMapping(
