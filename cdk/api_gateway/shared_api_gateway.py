@@ -85,8 +85,7 @@ class SharedApiGateway(Stack):
     def create_rest_api(self):
 
         # Create the Rest API
-        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway',
-                                          domain_name=self.zones.api.zone_name)
+        # self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
 
         # Handle dns integration
         if self.create_dns:
@@ -106,11 +105,20 @@ class SharedApiGateway(Stack):
             #                          certificate=certificate)
             
             # Add a domain name to the API
-            self.api_domain_name = aws_apigateway.DomainName(
+            # self.api_domain_name = aws_apigateway.DomainName(
+            #     self,
+            #     "ExistingApiDomainName",
+            #     domain_name=domain_name,
+            #     certificate=certificate
+            # )
+            
+            self.api = aws_apigateway.RestApi(
                 self,
-                "ExistingApiDomainName",
-                domain_name=domain_name,
-                certificate=certificate
+                "SharedApiGateway",
+                domain_name=aws_apigateway.DomainNameOptions(
+                    domain_name=domain_name,
+                    certificate=certificate,
+                ),
             )
 
             # Reference the existing API Gateway Domain Name
@@ -123,12 +131,12 @@ class SharedApiGateway(Stack):
             # )
             
             # Associate the existing domain with the new Rest API using BasePathMapping
-            aws_apigateway.BasePathMapping(
-                self,
-                "BasePathMapping",
-                domain_name=self.api_domain_name,
-                rest_api=self.api,
-            )
+            # aws_apigateway.BasePathMapping(
+            #     self,
+            #     "BasePathMapping",
+            #     domain_name=self.api_domain_name,
+            #     rest_api=self.api,
+            # )
 
 
     def deploy_api_stage(self, stage_name: str = "prod"):
