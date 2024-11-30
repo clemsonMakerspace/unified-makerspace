@@ -131,12 +131,12 @@ class SharedApiGateway(Stack):
             )
             
             # Associate the existing domain with the new Rest API using BasePathMapping
-            aws_apigateway.BasePathMapping(
-                self,
-                "BasePathMapping",
-                domain_name=self.api_domain_name,
-                rest_api=self.api,
-            )
+            # aws_apigateway.BasePathMapping(
+            #     self,
+            #     "BasePathMapping",
+            #     domain_name=self.api_domain_name,
+            #     rest_api=self.api,
+            # )
 
 
     def deploy_api_stage(self, stage_name: str = "prod"):
