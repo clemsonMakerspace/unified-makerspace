@@ -86,6 +86,14 @@ class SharedApiGateway(Stack):
 
         # Create the Rest API
         # self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+        self.api = aws_apigateway.RestApi(
+            self,
+            "SharedApiGateway",
+            # domain_name=aws_apigateway.DomainNameOptions(
+            #     domain_name=domain_name,
+            #     certificate=certificate,
+            # ),
+        )
 
         # Handle dns integration
         if self.create_dns:
@@ -122,15 +130,6 @@ class SharedApiGateway(Stack):
                 domain_name_alias_target=f"d-6fxcutcsv0.execute-api.{Aws.REGION}.amazonaws.com."
             )
             
-            self.api = aws_apigateway.RestApi(
-                self,
-                "SharedApiGateway",
-                # domain_name=aws_apigateway.DomainNameOptions(
-                #     domain_name=domain_name,
-                #     certificate=certificate,
-                # ),
-            )
-
             # Associate the existing domain with the new Rest API using BasePathMapping
             aws_apigateway.BasePathMapping(
                 self,
