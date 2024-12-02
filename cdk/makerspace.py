@@ -38,9 +38,9 @@ class MakerspaceStack(Stack):
 
         self.domains = Domains(self.stage)
 
-        self.hosted_zones_stack()
-
         self.create_dns = 'dev' not in self.domains.stage
+        
+        self.hosted_zones_stack()
 
         self.database_stack()
 
