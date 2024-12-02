@@ -48,8 +48,16 @@ class MakerspaceStack(Stack):
 
         self.backend_stack()
 
-        self.cognito_setup()
+        if self.create_dns:
+            self.dns_records_stack()
 
+        self.shared_api_gateway()
+        
+        self.cognito_setup()
+        
+        # if self.stage.lower() == 'prod':
+        #     self.data_migration_stack()
+        
         # Set permissions for each lambda function to respective DDB table
         self.database.visits_table.grant_read_write_data(
             self.backend_api.lambda_visits_handler)
@@ -65,14 +73,6 @@ class MakerspaceStack(Stack):
         self.database.equipment_table.grant_read_write_data(self.backend_api.lambda_equipment_handler)
         
         self.database.qualifications_table.grant_read_write_data(self.backend_api.lambda_qualifications_handler)
-
-        self.shared_api_gateway()
-
-        if self.create_dns:
-            self.dns_records_stack()
-            
-        # if self.stage.lower() == 'prod':
-        #     self.data_migration_stack()
             
     # def data_migration_stack(self):
         
