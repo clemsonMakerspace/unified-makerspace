@@ -70,7 +70,7 @@ class MakerspaceDns(Stack):
                                                   zone_name=self.domains.visit)
 
     def api_zone(self):
-        self.api = aws_route53.PublicHostedZone(self, 'api',
+        self.api_hosted_zone = aws_route53.PublicHostedZone(self, 'api',
                                                 zone_name=self.domains.api)
 
     def maintenance_zone(self):
@@ -96,7 +96,7 @@ class MakerspaceDns(Stack):
             certificate = aws_certificatemanager.Certificate(
                 self, 'ApiGatewayCert',
                 domain_name=self.domains.api,
-                validation=aws_certificatemanager.CertificateValidation.from_dns(self.api)
+                validation=aws_certificatemanager.CertificateValidation.from_dns(self.api_hosted_zone)
             )
 
             self.api.add_domain_name('ApiGatewayDomainName',
@@ -129,8 +129,8 @@ class MakerspaceDnsRecords(Stack):
 
         zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
                                                                   'ApiHostedZoneRef',
-                                                                  hosted_zone_id=self.zones.api.hosted_zone_id,
-                                                                  zone_name=self.zones.api.zone_name)
+                                                                  hosted_zone_id=self.zones.api_hosted_zone.hosted_zone_id,
+                                                                  zone_name=self.zones.api_hosted_zone.zone_name)
 
         aws_route53.ARecord(self, 'ApiRecord',
                             zone=zone,
