@@ -39,15 +39,16 @@ class SharedApiGateway(Stack):
     def __init__(self, scope: Construct, stage: str,
                 user: aws_lambda.Function, visits: aws_lambda.Function,
                  qualifications: aws_lambda.Function, equipment: aws_lambda.Function,
-                 *, env: Environment, create_dns: bool, 
+                 api: aws_apigateway.RestApi, *, env: Environment, create_dns: bool, 
                 zones: MakerspaceDns = None):
 
         super().__init__(scope, 'SharedApiGateway', env=env)
 
         self.create_dns = create_dns
         self.zones = zones
+        self.api = api
 
-        self.create_rest_api()
+        # self.create_rest_api()
 
         # Scheme of "..._user_id" indicates routing for endpoints with
         # the path parameter {user_id}
@@ -82,21 +83,21 @@ class SharedApiGateway(Stack):
         self.plan.add_api_key(self.api_key)
 
 
-    def create_rest_api(self):
+    # def create_rest_api(self):
 
-        # Create the Rest API
-        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+    #     # Create the Rest API
+    #     self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
 
-        # Handle dns integration
-        if self.create_dns:
-            domain_name = self.zones.api.zone_name
-            certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
-                                                                         domain_name=domain_name,
-                                                                         hosted_zone=self.zones.api)
+    #     # Handle dns integration
+    #     if self.create_dns:
+    #         domain_name = self.zones.api.zone_name
+    #         certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
+    #                                                                      domain_name=domain_name,
+    #                                                                      hosted_zone=self.zones.api)
 
-            self.api.add_domain_name('ApiGatewayDomainName',
-                                     domain_name=domain_name,
-                                     certificate=certificate)
+    #         self.api.add_domain_name('ApiGatewayDomainName',
+    #                                  domain_name=domain_name,
+    #                                  certificate=certificate)
 
     def deploy_api_stage(self, stage_name: str = "prod"):
         self.stage = aws_apigateway.Stage(

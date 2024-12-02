@@ -69,11 +69,12 @@ class Visit(Stack):
         if self.create_dns:
             domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
-            kwargs['certificate'] = aws_certificatemanager.DnsValidatedCertificate(
-                self, 'VisitorsCertificate', domain_name=domain_name, hosted_zone=self.zones.visit)
+            kwargs['certificate'] = aws_certificatemanager.Certificate(
+                self, 'VisitorsCertificate', domain_name=domain_name, 
+                validation=aws_certificatemanager.CertificateValidation.from_dns(self.zones.visit))
 
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
-            origin=aws_cloudfront_origins.S3Origin(
+            origin=aws_cloudfront_origins.S3BucketOrigin(
                 bucket=self.bucket,
                 origin_access_identity=self.oai),
             viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)

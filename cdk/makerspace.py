@@ -123,6 +123,7 @@ class MakerspaceStack(Stack):
             self.backend_api.lambda_visits_handler,
             self.backend_api.lambda_qualifications_handler,
             self.backend_api.lambda_equipment_handler,
+            api=self.dns.api,
             env=self.env, zones=self.dns, create_dns=self.create_dns
         )
 
@@ -130,7 +131,8 @@ class MakerspaceStack(Stack):
 
     def hosted_zones_stack(self):
 
-        self.dns = MakerspaceDns(self.app, self.stage, env=self.env)
+        self.dns = MakerspaceDns(self.app, self.stage, create_dns=self.create_dns, 
+                                 env=self.env)
 
         self.add_dependency(self.dns)
 
@@ -147,7 +149,7 @@ class MakerspaceStack(Stack):
             self.stage,
             env=self.env,
             zones=self.dns,
-            api_gateway=self.api_gateway.api,
+            api_gateway=self.dns.api,
             visit_distribution=self.visit.distribution
         )
 

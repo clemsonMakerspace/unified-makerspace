@@ -6,7 +6,8 @@ from aws_cdk import (
     aws_apigateway,
     aws_cloudfront,
     aws_route53,
-    aws_route53_targets
+    aws_route53_targets,
+    aws_certificatemanager
 )
 from constructs import Construct
 
@@ -49,10 +50,11 @@ class MakerspaceDns(Stack):
     """
 
     def __init__(self, scope: Construct,
-                 stage: str, *, env: Environment):
+                 stage: str, create_dns: bool, *, env: Environment):
         super().__init__(scope, 'MakerspaceDns', env=env)
 
         self.domains = Domains(stage)
+        self.create_dns = create_dns
 
         self.visitors_zone()
         self.api_zone()
@@ -60,6 +62,8 @@ class MakerspaceDns(Stack):
         #! Should we remove these since we're not using them? 
         self.maintenance_zone()
         self.admin_zone()
+        
+        self.create_rest_api()
 
     def visitors_zone(self):
         self.visit = aws_route53.PublicHostedZone(self, 'visit',
@@ -76,6 +80,28 @@ class MakerspaceDns(Stack):
     def admin_zone(self):
         aws_route53.PublicHostedZone(self, 'admin',
                                      zone_name=self.domains.admin)
+        
+    def create_rest_api(self):
+
+        # Create the Rest API
+        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+
+        # Handle dns integration
+        if self.create_dns:
+            # Depreciated way of making certificate
+            # certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
+            #                                                              domain_name=self.domains.api,
+            #                                                              hosted_zone=self.api)
+
+            certificate = aws_certificatemanager.Certificate(
+                self, 'ApiGatewayCert',
+                domain_name=self.domains.api,
+                validation=aws_certificatemanager.CertificateValidation.from_dns(self.api)
+            )
+
+            self.api.add_domain_name('ApiGatewayDomainName',
+                                     domain_name=self.domains.api,
+                                     certificate=certificate)
 
 
 class MakerspaceDnsRecords(Stack):
