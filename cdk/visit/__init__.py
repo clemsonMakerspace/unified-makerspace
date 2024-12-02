@@ -51,47 +51,99 @@ class Visit(Stack):
 
 
     def source_bucket(self):
-        self.oai = aws_cloudfront.OriginAccessIdentity(
-            self, 'VisitorsOriginAccessIdentity')
+        # Depreciated
+        # self.oai = aws_cloudfront.OriginAccessIdentity(
+        #     self, 'VisitorsOriginAccessIdentity')
  
-        self.bucket = aws_s3.Bucket(self, 'cumakerspace-visitors-console')
-        self.bucket.grant_read(self.oai)
-        aws_s3_deployment.BucketDeployment(self, 'VisitorsConsoleDeployment',
-                                           sources=[
-                                               aws_s3_deployment.Source.asset(
-                                                   f'visit/console/{self.stage}/')
-                                           ],
-                                           destination_bucket=self.bucket)
+        # self.bucket = aws_s3.Bucket(self, 'cumakerspace-visitors-console')
+        # self.bucket.grant_read(self.oai)
+        
+        # Create the S3 bucket
+        self.bucket = aws_s3.Bucket(
+            self,
+            'cumakerspace-visitors-console',
+            block_public_access=aws_s3.BlockPublicAccess.BLOCK_ALL
+        )
+
+        # Deploy static files to the bucket
+        aws_s3_deployment.BucketDeployment(
+            self,
+            'VisitorsConsoleDeployment',
+            sources=[
+                aws_s3_deployment.Source.asset(f'visit/console/{self.stage}/')
+            ],
+            destination_bucket=self.bucket
+        )
         
     def cloudfront_distribution(self):
 
         kwargs = {}
+
         if self.create_dns:
             domain_name = self.zones.visit.zone_name
             kwargs['domain_names'] = [domain_name]
             kwargs['certificate'] = aws_certificatemanager.Certificate(
-                self, 'VisitorsCertificate', domain_name=domain_name, 
-                validation=aws_certificatemanager.CertificateValidation.from_dns(self.zones.visit))
+                self,
+                'VisitorsCertificate',
+                domain_name=domain_name,
+                validation=aws_certificatemanager.CertificateValidation.from_dns(self.zones.visit)
+            )
 
+        # Create Origin Access Control (OAC)
+        oac = aws_cloudfront.CfnOriginAccessControl(
+            self, 'VisitorsOriginAccessControl',
+            origin_access_control_config=aws_cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty(
+                name='VisitorsOAC',
+                origin_access_control_origin_type='s3',
+                signing_behavior='always',
+                signing_protocol='sigv4'
+            )
+        )
+
+        # Configure default behavior
         kwargs['default_behavior'] = aws_cloudfront.BehaviorOptions(
             origin=aws_cloudfront_origins.S3BucketOrigin(
                 bucket=self.bucket,
-                origin_access_identity=self.oai),
-            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
-        kwargs['default_root_object'] = "index.html"
+            ),
+            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+        )
 
+        kwargs['default_root_object'] = "index.html"
         kwargs['price_class'] = aws_cloudfront.PriceClass.PRICE_CLASS_100
 
         # This error response redirect back to index.html because React handles everything in a page
         # including routing. when you add /register after the domain, there would be such key avaliable
         # in the static site. We need cloudfront redirect it back to index.html for React to
         # handle the routing.
-        kwargs['error_responses'] = [aws_cloudfront.ErrorResponse(
-            http_status=404,
-            response_http_status=200,
-            response_page_path="/index.html",
-            ttl=Duration.seconds(10)
-        )]
+        kwargs['error_responses'] = [
+            aws_cloudfront.ErrorResponse(
+                http_status=404,
+                response_http_status=200,
+                response_page_path="/index.html",
+                ttl=Duration.seconds(10)
+            )
+        ]
 
+        # Create CloudFront Distribution
         self.distribution = aws_cloudfront.Distribution(
-            self, 'VisitorsConsoleCache', **kwargs)
+            self, 'VisitorsConsoleCache', **kwargs
+        )
+
+        # Attach OAC to the CloudFront distribution
+        cfn_distribution = self.distribution.node.default_child
+        for origin in cfn_distribution.origins:
+            origin['originAccessControlId'] = oac.attr_id
+
+        # Grant access to CloudFront via a bucket policy
+        self.bucket.add_to_resource_policy(
+            aws_s3.PolicyStatement(
+                actions=["s3:GetObject"],
+                resources=[self.bucket.arn_for_objects("*")],
+                principals=[aws_s3.ArnPrincipal(f"arn:aws:iam::{Aws.ACCOUNT_ID}:root")],
+                conditions={
+                    "StringEquals": {
+                        "AWS:SourceArn": self.distribution.distribution_arn
+                    }
+                }
+            )
+        )
