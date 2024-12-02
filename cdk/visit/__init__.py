@@ -131,8 +131,19 @@ class Visit(Stack):
 
         # Attach OAC to the CloudFront distribution
         cfn_distribution = self.distribution.node.default_child
-        for origin in cfn_distribution.origins:
-            origin['originAccessControlId'] = oac.attr_id
+        cfn_distribution.add_property_override(
+            "DistributionConfig.Origins",
+            [
+                {
+                    "Id": "S3Origin",
+                    "DomainName": self.bucket.bucket_regional_domain_name,
+                    "S3OriginConfig": {
+                        "OriginAccessIdentity": ""  # Not needed for OAC
+                    },
+                    "OriginAccessControlId": oac.attr_id
+                }
+            ]
+        )
 
         # Grant access to CloudFront via a bucket policy
         self.bucket.add_to_resource_policy(
