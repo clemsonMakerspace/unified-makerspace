@@ -50,11 +50,10 @@ class MakerspaceDns(Stack):
     """
 
     def __init__(self, scope: Construct,
-                 stage: str, create_dns: bool, *, env: Environment):
+                 stage: str, *, env: Environment):
         super().__init__(scope, 'MakerspaceDns', env=env)
 
         self.domains = Domains(stage)
-        self.create_dns = create_dns
 
         self.visitors_zone()
         self.api_zone()
@@ -62,8 +61,6 @@ class MakerspaceDns(Stack):
         #! Should we remove these since we're not using them? 
         self.maintenance_zone()
         self.admin_zone()
-        
-        self.create_rest_api()
 
     def visitors_zone(self):
         self.visit = aws_route53.PublicHostedZone(self, 'visit',
@@ -80,28 +77,6 @@ class MakerspaceDns(Stack):
     def admin_zone(self):
         aws_route53.PublicHostedZone(self, 'admin',
                                      zone_name=self.domains.admin)
-        
-    def create_rest_api(self):
-
-        # Create the Rest API
-        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
-
-        # Handle dns integration
-        if self.create_dns:
-            # Depreciated way of making certificate
-            # certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
-            #                                                              domain_name=self.domains.api,
-            #                                                              hosted_zone=self.api)
-
-            certificate = aws_certificatemanager.Certificate(
-                self, 'ApiGatewayCert',
-                domain_name=self.domains.api,
-                validation=aws_certificatemanager.CertificateValidation.from_dns(self.api_hosted_zone)
-            )
-
-            self.api.add_domain_name('ApiGatewayDomainName',
-                                     domain_name=self.domains.api,
-                                     certificate=certificate)
 
 
 class MakerspaceDnsRecords(Stack):
@@ -127,31 +102,35 @@ class MakerspaceDnsRecords(Stack):
 
     def api_record(self, api_gateway: aws_apigateway.RestApi):
 
-        zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
-                                                                  'ApiHostedZoneRef',
-                                                                  hosted_zone_id=self.zones.api_hosted_zone.hosted_zone_id,
-                                                                  zone_name=self.zones.api_hosted_zone.zone_name)
+        # zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
+        #                                                           'ApiHostedZoneRef',
+        #                                                           hosted_zone_id=self.zones.api_hosted_zone.hosted_zone_id,
+        #                                                           zone_name=self.zones.api_hosted_zone.zone_name)
+
+        zone = self.zones.api_hosted_zone
 
         aws_route53.ARecord(self, 'ApiRecord',
                             zone=zone,
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.ApiGatewayDomain(
-                                    api_gateway.domain_name)))
+                                    domain_name=api_gateway.domain_name)))
 
     def visit_record(self, visit: aws_cloudfront.Distribution):
 
-        zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
-                                                                  'VisitHostedZoneRef',
-                                                                  hosted_zone_id=self.zones.visit.hosted_zone_id,
-                                                                  zone_name=self.zones.visit.zone_name)
+        # zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
+        #                                                           'VisitHostedZoneRef',
+        #                                                           hosted_zone_id=self.zones.visit.hosted_zone_id,
+        #                                                           zone_name=self.zones.visit.zone_name)
 
-        distribution = aws_cloudfront.Distribution.from_distribution_attributes(self,
-                                                                                'VisitCloudFrontRef',
-                                                                                distribution_id=visit.distribution_id,
-                                                                                domain_name=visit.distribution_domain_name)
+        zone = self.zones.visit
+
+        # distribution = aws_cloudfront.Distribution.from_distribution_attributes(self,
+        #                                                                         'VisitCloudFrontRef',
+        #                                                                         distribution_id=visit.distribution_id,
+        #                                                                         domain_name=visit.distribution_domain_name)
 
         aws_route53.ARecord(self, 'VisitRecord',
                             zone=zone,
                             target=aws_route53.RecordTarget(
                                 alias_target=aws_route53_targets.CloudFrontTarget(
-                                    distribution=distribution)))
+                                    distribution=visit)))

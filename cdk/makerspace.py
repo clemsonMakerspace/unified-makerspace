@@ -38,23 +38,23 @@ class MakerspaceStack(Stack):
 
         self.domains = Domains(self.stage)
 
-        self.create_dns = 'dev' not in self.domains.stage
-        
         self.hosted_zones_stack()
+
+        self.create_dns = 'dev' not in self.domains.stage
 
         self.database_stack()
 
         self.visitors_stack()
 
+        self.cognito_setup()
+
         self.backend_stack()
+
+        self.shared_api_gateway()
 
         if self.create_dns:
             self.dns_records_stack()
 
-        self.shared_api_gateway()
-        
-        self.cognito_setup()
-        
         # if self.stage.lower() == 'prod':
         #     self.data_migration_stack()
         
@@ -123,7 +123,6 @@ class MakerspaceStack(Stack):
             self.backend_api.lambda_visits_handler,
             self.backend_api.lambda_qualifications_handler,
             self.backend_api.lambda_equipment_handler,
-            api=self.dns.api,
             env=self.env, zones=self.dns, create_dns=self.create_dns
         )
 
@@ -131,8 +130,7 @@ class MakerspaceStack(Stack):
 
     def hosted_zones_stack(self):
 
-        self.dns = MakerspaceDns(self.app, self.stage, create_dns=self.create_dns, 
-                                 env=self.env)
+        self.dns = MakerspaceDns(self.app, self.stage, env=self.env)
 
         self.add_dependency(self.dns)
 
@@ -149,7 +147,7 @@ class MakerspaceStack(Stack):
             self.stage,
             env=self.env,
             zones=self.dns,
-            api_gateway=self.dns.api,
+            api_gateway=self.api_gateway.api,
             visit_distribution=self.visit.distribution
         )
 
