@@ -1,32 +1,53 @@
 import type { MakerspaceLocation } from "./types";
 
 export const api_endpoint =
-  import.meta.env.VITE_API_ENDPOINT || "https://api.cumaker.space";
+  import.meta.env.VITE_API_ENDPOINT || "https://beta-api.cumaker.space";
 
 // currently `YEAR-MONTH-DAY, YYYY-MM-DD`
 export const format_date = (date: Date) => date.toISOString().split("T")[0];
 
-export const locations: MakerspaceLocation[] = [
+export const locations = [
   {
-    slug: "watt_center",
     name: "Watt Family Innovation Center",
     tools: [
-      "3D Printer (FDM - Plastic)",
+      "FDM 3D Printer (Plastic)",
+      "SLA 3D Printer (Resin)",
       "3D Scanner",
       "CNC Mills",
       "Hand Tools",
       "Laser Cutter/Engraver",
       "Microelectronics & Soldering Supplies",
       "Part Pickup",
-      "Resin Printer (Formlabs Resin)",
       "Visiting",
     ],
+    fdm_printers: [
+      "Mini 1",
+      "Mini 2",
+      "Mini 3",
+      "Mini 4",
+      "Mini 5",
+      "Mini 6",
+      "Mini 7",
+      "Mini 8",
+      "Mini 9",
+      "Mini 10",
+      "Mini 11",
+      "Mini 12",
+      "Taz 1",
+      "Taz 2",
+      "Taz 3",
+      "Taz 4",
+      "Taz 5",
+      "Taz 6",
+      "Taz 7",
+      "Taz 8",
+    ],
+    sla_printers: ["Hopeful Terrier", "Inspiring Llama"],
   },
   {
-    slug: "cooper_library",
     name: "Cooper Library",
     tools: [
-      "3D Printer (FDM)",
+      "FDM 3D Printer (Plastic)",
       "Button Maker",
       "Embroidery/Sewing Machine",
       "Fabric Printer",
@@ -35,10 +56,33 @@ export const locations: MakerspaceLocation[] = [
       "Vinyl Cutter",
       "Visiting",
     ],
+    fdm_printers: [
+      "Adobe",
+      "Adobe 1",
+      "Adobe 2",
+      "Adobe 3",
+      "Adobe 4",
+      "Adobe 5",
+      "Adobe 6",
+      "Adobe 7",
+      "Adobe 8",
+      "Adobe 9",
+      "Adobe 10",
+      "Adobe 11",
+      "Adobe 12",
+      "Adobe 13",
+      "Adobe 14",
+      "Adobe 15",
+      "Adobe 16",
+      "Taz A",
+      "Taz B",
+      "Taz C",
+      "Taz D",
+      "Taz E",
+    ],
   },
   {
-    slug: "cook_lab",
-    name: "Cook Laboratory",
+    name: "CU ICAR",
     tools: ["Waterjet", "Visiting"],
   },
 ];
@@ -276,4 +320,72 @@ export const minors = [
   "Women's Leadership",
   "Writing",
   "Youth Development Studies",
+];
+
+export const equipmentTypes = [
+  "FDM 3D Printer (Plastic)",
+  "Laser Engraver",
+  "Glowforge",
+  "SLA 3D Printer (Resin)",
+  "Fabric Printer",
+  "Vinyl Cutter",
+  "Button Maker",
+  "3D Scanner",
+  "Hand Tools",
+  "Sticker Printer",
+  "Embroidery Machine",
+  "new thing",
+];
+
+export const projectTypes = [
+  "Personal Project",
+  "Research Project",
+  "Class Assignment",
+  "Creative Inquiry",
+  "Senior Design",
+  "Club/Organization",
+];
+
+export const surveryScores = [
+  "10",
+  "9",
+  "8",
+  "7",
+  "6",
+  "5",
+  "4",
+  "3",
+  "2",
+  "1",
+];
+
+export const surveyIssues = [
+  "No issues",
+  "Software issues",
+  "Machine issues",
+  "Intern issues",
+];
+
+export const interns = [
+  "Drew",
+  "Andrew",
+  "Anna",
+  "Braden",
+  "Michael",
+  "Taylor",
+  "John",
+  "Jack A",
+  "Jack F",
+  "Justin",
+  "Katie",
+  "Keller",
+  "Kwasi",
+  "Lucia",
+  "Philip",
+  "Lucy",
+  "Nicolas",
+  "Quinn",
+  "Steven",
+  "Thomas",
+  "Zachary",
 ];

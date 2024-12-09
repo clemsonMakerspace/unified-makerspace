@@ -4,14 +4,14 @@ import { locations } from "../library/constants";
 import { getAmplifyConfig } from "../config/getAmplifyConfig";
 import React, { useEffect } from "react";
 
-import LocationSelection from "./LocationSelection";
+import Home from "./Home";
 import Registration from "./Registration";
-import SignInSuccess from "./SignInSuccess";
-import SignInError from "./SignInError";
 import NotFoundPage from "./NotFoundPage";
-import VisitForm from "../components/VisitForm";
 import Admin from "./Admin";
-import Quizzes from "./QuizStatus";
+import Qualifications from "./Qualifications";
+import EquipmentForm from "./EquipmentForm";
+import Visits from "./Visits";
+import EquipmentUsage from "./EquipmentUsage";
 
 const App = () => {
   useEffect(() => {
@@ -28,26 +28,17 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LocationSelection />} />
+        {/* Public pages */}
+        <Route path="/" element={<Home />} />
         <Route path="/register" element={<Registration />} />
-        <Route path="/success" element={<SignInSuccess />} />
-        <Route path="/error" element={<SignInError />} />
+        <Route path="/equipment_form" element={<EquipmentForm />} />
         <Route path="*" element={<NotFoundPage />} />
 
+        {/* Admin pages */}
         <Route path="/admin" element={<Admin />} />
-        <Route path="/quiz_status" element={<Quizzes />} />
-
-        {/* makerspace specific routes */}
-        {locations.map((location) => {
-          const { slug } = location;
-          return (
-            <Route
-              path={`/${slug}`}
-              key={slug}
-              element={<VisitForm location={location} />}
-            />
-          );
-        })}
+        <Route path="/qualifications" element={<Qualifications />} />
+        <Route path="/equipment_usage" element={<EquipmentUsage />} />
+        <Route path="/visits" element={<Visits />} />
       </Routes>
     </Router>
   );

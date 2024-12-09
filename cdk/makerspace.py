@@ -142,6 +142,12 @@ class MakerspaceStack(Stack):
         
         """
 
+        if self.create_dns:
+            domain_name = self.dns.api_hosted_zone.zone_name
+            backend_api_url: str = f"https://{domain_name}"
+        else:
+            backend_api_url: str = ""
+
         self.backend_api = BackendApi(
             self.app,
             self.stage,
@@ -150,7 +156,9 @@ class MakerspaceStack(Stack):
             self.database.equipment_table.table_name,
             self.database.qualifications_table.table_name,
             zones=self.dns,
-            env=self.env
+            env=self.env,
+            backend_api_key=self.backend_api_key,
+            backend_api_url=backend_api_url
         )
 
         # Dependency ensures this is completely configured prior
@@ -166,6 +174,7 @@ class MakerspaceStack(Stack):
             self.backend_api.lambda_visits_handler,
             self.backend_api.lambda_qualifications_handler,
             self.backend_api.lambda_equipment_handler,
+            self.backend_api.lambda_tiger_training_handler,
             backend_api_key=self.backend_api_key,
             env=self.env, zones=self.dns, create_dns=self.create_dns
         )

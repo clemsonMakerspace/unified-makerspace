@@ -75,6 +75,7 @@ equipment_path: str = "/equipment"
 equipment_param_path: str = equipment_path + user_endpoint
 qualifications_path: str = "/qualifications"
 qualifications_param_path: str = qualifications_path + user_endpoint
+tiger_training_path: str = "/tiger_training"
 
 # Other global values
 DEFAULT_SCAN_LIMIT: int = 1000

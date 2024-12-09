@@ -9,9 +9,14 @@ body {
 }
 
 .btn-pastel-purple {
-  background-color: #b19cd9;
+  background-color: #522d80;
   color: white;
   border: none;
+}
+
+.btn-pastel-purple:hover {
+  background-color: #b19cd9;
+  color: white;
 }
 
 .btn-pastel-orange {

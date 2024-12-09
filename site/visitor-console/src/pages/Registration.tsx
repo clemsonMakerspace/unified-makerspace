@@ -75,7 +75,7 @@ const Registration = () => {
 
   const onSubmit = handleSubmit((data) => register_user(data as Schema));
 
-  const register_user = (form_data: Schema): void => {
+  const register_user = async (form_data: Schema): Promise<void> => {
     const body = {
       username: form_data.username,
       firstName: form_data.firstname,
@@ -89,33 +89,30 @@ const Registration = () => {
       Minor: form_data.minor,
     };
 
-    fetch(`${api_endpoint}/register`, {
-      method: "post",
-      body: JSON.stringify(body),
-    }).then((response) => {
+    try {
+      const response = await fetch(`${api_endpoint}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
       if (response.ok) {
-        reset();
+        console.log("User registered successfully.");
         setRegistered(true);
       } else {
-        alert("Registration unsuccessful");
+        const errorData = await response.json();
+        console.error("Registration failed:", errorData);
       }
-    });
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
   };
 
   if (registered) return <PageCard title="Registration Successful" />;
 
   let userRole = watch("position");
-  if (userRole && userRole === "Undergraduate Student") {
-    document.getElementById("userRole")!.className = "col-md-12 mb-2";
-    document.querySelectorAll("[id=undergradData]").forEach((element) => {
-      element.setAttribute("style", "display:block");
-    });
-  } else if (userRole && userRole !== "Undergraduate Student") {
-    document.getElementById("userRole")!.className = "col-md-12 mb-4";
-    document.querySelectorAll("[id=undergradData]").forEach((element) => {
-      element.setAttribute("style", "display:none");
-    });
-  }
 
   return (
     <PageCard
@@ -189,7 +186,7 @@ const Registration = () => {
           </div>
 
           {/* User Position */}
-          <div id="userRole" className="col-md-12 mb-4">
+          <div id="userRole" className="col-md-12 mb-2">
             <label htmlFor="position" className="form-label">
               Position
             </label>
@@ -200,78 +197,70 @@ const Registration = () => {
             />
           </div>
 
-          {/* Graduating Semester */}
-          <div
-            id="undergradData"
-            style={{ display: "none" }}
-            className="col-md-6 mb-2"
-          >
-            <label htmlFor="semester" className="form-label">
-              Graduating Semester
-            </label>
-            <FormSelect
-              control={control}
-              name="gradsemester"
-              values={gradsemesters}
-            />
-          </div>
+          {userRole === "Undergraduate Student" && (
+            <>
+              {/* Graduating Semester */}
+              <div className="col-md-6 mb-2">
+                <label htmlFor="semester" className="form-label">
+                  Graduating Semester
+                </label>
+                <FormSelect
+                  control={control}
+                  name="gradsemester"
+                  values={gradsemesters}
+                />
+              </div>
 
-          {/* Graduating Year */}
-          <div
-            id="undergradData"
-            style={{ display: "none" }}
-            className="col-md-6 mb-2"
-          >
-            <label htmlFor="year" className="form-label">
-              Graduating Year
-            </label>
-            <FormSelect control={control} name="gradyear" values={gradyears} />
-          </div>
+              {/* Graduating Year */}
+              <div className="col-md-6 mb-2">
+                <label htmlFor="year" className="form-label">
+                  Graduating Year
+                </label>
+                <FormSelect
+                  control={control}
+                  name="gradyear"
+                  values={gradyears}
+                />
+              </div>
 
-          {/* major */}
-          <div
-            id="undergradData"
-            style={{ display: "none" }}
-            className="col-12 mb-2"
-          >
-            <label htmlFor="major" className="form-label">
-              Major(s)
-            </label>
-            <FormMultiselect
-              id="major"
-              name="major"
-              limit={2}
-              control={control}
-              values={majors}
-            />
-          </div>
+              {/* major */}
+              <div className="col-12 mb-2">
+                <label htmlFor="major" className="form-label">
+                  Major(s)
+                </label>
+                <FormMultiselect
+                  id="major"
+                  name="major"
+                  limit={2}
+                  control={control}
+                  values={majors}
+                />
+              </div>
 
-          {/* minor */}
-          <div
-            id="undergradData"
-            style={{ display: "none" }}
-            className="col-12 mb-4"
-          >
-            <label htmlFor="minor" className="form-label">
-              Minor(s)
-            </label>
-            <FormMultiselect
-              id="minor"
-              name="minor"
-              limit={2}
-              control={control}
-              values={minors}
-            />
-          </div>
+              {/* minor */}
+              <div className="col-12 mb-2">
+                <label htmlFor="minor" className="form-label">
+                  Minor(s)
+                </label>
+                <FormMultiselect
+                  id="minor"
+                  name="minor"
+                  limit={2}
+                  control={control}
+                  values={minors}
+                />
+              </div>
+            </>
+          )}
 
           {/* submission options */}
           <div className="d-flex justify-content-between">
-            <button type="submit" className="btn btn-secondary mr-5">
-              Register
-            </button>
             <Link to="/">
               <button className="btn btn-link text-light">Cancel</button>
             </Link>
+            <button type="submit" className="btn btn-secondary mr-5 mt-2">
+              Register
+            </button>
           </div>
         </form>
       </div>

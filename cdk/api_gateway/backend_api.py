@@ -4,6 +4,7 @@ from aws_cdk import (
     Environment,
     aws_lambda,
     aws_iam,
+    aws_secretsmanager,
     PhysicalName
 )
 from constructs import Construct
@@ -33,6 +34,8 @@ class BackendApi(Stack):
                  qualifications_table_name: str,
                  *,
                  env: Environment,
+                 backend_api_key: str = "",
+                 backend_api_url: str = "",
                  zones: MakerspaceDns = None):
 
         super().__init__(scope, 'BackendApi', env=env)
@@ -53,6 +56,7 @@ class BackendApi(Stack):
         self.users_handler_lambda(users_table_name, ("https://" + self.domain_name))
         self.qualifications_handler_lambda(qualifications_table_name, ("https://" + self.domain_name))
         self.equipment_handler_lambda(equipment_table_name, ("https://" + self.domain_name))
+        self.tiger_training_handler_lambda(backend_api_key, backend_api_url, ("https://" + self.domain_name))
 
         # Create policy with AWSInvokeFullAccess actions - should work the same way
         self.api_invoke_policy = aws_iam.PolicyStatement(
@@ -65,6 +69,7 @@ class BackendApi(Stack):
         self.lambda_users_handler.role.add_to_policy(self.api_invoke_policy)
         self.lambda_qualifications_handler.role.add_to_policy(self.api_invoke_policy)
         self.lambda_equipment_handler.role.add_to_policy(self.api_invoke_policy)
+        self.lambda_tiger_training_handler.role.add_to_policy(self.api_invoke_policy)
 
     def visits_handler_lambda(self, visits_table_name: str, users_table_name: str, domain_name: str):
 
@@ -122,6 +127,40 @@ class BackendApi(Stack):
             environment={
                 'DOMAIN_NAME': domain_name,
                 'EQUIPMENT_TABLE_NAME': equipment_table_name,
+            },
+            handler='equipment_handler.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_12)
+
+    def tiger_training_handler_lambda(self, backend_api_key: str, backend_api_url: str, domain_name: str):
+
+        # Retrieve Bridge LMS key and secret
+        secret_name: str = "BridgeLMSApiSecrets"
+        bridge_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
+                self, 
+                "BridgeSecrets",
+                secret_name
+        )
+        bridge_key: str = str(bridge_secrets.secret_value_from_json("key"))
+        bridge_secret: str = str(bridge_secrets.secret_value_from_json("secret"))
+
+        bridge_url: str = "https://clemson.bridgeapp.com"
+
+        # The id of the Makerspace's program in Tiger Training (Bridge LMS)
+        makerspace_program_id: str = "4133"
+
+        self.lambda_tiger_training_handler = aws_lambda.Function(
+            self,
+            'TigerTrainingHandlerLambda',
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('api_gateway/lambda_code/tiger_training_handler'),
+            environment={
+                'DOMAIN_NAME': domain_name,
+                'BRIDGE_URL': bridge_url,
+                'BRIDGE_KEY': bridge_key,
+                'BRIDGE_SECRET': bridge_secret,
+                'BRIDGE_PROGRAM_ID': makerspace_program_id,
+                'AWS_API_KEY': backend_api_key,
+                'AWS_API_URL': backend_api_url,
             },
             handler='equipment_handler.handler',
             runtime=aws_lambda.Runtime.PYTHON_3_12)

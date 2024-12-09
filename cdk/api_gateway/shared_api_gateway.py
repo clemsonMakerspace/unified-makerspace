@@ -7,6 +7,9 @@ from aws_cdk import (
     aws_apigateway,
     Aws
 )
+
+import boto3
+
 from constructs import Construct
 from dns import MakerspaceDns
 
@@ -39,6 +42,7 @@ class SharedApiGateway(Stack):
     def __init__(self, scope: Construct, stage: str,
                 user: aws_lambda.Function, visits: aws_lambda.Function,
                  qualifications: aws_lambda.Function, equipment: aws_lambda.Function,
+                 tiger_training: aws_lambda.Function,
                  *, backend_api_key: str = None, 
                  env: Environment, create_dns: bool, 
                 zones: MakerspaceDns = None):
@@ -68,6 +72,9 @@ class SharedApiGateway(Stack):
         # /qualifications routing
         self.route_qualifications(qualifications)
         self.route_qualifications_user_id(qualifications)
+
+        # /tiger_training routing
+        self.route_tiger_training(tiger_training)
         
         # Deploy the api to a stage
         stage_name: str = f"{stage}"
@@ -82,11 +89,7 @@ class SharedApiGateway(Stack):
 
         # Add an api key to the usage plan
         key_name: str = "SharedAPIAdminKey"
-        self.api_key = self.api.add_api_key(
-                "SharedAPIKey",
-                api_key_name=key_name,
-                value=backend_api_key
-        )
+        self.get_api_key(key_name, backend_api_key)
         self.plan.add_api_key(self.api_key)
 
 
@@ -137,6 +140,39 @@ class SharedApiGateway(Stack):
             )
         )
 
+    def get_api_key(self, key_name: str, backend_api_key: str):
+        """
+        Sets an api_key to use for a usage plan. If the api key
+        already exists, use the existing one. Otherwise, create
+        a new api key
+        """
+        api_gateway_client = boto3.client('apigateway', region_name="us-east-1")
+
+        def api_key_exists(name) -> str:
+            response = api_gateway_client.get_api_keys(includeValues=False)
+            for api_key in response['items']:
+                if api_key['name'] == name:
+                    return api_key['id']
+            return ""
+
+        # Try getting an existing api key id
+        api_id: str = api_key_exists(key_name)
+
+        # Use old api key
+        if api_id:
+            self.api_key = aws_apigateway.ApiKey.from_api_key_id(
+                    self,
+                    "ShareApiKey",
+                    api_id
+            )
+
+        # Create new api key
+        else:
+            self.api_key = self.api.add_api_key(
+                    "SharedAPIKey",
+                    api_key_name=key_name,
+                    value=backend_api_key
+            )
 
     """
     Users:
@@ -162,7 +198,7 @@ class SharedApiGateway(Stack):
 
         # methods
         self.users.add_method('GET', users_handler, api_key_required=True)
-        self.users.add_method('POST', users_handler, api_key_required=True)
+        self.users.add_method('POST', users_handler)
     
 
     def route_users_user_id(self, users: aws_lambda.Function):
@@ -236,7 +272,7 @@ class SharedApiGateway(Stack):
 
         # methods
         self.equipment.add_method('GET', equipment, api_key_required=True)
-        self.equipment.add_method('POST', equipment, api_key_required=True)
+        self.equipment.add_method('POST', equipment)
         
     def route_equipment_user_id(self, equipment: aws_lambda.Function):
         
@@ -284,4 +320,25 @@ class SharedApiGateway(Stack):
 
         # methods
         self.qualifications_user_id.add_method('GET', qualifications_user_id, api_key_required=True)
-        self.qualifications_user_id.add_method('PATCH', qualifications_user_id, api_key_required=True)
+
+
+    """
+    Tiger Training
+
+    Used to pull data from Tiger Training and store it to the backend using the
+    necessary endpoints. Admittedly, this isn't the prettiest solution, but it
+    is necessary to achieve the desired end goal of pressing a button on the
+    frontend and automatically pulling/storing new course completions.
+
+    Endpoints:
+    /tiger_training
+      - ANY
+    """
+    def route_tiger_training(self, tiger_training: aws_lambda.Function):
+
+        # create resource '/tiger_training'
+        tiger_training = aws_apigateway.LambdaIntegration(tiger_training)
+        self.tiger_training = self.api.root.add_resource('tiger_training')
+
+        # methods
+        self.tiger_training.add_method('ANY', tiger_training, api_key_required=True)

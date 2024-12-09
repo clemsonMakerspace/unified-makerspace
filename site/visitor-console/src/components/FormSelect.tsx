@@ -1,17 +1,25 @@
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, Path, FieldValues } from "react-hook-form";
 import Select from "react-select";
 
-interface Props {
-  control: Control;
-  name: string;
+interface OptionType {
+  label: string;
+  value: string;
+}
+
+interface Props<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>;
+  name: Path<TFieldValues>;
   values: string[];
   id?: string;
 }
 
-const FormSelect = ({ control, name, values, id }: Props) => {
-  // referenced: https://codesandbox.io/s/react-hook-form-react-select-u36uv
-
-  const options = values.map((value) => ({
+const FormSelect = <TFieldValues extends FieldValues>({
+  control,
+  name,
+  values,
+  id,
+}: Props<TFieldValues>) => {
+  const options: OptionType[] = values.map((value) => ({
     label: value,
     value: value,
   }));
@@ -20,14 +28,14 @@ const FormSelect = ({ control, name, values, id }: Props) => {
     <Controller
       name={name}
       control={control}
-      render={({ field: { value, onChange, onBlur } }) => (
+      render={({ field }) => (
         <Select
           id={id}
           className="text-dark"
           options={options}
-          value={options.filter((v) => v.value === value)}
-          onChange={(v) => onChange((v as any).value)}
-          onBlur={onBlur}
+          value={options.find((option) => option.value === field.value)}
+          onChange={(option) => field.onChange(option ? option.value : "")}
+          onBlur={field.onBlur}
         />
       )}
     />
