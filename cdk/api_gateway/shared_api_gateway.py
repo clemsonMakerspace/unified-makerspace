@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_certificatemanager,
     aws_lambda,
     aws_apigateway,
+    custom_resources,
     Aws
 )
 
@@ -12,6 +13,7 @@ import boto3
 
 from constructs import Construct
 from dns import MakerspaceDns
+
 
 class SharedApiGateway(Stack):
     """
@@ -87,9 +89,67 @@ class SharedApiGateway(Stack):
         plan_name: str = "SharedAPIAdminPlan"
         self.create_usage_plan(plan_name)
 
-        # Add an api key to the usage plan
-        key_name: str = "SharedAPIAdminKey"
-        self.get_api_key(key_name, backend_api_key)
+        # Handle api key
+        api_key_name: str = "SharedAPIAdminKey"
+
+        # Create a Lambda function to query for an API Key
+        api_key_checker_function = aws_lambda.Function(
+            self, "ApiKeyCheckerFunction",
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            handler="index.handler",
+            code=aws_lambda.Code.from_inline("""
+import boto3
+
+def handler(event, context):
+    client = boto3.client('apigateway')
+    api_key_name = event['ResourceProperties']['ApiKeyName']
+
+    try:
+        response = client.get_api_keys(includeValues=False)
+        for key in response['items']:
+            if key['name'] == api_key_name:
+                return {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
+        return {'PhysicalResourceId': 'None', 'Data': {}}
+    except Exception as e:
+        raise Exception(f"Error retrieving API Key: {e}")
+            """),
+        )
+
+        # Use the custom resource to fetch the API Key ID
+        custom_resource = custom_resources.AwsCustomResource(
+            self, "ApiKeyRetriever",
+            on_create=custom_resources.AwsSdkCall(
+                service="Lambda",
+                action="invoke",
+                parameters={
+                    "FunctionName": api_key_checker_function.function_name,
+                    "Payload": {"ApiKeyName": api_key_name}
+                },
+                physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
+            ),
+            policy=custom_resources.AwsCustomResourcePolicy.from_sdk_calls(resources=custom_resources.AwsCustomResourcePolicy.ANY_RESOURCE)
+        )
+
+        # Retrieve API Key ID from the custom resource
+        api_key_id = custom_resource.get_response_field("Data.ApiKeyId")
+
+        # Create a new API Key if it doesn't exist
+        if not api_key_id:
+            self.api_key = self.api.add_api_key(
+                    "SharedAPIKey",
+                    api_key_name=api_key_name,
+                    value=backend_api_key
+            )
+
+        # Otherwise, retrieve the existing key from its id
+        else:
+            self.api_key = aws_apigateway.ApiKey.from_api_key_id(
+                    self,
+                    "SharedAPIKey",
+                    api_key_id
+            )
+
+        # Add the api key to the usage plan
         self.plan.add_api_key(self.api_key)
 
 
@@ -140,39 +200,6 @@ class SharedApiGateway(Stack):
             )
         )
 
-    def get_api_key(self, key_name: str, backend_api_key: str):
-        """
-        Sets an api_key to use for a usage plan. If the api key
-        already exists, use the existing one. Otherwise, create
-        a new api key
-        """
-        api_gateway_client = boto3.client('apigateway', region_name="us-east-1")
-
-        def api_key_exists(name) -> str:
-            response = api_gateway_client.get_api_keys(includeValues=False)
-            for api_key in response['items']:
-                if api_key['name'] == name:
-                    return api_key['id']
-            return ""
-
-        # Try getting an existing api key id
-        api_id: str = api_key_exists(key_name)
-
-        # Use old api key
-        if api_id:
-            self.api_key = aws_apigateway.ApiKey.from_api_key_id(
-                    self,
-                    "ShareApiKey",
-                    api_id
-            )
-
-        # Create new api key
-        else:
-            self.api_key = self.api.add_api_key(
-                    "SharedAPIKey",
-                    api_key_name=key_name,
-                    value=backend_api_key
-            )
 
     """
     Users:
