@@ -44,9 +44,9 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
   const equipment = getEquipmentForLocation(selectedLocation);
   const printers =
     equipmentType === "FDM 3D Printer (Plastic)"
-      ? getPrintersForLocation(selectedLocation, "fdm_printers")
+      ? getPrintersForLocation(selectedLocation, "fdm_printers") ?? []
       : equipmentType === "SLA 3D Printer (Resin)"
-      ? getPrintersForLocation(selectedLocation, "sla_printers")
+      ? getPrintersForLocation(selectedLocation, "sla_printers") ?? []
       : [];
 
   return (
