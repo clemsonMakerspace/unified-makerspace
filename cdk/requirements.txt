@@ -41,3 +41,4 @@ typing-extensions
 urllib3
 Werkzeug
 xmltodict
+python3
