@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from ..api_defaults import *
 
-class LogEquipmentFunction():
+class EquipmentHandler():
     def __init__(self, equipment_table):
         # TODO: Setup CloudWatch Logs
         # Sets up CloudWatch logs and sets level to INFO
@@ -26,7 +26,7 @@ class LogEquipmentFunction():
             self.equipment_table = equipment_table
             
     # Main handler function
-    def equipment_handler(self, event, context):
+    def handle_event(self, event, context):
         try:
             method_requires_body: list = ["POST", "PATCH"]
 
@@ -102,7 +102,7 @@ class LogEquipmentFunction():
                 return buildResponse(statusCode = 400, body = body)
 
             try:
-                key_expression = Key('_ignore').eq("1") & timestamp_expression
+                key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1") & timestamp_expression
                 items = queryByKeyExpression(self.equipment_table, key_expression, GSI = TIMESTAMP_INDEX)
 
             except Exception as e:
@@ -122,6 +122,64 @@ class LogEquipmentFunction():
 
         else:
             equipment_logs = scanTable(self.equipment_table)
+
+        body = { 'equipment_logs': equipment_logs }
+
+        return buildResponse(statusCode = 200, body = body)
+
+    def get_all_equipment_usage_information(self, query_parameters: dict):
+        """
+        Returns all the equipment usage objects from the equipment usage table.
+
+        :params query_parameters: A dictionary of parameter names and values to filter by.
+        """
+
+        if query_parameters:
+            try:
+                timestamp_expression = buildTimestampKeyExpression(query_parameters, 'timestamp')
+
+            except InvalidQueryParameters as iqp:
+                body = { 'errorMsg': str(iqp) }
+                return buildResponse(statusCode = 400, body = body)
+
+            # Get the number of items to return
+            if "limit" in query_parameters:
+                limit = query_parameters["limit"]
+
+            # Otherwise return as many as possible
+            else:
+                limit = QUERY_LIMIT_RETURN_ALL
+
+            try:
+                if timestamp_expression:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1") & timestamp_expression
+                else:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1")
+
+                items = queryByKeyExpression(self.equipment_table, key_expression,
+                                             GSI = TIMESTAMP_INDEX, limit = limit)
+
+            except Exception as e:
+                body = { 'errorMsg': "Something went wrong on the server." }
+                return buildResponse(statusCode = 500, body = body)
+
+            # Do a second lookup for all returned items to get the rest of the data
+            equipment_logs = []
+            for item in items:
+                user_id = item['user_id']
+                timestamp = item['timestamp']
+
+                response = self.equipment_table.get_item(
+                    Key={ 
+                        'user_id': user_id,
+                        'timestamp': timestamp
+                    }
+                )
+
+                equipment_logs.append(response['Item'])
+
+        else:
+            equipment_logs = scanTable(self.equipment_table, limit = SCAN_LIMIT_RETURN_ALL)
 
         body = { 'equipment_logs': equipment_logs }
 
@@ -155,8 +213,8 @@ class LogEquipmentFunction():
             body = { 'errorMsg': errorMsg}
             return buildResponse(statusCode = 400, body = body)
 
-        # Always force "_ignore" key to have value of "1"
-        data['_ignore'] = "1"
+        # Always force GSI_ATTRIBUTE_NAME key to have value of "1"
+        data[GSI_ATTRIBUTE_NAME] = "1"
 
         # Actually try putting the item into the table
         try:
@@ -178,12 +236,6 @@ class LogEquipmentFunction():
         :params query_parameters: A dictionary of parameter names and values to filter by.
         """
 
-        if 'limit' in query_parameters and query_parameters['limit'] > 0:
-            limit = query_parameters['limit']
-            del query_parameters['limit']
-        else:
-            limit = DEFAULT_QUERY_LIMIT
-
         if query_parameters:
             try:
                 timestamp_expression = buildTimestampKeyExpression(query_parameters, 'timestamp')
@@ -192,9 +244,22 @@ class LogEquipmentFunction():
                 body = { 'errorMsg': str(iqp) }
                 return buildResponse(statusCode = 400, body = body)
 
+            # Get the number of items to return
+            if "limit" in query_parameters:
+                limit = query_parameters["limit"]
+
+            # Otherwise return as many as possible
+            else:
+                limit = QUERY_LIMIT_RETURN_ALL
+
             try:
-                key_expression = Key('user_id').eq(user_id) & timestamp_expression
-                equipment_logs = queryByKeyExpression(self.equipment_table, key_expression, None, limit)
+                if timestamp_expression:
+                    key_expression = Key('user_id').eq(user_id) & timestamp_expression
+                else:
+                    key_expression = Key('user_id').eq(user_id)
+
+                equipment_logs = queryByKeyExpression(self.equipment_table, key_expression,
+                                                      GSI = None, limit = limit)
 
             except Exception as e:
                 body = { 'errorMsg': "Something went wrong on the server." }
@@ -202,7 +267,12 @@ class LogEquipmentFunction():
 
         else:
             key_expression = Key('user_id').eq(user_id)
-            equipment_logs = queryByKeyExpression(self.equipment_table, key_expression, None, limit)
+            equipment_logs = queryByKeyExpression(
+                    self.equipment_table,
+                    key_expression,
+                    GSI = None,
+                    limit = QUERY_LIMIT_RETURN_ALL
+            )
 
         body = { 'equipment_logs': equipment_logs }
 
@@ -253,8 +323,8 @@ class LogEquipmentFunction():
         except KeyError:
             pass
         
-        # Ensure data['_ignore'] == '1'
-        data['_ignore'] = '1'
+        # Ensure data[GSI_ATTRIBUTE_NAME] == '1'
+        data[GSI_ATTRIBUTE_NAME] = '1'
 
         # Copy all all fields from data to user
         for key in data:
@@ -403,7 +473,7 @@ class LogEquipmentFunction():
         return data
 
             
-log_equipment_function = LogEquipmentFunction(None)
 
 def handler(request, context):
-    return log_equipment_function.equipment_handler(request, context)
+    equipment_handler = EquipmentHandler(None)
+    return equipment_handler.handle_event(request, context)

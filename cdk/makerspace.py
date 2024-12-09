@@ -2,7 +2,8 @@
 from aws_cdk import (
     Stage,
     Stack,
-    Environment
+    Environment,
+    aws_secretsmanager
 )
 from constructs import Construct
 
@@ -36,25 +37,42 @@ class MakerspaceStack(Stack):
         self.stage = stage
         self.env = env
 
+        # Obtain domains for passed in stage
         self.domains = Domains(self.stage)
 
+        # Create Hosted Zones in Route53
         self.hosted_zones_stack()
 
+        # Evaluate to true; no longer using
+        # dev accounts as it was previously 
+        # setup this way (Note from Fall '24)
         self.create_dns = 'dev' not in self.domains.stage
 
         self.database_stack()
 
-        self.visitors_stack()
+        # Get the api key value to use for backend api requests
+        secret_name: str = "SharedApiGatewayKey"
+        shared_gateway_secret = aws_secretsmanager.Secret.from_secret_name_v2(
+                self,
+                "SharedGatewaySecret",
+                secret_name
+        )
+        self.backend_api_key: str = str(shared_gateway_secret.secret_value_from_json("backend_api_key"))
 
+        
         self.cognito_setup()
-
+        
+        # Create the backend api and shared api gateway first to obtain an api url
         self.backend_stack()
 
         self.shared_api_gateway()
+        
+        self.visitors_stack()
 
         if self.create_dns:
             self.dns_records_stack()
 
+        
         # if self.stage.lower() == 'prod':
         #     self.data_migration_stack()
         
@@ -82,24 +100,47 @@ class MakerspaceStack(Stack):
         
 
     def database_stack(self):
+        """ 
+        Creates Database Stack in CloudFormation\n
+        Creates and configures each DynamoDB table we are using in our environments
+        """
 
         self.database = Database(self.app, self.stage, env=self.env)
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.database)
 
     def visitors_stack(self):
+        """ 
+        Creates the Visit Stack in CloudFormation\n
+        Creates and configures the source artifact bucket for our website\n
+        Creates and configures the CloudFront Distribution for global access\n
+            to the website
+        """
 
         self.visit = Visit(
             self.app,
             self.stage,
             create_dns=self.create_dns,
             zones=self.dns,
-            env=self.env
+            env=self.env,
+            backend_api_key=self.backend_api_key,
+            backend_api_url=self.api_gateway.url
         )
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.visit)
 
     def backend_stack(self):
+        """ 
+        Creates the BackendApi Stack in CloudFormation
+        Creates and configures all Lambda functions utilized
+            by the SharedApiGateway Stack; grants the appropriate
+            permissions to the functions to allow the 
+        
+        """
 
         self.backend_api = BackendApi(
             self.app,
@@ -112,6 +153,8 @@ class MakerspaceStack(Stack):
             env=self.env
         )
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.backend_api)
 
     def shared_api_gateway(self):
@@ -123,15 +166,20 @@ class MakerspaceStack(Stack):
             self.backend_api.lambda_visits_handler,
             self.backend_api.lambda_qualifications_handler,
             self.backend_api.lambda_equipment_handler,
+            backend_api_key=self.backend_api_key,
             env=self.env, zones=self.dns, create_dns=self.create_dns
         )
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.api_gateway)
 
     def hosted_zones_stack(self):
 
         self.dns = MakerspaceDns(self.app, self.stage, env=self.env)
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.dns)
 
     def dns_records_stack(self):
@@ -151,6 +199,8 @@ class MakerspaceStack(Stack):
             visit_distribution=self.visit.distribution
         )
 
+        # Dependency ensures this is completely configured prior
+        # to continuing on
         self.add_dependency(self.dns_records)
 
     def cognito_setup(self):

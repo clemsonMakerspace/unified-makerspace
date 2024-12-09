@@ -17,6 +17,8 @@ class Domains:
 
         stage = stage.lower()
         if stage == 'prod':
+            # Prepend with nothing - we want normal sub-domains
+            # i.e. visit.cumaker.space, not prod-visit.cumaker.space
             self.stage = ''
         else:
             # We can use sub-domains with NS records if we replace this
@@ -27,11 +29,17 @@ class Domains:
         self.api = self.domain('api')
         self.visit = self.domain('visit')
         
-        #! There isn't a maintenance or admin domain? 
+        # We current do not use these but they are partially setup.
+        # If you want to use these, add a way to add A 
+        # records for these in the MakerspaceDnsRecords stack below.
         self.maintenance = self.domain('maintenance')
         self.admin = self.domain('admin')
 
     def domain(self, prefix: str) -> str:
+        """ 
+        Creates the strings for each domain to be utilized
+        in the MakerspaceDns Stack
+        """
         # todo: to expand to more schools or spaces, modify this
         return f'{self.stage}{prefix}.cumaker.space'
 
@@ -47,34 +55,58 @@ class MakerspaceDns(Stack):
     The biggest benefit of having Route53 manage the DNS for the maintenance
     and visitor login apps is that we can handle the TLS certs in AWS with
     fewer steps.
+    
+    Documentation Links:
+        - aws_route53:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53.html 
+            
+        - aws_route53.PublicHostedZone: 
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53/PublicHostedZone.html  
+            
+        - aws_route53.ARecord:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53/ARecord.html
     """
 
     def __init__(self, scope: Construct,
                  stage: str, *, env: Environment):
         super().__init__(scope, 'MakerspaceDns', env=env)
 
+        # Obtain domains for passed in stage
         self.domains = Domains(stage)
-
+        
         self.visitors_zone()
         self.api_zone()
 
-        #! Should we remove these since we're not using them? 
+        # Currently not using these Route53 Hosted Zones
+        # They are created in the case for future implmentation
         self.maintenance_zone()
         self.admin_zone()
 
     def visitors_zone(self):
+        """ 
+        Creates the Public Hosted Zone in Route53 with the passed in domain
+        """
         self.visit = aws_route53.PublicHostedZone(self, 'visit',
                                                   zone_name=self.domains.visit)
 
     def api_zone(self):
+        """ 
+        Creates the Public Hosted Zone in Route53 with the passed in domain
+        """
         self.api_hosted_zone = aws_route53.PublicHostedZone(self, 'api',
                                                 zone_name=self.domains.api)
 
     def maintenance_zone(self):
+        """ 
+        Creates the Public Hosted Zone in Route53 with the passed in domain
+        """
         aws_route53.PublicHostedZone(self, 'maintenance',
                                      zone_name=self.domains.maintenance)
 
     def admin_zone(self):
+        """ 
+        Creates the Public Hosted Zone in Route53 with the passed in domain
+        """
         aws_route53.PublicHostedZone(self, 'admin',
                                      zone_name=self.domains.admin)
 
@@ -93,22 +125,22 @@ class MakerspaceDnsRecords(Stack):
         super().__init__(scope, id, env=env)
 
         self.zones = zones
-
+        
+        # Adds dependency to ensure we have the zones 
+        # populated prior to moving forward
         self.add_dependency(self.zones)
 
+        # Create A Record for api Hosted Zone
         self.api_record(api_gateway)
 
+        # Creates A Record for visit Hosted Zone
         self.visit_record(visit_distribution)
 
     def api_record(self, api_gateway: aws_apigateway.RestApi):
 
-        # zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
-        #                                                           'ApiHostedZoneRef',
-        #                                                           hosted_zone_id=self.zones.api_hosted_zone.hosted_zone_id,
-        #                                                           zone_name=self.zones.api_hosted_zone.zone_name)
-
         zone = self.zones.api_hosted_zone
 
+        # Creates A Record
         aws_route53.ARecord(self, 'ApiRecord',
                             zone=zone,
                             target=aws_route53.RecordTarget(
@@ -117,18 +149,9 @@ class MakerspaceDnsRecords(Stack):
 
     def visit_record(self, visit: aws_cloudfront.Distribution):
 
-        # zone = aws_route53.HostedZone.from_hosted_zone_attributes(self,
-        #                                                           'VisitHostedZoneRef',
-        #                                                           hosted_zone_id=self.zones.visit.hosted_zone_id,
-        #                                                           zone_name=self.zones.visit.zone_name)
-
         zone = self.zones.visit
 
-        # distribution = aws_cloudfront.Distribution.from_distribution_attributes(self,
-        #                                                                         'VisitCloudFrontRef',
-        #                                                                         distribution_id=visit.distribution_id,
-        #                                                                         domain_name=visit.distribution_domain_name)
-
+        # Creates A Record
         aws_route53.ARecord(self, 'VisitRecord',
                             zone=zone,
                             target=aws_route53.RecordTarget(

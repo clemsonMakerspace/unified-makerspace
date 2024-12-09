@@ -8,8 +8,9 @@ import os
 import re
 from datetime import datetime
 from ..api_defaults import *
+from aws_cdk import Aws
 
-class LogVisitFunction():
+class VisitsHandler():
     """
     This function will be used to wrap the functionality of the lambda
     so we can more easily test with pytest.
@@ -42,13 +43,12 @@ class LogVisitFunction():
             self.users_table = users_table
 
         if ses_client is None:
-            AWS_REGION = os.environ['AWS_REGION']
-            self.client = boto3.client('ses', region_name=AWS_REGION)
+            self.client = boto3.client('ses', region_name=Aws.REGION)
         else:
             self.client = ses_client
             
     # Main handler function
-    def visits_handler(self, event, context):
+    def handle_event(self, event, context):
         try:
             method_requires_body: list = ["POST", "PATCH"]
 
@@ -61,11 +61,8 @@ class LogVisitFunction():
             if user_endpoint in resource_path:
                 user_id = event['pathParameters'].get('user_id')
 
-                # Make sure no '@' is in user_id
-                if len(user_id.split("@")) > 1:
-                    errorMsg: str = "user_id can't be an email."
-                    body = { 'errorMsg': errorMsg }
-                    return buildResponse(statusCode = 400, body = body)
+                # Ensure user_id is just the username if it is an email
+                user_id.split('@')[0]
 
             # Get the body data if needed
             data:dict = {}
@@ -184,9 +181,22 @@ class LogVisitFunction():
                 body = { 'errorMsg': str(iqp) }
                 return buildResponse(statusCode = 400, body = body)
 
+            # Get the number of items to return
+            if "limit" in query_parameters:
+                limit = query_parameters["limit"]
+
+            # Otherwise return as many as possible
+            else:
+                limit = QUERY_LIMIT_RETURN_ALL
+
             try:
-                key_expression = Key('_ignore').eq("1") & timestamp_expression
-                items = queryByKeyExpression(self.visits_table, key_expression, GSI = TIMESTAMP_INDEX)
+                if timestamp_expression:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1") & timestamp_expression
+                else:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1")
+
+                items = queryByKeyExpression(self.visits_table, key_expression,
+                                             GSI = TIMESTAMP_INDEX, limit = limit)
 
             except Exception as e:
                 body = { 'errorMsg': "Something went wrong on the server." }
@@ -196,15 +206,19 @@ class LogVisitFunction():
             visits = []
             for item in items:
                 user_id = item['user_id']
+                timestamp = item['timestamp']
 
                 response = self.visits_table.get_item(
-                    Key={ 'user_id': user_id }
+                    Key={
+                        'user_id': user_id,
+                        'timestamp': timestamp,
+                    }
                 )
 
                 visits.append(response['Item'])
 
         else:
-            visits = scanTable(self.visits_table)
+            visits = scanTable(self.visits_table, limit = SCAN_LIMIT_RETURN_ALL)
 
         body = { 'visits': visits }
 
@@ -238,8 +252,8 @@ class LogVisitFunction():
             body = { 'errorMsg': errorMsg}
             return buildResponse(statusCode = 400, body = body)
 
-        # Always force "_ignore" key to have value of "1"
-        data['_ignore'] = "1"
+        # Always force GSI_ATTRIBUTE_NAME key to have value of "1"
+        data[GSI_ATTRIBUTE_NAME] = "1"
 
         # Actually try putting the item into the table
         try:
@@ -266,13 +280,6 @@ class LogVisitFunction():
         :params query_parameters: A dictionary of parameter names and values to filter by.
         """
 
-        # Set the limit amount
-        if 'limit' in query_parameters and query_parameters['limit'] > 0:
-            limit = query_parameters['limit']
-            del query_parameters['limit']
-        else:
-            limit = DEFAULT_QUERY_LIMIT
-
         if query_parameters:
             try:
                 timestamp_expression = buildTimestampKeyExpression(query_parameters, 'timestamp')
@@ -281,9 +288,22 @@ class LogVisitFunction():
                 body = { 'errorMsg': str(iqp) }
                 return buildResponse(statusCode = 400, body = body)
 
+            # Get the number of items to return
+            if "limit" in query_parameters:
+                limit = query_parameters["limit"]
+
+            # Otherwise return as many as possible
+            else:
+                limit = QUERY_LIMIT_RETURN_ALL
+
             try:
-                key_expression = Key('user_id').eq(user_id) & timestamp_expression
-                visits = queryByKeyExpression(self.visits_table, key_expression, None, limit)
+                if timestamp_expression:
+                    key_expression = Key('user_id').eq(user_id) & timestamp_expression
+                else:
+                    key_expression = Key('user_id').eq(user_id)
+
+                visits = queryByKeyExpression(self.visits_table, key_expression,
+                                              GSI = None, limit = limit)
 
             except Exception as e:
                 body = { 'errorMsg': "Something went wrong on the server." }
@@ -291,7 +311,8 @@ class LogVisitFunction():
 
         else:
             key_expression = Key('user_id').eq(user_id)
-            visits = queryByKeyExpression(self.visits_table, key_expression, None, limit)
+            visits = queryByKeyExpression(self.visits_table, key_expression,
+                                          GSI = None, limit = QUERY_LIMIT_RETURN_ALL)
 
         body = { 'visits': visits }
 
@@ -328,10 +349,10 @@ class LogVisitFunction():
                 raise InvalidRequestBody(errorMsg)
 
 
-log_visit_function = LogVisitFunction(None, None, None)
 
 
 def handler(request, context):
     # This will be hit in prod, and will connect to the stood-up dynamodb
     # and Simple Email Service clients.
-    return log_visit_function.visits_handler(request, context)
+    visit_handler = VisitsHandler(None, None, None)
+    return visit_handler.handle_event(request, context)

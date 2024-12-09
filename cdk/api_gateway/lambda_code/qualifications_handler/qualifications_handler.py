@@ -9,7 +9,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from ..api_defaults import *
 
-class LogQualificationFunction():
+class QualificationsHandler():
     def __init__(self, qualifications_table):
         # TODO: Setup CloudWatch Logs
         # Sets up CloudWatch logs and sets level to INFO
@@ -26,13 +26,13 @@ class LogQualificationFunction():
         else:
             self.qualifications_table = qualifications_table
 
-        self.required_fields: list[str] = ["user_id", "trainings", "waivers"]
-        self.completable_item_lists: list[str] = ["trainings", "waivers"]
+        self.required_fields: list[str] = ["user_id", "trainings", "waivers", "miscellaneous", "last_updated"]
+        self.completable_item_lists: list[str] = ["trainings", "waivers", "miscellaneous"]
         self.completable_item_fields: list [str] = ["name", "completion_status"]
         self.valid_completion_statuses: list[str] = ["Complete", "Incomplete"]
             
     # Main handler function
-    def qualifications_handler(self, event, context):
+    def handle_event(self, event, context):
         """ 
         Handles the request of what the user is trying accomplish with any endpoint regarding qualifications.
         Based on the request, it will route to the appropriate function to accomplish the request.
@@ -105,7 +105,7 @@ class LogQualificationFunction():
 
         :params query_parameters: A dictionary of parameter names and values to filter by.
         """
-        
+
         if query_parameters:
             try:
                 timestamp_expression = buildTimestampKeyExpression(query_parameters, 'last_updated')
@@ -114,10 +114,23 @@ class LogQualificationFunction():
                 body = { 'errorMsg': str(iqp) }
                 return buildResponse(statusCode = 400, body = body)
 
+            # Get the number of items to return
+            if "limit" in query_parameters:
+                limit = query_parameters["limit"]
+
+            # Otherwise return as many as possible
+            else:
+                limit = QUERY_LIMIT_RETURN_ALL
+
             # Query for matching qualifcation entries
             try:
-                key_expression = Key('_ignore').eq("1") & timestamp_expression
-                items = queryByKeyExpression(self.qualifications_table, key_expression, GSI = TIMESTAMP_INDEX)
+                if timestamp_expression:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1") & timestamp_expression
+                else:
+                    key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1")
+
+                items = queryByKeyExpression(self.qualifications_table, key_expression,
+                                             GSI = TIMESTAMP_INDEX, limit = limit)
 
             except Exception as e:
                 body = { 'errorMsg': "Something went wrong on the server." }
@@ -127,15 +140,19 @@ class LogQualificationFunction():
             qualifications = []
             for item in items:
                 user_id = item['user_id']
+                last_updated = item['last_updated']
 
                 response = self.qualifications_table.get_item(
-                    Key={ 'user_id': user_id }
+                    Key={
+                        'user_id': user_id,
+                        'last_updated': last_updated,
+                    }
                 )
 
                 qualifications.append(response['Item'])
 
         else:
-            qualifications = scanTable(self.qualifications_table)
+            qualifications = scanTable(self.qualifications_table, limit = SCAN_LIMIT_RETURN_ALL)
 
         body = { 'qualifications': qualifications }
 
@@ -178,8 +195,8 @@ class LogQualificationFunction():
         if 'miscellaneous' not in data:
             data['miscellaneous'] = []
 
-        # Always force "_ignore" key to have value of "1"
-        data['_ignore'] = "1"
+        # Always force GSI_ATTRIBUTE_NAME key to have value of "1"
+        data[GSI_ATTRIBUTE_NAME] = "1"
 
         # Actually try putting the item into the table
         try:
@@ -224,9 +241,10 @@ class LogQualificationFunction():
 
     def patch_user_qualifications(self, user_id: str, data: dict):
         """
-        Updates the qualifications information entry for a specified user. Fails if the a
-        qualifications entry does not exist for the user. Always appends list objects to
-        the list found in the user's qualifications entry.
+        Updates the qualifications information entry for a specified user. Fails if a
+        qualifications entry does not exist for the user. Always appends lists to
+        existing lists in the qualifications entry, though it does ensure the lists
+        'trainings', 'waivers', and 'miscellaneous' are valid sets.
 
         :params user_id: The name of the user.
         :params data: The updated qualifications information entry.
@@ -255,9 +273,8 @@ class LogQualificationFunction():
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 400, body = body)
 
-        # Update data['last_updated'] and ensure data['_ignore'] == '1'
-        data['last_updated'] = datetime.now(ZoneInfo("America/New_York")).strftime(TIMESTAMP_FORMAT)
-        data['_ignore'] = '1'
+        # Ensure data[GSI_ATTRIBUTE_NAME] == '1'
+        data[GSI_ATTRIBUTE_NAME] = '1'
 
         # Copy all all fields from data to user
         for key in data:
@@ -282,8 +299,8 @@ class LogQualificationFunction():
                     for k in data[key]
                 ])
 
-                # Create a list of dictionaries from the CompletableItems in the
-                # unique_items set and update qualifications[key] with it.
+                # Convert unique_items from CompletableItems to dictionaries
+                # and update qualifications[key]
                 qualifications[key] = [item.__dict__ for item in unique_items]
 
             # Otherwise, just replace the item in the qualifications entry
@@ -300,13 +317,14 @@ class LogQualificationFunction():
         # Try putting item back into table
         self.qualifications_table.put_item(Item=qualifications)
 
-        # Delete the old entry
-        self.qualifications_table.delete_item(
-            Key={
-                'user_id': entry_to_delete['user_id'],
-                'last_updated': entry_to_delete['last_updated']
-            }
-        )
+        # Delete the old entry only if the timestamps are different
+        if entry_to_delete['last_updated'] != qualifications['last_updated']:
+            self.qualifications_table.delete_item(
+                Key={
+                    'user_id': entry_to_delete['user_id'],
+                    'last_updated': entry_to_delete['last_updated']
+                }
+            )
 
         # Successfully updated user
         return buildResponse(statusCode = 204, body = {})
@@ -324,10 +342,16 @@ class LogQualificationFunction():
         :raises: InvalidRequestBody
         """
 
-
         # Ensure all required fields are present
         if not allKeysPresent(self.required_fields, data):
-            errorMsg: str = f"Missing at least one field from {self.required_fields} in request body. 'trainings' and 'waivers' can be empty lists."
+            errorMsg: str = f"Missing at least one field from {self.required_fields} in request body. Fields in {self.completable_item_lists} can be empty lists."
+            raise InvalidRequestBody(errorMsg)
+
+        # Ensure last_updated is in the correct format
+        try:
+            datetime.strptime(data['last_updated'], TIMESTAMP_FORMAT)
+        except ValueError:
+            errorMsg: str = f"Timestamp 'last_updated 'not in the approved format. Approved format is 'YYYY-MM-DDThh:mm:ss'."
             raise InvalidRequestBody(errorMsg)
 
         for completable_list in self.completable_item_lists:
@@ -343,9 +367,8 @@ class LogQualificationFunction():
                     raise InvalidRequestBody(errorMsg)
 
         return data
-
             
-log_qualification_function = LogQualificationFunction(None)
 
 def handler(request, context):
-    return log_qualification_function.qualifications_handler(request, context)
+    qualification_handler = QualificationsHandler(None)
+    return qualification_handler.handle_event(request, context)

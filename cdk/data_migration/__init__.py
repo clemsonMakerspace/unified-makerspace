@@ -14,15 +14,14 @@ from aws_cdk import (
 import json
 from constructs import Construct
 
-#! WIP
 class DataMigrationStack(Stack):
     def __init__(self, scope: Construct, id: str, *, env: Environment) -> None:
         super().__init__(scope, id, env=env)
 
-        # 1. Use an already existing S3 bucket for input files (CSV files)
+        # Use an already existing S3 bucket for input files (CSV files)
         input_bucket = s3.Bucket.from_bucket_name(self, "ExistingBucket", "testing-trigger-for-glue-job")
 
-        # 2. Define the IAM role for the Glue job (created in Prod environment)
+        # Define the IAM role for the Glue job (created in Prod environment)
         glue_role = iam.Role(self, "GlueJobRole",
             assumed_by=iam.ServicePrincipal("glue.amazonaws.com"),
             managed_policies=[
@@ -32,7 +31,7 @@ class DataMigrationStack(Stack):
             ]
         )
 
-        # 3. Define the Glue ETL job
+        # Define the Glue ETL job
         glue_job = glue.CfnJob(self, "GlueETLJob",
             name="beta-S3Pull-CSVParse-DDBStore",  # The Glue job name
             role=glue_role.role_arn,  # Role created in Prod environment
@@ -49,7 +48,7 @@ class DataMigrationStack(Stack):
             number_of_workers=2  # Adjust based on the size of your data
         )
 
-        # 4. Create the Lambda function that will trigger the Glue job in the Prod account
+        # Create the Lambda function that will trigger the Glue job in the Prod account
         trigger_glue_lambda = lambda_.Function(self, "TriggerGlueJobLambda",
             runtime=lambda_.Runtime.PYTHON_3_12,
             handler="data_migration.lambda_handler",
@@ -59,10 +58,10 @@ class DataMigrationStack(Stack):
             }
         )
 
-        # 5. Grant Lambda function permissions to read from the S3 bucket in Beta account
+        # Grant Lambda function permissions to read from the S3 bucket in Beta account
         input_bucket.grant_read(trigger_glue_lambda)
 
-        # 6. Grant Lambda function permissions to start the Glue job
+        # Grant Lambda function permissions to start the Glue job
         trigger_glue_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 actions=["glue:StartJobRun"],
@@ -70,7 +69,7 @@ class DataMigrationStack(Stack):
             )
         )
 
-        # 7. Create a Custom Resource to modify the S3 bucket policy in the Beta account
+        # Create a Custom Resource to modify the S3 bucket policy in the Beta account
         custom_resource = cr.AwsCustomResource(self, "CustomBucketPolicyResource",
             on_create={
                 "service": "S3",
@@ -101,6 +100,6 @@ class DataMigrationStack(Stack):
             ])
         )
 
-        # 8. Output Lambda ARN and Glue Job ARN for reference
+        # Output Lambda ARN and Glue Job ARN for reference
         CfnOutput(self, "TriggerGlueLambdaARN", value=trigger_glue_lambda.function_arn)
         CfnOutput(self, "GlueJobName", value=glue_job.name)

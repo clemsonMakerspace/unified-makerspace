@@ -39,7 +39,8 @@ class SharedApiGateway(Stack):
     def __init__(self, scope: Construct, stage: str,
                 user: aws_lambda.Function, visits: aws_lambda.Function,
                  qualifications: aws_lambda.Function, equipment: aws_lambda.Function,
-                 *, env: Environment, create_dns: bool, 
+                 *, backend_api_key: str = None, 
+                 env: Environment, create_dns: bool, 
                 zones: MakerspaceDns = None):
 
         super().__init__(scope, 'SharedApiGateway', env=env)
@@ -72,13 +73,20 @@ class SharedApiGateway(Stack):
         stage_name: str = f"{stage}"
         self.deploy_api_stage(stage_name)
 
+        # Add the stage to the api url
+        self.url += f"/{stage_name}"
+
         # Create a usage plan for the stage
         plan_name: str = "SharedAPIAdminPlan"
         self.create_usage_plan(plan_name)
 
         # Add an api key to the usage plan
         key_name: str = "SharedAPIAdminKey"
-        self.api_key = self.api.add_api_key(key_name)
+        self.api_key = self.api.add_api_key(
+                "SharedAPIKey",
+                api_key_name=key_name,
+                value=backend_api_key
+        )
         self.plan.add_api_key(self.api_key)
 
 
@@ -90,6 +98,7 @@ class SharedApiGateway(Stack):
         # Handle dns integration
         if self.create_dns:
             domain_name = self.zones.api_hosted_zone.zone_name
+            self.url: str = f"https://{domain_name}"
             # Depreciated way of making certificate
             # certificate = aws_certificatemanager.DnsValidatedCertificate(self, 'ApiGatewayCert',
             #                                                              domain_name=self.domains.api,

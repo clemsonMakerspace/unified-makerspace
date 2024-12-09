@@ -63,8 +63,10 @@ class CompletableItem():
         """
         return hash((self.name))
 
+# Primary key to use in all tables
+PRIMARY_KEY: str = "user_id"
 # Define path constants
-user_endpoint: str = "/{user_id}"
+user_endpoint: str = f"/{{{PRIMARY_KEY}}}"
 users_path: str = "/users"
 users_param_path: str = users_path + user_endpoint
 visits_path: str = "/visits"
@@ -76,9 +78,9 @@ qualifications_param_path: str = qualifications_path + user_endpoint
 
 # Other global values
 DEFAULT_SCAN_LIMIT: int = 1000
-DEFAULT_QUERY_LIMIT: int = 1000
 TIMESTAMP_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
 TIMESTAMP_INDEX: str = "TimestampIndex"
+GSI_ATTRIBUTE_NAME: str = "_ignore"
 VALID_LOCATIONS: list[str] = ["Watt", "Cooper", "CUICAR"]
 VALID_QUERY_PARAMETERS: list[str] = [
     "start_timestamp",
@@ -86,6 +88,8 @@ VALID_QUERY_PARAMETERS: list[str] = [
     "limit"
 ]
 INT_QUERY_PARAMETERS: list[str] = ["limit"]
+QUERY_LIMIT_RETURN_ALL: int = -1
+SCAN_LIMIT_RETURN_ALL: int = -1
 
 def buildResponse(statusCode: int, body: dict):
     """
@@ -134,7 +138,10 @@ def buildTimestampKeyExpression(query_parameters: dict, timestamp_attr_name: str
         start_timestamp = query_parameters["start_timestamp"]
 
     # Build the FilterExpression to filter by
-    if end_timestamp and not start_timestamp:
+    if not start_timestamp and not end_timestamp:
+        return None
+
+    elif end_timestamp and not start_timestamp:
         expression = Key(timestamp_attr_name).lte(end_timestamp)
 
     elif start_timestamp and not end_timestamp:
@@ -152,7 +159,8 @@ def buildTimestampKeyExpression(query_parameters: dict, timestamp_attr_name: str
 
     return expression
 
-def queryByKeyExpression(table, key_expression, GSI = None, limit = DEFAULT_QUERY_LIMIT) -> list:
+def queryByKeyExpression(table, key_expression, GSI = None,
+                         limit: int = QUERY_LIMIT_RETURN_ALL) -> list:
     """
     Queries a given table for all entries that match the provided key
     expression. When desiring to search by timestamp, table is required
@@ -174,6 +182,10 @@ def queryByKeyExpression(table, key_expression, GSI = None, limit = DEFAULT_QUER
     :params GSI: The string name of the global secondary index that has _ignore
                  primary key and timestamp as the sort key. Required if
                  trying to query by timestamps.
+    :params limit: The maximum number of results to return. Specifying any
+                   negative number indicates to return all matching items.
+                   Defaults to the value that represents returning as many
+                   items as possible.
     :return: A list containing all entries that pass the timestamp filtering.
     """
 
@@ -181,8 +193,6 @@ def queryByKeyExpression(table, key_expression, GSI = None, limit = DEFAULT_QUER
     Query at least once, then keep querying until queries
     stop exceeding response limit.
     """
-
-    # TODO: Put params into an args tuple and call *args in .scan()
 
     # The list that will store all matching query items
     items: list = []
@@ -203,9 +213,14 @@ def queryByKeyExpression(table, key_expression, GSI = None, limit = DEFAULT_QUER
 
         """
         Query until "LastEvaluatedKey" isn't in response (all appropriate keys
-        where checked) or until the length of items >= limit
+        where checked)
         """
-        while "LastEvaluatedKey" in response and len(items) < limit:
+        while "LastEvaluatedKey" in response:
+
+            # Stop scanning if the number of items has reached the imposed limit
+            if limit > 0 and len(items) >= limit:
+                break
+
             if GSI != None:
                 response = table.query(
                     IndexName=GSI,
@@ -224,15 +239,25 @@ def queryByKeyExpression(table, key_expression, GSI = None, limit = DEFAULT_QUER
         # Don't log since this function's errors should be handled by caller
         raise Exception(e)
 
-    return items[0:limit]
 
-def scanTable(table, filter_expression = None) -> list:
+    # Return the full list of items if limit is QUERY_LIMIT_RETURN_ALL
+    if limit == QUERY_LIMIT_RETURN_ALL:
+        return items
+    # Otherwise return the first limit items
+    else:
+        return items[0:limit]
+
+def scanTable(table, filter_expression = None, limit: int = SCAN_LIMIT_RETURN_ALL) -> list:
     """
     Scans an entire dynamodb table. Optionally uses a passed in filter expression
     to limit the results returned.
 
     :params table: The dynamodb.Table to use.
     :params filter_expression: The optional Attr() filter to use.
+    :params limit: The maximum number of results to return. Specifying any
+                   negative number indicates to return all matching items.
+                   Defaults to the value that represents returning as many
+                   items as possible.
     :return: A list of all returned items (that optionally match
               filter_expression).
     """
@@ -260,6 +285,11 @@ def scanTable(table, filter_expression = None) -> list:
 
         # Keep scanning for more items until no more return
         while 'Items' in response and 'LastEvaluatedKey' in response:
+
+            # Stop scanning if the number of items has reached the imposed limit
+            if limit > 0 and len(items) >= limit:
+                break
+
             if not filter_expression == None:
                 response = table.scan(
                     FilterExpression=filter_expression,
@@ -281,7 +311,12 @@ def scanTable(table, filter_expression = None) -> list:
     except Exception as e:
         raise e
 
-    return items
+    # Return the full list of items if limit is SCAN_LIMIT_RETURN_ALL
+    if limit == SCAN_LIMIT_RETURN_ALL:
+        return items
+    # Otherwise return the first limit items
+    else:
+        return items[0:limit]
 
 def allKeysPresent(keys: list[str], data: dict) -> bool:
     """

@@ -32,12 +32,14 @@ class Pipeline(Stack):
         #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
         #                   during the subsequent deployments.
         
-        #! Add this back -- Removed in the case of accidental startup of resources
+        # Active listener on the designated branch in the Unified Makerspace Repo
         codestar_source = CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
                 connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
             )
+        
+        # Commands used to build pipeline in the Build stage
         deploy_cdk_shell_step = ShellStep("Synth",
-            # use a connection created using the AWS console to authenticate to GitHub
+            # Use a connection created using the AWS console to authenticate to GitHub
             input=codestar_source,
             commands=[    
                 # Clear the CDK context cache and remove old cdk.out file
@@ -45,7 +47,7 @@ class Pipeline(Stack):
                 'rm -f .cdk.context.json || echo "No context cache to clear"',
                 'rm -rf cdk.out || echo "No output directory to clear"',
                 
-                # Uninstall all AWS CDK V1 packages
+                # Uninstall all AWS CDK V1 packages 
                 "pip uninstall -y 'aws-cdk.*' || echo 'No CDK V1 packages found'",
                 
                 # install dependancies for frontend
@@ -72,17 +74,17 @@ class Pipeline(Stack):
             primary_output_directory="cdk/cdk.out",
         )
         
+        # Create Pipeline object
         pipeline = CodePipeline(self, "Pipeline",
-            synth=deploy_cdk_shell_step,
-            cross_account_keys=True  # necessary to allow the prod account to access our artifact bucket
+            synth=deploy_cdk_shell_step, # Pass in commands from Shell Step
+            cross_account_keys=True  # Necessary to allow the prod account to access our artifact bucket
         )
         
-        # create the stack for beta
+        # Create the stack for beta
         self.beta_stage = MakerspaceStage(self, 'Beta', env=accounts['Beta'])
         beta_deploy_stage = pipeline.add_stage(self.beta_stage)
 
-
-        # curl beta frontend
+        # Curl beta frontend
         beta_deploy_stage.add_post(
             ShellStep(
                 "TestBetaCloudfrontEndpoint",
@@ -92,23 +94,23 @@ class Pipeline(Stack):
             )
         )
 
-        # beta_deploy_stage.add_post(
-        #     ShellStep(
-        #         "TestBetaAPIEndpoints",
-        #         input=codestar_source, # pass entire codestar connection to repo
-        #         commands=[
-        #             "ENV=Beta python3 cdk/visit/lambda_code/test_api/testing_script.py",
-        #         ],
-        #     )
-        # )
+        beta_deploy_stage.add_post(
+            ShellStep(
+                "TestBetaAPIEndpoints",
+                input=codestar_source, # pass entire codestar connection to repo
+                commands=[
+                    "PYTHONPATH=cdk/api_gateway/ python3 -m pytest -vs --import-mode=importlib --disable-warnings cdk/api_gateway/tests"
+                ],
+            )
+        )
 
-        # create the stack for prod
+        # Create the stack for prod
         self.prod_stage = MakerspaceStage(self, 'Prod', env=accounts['Prod'])
         prod_deploy_stage = pipeline.add_stage(self.prod_stage, 
             pre=[ManualApprovalStep("PromoteBetaToProd")]
         )
 
-        # curl prod frontend
+        # Curl prod frontend
         prod_deploy_stage.add_post(
             ShellStep(
                 "TestingProdCloudfrontEndpoint",
@@ -118,6 +120,7 @@ class Pipeline(Stack):
             )
         )
 
+        # Run API Endpoint test script for Prod
         # prod_deploy_stage.add_post(
         #     ShellStep(
         #         "TestProdAPIEndpoints",

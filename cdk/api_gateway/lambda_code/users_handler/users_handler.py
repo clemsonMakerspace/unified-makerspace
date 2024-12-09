@@ -5,35 +5,30 @@ import os
 import logging
 from ..api_defaults import *
 
-class RegisterUserFunction():
+class UsersHandler():
     """
-    This class wraps the function of the lambda so we can more easily test
+    This class wraps the functionality of the lambda so we can more easily test
     it with moto. In production, we will continue to pass the stood-up
     dynamodb table to the handler itself. However, when initializing this class,
     we can choose to instead initialize it with a mocked version of the
     dynamodb table.
     """
 
-    def __init__(self, users_table, dynamodbclient):
+    def __init__(self, users_table):
         # TODO: Setup CloudWatch Logs
         # Sets up CloudWatch logs and sets level to INFO
         # self.logger = logging.getLogger()
         # self.logger.setLevel(logging.INFO)
         
-        if dynamodbclient is None:
-            self.dynamodbclient = boto3.client('dynamodb')
-        else:
-            self.dynamodbclient = dynamodbclient
-
-        self.USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
         if users_table is None:
-            dynamodbresource = boto3.resource('dynamodb')
+            dynamodbresource = boto3.resource('dynamodb', region_name="us-east-1")
+            self.USERS_TABLE_NAME = os.environ["USERS_TABLE_NAME"]
             self.users_table = dynamodbresource.Table(self.USERS_TABLE_NAME)
         else:
             self.users_table = users_table
             
     # Main handler function
-    def users_handler(self, event, context):
+    def handle_event(self, event, context):
         try:
             method_requires_body: list = ["POST", "PATCH"]
 
@@ -46,14 +41,11 @@ class RegisterUserFunction():
             if user_endpoint in resource_path:
                 user_id = event['pathParameters'].get('user_id')
 
-                # Make sure no '@' is in user_id
-                if len(user_id.split("@")) > 1:
-                    errorMsg: str = "user_id can't be an email."
-                    body = { 'errorMsg': errorMsg }
-                    return buildResponse(statusCode = 400, body = body)
+                # Ensure user_id is just the username if it is an email
+                user_id.split('@')[0]
 
             # Get the body data if needed
-            data:dict = {}
+            data: dict = {}
             if http_method in method_requires_body:
                 if 'body' not in event:
                     errorMsg: str = "REST method {http_method} requires a request body."
@@ -76,7 +68,7 @@ class RegisterUserFunction():
 
             # User information request handling
             if http_method == "GET" and resource_path == users_path:
-                response = self.get_all_user_information()
+                response = self.get_all_user_information(query_parameters)
             elif http_method == "POST" and resource_path == users_path:
                 response = self.create_user_information(data)
 
@@ -86,22 +78,34 @@ class RegisterUserFunction():
                 response = self.patch_user_information(user_id, data)
 
             return response
-        except:
-            errorMsg: str = f"We're sorry, but something happened. Try again later."
+        except Exception as e:
+            #errorMsg: str = f"We're sorry, but something happened. Try again later."
+            errorMsg = str(e)
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 500, body = body)
         
     ######################################
     # User information function handlers #
     ######################################
-    def get_all_user_information(self):
+    def get_all_user_information(self, query_parameters: dict = {}):
         """
         Returns all user information entries from the user information table.
+
+        :params query_parameters: A dictionary of parameter names and values to filter by.
         """
 
-        users = scanTable(self.users_table)
+        # Try to get the number of items to return
+        if "limit" in query_parameters:
+            limit = query_parameters["limit"]
+
+        # Otherwise return as many as possible
+        else:
+            limit = QUERY_LIMIT_RETURN_ALL
+
+        users = scanTable(self.users_table, limit = limit)
 
         body = { 'users': users }
+
         return buildResponse(statusCode = 200, body = body)
 
     def create_user_information(self, data: dict):
@@ -264,11 +268,9 @@ class RegisterUserFunction():
         return data
 
 
-register_user_function = RegisterUserFunction(None, None)
-
-
 def handler(request, context):
     # Register user information from the makerspace/register console
     # Since this will be hit in prod, it will go ahead and hit our prod
     # dynamodb table
-    return register_user_function.users_handler(request, context)
+    user_handler = UsersHandler(users_table = None)
+    return user_handler.handle_event(request, context)
