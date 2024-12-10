@@ -107,10 +107,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-    client = boto3.client('apigateway')
-    api_key_name = event['ResourceProperties']['ApiKeyName']
-
     try:
+        client = boto3.client('apigateway')
+        api_key_name = event['ApiKeyName']
+
         response = client.get_api_keys(includeValues=False)
         for key in response['items']:
             if key['name'] == api_key_name:
