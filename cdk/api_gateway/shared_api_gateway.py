@@ -117,9 +117,20 @@ def handler(event, context):
             """),
         )
         
-        # Grant the custom resource role permission to invoke the Lambda function
-        api_key_checker_function.grant_invoke(
-            aws_iam.ServicePrincipal("lambda.amazonaws.com")
+        # Create an IAM Role for the AwsCustomResource
+        custom_resource_role = aws_iam.Role(
+            self, "CustomResourceRole",
+            assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),
+            inline_policies={
+                "InvokeLambdaPolicy": aws_iam.PolicyDocument(
+                    statements=[
+                        aws_iam.PolicyStatement(
+                            actions=["lambda:InvokeFunction"],
+                            resources=[api_key_checker_function.function_arn]
+                        )
+                    ]
+                )
+            }
         )
 
         # Allow the api key checker to get api keys
@@ -130,7 +141,6 @@ def handler(event, context):
             )
         )
 
-
         # Use the custom resource to fetch the API Key ID
         custom_resource = custom_resources.AwsCustomResource(
             self, "ApiKeyRetriever",
@@ -139,12 +149,14 @@ def handler(event, context):
                 action="invoke",
                 parameters={
                     "FunctionName": api_key_checker_function.function_name,
-                    "Payload": json.dumps({"ApiKeyName": api_key_name})
+                    "Payload": json.dumps({"ApiKeyName": api_key_name})  # Serialize payload as JSON
                 },
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
             ),
-            policy=custom_resources.AwsCustomResourcePolicy.from_sdk_calls(resources=custom_resources.AwsCustomResourcePolicy.ANY_RESOURCE)
+            policy=custom_resources.AwsCustomResourcePolicy.from_sdk_calls(resources=custom_resources.AwsCustomResourcePolicy.ANY_RESOURCE),
+            role=custom_resource_role,  # Attach the role to the custom resource
         )
+
 
         # Retrieve API Key ID from the custom resource
         api_key_id = custom_resource.get_response_field("Data.ApiKeyId")
