@@ -10,6 +10,7 @@ from aws_cdk import (
 )
 
 import boto3
+import json
 
 from constructs import Construct
 from dns import MakerspaceDns
@@ -123,7 +124,7 @@ def handler(event, context):
                 action="invoke",
                 parameters={
                     "FunctionName": api_key_checker_function.function_name,
-                    "Payload": {"ApiKeyName": api_key_name}
+                    "Payload": json.dumps({"ApiKeyName": api_key_name})
                 },
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
             ),
