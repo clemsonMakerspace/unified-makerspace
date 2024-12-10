@@ -107,7 +107,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-    logger.info(event)
+    logger.info(f"Event:\n{event}")
     try:
         client = boto3.client('apigateway')
         api_key_name = event['ApiKeyName']
@@ -118,17 +118,24 @@ def handler(event, context):
                 return {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
         return {'PhysicalResourceId': 'None', 'Data': {'ApiKeyId': ""}}
     except Exception as e:
-        logger.info(e)
         raise Exception(f"Error retrieving API Key: {e}")
             """),
         )
 
         # Allow the api key checker to get api keys
-        self.checker_role = aws_iam.PolicyStatement(
-            actions=["apigateway:GetApiKeys"],
-            resources=["*"]  # Adjust resource scoping if necessary
+        self.checker_get_all_keys_role = aws_iam.PolicyStatement(
+            actions=["apigateway:GET"],
+            resources=[f"arn:aws:apigateway:{self.region}::/apikeys/*"]  # Adjust resource scoping if necessary
         )
-        self.api_key_checker_function.role.add_to_policy(self.checker_role)
+
+        # Sanity IAM role
+        self.alt_checker_get_all_keys_role = aws_iam.PolicyStatement(
+            actions=["apigateway:GET"],
+            resources=[f"arn:aws:apigateway:{self.region}::/apikeys"]  # Adjust resource scoping if necessary
+        )
+
+        self.api_key_checker_function.role.add_to_policy(self.checker_get_all_keys_role)
+        self.api_key_checker_function.role.add_to_policy(self.alt_checker_get_all_keys_role)
         
         # Create an IAM Role for the AwsCustomResource
         custom_resource_role = aws_iam.Role(
