@@ -142,7 +142,7 @@ def handler(event, context):
         api_key_checker_function.add_to_role_policy(
             aws_iam.PolicyStatement(
                 actions=["apigateway:GetApiKeys"],
-                resources=["/apiKeys/*"]  # Adjust resource scoping if necessary
+                resources=["*"]  # Adjust resource scoping if necessary
             )
         )
 
