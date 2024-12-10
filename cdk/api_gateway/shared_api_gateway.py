@@ -111,7 +111,7 @@ def handler(event, context):
         for key in response['items']:
             if key['name'] == api_key_name:
                 return {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
-        return {'PhysicalResourceId': 'None', 'Data': {}}
+        return {'PhysicalResourceId': 'None', 'Data': {'ApiKeyId': ""}}
     except Exception as e:
         raise Exception(f"Error retrieving API Key: {e}")
             """),
@@ -173,7 +173,7 @@ def handler(event, context):
         else:
             self.api_key = aws_apigateway.ApiKey.from_api_key_id(
                     self,
-                    "SharedAPIKey",
+                    "OldSharedAPIKey",
                     api_key_id
             )
 
