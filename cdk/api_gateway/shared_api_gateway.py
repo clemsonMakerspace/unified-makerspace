@@ -95,7 +95,7 @@ class SharedApiGateway(Stack):
         api_key_name: str = "SharedAPIAdminKey"
 
         # Create a Lambda function to query for an API Key
-        api_key_checker_function = aws_lambda.Function(
+        self.api_key_checker_function = aws_lambda.Function(
             self, "ApiKeyCheckerFunction",
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             handler="index.handler",
@@ -107,6 +107,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+    logger.info(event)
     try:
         client = boto3.client('apigateway')
         api_key_name = event['ApiKeyName']
@@ -121,6 +122,13 @@ def handler(event, context):
         raise Exception(f"Error retrieving API Key: {e}")
             """),
         )
+
+        # Allow the api key checker to get api keys
+        self.checker_role = aws_iam.PolicyStatement(
+            actions=["apigateway:GetApiKeys"],
+            resources=["*"]  # Adjust resource scoping if necessary
+        )
+        self.api_key_checker_function.role.add_to_policy(self.checker_role)
         
         # Create an IAM Role for the AwsCustomResource
         custom_resource_role = aws_iam.Role(
@@ -131,20 +139,13 @@ def handler(event, context):
                     statements=[
                         aws_iam.PolicyStatement(
                             actions=["lambda:InvokeFunction"],
-                            resources=[api_key_checker_function.function_arn]
+                            resources=[self.api_key_checker_function.function_arn]
                         )
                     ]
                 )
             }
         )
 
-        # Allow the api key checker to get api keys
-        api_key_checker_function.add_to_role_policy(
-            aws_iam.PolicyStatement(
-                actions=["apigateway:GetApiKeys"],
-                resources=["*"]  # Adjust resource scoping if necessary
-            )
-        )
 
         # Use the custom resource to fetch the API Key ID
         custom_resource = custom_resources.AwsCustomResource(
@@ -153,7 +154,7 @@ def handler(event, context):
                 service="Lambda",
                 action="invoke",
                 parameters={
-                    "FunctionName": api_key_checker_function.function_name,
+                    "FunctionName": self.api_key_checker_function.function_name,
                     "Payload": json.dumps({"ApiKeyName": api_key_name})  # Serialize payload as JSON
                 },
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
