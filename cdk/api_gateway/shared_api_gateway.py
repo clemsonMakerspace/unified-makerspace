@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_certificatemanager,
     aws_lambda,
     aws_apigateway,
+    aws_iam,
     custom_resources,
     Aws
 )
@@ -115,6 +116,20 @@ def handler(event, context):
         raise Exception(f"Error retrieving API Key: {e}")
             """),
         )
+        
+        # Grant the custom resource role permission to invoke the Lambda function
+        api_key_checker_function.grant_invoke(
+            aws_iam.ServicePrincipal("lambda.amazonaws.com")
+        )
+
+        # Allow the api key checker to get api keys
+        api_key_checker_function.add_to_role_policy(
+            aws_iam.PolicyStatement(
+                actions=["apigateway:GetApiKeys"],
+                resources=["*"]  # Adjust resource scoping if necessary
+            )
+        )
+
 
         # Use the custom resource to fetch the API Key ID
         custom_resource = custom_resources.AwsCustomResource(
