@@ -102,12 +102,13 @@ class SharedApiGateway(Stack):
             code=aws_lambda.Code.from_inline("""
 import boto3
 import logging
+import json
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
-    logger.info(f"Event:\n{event}")
+    logger.info(json.dumps(event, indent=2))
     try:
         client = boto3.client('apigateway')
         api_key_name = event['ApiKeyName']
