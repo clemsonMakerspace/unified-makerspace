@@ -136,6 +136,19 @@ class SharedApiGateway(Stack):
             }
         )
 
+        test_function = aws_lambda.Function(
+            self, "TEST_FUNCTION",
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            handler="index.handler",
+            code=aws_lambda.Code.from_inline("""
+import json
+
+def handler(event, context):
+    print(f"Event received: {json.dumps(event)}")  # Debug log for event
+
+    return {'PhysicalResourceId': 'None', 'Data': {}}
+            """),
+        )
 
         # Use the custom resource to call the api key checker
         # (and delete any matching api key with the same name)
@@ -145,7 +158,7 @@ class SharedApiGateway(Stack):
                 service="Lambda",
                 action="invoke",
                 parameters={
-                    "FunctionName": self.lambda_api_key_checker.function_name,
+                    "FunctionName": test_function.function_name,
                     "Payload": json.dumps({"ApiKeyName": api_key_name})  # Serialize payload as JSON
                 },
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
@@ -154,15 +167,15 @@ class SharedApiGateway(Stack):
             role=custom_resource_role,  # Attach the role to the custom resource
         )
 
-        # Create a new API Key
-        self.api_key = self.api.add_api_key(
-            "SharedAPIKey",
-            api_key_name=api_key_name,
-            value=backend_api_key
-        )
+        ## Create a new API Key
+        #self.api_key = self.api.add_api_key(
+        #    "SharedAPIKey",
+        #    api_key_name=api_key_name,
+        #    value=backend_api_key
+        #)
 
-        # Add the api key to the usage plan
-        self.plan.add_api_key(self.api_key)
+        ## Add the api key to the usage plan
+        #self.plan.add_api_key(self.api_key)
 
         # WARNING:
         # The following is a band-aid patch that should be fixed in the future.

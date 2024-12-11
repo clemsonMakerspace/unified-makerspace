@@ -3,7 +3,8 @@ from aws_cdk import (
     Stage,
     Stack,
     Environment,
-    aws_secretsmanager
+    aws_secretsmanager,
+    SecretValue
 )
 from constructs import Construct
 
@@ -57,7 +58,9 @@ class MakerspaceStack(Stack):
                 "SharedGatewaySecret",
                 secret_name
         )
-        self.backend_api_key: str = str(shared_gateway_secret.secret_value_from_json("api_key").unsafe_unwrap())
+        secret_value = SecretValue.secrets_manager(shared_gateway_secret.secret_name)
+        self.backend_api_key: str = secret_value.to_string()
+        print(f"API KEY: {self.backend_api_key}")
         
         self.cognito_setup()
         
