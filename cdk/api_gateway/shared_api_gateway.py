@@ -137,14 +137,65 @@ class SharedApiGateway(Stack):
         )
 
         test_function = aws_lambda.Function(
-            self, "TEST_FUNCTION",
+            self, "NEW_TEST_FUNCTION",
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             handler="index.handler",
             code=aws_lambda.Code.from_inline("""
+import boto3
+import logging
 import json
+import time
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+def delete_key(client, api_key_name: str) -> bool:
+
+    deleted_key: bool = False
+
+    response = client.get_api_keys(includeValues=False)
+
+    # Check for matching key name
+    for key in response['items']:
+        if key['name'] == api_key_name:
+
+            # Delete the key
+            try:
+                client.delete_api_key(apiKey=key['id'])
+                logger.info(f"Deleted key '{key['id']}'")
+                deleted_key = True
+            except Exception as e:
+                raise Exception(f"Error deleting API Key: {e}")
+
+    return deleted_key
 
 def handler(event, context):
-    print(f"Event received: {json.dumps(event)}")  # Debug log for event
+
+    logger.info("Event:")
+    logger.info(json.dumps(event, indent=2))
+    
+    try:
+        client = boto3.client('apigateway')
+
+        if 'ApiKeyName' not in event:
+            raise Exception("Missing 'ApiKeyName' from event input fields.")
+
+        api_key_name = event['ApiKeyName']
+
+        # Try and delete the key
+        delete_key(client, api_key_name)
+
+        # Wait 5 seconds for changes to propagate
+        time.sleep(5)
+
+        # Ensure key was deleted (delete_key should return False for no key deleted)
+        key_deleted: bool = delete_key(client, api_key_name)
+
+        if key_deleted:
+            raise Exception(f"Api key still existed after deleting first time.")
+
+    except Exception as e:
+        raise Exception(f"Error occurred: {e}")
 
     return {'PhysicalResourceId': 'None', 'Data': {}}
             """),
@@ -209,7 +260,7 @@ def handler(event, context):
         config_filename: str = ".env"
 
         # Data to store
-        data: str = f"BACKEND_KEY={backend_api_key}"
+        data: str = f"VITE_BACKEND_KEY={backend_api_key}"
 
         # Path to the file to write the data to
         # Assumes directory structure is cdk/visit/console/{stage_name} and the CWD

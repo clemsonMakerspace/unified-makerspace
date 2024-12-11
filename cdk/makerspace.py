@@ -59,6 +59,7 @@ class MakerspaceStack(Stack):
                 secret_name
         )
         secret_value = SecretValue.secrets_manager(shared_gateway_secret.secret_name)
+        secret_value.unsafe_unwrap()
         self.backend_api_key: str = secret_value.to_string()
         print(f"API KEY: {self.backend_api_key}")
         
