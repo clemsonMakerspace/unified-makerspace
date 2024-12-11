@@ -108,16 +108,23 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+    logger.info("Event:")
     logger.info(json.dumps(event, indent=2))
     try:
         client = boto3.client('apigateway')
         api_key_name = event['ApiKeyName']
 
         response = client.get_api_keys(includeValues=False)
+        key_data = None
         for key in response['items']:
             if key['name'] == api_key_name:
-                return {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
-        return {'PhysicalResourceId': 'None', 'Data': {'ApiKeyId': ""}}
+                key_data = {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
+                break
+        if not key_data:
+            key_data = {'PhysicalResourceId': 'None', 'Data': {'ApiKeyId': ""}}
+        logger.info("Key data")
+        logger.info(json.dumps(key_data, indent=2))
+        return key_data
     except Exception as e:
         raise Exception(f"Error retrieving API Key: {e}")
             """),
@@ -173,6 +180,7 @@ def handler(event, context):
 
 
         # Retrieve API Key ID from the custom resource
+        print(custom_resource.to_string())
         api_key_id = custom_resource.get_response_field("Data.ApiKeyId")
 
         # Create a new API Key if it doesn't exist
