@@ -8,7 +8,8 @@ from aws_cdk import (
     aws_iam,
     custom_resources,
     Aws,
-    PhysicalName
+    PhysicalName,
+    Duration
 )
 
 import boto3
@@ -221,7 +222,7 @@ class SharedApiGateway(Stack):
             function_name=PhysicalName.GENERATE_IF_NEEDED,
             code=aws_lambda.Code.from_asset('api_gateway/lambda_code/api_key_checker'),
             handler='api_key_checker.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 
 

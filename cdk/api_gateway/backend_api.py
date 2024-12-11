@@ -5,7 +5,8 @@ from aws_cdk import (
     aws_lambda,
     aws_iam,
     aws_secretsmanager,
-    PhysicalName
+    PhysicalName,
+    Duration
 )
 from constructs import Construct
 from dns import MakerspaceDns
@@ -84,7 +85,7 @@ class BackendApi(Stack):
                 'USERS_TABLE_NAME': users_table_name
             },
             handler='visits_handler.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 
     
@@ -100,7 +101,7 @@ class BackendApi(Stack):
                 'USERS_TABLE_NAME': users_table_name,
             },
             handler='users_handler.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 
     
@@ -116,7 +117,7 @@ class BackendApi(Stack):
                 'QUALIFICATIONS_TABLE_NAME': qualifications_table_name,
             },
             handler='qualifications_handler.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 
     
@@ -132,7 +133,7 @@ class BackendApi(Stack):
                 'EQUIPMENT_TABLE_NAME': equipment_table_name,
             },
             handler='equipment_handler.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 
     def tiger_training_handler_lambda(self, backend_api_key: str, backend_api_url: str, domain_name: str):
@@ -167,5 +168,5 @@ class BackendApi(Stack):
                 'AWS_API_URL': backend_api_url,
             },
             handler='equipment_handler.handler',
-            timeout=29,
+            timeout=Duration.seconds(29),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
