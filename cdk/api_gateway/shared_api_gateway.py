@@ -195,6 +195,10 @@ def handler(event, context):
             """),
         )
 
+        test_function.role.add_to_policy(self.checker_get_all_keys_role)
+        test_function.role.add_to_policy(self.checker_delete_any_key_role)
+        test_function.role.add_to_policy(self.alt_checker_get_all_keys_role)
+
         # Create an IAM Role for the AwsCustomResource
         custom_resource_role_2 = aws_iam.Role(
             self, "CustomResourceRole2",

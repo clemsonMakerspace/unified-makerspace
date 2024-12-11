@@ -99,11 +99,11 @@ class Pipeline(Stack):
                 "TestBetaAPIEndpoints",
                 input=codestar_source, # pass entire codestar connection to repo
                 commands=[
-                    "pwd",
-                    "ls",
                     "pip install pytest --force-reinstall",
                     # "pip install python3 --force-reinstall",
                     "pip install moto --force-reinstall",
+                    "pip install aws_cdk --force-reinstall",
+                    "pip install boto3 --force-reinstall",
                     "PYTHONPATH=cdk/api_gateway/ python3 -m pytest -vs --import-mode=importlib --disable-warnings cdk/api_gateway/tests"
                 ],
             )
