@@ -57,8 +57,7 @@ class MakerspaceStack(Stack):
                 "SharedGatewaySecret",
                 secret_name
         )
-        self.backend_api_key: str = str(shared_gateway_secret.secret_value_from_json("backend_api_key"))
-
+        self.backend_api_key: str = str(shared_gateway_secret.secret_value_from_json("api_key").unsafe_unwrap())
         
         self.cognito_setup()
         

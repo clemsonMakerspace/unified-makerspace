@@ -485,7 +485,7 @@ def handler(event, context):
         if key_deleted:
             raise Exception(f"Api key still existed after deleting first time.")
 
-        return {}
+        return {'PhysicalResourceId': 'None', 'Data': {}}
 
     except Exception as e:
         raise Exception(f"Error occurred: {e}")
