@@ -126,7 +126,8 @@ def handler(event, context):
         logger.info(json.dumps(key_data, indent=2))
         return key_data
     except Exception as e:
-        raise Exception(f"Error retrieving API Key: {e}")
+        #raise Exception(f"Error retrieving API Key: {e}")
+        return {'Data': {'ApiKeyId': ""}}
             """),
         )
 
@@ -180,8 +181,15 @@ def handler(event, context):
 
 
         # Retrieve API Key ID from the custom resource
-        print(custom_resource.to_string())
-        api_key_id = custom_resource.get_response_field("Data.ApiKeyId")
+        print(custom_resource)
+        payload = custom_resource.get_response_field("Payload")
+        try:
+            payload = json.loads(payload)
+        except:
+            pass
+        if "Data" not in payload:
+            raise Exception(f"payload: {payload}")
+        api_key_id = payload["Data"]["ApiKeyId"]
 
         # Create a new API Key if it doesn't exist
         if not api_key_id:
