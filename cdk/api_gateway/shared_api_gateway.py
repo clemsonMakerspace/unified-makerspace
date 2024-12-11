@@ -150,6 +150,22 @@ def handler(event, context):
             """),
         )
 
+        # Create an IAM Role for the AwsCustomResource
+        custom_resource_role_2 = aws_iam.Role(
+            self, "CustomResourceRole",
+            assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),
+            inline_policies={
+                "InvokeLambdaPolicy": aws_iam.PolicyDocument(
+                    statements=[
+                        aws_iam.PolicyStatement(
+                            actions=["lambda:InvokeFunction"],
+                            resources=[test_function.function_arn]
+                        )
+                    ]
+                )
+            }
+        )
+
         # Use the custom resource to call the api key checker
         # (and delete any matching api key with the same name)
         custom_resource = custom_resources.AwsCustomResource(
@@ -164,7 +180,7 @@ def handler(event, context):
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
             ),
             policy=custom_resources.AwsCustomResourcePolicy.from_sdk_calls(resources=custom_resources.AwsCustomResourcePolicy.ANY_RESOURCE),
-            role=custom_resource_role,  # Attach the role to the custom resource
+            role=custom_resource_role_2,  # Attach the role to the custom resource
         )
 
         ## Create a new API Key

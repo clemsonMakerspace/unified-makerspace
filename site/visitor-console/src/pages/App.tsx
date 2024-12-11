@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Amplify } from "aws-amplify";
-import { locations } from "../library/constants";
 import { getAmplifyConfig } from "../config/getAmplifyConfig";
 import React, { useEffect } from "react";
 

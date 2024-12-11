@@ -27,7 +27,7 @@ const Visits = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": "bY2BQ0boppPn3rnfSjsh68kgQKpBYMq4eP5uWLvd",
+            "x-api-key": import.meta.env.BACKEND_KEY,
           },
         });
 
