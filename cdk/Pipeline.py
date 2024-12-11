@@ -100,7 +100,7 @@ class Pipeline(Stack):
                 input=codestar_source, # pass entire codestar connection to repo
                 commands=[
                     "pwd",
-                    "ls"
+                    "ls",
                     "pip install pytest --force-reinstall",
                     # "pip install python3 --force-reinstall",
                     "pip install moto --force-reinstall",

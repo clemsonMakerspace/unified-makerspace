@@ -149,26 +149,6 @@ import time
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def delete_key(client, api_key_name: str) -> bool:
-
-    deleted_key: bool = False
-
-    response = client.get_api_keys(includeValues=False)
-
-    # Check for matching key name
-    for key in response['items']:
-        if key['name'] == api_key_name:
-
-            # Delete the key
-            try:
-                client.delete_api_key(apiKey=key['id'])
-                logger.info(f"Deleted key '{key['id']}'")
-                deleted_key = True
-            except Exception as e:
-                raise Exception(f"Error deleting API Key: {e}")
-
-    return deleted_key
-
 def handler(event, context):
 
     logger.info("Event:")
@@ -182,17 +162,31 @@ def handler(event, context):
 
         api_key_name = event['ApiKeyName']
 
-        # Try and delete the key
-        delete_key(client, api_key_name)
+        response = client.get_api_keys(includeValues=False)
+
+        # Check for matching key name
+        for key in response['items']:
+
+            if key['name'] == api_key_name:
+
+                # Delete the key
+                try:
+                    client.delete_api_key(apiKey=key['id'])
+                    logger.info(f"Deleted key '{key['id']}'")
+
+                except Exception as e:
+                    raise Exception(f"Error deleting API Key: {e}")
 
         # Wait 5 seconds for changes to propagate
         time.sleep(5)
 
-        # Ensure key was deleted (delete_key should return False for no key deleted)
-        key_deleted: bool = delete_key(client, api_key_name)
+        # Ensure key was deleted
+        response = client.get_api_keys(includeValues=False)
 
-        if key_deleted:
-            raise Exception(f"Api key still existed after deleting first time.")
+        # Check for matching key name
+        for key in response['items']:
+            if key['name'] == api_key_name:
+                raise Exception(f"Api key still existed after deleting first time.")
 
     except Exception as e:
         raise Exception(f"Error occurred: {e}")
