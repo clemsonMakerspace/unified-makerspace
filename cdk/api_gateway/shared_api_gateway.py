@@ -152,7 +152,7 @@ def handler(event, context):
 
         # Create an IAM Role for the AwsCustomResource
         custom_resource_role_2 = aws_iam.Role(
-            self, "CustomResourceRole",
+            self, "CustomResourceRole2",
             assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),
             inline_policies={
                 "InvokeLambdaPolicy": aws_iam.PolicyDocument(
