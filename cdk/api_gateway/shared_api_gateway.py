@@ -95,12 +95,18 @@ class SharedApiGateway(Stack):
         # Handle api key
         api_key_name: str = "SharedAPIAdminKey"
 
-        # Create a Lambda function to query for an API Key
+        # Create a Lambda function to delete an api key if it exists
         self.api_key_checker_lambda()
 
         # Allow the api key checker to get api keys
         self.checker_get_all_keys_role = aws_iam.PolicyStatement(
             actions=["apigateway:GET"],
+            resources=[f"arn:aws:apigateway:{self.region}::/apikeys/*"]  # Adjust resource scoping if necessary
+        )
+
+        # Allow the api key checker to delete api keys
+        self.checker_delete_any_key_role = aws_iam.PolicyStatement(
+            actions=["apigateway:DELETE"],
             resources=[f"arn:aws:apigateway:{self.region}::/apikeys/*"]  # Adjust resource scoping if necessary
         )
 
@@ -111,6 +117,7 @@ class SharedApiGateway(Stack):
         )
 
         self.lambda_api_key_checker.role.add_to_policy(self.checker_get_all_keys_role)
+        self.lambda_api_key_checker.role.add_to_policy(self.checker_delete_any_key_role)
         self.lambda_api_key_checker.role.add_to_policy(self.alt_checker_get_all_keys_role)
         
         # Create an IAM Role for the AwsCustomResource
@@ -130,7 +137,8 @@ class SharedApiGateway(Stack):
         )
 
 
-        # Use the custom resource to fetch the API Key ID
+        # Use the custom resource to call the api key checker
+        # (and delete any matching api key with the same name)
         custom_resource = custom_resources.AwsCustomResource(
             self, "ApiKeyRetriever",
             on_create=custom_resources.AwsSdkCall(
@@ -147,24 +155,12 @@ class SharedApiGateway(Stack):
         )
 
 
-        # Retrieve API Key ID from the custom resource
-        api_key_id = custom_resource.get_response_field("Payload.Data.ApiKeyId")
-
-        # Create a new API Key if it doesn't exist
-        if not api_key_id:
-            self.api_key = self.api.add_api_key(
-                    "SharedAPIKey",
-                    api_key_name=api_key_name,
-                    value=backend_api_key
-            )
-
-        # Otherwise, retrieve the existing key from its id
-        else:
-            self.api_key = aws_apigateway.ApiKey.from_api_key_id(
-                    self,
-                    "OldSharedAPIKey",
-                    api_key_id
-            )
+        # Create a new API Key
+        self.api_key = self.api.add_api_key(
+            "SharedAPIKey",
+            api_key_name=api_key_name,
+            value=backend_api_key
+        )
 
         # Add the api key to the usage plan
         self.plan.add_api_key(self.api_key)

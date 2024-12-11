@@ -1,13 +1,12 @@
 """
 Checks to see if an api key matching a provided name already
-exists in the environment. If it does, it returns the id of
-the key, if it does not, it returns an empty string for the id.
+exists in the environment. If it does, it deletes the key.
 
 Expected input:
 { 'ApiKeyName': <NAME_OF_API_KEY> }
 
 Output:
-{ 'Data': {'ApiKeyId': <ID>} }
+{}
 """
 
 import boto3
@@ -31,20 +30,18 @@ def handler(event, context):
         api_key_name = event['ApiKeyName']
 
         response = client.get_api_keys(includeValues=False)
-        key_data = None
 
+        # Check for matching key name
         for key in response['items']:
             if key['name'] == api_key_name:
-                key_data = {'Data': {'ApiKeyId': key['id']}}
-                break
 
-        if not key_data:
-            key_data = {'Data': {'ApiKeyId': ""}}
+                # Delete the key
+                try:
+                    client.delete_api_key(apiKey=key['id'])
+                except Exception as e:
+                    raise Exception(f"Error deleting API Key: {e}")
 
-        logger.info("Key data")
-        logger.info(json.dumps(key_data, indent=2))
-
-        return key_data
+        return {}
 
     except Exception as e:
-        raise Exception(f"Error retrieving API Key: {e}")
+        raise Exception(f"Error occurred: {e}")
