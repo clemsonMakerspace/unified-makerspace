@@ -7,7 +7,8 @@ from aws_cdk import (
     aws_apigateway,
     aws_iam,
     custom_resources,
-    Aws
+    Aws,
+    PhysicalName
 )
 
 import boto3
@@ -95,41 +96,7 @@ class SharedApiGateway(Stack):
         api_key_name: str = "SharedAPIAdminKey"
 
         # Create a Lambda function to query for an API Key
-        self.api_key_checker_function = aws_lambda.Function(
-            self, "ApiKeyCheckerFunction",
-            runtime=aws_lambda.Runtime.PYTHON_3_12,
-            handler="index.handler",
-            code=aws_lambda.Code.from_inline("""
-import boto3
-import logging
-import json
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-def handler(event, context):
-    logger.info("Event:")
-    logger.info(json.dumps(event, indent=2))
-    try:
-        client = boto3.client('apigateway')
-        api_key_name = event['ApiKeyName']
-
-        response = client.get_api_keys(includeValues=False)
-        key_data = None
-        for key in response['items']:
-            if key['name'] == api_key_name:
-                key_data = {'PhysicalResourceId': key['id'], 'Data': {'ApiKeyId': key['id']}}
-                break
-        if not key_data:
-            key_data = {'PhysicalResourceId': 'None', 'Data': {'ApiKeyId': ""}}
-        logger.info("Key data")
-        logger.info(json.dumps(key_data, indent=2))
-        return key_data
-    except Exception as e:
-        #raise Exception(f"Error retrieving API Key: {e}")
-        return {'Data': {'ApiKeyId': ""}}
-            """),
-        )
+        self.api_key_checker_lambda()
 
         # Allow the api key checker to get api keys
         self.checker_get_all_keys_role = aws_iam.PolicyStatement(
@@ -143,8 +110,8 @@ def handler(event, context):
             resources=[f"arn:aws:apigateway:{self.region}::/apikeys"]  # Adjust resource scoping if necessary
         )
 
-        self.api_key_checker_function.role.add_to_policy(self.checker_get_all_keys_role)
-        self.api_key_checker_function.role.add_to_policy(self.alt_checker_get_all_keys_role)
+        self.lambda_api_key_checker.role.add_to_policy(self.checker_get_all_keys_role)
+        self.lambda_api_key_checker.role.add_to_policy(self.alt_checker_get_all_keys_role)
         
         # Create an IAM Role for the AwsCustomResource
         custom_resource_role = aws_iam.Role(
@@ -155,7 +122,7 @@ def handler(event, context):
                     statements=[
                         aws_iam.PolicyStatement(
                             actions=["lambda:InvokeFunction"],
-                            resources=[self.api_key_checker_function.function_arn]
+                            resources=[self.lambda_api_key_checker.function_arn]
                         )
                     ]
                 )
@@ -170,7 +137,7 @@ def handler(event, context):
                 service="Lambda",
                 action="invoke",
                 parameters={
-                    "FunctionName": self.api_key_checker_function.function_name,
+                    "FunctionName": self.lambda_api_key_checker.function_name,
                     "Payload": json.dumps({"ApiKeyName": api_key_name})  # Serialize payload as JSON
                 },
                 physical_resource_id=custom_resources.PhysicalResourceId.of(api_key_name)
@@ -181,15 +148,7 @@ def handler(event, context):
 
 
         # Retrieve API Key ID from the custom resource
-        print(custom_resource)
-        payload = custom_resource.get_response_field("Payload")
-        try:
-            payload = json.loads(payload)
-        except:
-            pass
-        if "Data" not in payload:
-            raise Exception(f"payload: {payload}")
-        api_key_id = payload["Data"]["ApiKeyId"]
+        api_key_id = custom_resource.get_response_field("Payload.Data.ApiKeyId")
 
         # Create a new API Key if it doesn't exist
         if not api_key_id:
@@ -257,6 +216,15 @@ def handler(event, context):
                 burst_limit=10
             )
         )
+
+    def api_key_checker_lambda(self):
+        self.lambda_api_key_checker = aws_lambda.Function(
+            self,
+            'ApiKeyChecker',
+            function_name=PhysicalName.GENERATE_IF_NEEDED,
+            code=aws_lambda.Code.from_asset('api_gateway/lambda_code/api_key_checker'),
+            handler='api_key_checker.handler',
+            runtime=aws_lambda.Runtime.PYTHON_3_12)
 
 
     """
