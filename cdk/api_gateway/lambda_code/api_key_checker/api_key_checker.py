@@ -38,6 +38,7 @@ def handler(event, context):
                 # Delete the key
                 try:
                     client.delete_api_key(apiKey=key['id'])
+                    logger.info(f"Deleted key '{key['id']}'")
                 except Exception as e:
                     raise Exception(f"Error deleting API Key: {e}")
 

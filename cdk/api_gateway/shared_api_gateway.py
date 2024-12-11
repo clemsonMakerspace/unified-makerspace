@@ -85,9 +85,6 @@ class SharedApiGateway(Stack):
         stage_name: str = f"{stage}"
         self.deploy_api_stage(stage_name)
 
-        # Add the stage to the api url
-        self.url += f"/{stage_name}"
-
         # Create a usage plan for the stage
         plan_name: str = "SharedAPIAdminPlan"
         self.create_usage_plan(plan_name)
@@ -154,7 +151,6 @@ class SharedApiGateway(Stack):
             role=custom_resource_role,  # Attach the role to the custom resource
         )
 
-
         # Create a new API Key
         self.api_key = self.api.add_api_key(
             "SharedAPIKey",
@@ -190,7 +186,7 @@ class SharedApiGateway(Stack):
                                      domain_name=domain_name,
                                      certificate=certificate)
 
-    def deploy_api_stage(self, stage_name: str = "prod"):
+    def deploy_api_stage(self, stage_name: str = "Prod"):
         if not self.api.latest_deployment:
             deployment = aws_apigateway.Deployment(self, 'ApiDeployment', api=self.api)
         else:
@@ -210,7 +206,12 @@ class SharedApiGateway(Stack):
             throttle=aws_apigateway.ThrottleSettings(
                 rate_limit=50,
                 burst_limit=10
-            )
+            ),
+            api_stages=[
+                aws_apigateway.UsagePlanPerApiStage(
+                    stage=self.stage
+                )
+            ]
         )
 
     def api_key_checker_lambda(self):
