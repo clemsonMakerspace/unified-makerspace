@@ -88,6 +88,7 @@ class MakerspaceDns(Stack):
         """
         self.visit = aws_route53.PublicHostedZone(self, 'visit',
                                                   zone_name=self.domains.visit)
+        self.add_custom_ns_record(self.visit, 'visit')
 
     def api_zone(self):
         """ 
@@ -95,21 +96,42 @@ class MakerspaceDns(Stack):
         """
         self.api_hosted_zone = aws_route53.PublicHostedZone(self, 'api',
                                                 zone_name=self.domains.api)
+        self.add_custom_ns_record(self.api_hosted_zone, 'api')
 
     def maintenance_zone(self):
         """ 
         Creates the Public Hosted Zone in Route53 with the passed in domain
         """
-        aws_route53.PublicHostedZone(self, 'maintenance',
+        maintenance_zone = aws_route53.PublicHostedZone(self, 'maintenance',
                                      zone_name=self.domains.maintenance)
+        self.add_custom_ns_record(maintenance_zone, 'maintenance')
 
     def admin_zone(self):
         """ 
         Creates the Public Hosted Zone in Route53 with the passed in domain
         """
-        aws_route53.PublicHostedZone(self, 'admin',
+        admin_zone = aws_route53.PublicHostedZone(self, 'admin',
                                      zone_name=self.domains.admin)
+        self.add_custom_ns_record(admin_zone, 'admin')
 
+    def add_custom_ns_record(self, hosted_zone: aws_route53.PublicHostedZone, zone_name: str):
+        """
+        Adds a custom NS record to the hosted zone.
+        """
+        custom_ns = [
+            'ns-654.awsdns-17.net.',
+            'ns-123.awsdns-15.com.',
+            'ns-1369.awsdns-43.org.',
+            'ns-1591.awsdns-06.co.uk.',
+        ]
+
+        aws_route53.CfnRecordSet(self, f'{zone_name}CustomNSRecord',
+            hosted_zone_id=hosted_zone.hosted_zone_id,
+            name=f"{hosted_zone.zone_name}.",  # Ensure it matches the zone name with a trailing dot
+            type="NS",
+            ttl="172800",
+            resource_records=custom_ns
+        )
 
 class MakerspaceDnsRecords(Stack):
 
