@@ -3,8 +3,8 @@ import pytest
 from datetime import datetime
 
 # Lambda code imports
-from lambda_code.visits_handler.visits_handler import VisitsHandler
-from lambda_code.api_defaults import (
+from ..lambda_code.visits_handler.visits_handler import VisitsHandler
+from ..lambda_code.api_defaults import (
     PRIMARY_KEY,
     visits_path,
     visits_param_path,
@@ -12,7 +12,7 @@ from lambda_code.api_defaults import (
 )
 
 # Test util imports
-from tests.utils.utils import (
+from ..utilsFolder.utils import (
     create_table,
     create_gsi_table,
     create_ses_client,

@@ -3,8 +3,8 @@ import pytest
 from datetime import datetime
 
 # Lambda code imports
-from lambda_code.equipment_handler.equipment_handler import EquipmentHandler
-from lambda_code.api_defaults import (
+from ..lambda_code.equipment_handler.equipment_handler import EquipmentHandler
+from ..lambda_code.api_defaults import (
     PRIMARY_KEY,
     equipment_path,
     equipment_param_path,
@@ -12,7 +12,7 @@ from lambda_code.api_defaults import (
 )
 
 # Test util imports
-from tests.utils.utils import (
+from ..utilsFolder.utils import (
     create_gsi_table,
     create_rest_http_event,
     jsonify_response,

@@ -1,4 +1,5 @@
-from lambda_code.api_defaults import *
+# from ....api_gateway.lambda_code.api_defaults import
+from ..lambda_code.api_defaults import *
 from moto import mock_aws
 import boto3
 

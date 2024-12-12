@@ -165,11 +165,13 @@ class BackendApi(Stack):
             environment={
                 'DOMAIN_NAME': domain_name,
                 'BRIDGE_URL': bridge_url,
-                'BRIDGE_KEY': bridge_key.resolve(),
-                'BRIDGE_SECRET': bridge_secret.resolve(),
+                'BRIDGE_KEY': bridge_key.to_string(),
+                'BRIDGE_SECRET': bridge_secret.to_string(),
                 'BRIDGE_PROGRAM_ID': makerspace_program_id,
                 'QUALIFICATIONS_LAMBDA': self.lambda_qualifications_handler.function_name
             },
             handler='equipment_handler.handler',
             timeout=Duration.seconds(30),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
+
+        bridge_secrets.grant_read(self.lambda_tiger_training_handler)

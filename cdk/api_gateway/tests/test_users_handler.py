@@ -2,15 +2,15 @@ from moto import mock_aws
 import pytest
 
 # Lambda code imports
-from lambda_code.users_handler.users_handler import UsersHandler
-from lambda_code.api_defaults import (
+from ..lambda_code.users_handler.users_handler import UsersHandler
+from ..lambda_code.api_defaults import (
     PRIMARY_KEY,
     users_path,
     users_param_path,
 )
 
 # Test util imports
-from tests.utils.utils import (
+from ..utilsFolder.utils import (
     create_table,
     create_rest_http_event,
     jsonify_response,

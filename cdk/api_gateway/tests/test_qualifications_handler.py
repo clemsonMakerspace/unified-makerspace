@@ -4,8 +4,8 @@ import pytest
 from datetime import datetime, timedelta
 
 # Lambda code imports
-from lambda_code.qualifications_handler.qualifications_handler import QualificationsHandler
-from lambda_code.api_defaults import (
+from ..lambda_code.qualifications_handler.qualifications_handler import QualificationsHandler
+from ..lambda_code.api_defaults import (
     PRIMARY_KEY,
     qualifications_path,
     qualifications_param_path,
@@ -13,7 +13,7 @@ from lambda_code.api_defaults import (
 )
 
 # Test util imports
-from tests.utils.utils import (
+from ..utilsFolder.utils import (
     create_gsi_table,
     create_rest_http_event,
     jsonify_response,
