@@ -51,18 +51,6 @@ class MakerspaceStack(Stack):
 
         self.database_stack()
 
-        # Get the api key value to use for backend api requests
-        secret_name: str = "SharedApiGatewayKey"
-        shared_gateway_secret = aws_secretsmanager.Secret.from_secret_name_v2(
-                self,
-                "SharedGatewaySecret",
-                secret_name
-        )
-        secret_value = SecretValue.secrets_manager(shared_gateway_secret.secret_name)
-        secret_value.unsafe_unwrap()
-        self.backend_api_key: str = secret_value.to_string()
-        print(f"API KEY: {self.backend_api_key}")
-        
         self.cognito_setup()
         
         # Create the backend api and shared api gateway first to obtain an api url
@@ -128,8 +116,6 @@ class MakerspaceStack(Stack):
             create_dns=self.create_dns,
             zones=self.dns,
             env=self.env,
-            backend_api_key=self.backend_api_key,
-            backend_api_url=self.api_gateway.url
         )
 
         # Dependency ensures this is completely configured prior
@@ -145,12 +131,6 @@ class MakerspaceStack(Stack):
         
         """
 
-        if self.create_dns:
-            domain_name = self.dns.api_hosted_zone.zone_name
-            backend_api_url: str = f"https://{domain_name}"
-        else:
-            backend_api_url: str = ""
-
         self.backend_api = BackendApi(
             self.app,
             self.stage,
@@ -160,8 +140,6 @@ class MakerspaceStack(Stack):
             self.database.qualifications_table.table_name,
             zones=self.dns,
             env=self.env,
-            backend_api_key=self.backend_api_key,
-            backend_api_url=backend_api_url
         )
 
         # Dependency ensures this is completely configured prior
@@ -178,7 +156,6 @@ class MakerspaceStack(Stack):
             self.backend_api.lambda_qualifications_handler,
             self.backend_api.lambda_equipment_handler,
             self.backend_api.lambda_tiger_training_handler,
-            backend_api_key=self.backend_api_key,
             env=self.env, zones=self.dns, create_dns=self.create_dns
         )
 

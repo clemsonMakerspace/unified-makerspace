@@ -37,8 +37,6 @@ class Visit(Stack):
                  *,
                  env: Environment,
                  create_dns: bool,
-                 backend_api_key: str = "",
-                 backend_api_url: str = "",
                  zones: MakerspaceDns = None):
 
         super().__init__(scope, 'Visitors', env=env)
@@ -51,53 +49,9 @@ class Visit(Stack):
         self.create_dns = create_dns
         self.zones = zones
 
-        # Provision tiger training pull lambda function. Necessary that 
-        # this is first to allow passing the arn to the source bucket.
-        self.tiger_training_lambda(scope, backend_api_url, backend_api_key)
-
         self.source_bucket()
 
         self.cloudfront_distribution()
-
-
-    def tiger_training_lambda(self, scope: Construct,
-                              backend_api_url: str,
-                              backend_api_key: str
-                              ):
-        
-        # Retrieve Bridge LMS key and secret
-        secret_name: str = "BridgeLMSApiSecrets"
-        bridge_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
-                self, 
-                "BridgeSecrets",
-                secret_name
-        )
-        bridge_key: str = str(bridge_secrets.secret_value_from_json("key"))
-        bridge_secret: str = str(bridge_secrets.secret_value_from_json("secret"))
-
-        bridge_url: str = "https://clemson.bridgeapp.com"
-
-        # The id of the Makerspace's program in Tiger Training (Bridge LMS)
-        makerspace_program_id: str = "4133"
-
-        self.lambda_tiger_training = aws_lambda.Function(
-            self,
-            'TigerTrainingLambda',
-            function_name=PhysicalName.GENERATE_IF_NEEDED,
-            code=aws_lambda.Code.from_asset('visit/lambda_code/tiger_training'),
-            environment={
-                'BRIDGE_URL': bridge_url,
-                'BRIDGE_KEY': bridge_key,
-                'BRIDGE_SECRET': bridge_secret,
-                'BRIDGE_PROGRAM_ID': makerspace_program_id,
-                'AWS_API_KEY': backend_api_key,
-                'AWS_API_URL': backend_api_url
-            },
-            handler='tiger_training.handler',
-            runtime=aws_lambda.Runtime.PYTHON_3_12)
-
-        # Store the arn
-        self.lambda_tiger_training_arn = self.lambda_tiger_training.function_arn
 
 
     def source_bucket(self):

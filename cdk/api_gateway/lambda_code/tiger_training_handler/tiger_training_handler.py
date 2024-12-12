@@ -5,6 +5,7 @@ import base64
 from dataclasses import dataclass, field
 from datetime import datetime
 import logging
+import boto3
 from ..api_defaults import *
 
 logger = logging.getLogger()
@@ -21,6 +22,37 @@ BRIDGE_TIMESTAMP_FORMAT: str = "%Y-%m-%dT%H:%M:%S.%f"
 TZ_OFFSET: str = "-04:00"
 # With all of this together, a valid brige timestamp is in the format:
 # BRIDGE_TIMESTAMP_FORMAT + TZ_OFFSET
+
+def create_rest_http_event(httpMethod: str, resource: str,
+                      body = {},
+                      pathParameters: dict = {},
+                      queryStringParameters: dict = {}
+                      ) -> dict:
+    """
+    Creates a Rest HTTP event similar to what ApiGateway will
+    send to a lambda proxy. Use to prepare an event an api
+    handler would receive and handle.
+
+    :params httpMethod: The http method of the event. One of:
+                        "GET", "POST", "PATCH", "PUT", and
+                        "DELETE".
+    :params resource: The endpoint resource of the api that will
+                      be acted on. Path parameters must be named,
+                      not resolved, and should be in curly
+                      brackets ({}).
+                      Example: /test/{test_id}
+    :params body: The request json body to be sent.
+    :params pathParamters: A dictionary of path parameter names and
+                           their values.
+    :params queryStringParameters: A dictionary of query parameter
+                                   names and their values as strings.
+    :returns: A json object representing an AWS ApiGateway event.
+    """
+
+    # Stringify the body
+    response = locals()
+    response['body'] = json.dumps(response['body'])
+    return response
 
 @dataclass
 class CompletableItem():
@@ -257,12 +289,14 @@ class TigerTrainingHandler():
         # Get the program id from environment
         self.program_id: int = int(os.environ["BRIDGE_PROGRAM_ID"])
 
-        # Get backend base api endpoint and api key token
-        self.aws_url: str = os.environ["AWS_API_URL"]
-        self.aws_api_key: str = os.environ["AWS_API_KEY"]
+        # Get function name of the qualifications lambda for storing and retrieving
+        self.qualifications_lambda: str = os.environ["QUALIFICATIONS_LAMBDA"]
 
         # Initialize the program
         self.program: Program = Program(id=self.program_id)
+
+        # Create a lambda client
+        self.lambda_client = boto3.client('lambda')
 
 
     def handle_event(self, event, context):
@@ -277,7 +311,7 @@ class TigerTrainingHandler():
             learners: dict[str, Learner] = {}
 
             # Timestamp to restrict course enrollment results
-            base_time: str = self.get_latest_update_time(self.aws_url, self.aws_api_key)
+            base_time: str = self.get_latest_update_time()
 
             # Get all "completed" enrollments for each course
             for course in self.program.courses:
@@ -302,8 +336,6 @@ class TigerTrainingHandler():
                 learner = learners[user_id]
                 logger.info(f"Sending patch for user {user_id}")
                 status, response = self.patch_learner_aws(
-                        self.aws_url,
-                        self.aws_api_key,
                         learner
                 )
 
@@ -313,7 +345,7 @@ class TigerTrainingHandler():
                 """
                 if status == 400:
                     logger.info(f"{user_id} not yet created. Sending post")
-                    self.post_learner_aws(self.aws_url, self.aws_api_key, learner)
+                    self.post_learner_aws(learner)
 
             response = buildResponse(statusCode = 200, body = {})
 
@@ -321,6 +353,22 @@ class TigerTrainingHandler():
             errorMsg: str = f"We're sorry, but something happened. Try again later."
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 500, body = body)
+
+    def send_event_to_lambda(self, target_lambda: str, event: dict) -> dict:
+        """
+        Sends an event to a lambda function.
+
+        :params target_lambda: The name of the lambda function to send the event to.
+        :params event: The event to send.
+        :returns: Response dictionary from the lambda function.
+        """
+
+        response: dict = self.lambda_client.invoke(
+            FunctionName=target_lambda,
+            Payload=event
+        )
+
+        return response
 
 
     def separate_enrollments(self, enrollments: list[CompletableItem]) -> list[tuple[str, list[dict]]]:
@@ -419,104 +467,90 @@ class TigerTrainingHandler():
         return request_body
 
 
-    def patch_learner_aws(self, aws_url: str, auth_token: str,
-                          learner: Learner) -> tuple[int, dict]:
+    def patch_learner_aws(self, learner: Learner) -> tuple[int, dict]:
         """
-        Sends a patch request to the AWS /qualifications endpoint for
-        each newly completed course for the learner.
+        Sends a patch request event to the qualifications handler to update
+        a learner's completed courses.
 
-        :params aws_url: The base url of the backend api endpoint.
-        :params auth_token: The authorization token to use in the request.
-        :params learner: The learner to update
-        :returns: The response body returned from the patch request.
+        :params learner: The learner to update.
+        :returns: (statusCode, response_body)
         """
-
-        # Create endpoint url and prepare necessary headers
-        endpoint_url: str = f"{aws_url}/qualifications/{learner.user_id}"
-        headers: dict = {
-            "x-api-key": f"{auth_token}"
-        }
 
         # Create the qualifications patch request body
         request_body: dict = self.create_qualifications_patch_body(learner)
-        logger.info(f"Trying to patch {learner.user_id} with:\n{json.dumps(request_body, indent=2)}")
 
-        # Send patch request to AWS endpoint
-        response = http.request(
-            'PATCH',
-            endpoint_url,
-            headers=headers,
-            body=json.dumps(request_body),
+        # Create an event for the qualifications handler
+        event: dict = create_rest_http_event(
+            "PATCH",
+            resource="/qualifications",
+            body=request_body
         )
 
+        # Send event to qualifications handler
+        response = self.send_event_to_lambda(self.qualifications_lambda, event)
+
+        # Extract the response body
+        data: dict = json.loads(response['body'])
+
         # Get response body, if one exists
-        response_body = {}
-        if response.status != 204:
-            response_body = json.loads(response.data)
+        response_body = data
 
-        return (response.status, response_body)
+        return (response['statusCode'], response_body)
 
 
-    def post_learner_aws(self, aws_url: str, auth_token: str,
-                         learner: Learner) -> tuple[int, dict]:
+    def post_learner_aws(self, learner: Learner) -> tuple[int, dict]:
         """
-        Sends a patch request to the AWS /qualifications endpoint for
-        each newly completed course for the learner.
+        Sends a post request event to the qualifications handler. Used
+        to add new learners to the system.
 
-        :params aws_url: The base url of the backend api endpoint.
-        :params auth_token: The authorization token to use in the request.
-        :params learner: The learner to update
-        :returns: The response body returned from the patch request.
+        :params learner: The learner to add.
+        :returns: (statusCode, response_body)
         """
 
-        # Create endpoint url and prepare necessary headers
-        endpoint_url: str = f"{aws_url}/qualifications/"
-        headers: dict = {
-            "x-api-key": f"{auth_token}"
-        }
-
-        # Create the qualifications patch request body
+        # Create the qualifications post request body
         request_body: dict = self.create_qualifications_post_body(learner)
 
-        # Send patch request to AWS endpoint
-        response = http.request(
-            'POST',
-            endpoint_url,
-            headers=headers,
-            data=json.dumps(request_body),
+        # Create an event for the qualifications handler
+        event: dict = create_rest_http_event(
+            "POST",
+            resource="/qualifications",
+            body=request_body
         )
 
+        # Send event to qualifications handler
+        response = self.send_event_to_lambda(self.qualifications_lambda, event)
+
+        # Extract the response body
+        data: dict = json.loads(response['body'])
+
         # Get response body, if one exists
-        response_body = {}
-        if response.status != 204:
-            response_body = json.loads(response.data)
+        response_body = data
 
-        return (response.status, response_body)
+        return (response['statusCode'], response_body)
 
 
-    def get_latest_update_time(self, aws_url: str, auth_token: str) -> str:
+    def get_latest_update_time(self) -> str:
         """
         Gets the latest update time from the backend api qualifications.
 
-        :params aws_url: The base url of the backend api endpoint.
-        :params auth_token: The authorization token to use in the request.
+        :returns: The latest update time from qualifications in the backend database.
         """
 
-        # Create endpoint url and prepare necessary headers
-        endpoint_url: str = f"{aws_url}/qualifications?limit=1"
-        headers: dict = {
-            "x-api-key": f"{auth_token}"
-        }
+        # Prepare the query parameters
+        queryStringParamters: dict = { 'limit': 1 }
 
-        # Send get request to AWS endpoint
-        response = http.request(
-            'GET',
-            endpoint_url,
-            headers=headers,
+        # Create an event for the qualifications handler
+        event: dict = create_rest_http_event(
+            "GET",
+            resource="/qualifications",
+            queryStringParameters=queryStringParamters
         )
 
+        # Send event to qualifications handler
+        response = self.send_event_to_lambda(self.qualifications_lambda, event)
+
         # Extract the last_updated time stamp
-        data: dict = json.loads(response.data)
+        data: dict = json.loads(response['body'])
         
         # In case the qualifications table is empty, use datetime.min as last_updated
         if len(data['qualifications']) == 0:
@@ -542,5 +576,10 @@ class TigerTrainingHandler():
 def handler(event, context):
     # Pull qualification data from the Makerspace's Tiger Training program,
     # and POST it to the backend api.
-    tiger_training_handler = TigerTrainingHandler()
-    tiger_training_handler.handle_event(event, context)
+    try:
+        print("Hi")
+        tiger_training_handler = TigerTrainingHandler()
+        tiger_training_handler.handle_event(event, context)
+    except Exception as e:
+        print(e)
+        raise Exception(e)
