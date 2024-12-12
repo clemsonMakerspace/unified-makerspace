@@ -1,3 +1,21 @@
+"""
+NOTE:
+
+Due to relative importing errors, this file MUST be linked
+to any directory serving as a Lambda Function asset directory
+where the lambda function desires to import it. This way,
+the pipeline will automatically include this utility file
+in the source tree for each lambda. From there, add the following
+lines to be able to import this file as a module (api_defaults):
+
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from api_defaults import *
+"""
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import json

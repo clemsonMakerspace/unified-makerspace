@@ -6,7 +6,12 @@ from botocore.exceptions import ClientError
 import os
 import logging
 from datetime import datetime
-from ..api_defaults import *
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from api_defaults import *
 
 class EquipmentHandler():
     def __init__(self, equipment_table):

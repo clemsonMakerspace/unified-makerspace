@@ -7,8 +7,12 @@ import logging
 import os
 import re
 from datetime import datetime
-from ..api_defaults import *
-from aws_cdk import Aws
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from api_defaults import *
 
 class VisitsHandler():
     """
@@ -43,12 +47,13 @@ class VisitsHandler():
             self.users_table = users_table
 
         if ses_client is None:
-            self.client = boto3.client('ses', region_name=Aws.REGION)
+            self.client = boto3.client('ses', region_name=os.environ['AWS_REGION'])
         else:
             self.client = ses_client
             
     # Main handler function
     def handle_event(self, event, context):
+        self.logger.info(f"EVENT: {event}")
         try:
             method_requires_body: list = ["POST", "PATCH"]
 
@@ -85,9 +90,12 @@ class VisitsHandler():
                         query_parameters[key] = int(query_parameters[key])
             except:
                 query_parameters: dict = {}
+                
+            self.logger.info(f"LOCAL VARS:\n{http_method}\n{resource_path}\n{data}\n{user_id}\n{query_parameters}")
 
             # Visit information request handling
             if http_method == "GET" and resource_path == visits_path:
+                self.logger.info("IN GET ALL")
                 response = self.get_all_visit_information(query_parameters)
             elif http_method == "POST" and resource_path == visits_path:
                 response = self.create_user_visit_information(data)
@@ -95,7 +103,8 @@ class VisitsHandler():
                 response = self.get_user_visit_information(user_id, query_parameters)
                 
             return response
-        except:
+        except Exception as e:
+            self.logger.info(f"Exception: {e}")
             errorMsg: str = f"We're sorry, but something happened. Try again later."
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 500, body = body)

@@ -7,7 +7,12 @@ import os
 import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from ..api_defaults import *
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from api_defaults import *
 
 class QualificationsHandler():
     def __init__(self, qualifications_table):
@@ -179,9 +184,6 @@ class QualificationsHandler():
             errorMsg: str = f"User {user_id} qualifications already exist. Did you mean to update?"
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 400, body = body)
-
-        # Store the formatted current time in data['last_updated']
-        data['last_updated'] = datetime.now(ZoneInfo("America/New_York")).strftime(TIMESTAMP_FORMAT)
 
         # If 'trainings' not in data, store an empty list
         if 'trainings' not in data:

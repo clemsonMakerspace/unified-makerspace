@@ -6,7 +6,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import logging
 import boto3
-from ..api_defaults import *
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from api_defaults import *
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
