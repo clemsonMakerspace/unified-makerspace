@@ -64,10 +64,14 @@ class Pipeline(Stack):
                 'mkdir -p ../../cdk/visit/console/Prod',
                 'cp -r dist/* ../../cdk/visit/console/Prod',
                 
-                'cd ../..',
+                # cd to cdk directory
+                'cd ../../cdk',
+
+                # Replace any symbolic links with the actual file
+                "find . -type l | while read symlink; do target=$(readlink $symlink); rm $symlink; cp -r $target $symlink; done",
+
 
                 # synth the app
-                "cd cdk",
                 "npm install -g aws-cdk && pip install -r requirements.txt --force-reinstall",
                 "cdk synth"
             ],
