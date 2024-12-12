@@ -165,8 +165,8 @@ class BackendApi(Stack):
             environment={
                 'DOMAIN_NAME': domain_name,
                 'BRIDGE_URL': bridge_url,
-                'BRIDGE_KEY': bridge_key,
-                'BRIDGE_SECRET': bridge_secret,
+                'BRIDGE_KEY': bridge_key.resolve(),
+                'BRIDGE_SECRET': bridge_secret.resolve(),
                 'BRIDGE_PROGRAM_ID': makerspace_program_id,
                 'QUALIFICATIONS_LAMBDA': self.lambda_qualifications_handler.function_name
             },
