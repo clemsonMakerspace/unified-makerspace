@@ -104,7 +104,7 @@ class Pipeline(Stack):
                     "pip install moto --force-reinstall",
                     "pip install aws-cdk-lib constructs --force-reinstall",
                     "pip install boto3 --force-reinstall",
-                    "PYTHONPATH=cdk/api_gateway/ python3 -m pytest -vs --import-mode=importlib --disable-warnings api_gateway/tests"
+                    "PYTHONPATH=cdk/api_gateway/ python3 -m pytest -vs --import-mode=importlib --disable-warnings cdk/api_gateway/tests"
                 ],
             )
         )
