@@ -67,9 +67,15 @@ class Pipeline(Stack):
                 # cd to cdk directory
                 'cd ../../cdk',
 
-                # Replace any symbolic links with the actual file
-                "find . -type l | while read symlink; do target=$(readlink $symlink); rm $symlink; cp -r $target $symlink; done",
+                # cd to api_gateway/lambda_code directory
+                'cd api_gateway/lambda_code',
 
+                # Copy the api_defaults.py file to all the handler lambda
+                # asset directories it is needed as a module in.
+                "for dir in $(find . -type d -name '*handler'); do cp api_defaults.py $dir; done",
+
+                # cd back to cdk directory
+                'cd ../../',
 
                 # synth the app
                 "npm install -g aws-cdk && pip install -r requirements.txt --force-reinstall",
@@ -100,7 +106,7 @@ class Pipeline(Stack):
 
         beta_deploy_stage.add_post(
             ShellStep(
-                "TestBetaAPIEndpoints",
+                "TestBetaBackendHandlers",
                 input=codestar_source, # pass entire codestar connection to repo
                 commands=[
                     "pip install pytest --force-reinstall",
@@ -132,7 +138,7 @@ class Pipeline(Stack):
         # Run API Endpoint test script for Prod
         # prod_deploy_stage.add_post(
         #     ShellStep(
-        #         "TestProdAPIEndpoints",
+        #         "TestProdBackendHandlers",
         #         input=codestar_source, # pass entire codestar connection to repo
         #         commands=[
         #             "ENV=Prod python3 cdk/visit/lambda_code/test_api/testing_script.py",
