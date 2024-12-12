@@ -128,7 +128,7 @@ class SharedApiGateway(Stack):
             deployment = self.api.latest_deployment
 
         self.stage = aws_apigateway.Stage(
-            self, id=stage_name,
+            self, id=f"SharedApiGatewayDeploymentStage{stage_name}",
             deployment=deployment,
             stage_name=stage_name,
         )
