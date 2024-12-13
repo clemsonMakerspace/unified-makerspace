@@ -62,8 +62,12 @@ const EquipmentUsage = () => {
           );
         }
 
-        const data: EquipmentLog[] = await response.json();
-        setEquipmentLogs(Array.isArray(data) ? data : []);
+        const data = await response.json();
+        console.log(data);
+        const logs = Array.isArray(data.equipment_logs)
+          ? data.equipment_logs
+          : [];
+        setEquipmentLogs(logs);
       } catch (error) {
         console.error("Error fetching equipment logs:", error);
         setEquipmentLogs([]);

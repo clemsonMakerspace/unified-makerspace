@@ -11,6 +11,10 @@ type Visit = {
   timestamp: string;
 };
 
+type VisitResponse = {
+  visits: Visit[];
+};
+
 const Visits = () => {
   const [searchUsername, setSearchUsername] = useState("");
   const [visits, setVisits] = useState<Visit[]>([]);
@@ -35,8 +39,8 @@ const Visits = () => {
           throw new Error(`Error fetching visits: ${response.statusText}`);
         }
 
-        const data: Visit[] = await response.json();
-        setVisits(Array.isArray(data) ? data : []);
+        const data: VisitResponse = await response.json();
+        setVisits(data.visits);
       } catch (error: any) {
         console.error("Fetch error:", error);
         setError(error.message || "An unknown error occurred.");

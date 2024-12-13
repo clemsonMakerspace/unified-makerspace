@@ -210,8 +210,7 @@ const Registration = () => {
                 <label htmlFor="class" className="form-label">
                   Class standing
                 </label>
-                <FormMultiselect
-                  id="class"
+                <FormSelect
                   name="class"
                   control={control}
                   values={class_list}

@@ -222,7 +222,7 @@ class BackendApi(Stack):
                 'BRIDGE_PROGRAM_ID': makerspace_program_id,
                 'QUALIFICATIONS_LAMBDA': self.lambda_qualifications_handler.function_name
             },
-            handler='equipment_handler.handler',
+            handler='tiger_training_handler.handler',
             timeout=Duration.seconds(30),
             runtime=aws_lambda.Runtime.PYTHON_3_12)
 

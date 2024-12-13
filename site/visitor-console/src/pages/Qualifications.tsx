@@ -4,15 +4,23 @@ import { api_endpoint } from "../library/constants";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 
+type CompletableItem = {
+  name: string;
+  completion_status: string;
+};
+
+type QualificationsObject = {
+  user_id: string;
+  last_updated: string;
+  trainings: CompletableItem[];
+  waivers: CompletableItem[];
+  miscellaneous: CompletableItem[];
+};
+
 const Qualifications = () => {
   const [searchUsername, setSearchUsername] = useState("");
-  const [qualifications, setQualifications] = useState<{
-    last_updated: string;
-    trainings: { name: string; completion_status: string }[];
-    waivers: { name: string; completion_status: string }[];
-    miscellaneous: { name: string; completion_status: string }[];
-  } | null>(null);
-
+  const [qualifications, setQualifications] =
+    useState<QualificationsObject | null>(null);
   const [loading, setLoading] = useState(false);
   const [userNotFound, setUserNotFound] = useState(false);
   const [refreshStatus, setRefreshStatus] = useState<string | null>(null);
@@ -48,7 +56,7 @@ const Qualifications = () => {
           );
         }
       } else {
-        const data = await response.json();
+        const data: QualificationsObject = await response.json();
         setQualifications(data);
       }
     } catch (error) {
@@ -66,6 +74,7 @@ const Qualifications = () => {
       const response = await fetch(`${api_endpoint}/tiger_training`, {
         headers: {
           "Content-Type": "application/json",
+          "X-Api-Key": import.meta.env.VITE_BACKEND_KEY,
         },
       });
 

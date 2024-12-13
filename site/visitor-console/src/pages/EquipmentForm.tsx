@@ -154,7 +154,7 @@ const EquipmentForm = () => {
         print_status: form_data.print_status || "In Progress",
         print_notes: form_data.print_notes || "",
       }),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString().split(".")[0],
     };
     console.log("Form Submission:", JSON.stringify(dataWithDefaults, null, 2));
 
