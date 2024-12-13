@@ -102,7 +102,16 @@ const Registration = () => {
     }
   };
 
-  if (registered) return <PageCard title="Registration Successful" />;
+  if (registered)
+    return (
+      <PageCard title="Registration Successful">
+        <div className="d-flex justify-content-between">
+          <Link to="/">
+            <button className="btn btn-pastel-purple">Home</button>
+          </Link>
+        </div>
+      </PageCard>
+    );
 
   let userRole = watch("position");
 

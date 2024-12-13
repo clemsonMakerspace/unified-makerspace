@@ -21,11 +21,11 @@ export function getAmplifyConfig(): AmplifyConfig {
       userPoolClientId: "6jf7gq1c7qsrq8jherkgu75ko6",
     };
   } else {
-    // Default to production
+    // Default to beta
     console.log("default env");
     return {
-      userPoolId: "us-east-1_TQ9FwRJ44",
-      userPoolClientId: "58lututlkaggp6h8tu9oauqp5p",
+      userPoolId: "us-east-1_m5CyOD8Z0",
+      userPoolClientId: "6jf7gq1c7qsrq8jherkgu75ko6",
     };
   }
 }

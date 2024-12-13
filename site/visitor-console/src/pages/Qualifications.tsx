@@ -48,7 +48,7 @@ const Qualifications = () => {
       );
 
       if (!response.ok) {
-        if (response.status === 404) {
+        if (response.status === 400) {
           setUserNotFound(true);
         } else {
           throw new Error(
@@ -56,8 +56,23 @@ const Qualifications = () => {
           );
         }
       } else {
-        const data: QualificationsObject = await response.json();
-        setQualifications(data);
+        const data = await response.json();
+
+        const transformItems = (items: any[]): CompletableItem[] =>
+          items.map((item) => ({
+            name: item.name,
+            completion_status: item.completion_status,
+          }));
+
+        const transformedQualifications: QualificationsObject = {
+          user_id: data.user_id,
+          last_updated: data.last_updated,
+          trainings: transformItems(data.trainings),
+          waivers: transformItems(data.waivers),
+          miscellaneous: transformItems(data.miscellaneous),
+        };
+
+        setQualifications(transformedQualifications);
       }
     } catch (error) {
       console.error(error);
@@ -89,6 +104,16 @@ const Qualifications = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const isEmptyQualifications = (
+    qualifications: QualificationsObject
+  ): boolean => {
+    return (
+      qualifications.trainings.length === 0 &&
+      qualifications.waivers.length === 0 &&
+      qualifications.miscellaneous.length === 0
+    );
   };
 
   return (
@@ -135,39 +160,43 @@ const Qualifications = () => {
         {loading ? (
           <p>Loading...</p>
         ) : qualifications ? (
-          <table className="table table-bordered table-primary">
-            <thead>
-              <tr>
-                <th className="text-center align-middle">Type</th>
-                <th className="text-center align-middle">Name</th>
-                <th className="text-center align-middle">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ...qualifications.trainings.map((training) => ({
-                  ...training,
-                  type: "Training",
-                })),
-                ...qualifications.waivers.map((waiver) => ({
-                  ...waiver,
-                  type: "Waiver",
-                })),
-                ...qualifications.miscellaneous.map((misc) => ({
-                  ...misc,
-                  type: "Miscellaneous",
-                })),
-              ].map((item, index) => (
-                <tr key={index}>
-                  <td className="text-center align-middle">{item.type}</td>
-                  <td className="text-center align-middle">{item.name}</td>
-                  <td className="text-center align-middle">
-                    {item.completion_status}
-                  </td>
+          isEmptyQualifications(qualifications) ? (
+            <p>No qualifications found for user {qualifications.user_id}.</p>
+          ) : (
+            <table className="table table-bordered table-primary">
+              <thead>
+                <tr>
+                  <th className="text-center align-middle">Type</th>
+                  <th className="text-center align-middle">Name</th>
+                  <th className="text-center align-middle">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[
+                  ...qualifications.trainings.map((training) => ({
+                    ...training,
+                    type: "Training",
+                  })),
+                  ...qualifications.waivers.map((waiver) => ({
+                    ...waiver,
+                    type: "Waiver",
+                  })),
+                  ...qualifications.miscellaneous.map((misc) => ({
+                    ...misc,
+                    type: "Miscellaneous",
+                  })),
+                ].map((item, index) => (
+                  <tr key={index}>
+                    <td className="text-center align-middle">{item.type}</td>
+                    <td className="text-center align-middle">{item.name}</td>
+                    <td className="text-center align-middle">
+                      {item.completion_status}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
         ) : userNotFound ? (
           <p>No qualifications found for the specified user.</p>
         ) : (
