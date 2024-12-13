@@ -100,7 +100,22 @@ class SharedApiGateway(Stack):
     def create_rest_api(self):
 
         # Create the Rest API
-        self.api = aws_apigateway.RestApi(self, 'SharedApiGateway')
+        self.api = aws_apigateway.RestApi(
+            self,
+            'SharedApiGateway',
+            default_cors_preflight_options=aws_apigateway.CorsOptions(
+                allow_origins=aws_apigateway.Cors.ALL_ORIGINS,  # Allow all origins
+                allow_methods=aws_apigateway.Cors.ALL_METHODS,  # Allow all HTTP methods
+                allow_headers=[
+                    "Content-Type",
+                    "Authorization",
+                    "X-Amz-Date",
+                    "X-Api-Key",
+                    "Accept",
+                    "Origin",
+                ],
+            ),
+        )
 
         # Handle dns integration
         if self.create_dns:
