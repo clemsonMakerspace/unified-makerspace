@@ -233,7 +233,7 @@ class QualificationsHandler():
 
         # User qualifications doesn't exist if length of response['Items'] == 0
         if len(response['Items']) == 0:
-            errorMsg: str = f"No qualificationsfor the user {user_id} could be found. Is there a typo?"
+            errorMsg: str = f"No qualifications for the user {user_id} could be found. Is there a typo?"
             body = { 'errorMsg': errorMsg }
             return buildResponse(statusCode = 400, body = body)
 

@@ -191,7 +191,11 @@ class SharedApiGateway(Stack):
         )
 
     
-    def create_usage_plan(self, plan_name: str = "UsagePlan"):
+    def create_usage_plan(self, stage_name: str, plan_name: str = "UsagePlan"):
+        """
+        This is left as a stub / proof of concept for adding a usage plan
+        to the api gateway.
+        """
         self.plan = self.api.add_usage_plan(
             plan_name,
             name=plan_name,
@@ -201,7 +205,7 @@ class SharedApiGateway(Stack):
             ),
             api_stages=[
                 aws_apigateway.UsagePlanPerApiStage(
-                    stage=self.stage
+                    stage=stage_name
                 )
             ]
         )
