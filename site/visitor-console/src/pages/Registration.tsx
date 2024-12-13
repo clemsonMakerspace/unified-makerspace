@@ -22,8 +22,6 @@ import PageCard from "../components/PageCard";
 
 interface Schema {
   username: string;
-  firstname: string;
-  lastname: string;
   gender: string;
   birthday: Date;
   position: string;
@@ -36,8 +34,6 @@ interface Schema {
 const schema: SchemaOf<Schema> = yup
   .object({
     username: yup.string().required(),
-    firstname: yup.string().required(),
-    lastname: yup.string().required(),
     gender: yup.string().required(),
     birthday: yup.date().required(),
     position: yup.string().required(),
@@ -78,8 +74,6 @@ const Registration = () => {
   const register_user = async (form_data: Schema): Promise<void> => {
     const body = {
       username: form_data.username,
-      firstName: form_data.firstname,
-      lastName: form_data.lastname,
       Gender: form_data.gender,
       DOB: format_date(form_data.birthday),
       UserPosition: form_data.position,
@@ -132,34 +126,6 @@ const Registration = () => {
               type="text"
               placeholder="Enter username here"
               {...register("username")}
-            />
-          </div>
-
-          {/* firstname */}
-          <div className="col-md-6 mb-2">
-            <label htmlFor="firstname" className="form-label">
-              Firstname
-            </label>
-            <input
-              className="form-control col-md-6"
-              type="text"
-              id="firstname"
-              placeholder="Firstname"
-              {...register("firstname")}
-            />
-          </div>
-
-          {/* lastname */}
-          <div className="col-md-6 mb-2">
-            <label htmlFor="firstname" className="form-label">
-              Lastname
-            </label>
-            <input
-              className="form-control"
-              type="text"
-              id="firstname"
-              placeholder="Lastname"
-              {...register("lastname")}
             />
           </div>
 

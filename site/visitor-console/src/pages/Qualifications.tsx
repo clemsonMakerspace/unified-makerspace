@@ -34,7 +34,7 @@ const Qualifications = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": import.meta.env.BACKEND_KEY,
+            "X-Api-Key": import.meta.env.VITE_BACKEND_KEY,
           },
         }
       );

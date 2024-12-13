@@ -12,10 +12,18 @@ from aws_cdk import (
 from constructs import Construct
 import json
 
+from ..accounts_config import accounts
 
 class DataMigrationStack(Stack):
     def __init__(self, scope: Construct, id: str, *, env: Environment) -> None:
         super().__init__(scope, id, env=env)
+
+        # Get Beta and Prod environment information
+        beta_account_id = accounts["Beta"]["account"]
+        beta_region = accounts["Beta"]["region"]
+
+        prod_account_id = accounts["Prod"]["account"]
+        prod_region = accounts["Prod"]["region"]
 
         # Define the Beta S3 bucket for CSV files
         beta_bucket_name = "csvs-for-glue-job"
@@ -83,7 +91,7 @@ class DataMigrationStack(Stack):
         trigger_glue_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 actions=["glue:StartJobRun"],
-                resources=[f"arn:aws:glue:{self.region}:{self.account}:job/{glue_job.name}"]
+                resources=[f"arn:aws:glue:{prod_region}:{prod_account_id}:job/{glue_job.name}"]
             )
         )
 
@@ -97,7 +105,7 @@ class DataMigrationStack(Stack):
                 {
                     "Effect": "Allow",
                     "Principal": {
-                        "AWS": f"arn:aws:iam::{self.account}:role/GlueJobRole"
+                        "AWS": f"arn:aws:iam::{beta_account_id}:role/GlueJobRole"
                     },
                     "Action": ["s3:GetObject", "s3:ListBucket"],
                     "Resource": [
