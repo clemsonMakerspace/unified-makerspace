@@ -13,6 +13,32 @@ from constructs import Construct
 
 
 class Domains:
+    """
+    The Domains class generates domain names based on the deployment stage. These domains
+    are used for configuring hosted zones and DNS records in the Makerspace DNS stack.
+
+    This class ensures consistent domain naming for various services, such as:
+    - API
+    - Visitor login
+    - Maintenance and admin (partially set up, can be extended).
+
+    Parameters:
+    - stage (str): The deployment stage (e.g., "prod", "beta", "dev"). The stage determines
+                   the domain name prefixes. For production, no prefix is added.
+
+    Attributes:
+    - api (str): The domain name for the API service (e.g., "api.cumaker.space").
+    - visit (str): The domain name for the visitor login service (e.g., "visit.cumaker.space").
+    - maintenance (str): The domain name for maintenance services.
+    - admin (str): The domain name for admin services.
+
+    Methods:
+    - domain(prefix: str) -> str:
+        Constructs a domain name using the provided prefix and the current stage.
+
+    Notes:
+    - To expand for other schools or spaces, modify the `domain` method to support additional patterns.
+    """
     def __init__(self, stage: str):
 
         stage = stage.lower()
@@ -46,23 +72,38 @@ class Domains:
 
 class MakerspaceDns(Stack):
     """
-    Register the DNS used by the portions of the makerspace website owned by
-    the capstone in Route53.
+    The MakerspaceDns stack registers DNS zones in Route 53 for the Makerspace application.
+    This includes creating hosted zones for services such as the API and visitor login.
 
-    The DNS for the rest of the makerspace is in Gandi, where we have a
-    record delegating to the Route53 nameservers created by these zones.
+    The stack also configures Route 53 to handle TLS certificates with minimal effort.
 
-    The biggest benefit of having Route53 manage the DNS for the maintenance
-    and visitor login apps is that we can handle the TLS certs in AWS with
-    fewer steps.
-    
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta", "dev") used to determine domain names.
+    - env (Environment): The AWS environment where the stack is deployed, including account and region.
+
+    Key Features:
+    - Configures Public Hosted Zones for:
+        - Visitor login (`visit.cumaker.space`).
+        - API (`api.cumaker.space`).
+        - Maintenance and admin zones (currently unused but partially set up).
+    - Supports delegation of non-production domains to the beta environment's nameservers.
+
+    Methods:
+    - visitors_zone(): Creates a hosted zone for visitor login.
+    - api_zone(): Creates a hosted zone for the API service.
+    - maintenance_zone(): Placeholder for creating a hosted zone for maintenance services.
+    - admin_zone(): Placeholder for creating a hosted zone for admin services.
+
+    Notes:
+    - Non-production stages include prefixes (e.g., "beta-visit.cumaker.space").
+    - Additional A records must be added to fully utilize maintenance and admin zones.
+
     Documentation Links:
         - aws_route53:
             - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53.html 
-            
         - aws_route53.PublicHostedZone: 
             - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53/PublicHostedZone.html  
-            
         - aws_route53.ARecord:
             - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53/ARecord.html
     """
@@ -112,7 +153,42 @@ class MakerspaceDns(Stack):
 
 
 class MakerspaceDnsRecords(Stack):
+    """
+    The MakerspaceDnsRecords stack creates DNS records in Route 53 for the Makerspace application.
+    These records link hosted zones to services such as the API and visitor login.
 
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta", "dev").
+    - env (Environment): The AWS environment where the stack is deployed, including account and region.
+    - zones (MakerspaceDns): An instance of the `MakerspaceDns` stack providing hosted zones.
+    - api_gateway (aws_apigateway.RestApi): The API Gateway resource to be linked to the API hosted zone.
+    - visit_distribution (aws_cloudfront.Distribution): The CloudFront distribution for visitor login.
+
+    Key Features:
+    - Adds DNS A records for:
+        - API hosted zone (`api.cumaker.space`).
+        - Visitor login hosted zone (`visit.cumaker.space`).
+    - Ensures hosted zones are created before DNS records by adding a dependency on `MakerspaceDns`.
+
+    Methods:
+    - api_record(api_gateway): Creates an A record linking the API hosted zone to the API Gateway.
+    - visit_record(visit_distribution): Creates an A record linking the visitor login zone to the CloudFront distribution.
+
+    Notes:
+    - Maintenance and admin zones are not fully configured but can be extended as needed.
+    - A dependency ensures that hosted zones exist before records are added.
+
+    Documentation Links:
+        - aws_route53.ARecord:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53.ARecord.html
+        - aws_route53.RecordTarget:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53.RecordTarget.html
+        - aws_route53_targets.ApiGatewayDomain:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53_targets.ApiGatewayDomain.html
+        - aws_route53_targets.CloudFrontTarget:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53_targets.CloudFrontTarget.html
+    """
     def __init__(self, scope: Construct,
                  stage: str,
                  *,

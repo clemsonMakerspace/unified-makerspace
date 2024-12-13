@@ -21,15 +21,58 @@ import logging
 
 class Visit(Stack):
     """
-    Track visitors to the makerspace via a simple web console. This
-    exists as a backup in case the hardware scanner is not functional.
+    The Visit stack tracks visitors to the Makerspace through a simple web console.
+    This stack provides a backup mechanism for visitor registration in case the 
+    hardware scanner is unavailable.
 
-    This stack contains one primary part and the following workflow:
+    Workflow:
+    1. A static web page (e.g., `visit.cumaker.space`) asks for the Clemson username.
+    2. A backend API call logs the visit.
+    3. Additional registration logic is handled by the visits handler.
+    4. The visit is successfully logged.
 
-    1. A static web page asks for a Clemson username (visit.cumaker.space)
-    2. An api call to the backend api is made to log the visit.
-    3. The visits handler will consider any additional registration logic.
-    4. The user has successfully logged a visit.
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta", "dev").
+    - env (Environment): The AWS environment in which the stack is deployed.
+    - create_dns (bool): Whether to create DNS entries for the application.
+    - zones (MakerspaceDns): An optional instance of the `MakerspaceDns` stack to manage DNS zones.
+
+    Key Features:
+    - **Source Bucket**:
+        - Creates an S3 bucket for storing static website assets.
+        - Grants read access to a CloudFront Origin Access Identity (OAI).
+        - Deploys static files from the local directory (`visit/console/{stage}/`) to the S3 bucket.
+    - **CloudFront Distribution**:
+        - Configures a CloudFront distribution for the static site.
+        - Supports HTTPS with a certificate (if `create_dns` is `True`).
+        - Redirects HTTP requests to HTTPS.
+        - Handles 404 errors by redirecting to `index.html` for React-based routing.
+        - Uses `PRICE_CLASS_100` for cost optimization.
+
+    Methods:
+    - source_bucket():
+        - Creates an S3 bucket for static assets.
+        - Grants CloudFront OAI read access to the bucket.
+        - Deploys static files to the bucket using `BucketDeployment`.
+    - cloudfront_distribution():
+        - Configures a CloudFront distribution for the static site.
+        - Optionally associates a domain name and SSL certificate (if `create_dns` is `True`).
+
+    Notes:
+    - The `create_dns` parameter controls whether DNS records and SSL certificates are set up.
+    - The error handling ensures compatibility with React routing by redirecting all paths to `index.html`.
+    - Static files for deployment must be placed in `visit/console/{stage}/`.
+
+    Documentation Links:
+        - aws_s3.Bucket:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_s3/Bucket.html
+        - aws_cloudfront.Distribution:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_cloudfront/Distribution.html
+        - aws_s3_deployment.BucketDeployment:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_s3_deployment/BucketDeployment.html
+        - aws_certificatemanager.Certificate:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_certificatemanager/Certificate.html
     """
 
     def __init__(self, scope: Construct,

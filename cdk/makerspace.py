@@ -17,6 +17,23 @@ from cognito.cognito_construct import CognitoConstruct
 # from data_migration import DataMigrationStack
 
 class MakerspaceStage(Stage):
+    """
+    The MakerspaceStage class defines the deployment stage for the Makerspace application.
+    It is responsible for creating the `MakerspaceStack` for a specific stage (e.g., "prod", "beta").
+
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta").
+    - env (Environment): The AWS environment, including account and region, where the stack is deployed.
+
+    Key Features:
+    - Defines the deployment pipeline by instantiating the `MakerspaceStack`.
+    - Ensures consistent setup across environments.
+
+    Documentation Links:
+        - aws_cdk.Stage:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.Stage.html
+    """
     def __init__(self, scope: Construct, stage: str, *,
                  env: Environment) -> None:
         super().__init__(scope, stage, env=env)
@@ -25,7 +42,62 @@ class MakerspaceStage(Stage):
 
 
 class MakerspaceStack(Stack):
+    """
+    The MakerspaceStack class sets up the infrastructure required for the Makerspace application.
+    This includes all necessary resources such as databases, APIs, DNS, and authentication.
 
+    Parameters:
+    - app (Construct): The parent application or stack that this stack belongs to.
+    - stage (str): The deployment stage (e.g., "prod", "beta").
+    - env (Environment): The AWS environment, including account and region, where the stack is deployed.
+
+    Key Features:
+    - **Hosted Zones (DNS)**:
+        - Creates Route 53 hosted zones for DNS records using the `MakerspaceDns` stack.
+    - **Database**:
+        - Configures DynamoDB tables for users, visits, equipment, and qualifications using the `Database` stack.
+    - **Cognito**:
+        - Configures an AWS Cognito User Pool and User Pool Client for authentication.
+    - **API Gateway**:
+        - Sets up the `SharedApiGateway` and `BackendApi` for handling API requests.
+    - **Visitor Web Console**:
+        - Deploys the visitor web console with an S3 bucket and CloudFront distribution using the `Visit` stack.
+    - **DNS Records**:
+        - Manages DNS records for the application using the `MakerspaceDnsRecords` stack.
+    - **IAM Permissions**:
+        - Grants Lambda functions appropriate permissions to interact with DynamoDB tables.
+
+    Notes:
+    - Dependencies are explicitly added between stacks to ensure correct order of resource provisioning.
+    - DNS configuration is skipped for "dev" environments based on `create_dns` logic.
+
+    Methods:
+    - `database_stack()`: Creates the `Database` stack for DynamoDB tables.
+    - `visitors_stack()`: Creates the `Visit` stack for the visitor console.
+    - `backend_stack()`: Creates the `BackendApi` stack for API handling.
+    - `shared_api_gateway()`: Creates the `SharedApiGateway` stack for centralized API management.
+    - `hosted_zones_stack()`: Sets up Route 53 hosted zones for DNS.
+    - `dns_records_stack()`: Creates DNS records for the hosted zones.
+    - `cognito_setup()`: Sets up AWS Cognito for authentication.
+
+    Documentation Links:
+        - aws_cdk.Stack:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.Stack.html
+        - aws_cdk.Environment:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.Environment.html
+        - aws_secretsmanager.Secret:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_secretsmanager/Secret.html
+        - aws_cognito.UserPool:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_cognito/UserPool.html
+        - aws_dynamodb.Table:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/Table.html
+        - aws_route53.PublicHostedZone:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_route53/PublicHostedZone.html
+        - aws_cloudfront.Distribution:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_cloudfront/Distribution.html
+        - aws_lambda.Function:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/Function.html
+    """
     def __init__(self, app: Construct, stage: str, *,
                  env: Environment):
         super().__init__(

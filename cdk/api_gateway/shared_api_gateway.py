@@ -22,28 +22,77 @@ from dns import MakerspaceDns
 
 class SharedApiGateway(Stack):
     """
-    Amazon API Gateway for all Lambdas, will be fronted by `api.cumaker.space`.
+    The SharedApiGateway stack sets up an Amazon API Gateway to manage API requests 
+    for multiple Lambda functions. The gateway is fronted by a custom domain 
+    (e.g., `api.cumaker.space`) and serves as a centralized interface for all backend services.
+
+    Purpose
+    ---
+    This API Gateway integrates with various Lambda functions, each responsible for a specific 
+    resource and its associated methods. It provides a RESTful interface where each Lambda 
+    acts as a method handler for its respective resource. For example:
+    - A Lambda function handling `/users` must process all HTTP methods for this resource 
+      (e.g., GET /users, POST /users) as well as its sub-resources (e.g., GET /users/{user_id}).
 
     Structure
     ---
-
-    Each API that integrates with this stack needs to be imported as a Lambda
-    function. For now there's only four, but eventually we should pass them
-    in in some more structured way.
-
-    Each lambda is a method handler thats maps to a resource and is expected to
-    parse and call the appropriate methods to handle the request.
-
-    For example, consider the resource '/users'. There should the utilized lambda
-    must handle all of the method requests for it -- e.g., GET /users -- as well
-    as handle all requests for sub-resources -- e.g., GET /users/{UserID}.
+    The API Gateway is organized into the following resources and paths:
+    - `/users`: Manage user information (GET, POST).
+    - `/users/{user_id}`: Retrieve and update specific user information (GET, PATCH).
+    - `/visits`: Track visits to the Makerspace (GET, POST).
+    - `/visits/{user_id}`: Retrieve visits for a specific user (GET).
+    - `/equipment`: Manage equipment usage logs (GET, POST).
+    - `/equipment/{user_id}`: Retrieve or update equipment logs for a specific user (GET, PATCH).
+    - `/qualifications`: Track Tiger Training qualifications (GET, POST).
+    - `/qualifications/{user_id}`: Retrieve or update a user's qualifications (GET, PATCH).
+    - `/tiger_training`: Interact with Tiger Training data (ANY).
 
     Authorization
     ---
+    - The API uses API keys for authorization.
+    - Future plans include integrating Cognito authorizers for Makerspace employees and CUCourse.
 
-    This API Gateway uses API keys for authorization, but cognito authorizers may
-    be considered soon. The only authorizer we would care about is the cognito pool
-    that keeps track of makerspace employees (and CUCourse).
+    Future Improvements
+    ---
+    Automating the creation of a usage plan and API key is currently not implemented due to time 
+    constraints and challenges with recreating keys. These remain as manual steps for now.
+
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta").
+    - user (aws_lambda.Function): Lambda function for the `/users` resource.
+    - visits (aws_lambda.Function): Lambda function for the `/visits` resource.
+    - qualifications (aws_lambda.Function): Lambda function for the `/qualifications` resource.
+    - equipment (aws_lambda.Function): Lambda function for the `/equipment` resource.
+    - tiger_training (aws_lambda.Function): Lambda function for the `/tiger_training` resource.
+    - env (Environment): The AWS environment, including account and region.
+    - create_dns (bool): Whether to create a custom domain for the API Gateway.
+    - zones (MakerspaceDns): Optional Makerspace DNS configuration.
+
+    Key Features:
+    - **REST API**:
+        - Centralized API Gateway for multiple Lambda integrations.
+        - Default CORS configuration allows all origins and HTTP methods.
+    - **Routing**:
+        - Defines routes for various resources and integrates them with respective Lambda functions.
+    - **Custom Domain**:
+        - Integrates the API Gateway with a custom domain if `create_dns` is enabled.
+    - **Deployment**:
+        - Deploys the API to a stage (e.g., "prod", "beta") and supports future usage plan automation.
+
+    Documentation Links:
+        - aws_apigateway.RestApi:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/RestApi.html
+        - aws_apigateway.CorsOptions:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/CorsOptions.html
+        - aws_apigateway.Stage:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/Stage.html
+        - aws_apigateway.UsagePlan:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/UsagePlan.html
+        - aws_lambda.Function:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/Function.html
+        - aws_certificatemanager.Certificate:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_certificatemanager/Certificate.html
     """
 
     def __init__(self, scope: Construct, stage: str,

@@ -9,6 +9,81 @@ from aws_cdk import (
 from constructs import Construct
 
 class Database(Stack):
+    """
+    The Database stack is responsible for provisioning DynamoDB tables required for 
+    the application, including tables for users, visits, equipment, and qualifications.
+    Each table is configured with specific partition and sort keys, as well as 
+    optional Global Secondary Indexes (GSIs) to support efficient queries.
+
+    This stack performs the following tasks:
+    - Creates DynamoDB tables:
+        - Users Table
+        - Visits Table
+        - Equipment Table
+        - Qualifications Table
+    - Configures GSIs to enhance query capabilities.
+    - Enables point-in-time recovery for all tables.
+    - Retains tables upon stack deletion for data preservation.
+
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "dev", "prod") for environment-specific naming.
+    - env (Environment): The AWS environment, including account and region, in which the stack is deployed.
+
+    DynamoDB Tables:
+    - Users Table:
+        - Partition Key: `user_id` (string)
+        - Example Query: Query by `user_id` to retrieve user information.
+    - Visits Table:
+        - Partition Key: `user_id` (string)
+        - Sort Key: `timestamp` (string)
+        - GSI (TimestampIndex):
+            - Partition Key: `_ignore` (string)
+            - Sort Key: `timestamp` (string)
+        - Example Query:
+            - Query by `user_id` and `timestamp`.
+            - Query the TimestampIndex by `_ignore` and `timestamp`.
+    - Equipment Table:
+        - Partition Key: `user_id` (string)
+        - Sort Key: `timestamp` (string)
+        - GSI (TimestampIndex):
+            - Partition Key: `_ignore` (string)
+            - Sort Key: `timestamp` (string)
+        - Example Query:
+            - Query by `user_id` and `timestamp`.
+            - Query the TimestampIndex by `_ignore` and `timestamp`.
+    - Qualifications Table:
+        - Partition Key: `user_id` (string)
+        - Sort Key: `last_updated` (string)
+        - GSI (TimestampIndex):
+            - Partition Key: `_ignore` (string)
+            - Sort Key: `last_updated` (string)
+        - Example Query:
+            - Query by `user_id` and `last_updated`.
+            - Query the TimestampIndex by `_ignore` and `last_updated`.
+
+    Notes:
+    - All tables are configured with `PAY_PER_REQUEST` billing mode for cost efficiency.
+    - Tables are retained upon stack deletion to avoid accidental data loss.
+    - Point-in-time recovery is enabled to allow data recovery for up to 35 days.
+
+    Outputs:
+    - None: The class focuses solely on resource creation.
+
+    Documentation Links:
+        - aws_dynamodb.Table:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/Table.html
+        - aws_dynamodb.Attribute:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/Attribute.html
+        - aws_dynamodb.BillingMode:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/BillingMode.html
+        - aws_dynamodb.GlobalSecondaryIndex:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/GlobalSecondaryIndex.html
+        - aws_dynamodb.AttributeType:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_dynamodb/AttributeType.html
+        - RemovalPolicy:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk/RemovalPolicy.html
+    """
     def __init__(self, scope: Construct,
                  stage: str, *, env: Environment):
         # Sets up CloudWatch logs and sets level to INFO

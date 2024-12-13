@@ -15,24 +15,70 @@ from dns import Domains
 from accounts_config import accounts
 
 class Pipeline(Stack):
+    """
+    The Pipeline stack sets up a CI/CD pipeline for the Makerspace application, automating
+    the deployment process across Beta and Prod environments. This stack is based on the 
+    blog post: 
+    https://aws.amazon.com/blogs/developer/cdk-pipelines-continuous-delivery-for-aws-cdk-applications/
+
+    Define our pipeline:
+    The pipeline automatically creates and manages the following stages:
+    - **Source**: Fetches the source code from the GitHub repository and triggers the pipeline 
+                  on new commits.
+    - **Build**: Compiles the application (if necessary) and synthesizes the CDK application. 
+                 The output is a Cloud Assembly used for subsequent stages.
+    - **UpdatePipeline**: Updates the pipeline itself when changes are made, such as adding a new 
+                          deployment stage or assets.
+    - **PublishAssets**: Publishes file assets to S3 and Docker images to ECR in relevant accounts 
+                         and regions for use during deployments.
+    - **Beta Deployment**: Deploys the application to the Beta environment and tests the frontend 
+                           and backend endpoints.
+    - **Prod Deployment**: Promotes the Beta deployment to Prod after manual approval and tests 
+                           the frontend and backend endpoints.
+
+    Parameters:
+    - app (App): The parent application that owns this stack.
+    - id (str): The unique identifier for this stack.
+    - env (Environment): The AWS environment where the stack is deployed, including account and region.
+
+    Key Features:
+    - **Pipeline Definition**:
+        - Automatically triggers on commits to the specified branch in the Unified Makerspace repo.
+        - Includes stages for building, testing, and deploying the application.
+    - **Beta Stage**:
+        - Deploys the application to the Beta environment.
+        - Tests the Beta frontend (CloudFront) and backend (Lambda functions).
+    - **Prod Stage**:
+        - Promotes the Beta deployment to Prod with manual approval.
+        - Tests the Prod frontend (CloudFront).
+    - **Secrets Management**:
+        - Retrieves the backend API key from AWS Secrets Manager.
+    - **Shell Steps**:
+        - Performs operations such as dependency installation, environment variable setup, 
+          and CDK synthesis.
+
+    Notes:
+    - The pipeline uses cross-account keys to allow the Prod account to access the artifact bucket.
+    - Build commands ensure compatibility by removing old CDK V1 dependencies and setting up 
+      environment variables for the visitor console frontend.
+
+    Documentation Links:
+        - aws_cdk.pipelines.CodePipeline:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.pipelines/CodePipeline.html
+        - aws_cdk.pipelines.CodePipelineSource:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.pipelines/CodePipelineSource.html
+        - aws_cdk.pipelines.ShellStep:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.pipelines/ShellStep.html
+        - aws_cdk.pipelines.ManualApprovalStep:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.pipelines/ManualApprovalStep.html
+        - aws_secretsmanager.Secret:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_secretsmanager/Secret.html
+        - aws_secretsmanager.SecretValue:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_secretsmanager/SecretValue.html
+    """
     def __init__(self, app: App, id: str, *,
                  env: Environment) -> None:
         super().__init__(app, id, env=env)
-
-        # Define our pipeline
-        #
-        # Our pipeline will automatically create the following stages:
-        # Source          – This stage is probably familiar. It fetches the source of your CDK app from your forked
-        #                   GitHub repo and triggers the pipeline every time you push new commits to it.
-        # Build           – This stage compiles your code (if necessary) and performs a cdk synth. The output of that
-        #                   step is a cloud assembly, which is used to perform all actions in the rest of the pipeline.
-        # UpdatePipeline  – This stage modifies the pipeline if necessary. For example, if you update your code to add
-        #                   a new deployment stage to the pipeline or add a new asset to your application, the pipeline
-        #                   is automatically updated to reflect the changes you made.
-        # PublishAssets   – This stage prepares and publishes all file assets you are using in your app to Amazon Simple
-        #                   Storage Service (Amazon S3) and all Docker images to Amazon Elastic Container Registry
-        #                   (Amazon ECR) in every account and Region from which it’s consumed, so that they can be used
-        #                   during the subsequent deployments.
         
         # Active listener on the designated branch in the Unified Makerspace Repo
         codestar_source = CodePipelineSource.connection("clemsonMakerspace/unified-makerspace", "mainline",
@@ -65,9 +111,8 @@ class Pipeline(Stack):
                 'cd site/visitor-console',
                 'npm install',
 
+                # Add the backend key to the .env file in the visitor-console directory
                 f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > .env',
-                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > src/.env',
-                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > src/pages/.env',
  
                 # build for beta
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',

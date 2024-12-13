@@ -15,17 +15,69 @@ import logging
 
 class BackendApi(Stack):
     """
-    Consolidates all api methods for storing and retrieving data to and from
-    the chosen storage solution.
+    The BackendApi stack consolidates all Lambda functions responsible for storing 
+    and retrieving data to and from the application's storage solution. These functions 
+    are designed to handle various API Gateway requests for user information, visit logs, 
+    equipment usage, and training data.
 
-    This stack contains a few primary parts:
+    Purpose
+    ---
+    This stack provides the backend infrastructure for managing API requests via AWS Lambda. 
+    It integrates with DynamoDB tables for data persistence and uses environment variables 
+    to pass configuration details such as table names and domain endpoints.
 
-    1. An API Gateway routes requests to AWS Lambda
-    2. The lambda functions handle various requests:
-        a. Handling user information
-        b. Handling logging visits
-        c. Handling logging equipment form submissions
-        d. Handling user completion of trainings, waivers, etc.
+    Structure
+    ---
+    The stack includes the following components:
+    1. Lambda Functions:
+        - **Visits Handler**: Manages visit logs.
+        - **Users Handler**: Handles user information.
+        - **Qualifications Handler**: Tracks user progress in training programs.
+        - **Equipment Handler**: Manages equipment usage logs.
+        - **Tiger Training Handler**: Integrates with Bridge LMS to manage training data.
+    2. IAM Policies:
+        - Grants all Lambda functions the `execute-api:Invoke` and `execute-api:ManageConnections` actions.
+    3. Integration with External Services:
+        - Uses AWS Secrets Manager to securely retrieve credentials for Bridge LMS integration.
+
+    Parameters:
+    - scope (Construct): The scope in which this construct is defined.
+    - stage (str): The deployment stage (e.g., "prod", "beta").
+    - users_table_name (str): The name of the DynamoDB table for user data.
+    - visits_table_name (str): The name of the DynamoDB table for visit logs.
+    - equipment_table_name (str): The name of the DynamoDB table for equipment usage logs.
+    - qualifications_table_name (str): The name of the DynamoDB table for training qualifications.
+    - env (Environment): The AWS environment, including account and region.
+    - zones (MakerspaceDns): Optional Makerspace DNS configuration.
+
+    Key Features:
+    - **Lambda Function Provisioning**:
+        - Dynamically provisions Lambda functions for each API endpoint.
+        - Configures environment variables with table names and other settings.
+    - **IAM Policies**:
+        - Adds a policy to all Lambda functions to allow `execute-api:Invoke` and `execute-api:ManageConnections`.
+    - **Integration with Bridge LMS**:
+        - Uses AWS Secrets Manager to securely fetch API keys and credentials for the Tiger Training handler.
+    - **Environment-Specific Configuration**:
+        - Configures the API endpoint based on the deployment stage and DNS settings.
+
+    Notes:
+    - The Tiger Training handler is created last to ensure dependencies, such as the qualifications handler's 
+      function name, are resolved.
+
+    Documentation Links:
+        - aws_lambda.Function:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/Function.html
+        - aws_iam.PolicyStatement:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_iam/PolicyStatement.html
+        - aws_secretsmanager.Secret:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_secretsmanager/Secret.html
+        - aws_lambda.Code:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/Code.html
+        - aws_lambda.Runtime:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/Runtime.html
+        - aws_lambda.EnvironmentVariable:
+            - https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_lambda/EnvironmentVariable.html
     """
 
     def __init__(self, scope: Construct,

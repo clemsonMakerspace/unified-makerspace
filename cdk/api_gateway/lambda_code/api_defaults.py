@@ -120,7 +120,10 @@ def buildResponse(statusCode: int, body: dict):
     return {
         "statusCode": statusCode,
 		"headers": {
-			"Content-Type": "application/json"
+			'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*',
+            "Content-Type": "application/json",
 		},
         "body": json.dumps(body)
     }
