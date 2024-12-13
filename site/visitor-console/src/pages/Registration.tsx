@@ -15,6 +15,7 @@ import {
   gradyears,
   gradsemesters,
   userPosition,
+  class_list,
 } from "../library/constants";
 import FormSelect from "../components/FormSelect";
 import FormMultiselect from "../components/FormMultiselect";
@@ -27,6 +28,7 @@ interface Schema {
   position: string;
   gradsemester?: string;
   gradyear?: string;
+  class?: string;
   major?: string[];
   minor?: string[];
 }
@@ -42,6 +44,10 @@ const schema: SchemaOf<Schema> = yup
       then: yup.string().required(),
     }),
     gradyear: yup.string().when("position", {
+      is: "Undergraduate Student",
+      then: yup.string().required(),
+    }),
+    class: yup.string().when("position", {
       is: "Undergraduate Student",
       then: yup.string().required(),
     }),
@@ -73,15 +79,18 @@ const Registration = () => {
 
   const register_user = async (form_data: Schema): Promise<void> => {
     const body = {
-      username: form_data.username,
-      Gender: form_data.gender,
-      DOB: format_date(form_data.birthday),
-      UserPosition: form_data.position,
+      user_id: form_data.username,
+      gender: form_data.gender,
+      birthday: format_date(form_data.birthday),
+      university_status: form_data.position,
+      undergraduate_class: form_data.class,
       GradSemester: form_data.gradsemester,
       GradYear: form_data.gradyear,
-      Major: form_data.major,
-      Minor: form_data.minor,
+      major: form_data.major,
+      minor: form_data.minor,
     };
+
+    console.log(body);
 
     try {
       const response = await fetch(`${api_endpoint}/users`, {
@@ -189,10 +198,23 @@ const Registration = () => {
                 />
               </div>
 
+              {/* class standing */}
+              <div className="col-12 mb-2">
+                <label htmlFor="class" className="form-label">
+                  Class standing
+                </label>
+                <FormMultiselect
+                  id="class"
+                  name="class"
+                  control={control}
+                  values={class_list}
+                />
+              </div>
+
               {/* major */}
               <div className="col-12 mb-2">
                 <label htmlFor="major" className="form-label">
-                  Major(s)
+                  Major
                 </label>
                 <FormMultiselect
                   id="major"
@@ -206,7 +228,7 @@ const Registration = () => {
               {/* minor */}
               <div className="col-12 mb-2">
                 <label htmlFor="minor" className="form-label">
-                  Minor(s)
+                  Minor
                 </label>
                 <FormMultiselect
                   id="minor"

@@ -11,7 +11,7 @@ const Admin = () => {
   return (
     <PageCard title="Admin Page" subtitle="Dashboards">
       <div className="d-flex flex-wrap justify-content-center">
-        <a href="https://www.google.com">
+        <a href="https://cucourse.app.clemson.edu/makerspace/sessions.php">
           <button className="btn btn-secondary me-2">Sign-In</button>
         </a>
         <Link to={"/qualifications"}>
@@ -35,10 +35,6 @@ const Admin = () => {
   );
 };
 
-export default Admin;
-
-/*
 export default withAuthenticator(Admin, {
   hideSignUp: true,
 });
-*/

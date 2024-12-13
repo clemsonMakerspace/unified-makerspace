@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import { api_endpoint } from "../library/constants";
-//import { withAuthenticator } from "@aws-amplify/ui-react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 import EditModal from "../components/EditModal";
 
@@ -63,9 +63,10 @@ const EquipmentUsage = () => {
         }
 
         const data: EquipmentLog[] = await response.json();
-        setEquipmentLogs(data);
+        setEquipmentLogs(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching equipment logs:", error);
+        setEquipmentLogs([]);
       } finally {
         setLoading(false);
       }
@@ -203,10 +204,6 @@ const EquipmentUsage = () => {
   );
 };
 
-export default EquipmentUsage;
-
-/*
-export default withAuthenticator(Qualifications, {
+export default withAuthenticator(EquipmentUsage, {
   hideSignUp: true,
 });
-*/

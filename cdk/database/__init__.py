@@ -161,17 +161,21 @@ class Database(Stack):
                     })
         """
         
-        self.visits_table = aws_dynamodb.Table(self,
-                                                self.visits_id,
-                                                point_in_time_recovery=True,
-                                                removal_policy=RemovalPolicy.RETAIN,
-                                                sort_key=aws_dynamodb.Attribute(
-                                                    name='user_id',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                partition_key=aws_dynamodb.Attribute(
-                                                    name='timestamp',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
+        self.visits_table = aws_dynamodb.Table(
+            self,
+            self.visits_id,
+            point_in_time_recovery=True,
+            removal_policy=RemovalPolicy.RETAIN,
+            partition_key=aws_dynamodb.Attribute(
+                name='user_id',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            sort_key=aws_dynamodb.Attribute(
+                name='timestamp',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
         
         # Add GSI with _ignore as partition key and timestamp as sort key
         self.visits_table.add_global_secondary_index(
@@ -214,17 +218,21 @@ class Database(Stack):
                     })
         """
         
-        self.equipment_table = aws_dynamodb.Table(self,
-                                                self.equipment_id,
-                                                point_in_time_recovery=True,
-                                                removal_policy=RemovalPolicy.RETAIN,
-                                                sort_key=aws_dynamodb.Attribute(
-                                                    name='user_id',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                partition_key=aws_dynamodb.Attribute(
-                                                    name='timestamp',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
+        self.equipment_table = aws_dynamodb.Table(
+            self,
+            self.equipment_id,
+            point_in_time_recovery=True,
+            removal_policy=RemovalPolicy.RETAIN,
+            partition_key=aws_dynamodb.Attribute(
+                name='user_id',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            sort_key=aws_dynamodb.Attribute(
+                name='timestamp',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
         
         # Add GSI with _ignore as partition key and timestamp as sort key
         self.equipment_table.add_global_secondary_index(
@@ -267,17 +275,21 @@ class Database(Stack):
                     })
         """
         
-        self.qualifications_table = aws_dynamodb.Table(self,
-                                                self.qualifications_id,
-                                                point_in_time_recovery=True,
-                                                removal_policy=RemovalPolicy.RETAIN,
-                                                sort_key=aws_dynamodb.Attribute(
-                                                    name='user_id',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                partition_key=aws_dynamodb.Attribute(
-                                                    name='last_updated',
-                                                    type=aws_dynamodb.AttributeType.STRING),
-                                                billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST)
+        self.qualifications_table = aws_dynamodb.Table(
+            self,
+            self.qualifications_id,
+            point_in_time_recovery=True,
+            removal_policy=RemovalPolicy.RETAIN,
+            partition_key=aws_dynamodb.Attribute(
+                name='user_id',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            sort_key=aws_dynamodb.Attribute(
+                name='last_updated',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
         
         # Add GSI with _ignore as partition key and last_updated as sort key
         self.qualifications_table.add_global_secondary_index(

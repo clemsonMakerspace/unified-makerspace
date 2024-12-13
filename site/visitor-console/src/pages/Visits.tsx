@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import { api_endpoint } from "../library/constants";
-//import { withAuthenticator } from "@aws-amplify/ui-react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 
 // Define the type for a visit
@@ -36,9 +36,11 @@ const Visits = () => {
         }
 
         const data: Visit[] = await response.json();
-        setVisits(data);
-      } catch (error) {
-        console.log(error);
+        setVisits(Array.isArray(data) ? data : []);
+      } catch (error: any) {
+        console.error("Fetch error:", error);
+        setError(error.message || "An unknown error occurred.");
+        setVisits([]);
       } finally {
         setLoading(false);
       }
@@ -151,10 +153,6 @@ const Visits = () => {
   );
 };
 
-export default Visits;
-
-/*
 export default withAuthenticator(Visits, {
   hideSignUp: true,
 });
-*/

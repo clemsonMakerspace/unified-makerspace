@@ -25,8 +25,6 @@ const App = () => {
     });
   }, []);
 
-  console.log(import.meta.env.VITE_BACKEND_KEY);
-
   return (
     <Router>
       <Routes>

@@ -178,10 +178,6 @@ const Qualifications = () => {
   );
 };
 
-export default Qualifications;
-
-/*
 export default withAuthenticator(Qualifications, {
   hideSignUp: true,
 });
-*/
