@@ -57,39 +57,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         )}
       </div>
 
-      {/* Research & Creative Inquiry Specific Details */}
-      {(projectType === "Research Project" ||
-        projectType === "Creative Inquiry") && (
-        <>
-          <div className="col-12 mb-2">
-            <label htmlFor="class_number" className="form-label">
-              Project details
-            </label>
-            <input
-              id="class_number"
-              className="form-control"
-              type="text"
-              placeholder="Enter project name"
-              {...register("class_number")}
-            />
-          </div>
-          <div className="col-12 mb-2">
-            <label htmlFor="class_number" className="form-label">
-              What is your department?
-            </label>
-            <input
-              id="class_number"
-              className="form-control"
-              type="text"
-              placeholder="Enter project name"
-              {...register("class_number")}
-            />
-          </div>
-        </>
-      )}
-
       {/* Class Project Specific Details */}
-      {projectType === "Class Assignment" && (
+      {projectType === "Class" && (
         <>
           <div className="col-12 mb-2">
             <label htmlFor="class_number" className="form-label">
@@ -121,41 +90,26 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
               <p className="text-danger">{errors.faculty_name.message}</p>
             )}
           </div>
-        </>
-      )}
-
-      {/* Senior Design Specific Details */}
-      {projectType === "Senior Design" && (
-        <>
-          <div className="col-12 mb-2">
-            <label htmlFor="faculty_name" className="form-label">
-              Who is your advisor for the project?
-            </label>
-            <input
-              id="faculty_name"
-              className="form-control"
-              type="text"
-              placeholder="Enter name as First Last"
-              {...register("faculty_name")}
-            />
-          </div>
           <div className="col-12 mb-2">
             <label htmlFor="project_sponsor" className="form-label">
-              Who is the project sponsor?
+              Who is the project sponsor? (N/A if none)
             </label>
             <input
               id="project_sponsor"
               className="form-control"
               type="text"
-              placeholder="Enter company, department or organization"
+              placeholder="Please enter as First Last"
               {...register("project_sponsor")}
             />
+            {errors.project_sponsor && (
+              <p className="text-danger">{errors.project_sponsor.message}</p>
+            )}
           </div>
         </>
       )}
 
       {/* Club Specific Details */}
-      {projectType === "Club/Organization" && (
+      {projectType === "Club" && (
         <>
           <div className="col-12 mb-2">
             <label htmlFor="organization_affiliation" className="form-label">

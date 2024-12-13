@@ -221,6 +221,10 @@ class EquipmentHandler():
         # Always force GSI_ATTRIBUTE_NAME key to have value of "1"
         data[GSI_ATTRIBUTE_NAME] = "1"
 
+        # Make sure "print_mass" field at least exists
+        if "print_mass" not in data:
+            data["print_mass"] = ""
+
         # Actually try putting the item into the table
         try:
             self.equipment_table.put_item(
@@ -331,6 +335,10 @@ class EquipmentHandler():
         # Ensure data[GSI_ATTRIBUTE_NAME] == '1'
         data[GSI_ATTRIBUTE_NAME] = '1'
 
+        # Make sure "print_mass" field at least exists
+        if "print_mass" not in data:
+            data["print_mass"] = ""
+
         # Copy all all fields from data to user
         for key in data:
             equipment_log[key] = data[key]
@@ -393,7 +401,7 @@ class EquipmentHandler():
         required field to check is '3d_printer_info' when the type is 'SLA Printer'
         or 'FDM 3D Printer'. Otherwise, just make sure that the '3d_printer_info'
         field is disallowed for all other types. In the future, split equipment
-        type fields into more specificly defined ones as needed.
+        type fields into more specificaly defined ones as needed.
         """
         printer_3d_fields = FieldCheck(
             required = ["3d_printer_info"],
@@ -405,25 +413,15 @@ class EquipmentHandler():
             disallowed = ["3d_printer_info"]
         )
 
-        equipment_type_field_lookup: dict = {
-            "FDM 3D Printer": printer_3d_fields, 
-            "SLA Printer": printer_3d_fields, 
-            "Laser Engraver": other_equipment_type_fields, 
-            "Glowforge": other_equipment_type_fields, 
-            "Fabric Printer": other_equipment_type_fields, 
-            "Vinyl Cutter": other_equipment_type_fields, 
-            "Button Maker": other_equipment_type_fields, 
-            "3D Scanner": other_equipment_type_fields, 
-            "Hand Tools": other_equipment_type_fields, 
-            "Sticker Printer": other_equipment_type_fields, 
-            "Embroidery Machine": other_equipment_type_fields, 
+        required_equipment_field_check_lookup: dict = {
+            "FDM 3D Printer (Plastic)": printer_3d_fields, 
+            "SLA Printer (Resin)": printer_3d_fields, 
+            "Other": other_equipment_type_fields,
         }
-
-        valid_equipment_types: list[str] = [key for key in equipment_type_field_lookup]
 
         # Used to check contents of '3d_printer_info' object
         equipment_3d_printer_info_fields: list[str] = ["printer_name", "print_duration",
-                                                "print_mass", "print_mass_estimate",
+                                                "print_mass_estimate",
                                                 "print_status", "print_notes"]
 
         # Ensure all required fields are present
@@ -437,11 +435,10 @@ class EquipmentHandler():
             errorMsg: str = f"project_type {project_type} is not one of the valid project types {valid_project_types}."
             raise InvalidRequestBody(errorMsg)
 
-        # Error if equipment_type is not one of the defined ones
+        # Set equipment_type to "Other" if it doesn't require field checks
         equipment_type: str = data['equipment_type']
-        if equipment_type not in equipment_type_field_lookup:
-            errorMsg: str = f"equipment_type {equipment_type} is not one of the valid equipment types {valid_equipment_types}."
-            raise InvalidRequestBody(errorMsg)
+        if equipment_type not in required_equipment_field_check_lookup:
+            equipment_type = "Other"
 
         # Check for and clean fields related to 'project_type'
         checking_fields = project_type_field_lookup[project_type]
@@ -453,7 +450,7 @@ class EquipmentHandler():
             raise InvalidRequestBody(errorMsg)
 
         # Check for and clean fields related to 'equipment_type'
-        checking_fields = equipment_type_field_lookup[equipment_type]
+        checking_fields = required_equipment_field_check_lookup[equipment_type]
         try:
             data = checkAndCleanRequestFields(data, checking_fields)
         except InvalidRequestBody:

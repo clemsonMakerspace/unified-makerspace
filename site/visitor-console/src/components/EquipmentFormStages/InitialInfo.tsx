@@ -61,7 +61,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
           className="form-control"
           type="text"
           placeholder="Enter username here"
-          {...register("username")}
+          {...register("user_id")}
         />
         {errors.username && (
           <p className="text-danger">{errors.username.message}</p>
@@ -151,15 +151,15 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
             <>
               {/* Print Mass */}
               <div className="col-12 mb-2">
-                <label htmlFor="print_mass" className="form-label">
-                  Print Mass
+                <label htmlFor="print_mass_estimate" className="form-label">
+                  Print Mass Estimate
                 </label>
                 <input
-                  id="print_mass"
+                  id="print_mass_estimate"
                   className="form-control"
                   type="text"
                   placeholder="Enter print mass"
-                  {...register("print_mass")}
+                  {...register("print_mass_estimate")}
                 />
                 {errors.print_mass && (
                   <p className="text-danger">{errors.print_mass.message}</p>

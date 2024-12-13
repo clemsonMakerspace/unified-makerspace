@@ -8,7 +8,7 @@ export const format_date = (date: Date) => date.toISOString().split("T")[0];
 
 export const locations = [
   {
-    name: "Watt Family Innovation Center",
+    name: "Watt",
     tools: [
       "FDM 3D Printer (Plastic)",
       "SLA 3D Printer (Resin)",
@@ -45,7 +45,7 @@ export const locations = [
     sla_printers: ["Hopeful Terrier", "Inspiring Llama"],
   },
   {
-    name: "Cooper Library",
+    name: "Cooper",
     tools: [
       "FDM 3D Printer (Plastic)",
       "Button Maker",
@@ -82,18 +82,14 @@ export const locations = [
     ],
   },
   {
-    name: "CU ICAR",
+    name: "CUICAR",
     tools: ["Waterjet", "Visiting"],
   },
 ];
 
 export const genders = ["Male", "Female", "Other"];
 
-export const userPosition = [
-  "Undergraduate Student",
-  "Graduate Student",
-  "Faculty/Staff",
-];
+export const userPosition = ["Undergraduate", "Graduate", "Faculty"];
 
 export const gradsemesters = ["Fall", "Spring", "Summer"];
 
@@ -338,14 +334,7 @@ export const equipmentTypes = [
   "new thing",
 ];
 
-export const projectTypes = [
-  "Personal Project",
-  "Research Project",
-  "Class Assignment",
-  "Creative Inquiry",
-  "Senior Design",
-  "Club/Organization",
-];
+export const projectTypes = ["Personal", "Class", "Club"];
 
 export const surveryScores = [
   "10",

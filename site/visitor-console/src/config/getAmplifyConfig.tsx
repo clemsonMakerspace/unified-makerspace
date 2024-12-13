@@ -17,8 +17,8 @@ export function getAmplifyConfig(): AmplifyConfig {
   } else if (hostname === "beta-visit.cumaker.space") {
     console.log("beta env");
     return {
-      userPoolId: "us-east-1_7a59HeiH9",
-      userPoolClientId: "2f3ta1jhat9vpct10pvr7t8f3q",
+      userPoolId: "us-east-1_m5CyOD8Z0",
+      userPoolClientId: "6jf7gq1c7qsrq8jherkgu75ko6",
     };
   } else {
     // Default to production

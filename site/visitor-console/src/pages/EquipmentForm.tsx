@@ -6,14 +6,14 @@ import * as yup from "yup";
 import { api_endpoint } from "../library/constants";
 
 import PageCard from "../components/PageCard";
-import { equipmentTypes, projectTypes } from "../library/constants";
+import { projectTypes } from "../library/constants";
 
 import InitialInfo from "../components/EquipmentFormStages/InitialInfo";
 import ProjectDetails from "../components/EquipmentFormStages/ProjectDetails";
 import Survey from "../components/EquipmentFormStages/Survey";
 
 interface Schema {
-  username: string;
+  user_id: string;
   timestamp: string;
   location: string;
   equipment_type: string;
@@ -44,9 +44,9 @@ interface Schema {
 const stageSchemas = [
   // First stage - Initial Info
   yup.object({
-    username: yup.string().required(),
+    user_id: yup.string().required(),
     location: yup.string().required(),
-    equipment_type: yup.string().oneOf(equipmentTypes).required(),
+    equipment_type: yup.string().required(),
     equipment_history: yup.string().required(),
 
     // Printer fields with conditional validation
@@ -154,6 +154,7 @@ const EquipmentForm = () => {
         print_status: form_data.print_status || "In Progress",
         print_notes: form_data.print_notes || "",
       }),
+      timestamp: new Date().toISOString(),
     };
     console.log("Form Submission:", JSON.stringify(dataWithDefaults, null, 2));
 
@@ -163,7 +164,7 @@ const EquipmentForm = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form_data),
+        body: JSON.stringify(dataWithDefaults),
       });
 
       if (response.ok) {
