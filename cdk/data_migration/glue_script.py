@@ -36,8 +36,7 @@ df = df.toDF(*[col.strip() for col in df.columns])
 # Rename columns to match DynamoDB schema for visit information
 df = df.withColumnRenamed("Timestamp", "timestamp") \
        .withColumnRenamed("Where are you", "location") \
-       .withColumnRenamed("CU Username (the text before your @clemson email)", "user_id") \
-       .withColumn("name", lit(""))  # Add an empty column for "name"
+       .withColumnRenamed("CU Username (the text before your @clemson email)", "user_id")
 
 # Extract and process visit data
 visitData = df.select("user_id", "timestamp", "location", "name")
@@ -53,7 +52,6 @@ for row in visitData.collect():
             'user_id':          row.user_id,
             'timestamp':        row.timestamp,
             'location':         row.location,
-            'name':             "",
             '_ignore':          "1",
             # Add other user attributes if needed
         })

@@ -2,6 +2,8 @@
 # This stack is based on the following blog post:
 # https://aws.amazon.com/blogs/developer/cdk-pipelines-continuous-delivery-for-aws-cdk-applications/
 from aws_cdk import (
+    aws_secretsmanager,
+    SecretValue,
     App,
     Stack,
     Environment
@@ -37,6 +39,15 @@ class Pipeline(Stack):
                 connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
             )
         
+        # Retrieve backend api key from secrets manager
+        secret_name: str = "SharedApiGatewayKey"
+        shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
+                self, 
+                "SharedGatewaySecrets",
+                secret_name
+        )
+        shared_api_key: SecretValue = shared_secrets.secret_value_from_json("api_key")
+
         # Commands used to build pipeline in the Build stage
         deploy_cdk_shell_step = ShellStep("Synth",
             # Use a connection created using the AWS console to authenticate to GitHub
@@ -53,6 +64,10 @@ class Pipeline(Stack):
                 # install dependancies for frontend
                 'cd site/visitor-console',
                 'npm install',
+
+                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > .env',
+                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > src/.env',
+                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > src/pages/.env',
  
                 # build for beta
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',

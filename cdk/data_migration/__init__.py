@@ -18,7 +18,7 @@ class DataMigrationStack(Stack):
         super().__init__(scope, id, env=env)
 
         # Define the Beta S3 bucket for CSV files
-        beta_bucket_name = "testing-trigger-for-glue-job"
+        beta_bucket_name = "csvs-for-glue-job"
 
         # Create a dedicated S3 bucket for Glue temporary data
         temp_bucket = s3.Bucket(self, "GlueTempBucket",
