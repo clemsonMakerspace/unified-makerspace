@@ -39,20 +39,11 @@ const schema: SchemaOf<Schema> = yup
     gender: yup.string().required(),
     birthday: yup.date().required(),
     position: yup.string().required(),
-    gradsemester: yup.string().when("position", {
-      is: "Undergraduate Student",
-      then: yup.string().required(),
-    }),
-    gradyear: yup.string().when("position", {
-      is: "Undergraduate Student",
-      then: yup.string().required(),
-    }),
-    class: yup.string().when("position", {
-      is: "Undergraduate Student",
-      then: yup.string().required(),
-    }),
+    gradsemester: yup.string(),
+    gradyear: yup.string(),
+    class: yup.string(),
     major: yup.array().when("position", {
-      is: "Undergraduate Student",
+      is: (value: string) => value === "Undergraduate" || value === "Graduate",
       then: yup.array().required(),
     }),
     minor: yup.array(),
@@ -89,8 +80,6 @@ const Registration = () => {
       major: form_data.major,
       minor: form_data.minor,
     };
-
-    console.log(body);
 
     try {
       const response = await fetch(`${api_endpoint}/users`, {
@@ -172,7 +161,25 @@ const Registration = () => {
             />
           </div>
 
-          {userRole === "Undergraduate Student" && (
+          {userRole === "Graduate" && (
+            <>
+              {/* major */}
+              <div className="col-12 mb-2">
+                <label htmlFor="major" className="form-label">
+                  Major
+                </label>
+                <FormMultiselect
+                  id="major"
+                  name="major"
+                  limit={2}
+                  control={control}
+                  values={majors}
+                />
+              </div>
+            </>
+          )}
+
+          {userRole === "Undergraduate" && (
             <>
               {/* Graduating Semester */}
               <div className="col-md-6 mb-2">

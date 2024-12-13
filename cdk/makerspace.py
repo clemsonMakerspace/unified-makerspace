@@ -143,13 +143,9 @@ class MakerspaceStack(Stack):
         self.database.visits_table.grant_read_write_data(
             self.backend_api.lambda_visits_handler)
 
+        # Both visits and users handlers need access to users table
         self.database.users_table.grant_read_data(self.backend_api.lambda_visits_handler)
-        self.database.users_table.grant_read_data(self.backend_api.lambda_equipment_handler)
         self.database.users_table.grant_read_write_data(self.backend_api.lambda_users_handler)
-        
-        #! Do not have a lambda register handler
-        # self.database.users_table.grant_read_write_data(
-        #     self.backend_api.lambda_register_handler)
         
         self.database.equipment_table.grant_read_write_data(self.backend_api.lambda_equipment_handler)
         
