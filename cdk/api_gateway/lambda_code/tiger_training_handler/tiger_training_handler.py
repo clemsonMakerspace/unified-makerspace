@@ -305,7 +305,7 @@ class TigerTrainingHandler():
 
 
     def handle_event(self, event, context):
-        #logger.info(f"EVENT:\n{event}")
+        logger.info(f"EVENT:\n{event}")
 
         try:
 
@@ -354,10 +354,13 @@ class TigerTrainingHandler():
 
             response = buildResponse(statusCode = 200, body = {})
 
-        except:
+        except Exception as e:
+            logger.info(f"Exception:\n{e}")
             errorMsg: str = f"We're sorry, but something happened. Try again later."
             body = { 'errorMsg': errorMsg }
-            return buildResponse(statusCode = 500, body = body)
+            response = buildResponse(statusCode = 500, body = body)
+
+        return response
 
     def send_event_to_lambda(self, target_lambda: str, event: dict) -> dict:
         """
@@ -370,7 +373,7 @@ class TigerTrainingHandler():
 
         response: dict = self.lambda_client.invoke(
             FunctionName=target_lambda,
-            Payload=event
+            Payload=json.dumps(event)
         )
 
         return response
@@ -581,10 +584,5 @@ class TigerTrainingHandler():
 def handler(event, context):
     # Pull qualification data from the Makerspace's Tiger Training program,
     # and POST it to the backend api.
-    try:
-        print("Hi")
-        tiger_training_handler = TigerTrainingHandler()
-        tiger_training_handler.handle_event(event, context)
-    except Exception as e:
-        print(e)
-        raise Exception(e)
+    tiger_training_handler = TigerTrainingHandler()
+    return tiger_training_handler.handle_event(event, context)

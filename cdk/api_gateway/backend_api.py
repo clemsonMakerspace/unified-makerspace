@@ -126,6 +126,9 @@ class BackendApi(Stack):
         self.lambda_equipment_handler.role.add_to_policy(self.api_invoke_policy)
         self.lambda_tiger_training_handler.role.add_to_policy(self.api_invoke_policy)
 
+        # Allow tiger training to invoke qualifications
+        self.lambda_qualifications_handler.grant_invoke(self.lambda_tiger_training_handler)
+
 
     def visits_handler_lambda(self, visits_table_name: str, users_table_name: str, domain_name: str):
 
