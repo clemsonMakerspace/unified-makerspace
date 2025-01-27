@@ -74,7 +74,6 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
       <Modal.Body>
         {log ? (
           <>
-            {/* Display static fields */}
             {Object.entries(log).map(([key, value]) => {
               if (
                 key === "print_status" ||
@@ -86,10 +85,26 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
                 return null;
               }
 
+              if (typeof value === "object") {
+                // Handle nested objects
+                return (
+                  <div className="mb-2" key={key}>
+                    <strong>{key}:</strong>
+                    <ul>
+                      {Object.entries(value).map(([nestedKey, nestedValue]) => (
+                        <li key={nestedKey}>
+                          {nestedKey}: {nestedValue}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }
+
               return (
                 <div className="mb-2" key={key}>
                   <span>
-                    {key}: {value}
+                    <strong>{key}:</strong> {value}
                   </span>
                 </div>
               );

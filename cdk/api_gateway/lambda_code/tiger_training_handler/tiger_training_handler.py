@@ -103,7 +103,6 @@ class Learner():
         """
 
         if self.is_timestamp_greater_than_class_latest(self.last_updated):
-            logger.info(f"UPDATING CLASS TIMESTAMP: {self}")
             Learner._latest_timestamp_learner = self
 
 
@@ -207,7 +206,6 @@ class Course():
                 # Append course
                 learners[user_id].add_enrolled_course(self.name, "Complete")
 
-                logger.info(f"Trying to update Learner stuff with {user_id} for {self.name} with timestamp {last_updated}")
                 # Try updating the last_updated timestamp for the learner (and class)
                 learners[user_id].update_timestamp(last_updated)
 
@@ -305,10 +303,8 @@ class TigerTrainingHandler():
 
 
     def handle_event(self, event, context):
-        logger.info(f"EVENT:\n{event}")
 
         try:
-
             # Get all of the courses in the program
             self.program.get_courses(self.bridge_url, self.bridge_auth_token)
 
@@ -328,7 +324,13 @@ class TigerTrainingHandler():
             # Learner class stores a reference to the learner with the latest
             # last_updated value. Add this learner or update the existing one
             # depending on if the stored user_id is in learners or not.
-            latest_learner = Learner._latest_timestamp_learner
+            latest_learner: Learner = Learner._latest_timestamp_learner
+            
+            # If latest_learner is None, this means there were no users
+            # returned from the data at all (should happen only for all new
+            # courses with no users enrolled at all). Return success early
+            if type(latest_learner) is type(None):
+                return buildResponse(statusCode = 200, body = {})
 
             if latest_learner.user_id not in learners:
                 learners[latest_learner.user_id] = latest_learner
@@ -336,10 +338,10 @@ class TigerTrainingHandler():
             else:
                 learners[latest_learner.user_id].update_timestamp(latest_learner.last_updated)
 
+
             # Send patch request to the backend api to update each user's qualifications
             for user_id in learners:
                 learner = learners[user_id]
-                logger.info(f"Sending patch for user {user_id}")
                 status, response = self.patch_learner_aws(
                         learner
                 )
@@ -349,13 +351,11 @@ class TigerTrainingHandler():
                 yet. Post the enrollments instead to add the user to the qualifications.
                 """
                 if status == 400:
-                    logger.info(f"{user_id} not yet created. Sending post")
                     self.post_learner_aws(learner)
 
             response = buildResponse(statusCode = 200, body = {})
 
         except Exception as e:
-            logger.info(f"Exception:\n{e}")
             errorMsg: str = f"We're sorry, but something happened. Try again later."
             body = { 'errorMsg': errorMsg }
             response = buildResponse(statusCode = 500, body = body)
@@ -371,11 +371,15 @@ class TigerTrainingHandler():
         :returns: Response dictionary from the lambda function.
         """
 
-        response: dict = self.lambda_client.invoke(
-            FunctionName=target_lambda,
-            Payload=json.dumps(event)
-        )
+        try:
+            content: dict = self.lambda_client.invoke(
+                FunctionName=target_lambda,
+                Payload=json.dumps(event)
+            )
+        except Exception as e:
+            raise Exception(e)
 
+        response = json.loads(content['Payload'].read())
         return response
 
 
@@ -575,7 +579,6 @@ class TigerTrainingHandler():
 
         # Add TZ_OFFSET
         bridge_timestamp = bridge_timestamp + TZ_OFFSET
-        logger.info(f"USING BASE TIMESTAMP {bridge_timestamp}")
 
         # Return the timestamp
         return bridge_timestamp
