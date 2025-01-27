@@ -94,13 +94,15 @@ class Pipeline(Stack):
                 beta_secret_name
         )
         beta_shared_api_key: SecretValue = beta_shared_secrets.secret_value_from_json("api_key")
+        print(f"Beta key: {beta_shared_api_key.to_string()}")
 
         prod_shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
                 self, 
                 "ProdSharedGatewaySecrets",
                 prod_secret_name
         )
-        prod_shared_api_key: SecretValue = beta_shared_secrets.secret_value_from_json("api_key")
+        prod_shared_api_key: SecretValue = prod_shared_secrets.secret_value_from_json("api_key")
+        print(f"Prod key: {prod_shared_api_key.to_string()}")
 
         # Commands used to build pipeline in the Build stage
         deploy_cdk_shell_step = ShellStep("Synth",
@@ -120,14 +122,12 @@ class Pipeline(Stack):
                 'npm install',
 
                 # build for beta
-                f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" '\
-                    + f'VITE_BACKEND_KEY={beta_shared_api_key.to_string()} npm run build',
+                f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" VITE_BACKEND_KEY={beta_shared_api_key.to_string()} npm run build',
                 'mkdir -p ../../cdk/visit/console/Beta',
                 'cp -r dist/* ../../cdk/visit/console/Beta',
 
                 # build for prod
-                f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" '\
-                    + f'VITE_BACKEND_KEY={prod_shared_api_key.to_string()} npm run build',
+                f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" VITE_BACKEND_KEY={prod_shared_api_key.to_string()} npm run build',
                 'mkdir -p ../../cdk/visit/console/Prod',
                 'cp -r dist/* ../../cdk/visit/console/Prod',
                 
