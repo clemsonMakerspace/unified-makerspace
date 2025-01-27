@@ -192,11 +192,9 @@ class MakerspaceStack(Stack):
 
     def backend_stack(self):
         """ 
-        Creates the BackendApi Stack in CloudFormation
-        Creates and configures all Lambda functions utilized
-            by the SharedApiGateway Stack; grants the appropriate
-            permissions to the functions to allow the 
-        
+        Creates and configures all the backend api Lambda functions
+            utilized by the SharedApiGateway Stack; grants the appropriate
+            permissions to those functions.
         """
 
         self.backend_api = BackendApi(
