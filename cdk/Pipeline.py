@@ -121,13 +121,13 @@ class Pipeline(Stack):
 
                 # build for beta
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" '\
-                    + 'VITE_BACKEND_KEY={beta_shared_api_key.to_string()} npm run build',
+                    + f'VITE_BACKEND_KEY={beta_shared_api_key.to_string()} npm run build',
                 'mkdir -p ../../cdk/visit/console/Beta',
                 'cp -r dist/* ../../cdk/visit/console/Beta',
 
                 # build for prod
                 f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" '\
-                    + 'VITE_BACKEND_KEY={prod_shared_api_key.to_string()} npm run build',
+                    + f'VITE_BACKEND_KEY={prod_shared_api_key.to_string()} npm run build',
                 'mkdir -p ../../cdk/visit/console/Prod',
                 'cp -r dist/* ../../cdk/visit/console/Prod',
                 
