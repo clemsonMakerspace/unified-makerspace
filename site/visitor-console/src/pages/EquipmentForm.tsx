@@ -57,7 +57,7 @@ const stageSchemas = [
       then: yup.string().required(),
     }),
     print_name: yup.string(),
-    print_mass: yup.string().when("equipment_type", {
+    print_mass_estimate: yup.string().when("equipment_type", {
       is: "FDM 3D Printer (Plastic)",
       then: yup.string().required(),
     }),
