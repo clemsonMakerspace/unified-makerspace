@@ -85,22 +85,14 @@ class Pipeline(Stack):
                 connection_arn="arn:aws:codestar-connections:us-east-1:944207523762:connection/0d26aa24-5271-44cc-b436-3ddd4e2c9842"
             )
         
-        # Retrieve backend api key for beta and prod from secrets manager
-        beta_secret_name: str = "BetaSharedApiGatewayKey"
-        prod_secret_name: str = "ProdSharedApiGatewayKey"
-        beta_shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
+        # Retrieve backend api key from secrets manager
+        secret_name: str = "SharedApiGatewayKey"
+        shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
                 self, 
-                "BetaSharedGatewaySecrets",
-                beta_secret_name
+                "SharedGatewaySecrets",
+                secret_name
         )
-        beta_shared_api_key: SecretValue = beta_shared_secrets.secret_value_from_json("api_key")
-
-        prod_shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
-                self, 
-                "ProdSharedGatewaySecrets",
-                prod_secret_name
-        )
-        prod_shared_api_key: SecretValue = prod_shared_secrets.secret_value_from_json("api_key")
+        shared_api_key: SecretValue = shared_secrets.secret_value_from_json("api_key")
 
         # Commands used to build pipeline in the Build stage
         deploy_cdk_shell_step = ShellStep("Synth",
@@ -119,14 +111,15 @@ class Pipeline(Stack):
                 'cd site/visitor-console',
                 'npm install',
 
+                # Add the backend key to the .env file in the visitor-console directory
+                f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > .env',
+ 
                 # build for beta
-                f'echo "VITE_BACKEND_KEY={beta_shared_api_key.unsafeUnwrap()}" > .env',
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',
                 'mkdir -p ../../cdk/visit/console/Beta',
                 'cp -r dist/* ../../cdk/visit/console/Beta',
 
                 # build for prod
-                f'echo "VITE_BACKEND_KEY={prod_shared_api_key.unsafeUnwrap()}" > .env',
                 f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" npm run build',
                 'mkdir -p ../../cdk/visit/console/Prod',
                 'cp -r dist/* ../../cdk/visit/console/Prod',
