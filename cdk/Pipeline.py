@@ -86,7 +86,7 @@ class Pipeline(Stack):
             )
         
         # Retrieve backend api key from secrets manager
-        secret_name: str = "SharedApiGatewayKey"
+        secret_name: str = "BetaSharedApiGatewayKey"
         shared_secrets = aws_secretsmanager.Secret.from_secret_name_v2(
                 self, 
                 "SharedGatewaySecrets",
@@ -112,6 +112,7 @@ class Pipeline(Stack):
                 'npm install',
 
                 # Add the backend key to the .env file in the visitor-console directory
+                f'echo "Shared Api Key Type: {type(shared_api_key)}"',
                 f'echo "VITE_BACKEND_KEY={shared_api_key.to_string()}" > .env',
  
                 # build for beta
