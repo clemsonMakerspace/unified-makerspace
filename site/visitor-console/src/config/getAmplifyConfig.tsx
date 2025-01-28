@@ -8,24 +8,30 @@ interface AmplifyConfig {
 export function getAmplifyConfig(): AmplifyConfig {
   const hostname = window.location.hostname;
 
+  const prodUserPoolId = "us-east-1_TQ9FwRJ44";
+  const prodUserPoolClientId = "58lututlkaggp6h8tu9oauqp5p";
+
+  const betaUserPoolId = "us-east-1_4w535EQDB";
+  const betaUserPoolClientId = "6sfun4otg8chqplrmco2qvivni";
+
   if (hostname === "visit.cumaker.space") {
     console.log("prod env");
     return {
-      userPoolId: "us-east-1_TQ9FwRJ44",
-      userPoolClientId: "58lututlkaggp6h8tu9oauqp5p",
+      userPoolId: prodUserPoolId,
+      userPoolClientId: prodUserPoolClientId,
     };
   } else if (hostname === "beta-visit.cumaker.space") {
     console.log("beta env");
     return {
-      userPoolId: "us-east-1_m5CyOD8Z0",
-      userPoolClientId: "6jf7gq1c7qsrq8jherkgu75ko6",
+      userPoolId: betaUserPoolId,
+      userPoolClientId: betaUserPoolClientId,
     };
   } else {
     // Default to beta
     console.log("default env");
     return {
-      userPoolId: "us-east-1_m5CyOD8Z0",
-      userPoolClientId: "6jf7gq1c7qsrq8jherkgu75ko6",
+      userPoolId: betaUserPoolId,
+      userPoolClientId: betaUserPoolClientId,
     };
   }
 }
