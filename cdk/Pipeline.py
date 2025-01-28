@@ -120,13 +120,13 @@ class Pipeline(Stack):
                 'npm install',
 
                 # build for beta
-                f'echo "VITE_BACKEND_KEY={beta_shared_api_key.to_string()}" > .env'
+                f'echo "VITE_BACKEND_KEY={beta_shared_api_key.to_string()}" > .env',
                 f'VITE_API_ENDPOINT="https://{Domains("Beta").api}" npm run build',
                 'mkdir -p ../../cdk/visit/console/Beta',
                 'cp -r dist/* ../../cdk/visit/console/Beta',
 
                 # build for prod
-                f'echo "VITE_BACKEND_KEY={prod_shared_api_key.to_string()}" > .env'
+                f'echo "VITE_BACKEND_KEY={prod_shared_api_key.to_string()}" > .env',
                 f'VITE_API_ENDPOINT="https://{Domains("Prod").api}" npm run build',
                 'mkdir -p ../../cdk/visit/console/Prod',
                 'cp -r dist/* ../../cdk/visit/console/Prod',
