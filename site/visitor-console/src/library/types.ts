@@ -8,10 +8,12 @@ export interface Printer3DInfo {
   printer_name: string;
   print_name: string;
   print_duration: string;
-  print_mass: string;
-  print_mass_estimate: string;
   print_status: string;
   print_notes: string;
+  print_mass?: string;
+  print_mass_estimate?: string;
+  resin_volume?: string;
+  resin_type?: string;
 }
 
 export interface EquipmentSchema {

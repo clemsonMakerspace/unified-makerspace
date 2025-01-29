@@ -5,7 +5,7 @@ import { withAuthenticator } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 import EditModal from "../components/EditModal";
 
-import EquipmentSchema from "../library/types.ts";
+import { EquipmentSchema } from "../library/types";
 
 interface EquipmentLog extends EquipmentSchema {
   _ignore?: string;

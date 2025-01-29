@@ -12,13 +12,13 @@ import InitialInfo from "../components/EquipmentFormStages/InitialInfo";
 import ProjectDetails from "../components/EquipmentFormStages/ProjectDetails";
 import Survey from "../components/EquipmentFormStages/Survey";
 
-import EquipmentSchema from "../library/types.ts";
+import { EquipmentSchema } from "../library/types";
 
 import {
   FDM_PRINTER_STRING,
   SLA_PRINTER_STRING,
   is3DPrinter,
-} from "../library/constants.ts";
+} from "../library/constants";
 
 const stageSchemas = [
   // First stage - Initial Info
