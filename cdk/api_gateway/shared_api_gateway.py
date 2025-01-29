@@ -357,6 +357,7 @@ class SharedApiGateway(Stack):
 
         # methods
         self.qualifications_user_id.add_method('GET', qualifications_user_id, api_key_required=True)
+        self.qualifications_user_id.add_method('PATCH', qualifications_user_id, api_key_required=True)
 
 
     """

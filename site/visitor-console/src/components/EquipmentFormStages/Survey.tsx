@@ -2,7 +2,7 @@ import React from "react";
 import { UseFormRegister, FieldErrors, Control } from "react-hook-form";
 import FormSelect from "../FormSelect";
 
-import { surveryScores, surveyIssues, interns } from "../../library/constants";
+import { surveryScores, surveyIssues } from "../../library/constants";
 
 interface SurveyProps {
   register: UseFormRegister<any>;
@@ -18,7 +18,16 @@ const Survey: React.FC<SurveyProps> = ({ register, errors, control }) => {
         <label htmlFor="intern" className="form-label">
           Which Intern helped you today?
         </label>
-        <FormSelect control={control} name="intern" values={interns} />
+        <input
+          id="intern"
+          className="form-control"
+          type="text"
+          placeholder="Enter the intern's name"
+          {...register("intern")}
+        />
+        {errors.resin_volume && (
+          <p className="text-danger">{errors.resin_volume.message}</p>
+        )}
         {errors.intern && (
           <p className="text-danger">{errors.intern.message}</p>
         )}

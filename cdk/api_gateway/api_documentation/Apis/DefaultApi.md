@@ -112,7 +112,7 @@ Update data in an existing equipment usage data entry. Specify the timestamp fie
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **user\_id** | [**UserID**](../Models/.md)|  | [default to null] |
-| **EquipmentUsageProperties** | [**EquipmentUsageProperties**](../Models/EquipmentUsageProperties.md)| Update an equipment usage entry. Changed fields are required to exhibit any documented required field sets (e.g., changing equipment_type from \&quot;Laser Engraver\&quot;-&gt;\&quot;3D Printer\&quot; means a 3d_printer_info object must be provided in the request body). The user_id and timestamp fields will NEVER be changed, even if they are provided in the request body. If the timestamp field is not provided, the latest entry in the equipment usage table for the user will be updated instead. | [optional] |
+| **EquipmentUsageProperties** | [**EquipmentUsageProperties**](../Models/EquipmentUsageProperties.md)| Update an equipment usage entry. Changed fields are required to exhibit any documented required field sets (e.g., changing equipment_type from \&quot;Laser Engraver\&quot;-&gt;\&quot;3D Printer\&quot; means a printer_3d_info object must be provided in the request body). The user_id and timestamp fields will NEVER be changed, even if they are provided in the request body. If the timestamp field is not provided, the latest entry in the equipment usage table for the user will be updated instead. | [optional] |
 
 ### Return type
 

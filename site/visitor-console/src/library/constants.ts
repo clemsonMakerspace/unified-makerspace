@@ -356,26 +356,8 @@ export const surveyIssues = [
   "Intern issues",
 ];
 
-export const interns = [
-  "Drew",
-  "Andrew",
-  "Anna",
-  "Braden",
-  "Michael",
-  "Taylor",
-  "John",
-  "Jack A",
-  "Jack F",
-  "Justin",
-  "Katie",
-  "Keller",
-  "Kwasi",
-  "Lucia",
-  "Philip",
-  "Lucy",
-  "Nicolas",
-  "Quinn",
-  "Steven",
-  "Thomas",
-  "Zachary",
-];
+export const FDM_PRINTER_STRING = "FDM 3D Printer (Plastic)";
+export const SLA_PRINTER_STRING = "SLA 3D Printer (Resin)";
+
+export const is3DPrinter = (value: string) =>
+  value === FDM_PRINTER_STRING || value === SLA_PRINTER_STRING;

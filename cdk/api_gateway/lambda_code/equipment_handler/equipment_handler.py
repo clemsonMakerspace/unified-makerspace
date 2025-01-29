@@ -13,6 +13,21 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from api_defaults import *
 
+# Equipment Types
+EQUIPMENT_NAMES: dict = {
+    "FDM_PRINTER_STRING": "FDM 3D Printer (Plastic)",
+    "SLA_PRINTER_STRING": "SLA Printer (Resin)",
+    "LASER_ENGRAVER_STRING": "Laser Engraver",
+    "GLOWFORGE_STRING": "Glowforge",
+    "FABRIC_PRINTER_STRING": "Fabric Printer",
+    "VINYL_CUTTER_STRING": "Vinyl Cutter",
+    "BUTTON_MAKER_STRING": "Button Maker",
+    "3D_SCANNER_STRING": "3D Scanner",
+    "HAND_TOOLS_STRING": "Hand Tools",
+    "STICKER_PRINTER_STRING": "Sticker Printer",
+    "EMBROIDERY_STRING": "Embroidery Machine",
+}
+
 class EquipmentHandler():
     def __init__(self, equipment_table):
         # TODO: Setup CloudWatch Logs
@@ -98,46 +113,6 @@ class EquipmentHandler():
 
         :params query_parameters: A dictionary of parameter names and values to filter by.
         """
-        if query_parameters:
-            try:
-                timestamp_expression = buildTimestampKeyExpression(query_parameters, 'timestamp')
-
-            except InvalidQueryParameters as iqp:
-                body = { 'errorMsg': str(iqp) }
-                return buildResponse(statusCode = 400, body = body)
-
-            try:
-                key_expression = Key(GSI_ATTRIBUTE_NAME).eq("1") & timestamp_expression
-                items = queryByKeyExpression(self.equipment_table, key_expression, GSI = TIMESTAMP_INDEX)
-
-            except Exception as e:
-                body = { 'errorMsg': "Something went wrong on the server." }
-                return buildResponse(statusCode = 500, body = body)
-
-            # Do a second lookup for all returned items to get the rest of the data
-            equipment_logs = []
-            for item in items:
-                user_id = item['user_id']
-
-                response = self.equipment_table.get_item(
-                    Key={ 'user_id': user_id }
-                )
-
-                equipment_logs.append(response['Item'])
-
-        else:
-            equipment_logs = scanTable(self.equipment_table)
-
-        body = { 'equipment_logs': equipment_logs }
-
-        return buildResponse(statusCode = 200, body = body)
-
-    def get_all_equipment_usage_information(self, query_parameters: dict):
-        """
-        Returns all the equipment usage objects from the equipment usage table.
-
-        :params query_parameters: A dictionary of parameter names and values to filter by.
-        """
 
         if query_parameters:
             try:
@@ -189,6 +164,7 @@ class EquipmentHandler():
         body = { 'equipment_logs': equipment_logs }
 
         return buildResponse(statusCode = 200, body = body)
+
 
     def create_user_equipment_usage(self, data: dict):
         """
@@ -368,9 +344,10 @@ class EquipmentHandler():
         :raises: InvalidRequestBody
         """
 
+        # Equipment required fields
         required_fields: list[str] = ["user_id", "timestamp", "location",
                                     "project_name", "project_type", "equipment_type"]
-        
+
         # Project Type Fields
         personal_project_fields = FieldCheck(
             required = [],
@@ -398,31 +375,28 @@ class EquipmentHandler():
         # Equipment Type Fields
         """
         Due to the lack of data collection from other equipment, the only real
-        required field to check is '3d_printer_info' when the type is 'SLA Printer'
-        or 'FDM 3D Printer'. Otherwise, just make sure that the '3d_printer_info'
+        required field to check is 'printer_3d_info' when the type is 'SLA Printer'
+        or 'FDM 3D Printer'. Otherwise, just make sure that the 'printer_3d_info'
         field is disallowed for all other types. In the future, split equipment
         type fields into more specificaly defined ones as needed.
         """
+
         printer_3d_fields = FieldCheck(
-            required = ["3d_printer_info"],
-            disallowed = []
+            required = ["printer_3d_info"],
+            disallowed = [] # intentionally left blank to not delete other fields
         )
 
         other_equipment_type_fields = FieldCheck(
             required = [],
-            disallowed = ["3d_printer_info"]
+            disallowed = ["printer_3d_info"]
         )
 
+        # Lookup dictionary to retrieve the appropriate FieldCheck object
         required_equipment_field_check_lookup: dict = {
-            "FDM 3D Printer (Plastic)": printer_3d_fields, 
-            "SLA Printer (Resin)": printer_3d_fields, 
+            EQUIPMENT_NAMES["FDM_PRINTER_STRING"]: printer_3d_fields,
+            EQUIPMENT_NAMES["SLA_PRINTER_STRING"]: printer_3d_fields,
             "Other": other_equipment_type_fields,
         }
-
-        # Used to check contents of '3d_printer_info' object
-        equipment_3d_printer_info_fields: list[str] = ["printer_name", "print_duration",
-                                                "print_mass_estimate",
-                                                "print_status", "print_notes"]
 
         # Ensure all required fields are present
         if not allKeysPresent(required_fields, data):
@@ -446,7 +420,7 @@ class EquipmentHandler():
             data = checkAndCleanRequestFields(data, checking_fields)
         except InvalidRequestBody:
             # Re-raise InvalidRequestBody if the exception occurs
-            errorMsg: str = f"Missing at least one field from {checking_fields.required} for a project_type value of '{project_type}'."
+            errorMsg: str = f"Missing at least one field in request body from {checking_fields.required} for a project_type value of '{project_type}'."
             raise InvalidRequestBody(errorMsg)
 
         # Check for and clean fields related to 'equipment_type'
@@ -455,15 +429,33 @@ class EquipmentHandler():
             data = checkAndCleanRequestFields(data, checking_fields)
         except InvalidRequestBody:
             # Re-raise InvalidRequestBody if the exception occurs
-            errorMsg: str = f"Missing at least one field from {checking_fields.required} for a equipment_type value of '{equipment_type}'."
+            errorMsg: str = f"Missing at least one field in request body from {checking_fields.required} for an equipment_type value of '{equipment_type}'."
             raise InvalidRequestBody(errorMsg)
 
-        # Ensure 3d_printer_info object has all required fields if it is in data
-        if '3d_printer_info' in data and not \
-            allKeysPresent(equipment_3d_printer_info_fields, data['3d_printer_info']):
+        # Ensure printer_3d_info object has all required fields if it is in data
+        # General required fields all 'printer_3d_info' objects are required to have
+        general_printer_3d_info_fields: list[str] = ["printer_name", "print_name", "print_duration",
+                                                     "print_status", "print_notes"]
+        # Required fields specific to FDM 3D Printers
+        fdm_printer_3d_required_fields: list[str] = ["print_mass_estimate"] + general_printer_3d_info_fields
 
-                errorMsg: str = f"Missing at least one field from {equipment_3d_printer_info_fields} in the '3d_printer_info' object in the request body."
+        # Required fields specific to SLA 3D Printers
+        sla_printer_3d_required_fields: list[str] = ["resin_volume", "resin_type"] + general_printer_3d_info_fields
+
+        # Check FDM printer fields
+        if data["equipment_type"] == EQUIPMENT_NAMES["FDM_PRINTER_STRING"] and not \
+            allKeysPresent(fdm_printer_3d_required_fields, data['printer_3d_info']):
+
+                errorMsg: str = f"Missing at least one field in 'printer_3d_info' object from {fdm_printer_3d_required_fields} in the 'printer_3d_info' object in the request body."
                 raise InvalidRequestBody(errorMsg)
+
+        # Check SLA printer fields
+        elif data["equipment_type"] == EQUIPMENT_NAMES["SLA_PRINTER_STRING"] and not \
+            allKeysPresent(sla_printer_3d_required_fields, data['printer_3d_info']):
+
+                errorMsg: str = f"Missing at least one field in 'printer_3d_info' object from {fdm_printer_3d_required_fields} in the 'printer_3d_info' object in the request body."
+                raise InvalidRequestBody(errorMsg)
+
 
         # Ensure timestamp is in the correct format
         try:

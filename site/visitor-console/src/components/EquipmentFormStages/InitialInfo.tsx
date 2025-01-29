@@ -6,9 +6,13 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import FormSelect from "../FormSelect";
-import { equipmentTypes } from "../../library/constants";
 
-import { locations } from "../../library/constants";
+import {
+  locations,
+  equipmentTypes,
+  FDM_PRINTER_STRING,
+  SLA_PRINTER_STRING,
+} from "../../library/constants";
 
 interface InitialInfoProps {
   register: UseFormRegister<any>;
@@ -43,9 +47,9 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
 
   const equipment = getEquipmentForLocation(selectedLocation);
   const printers =
-    equipmentType === "FDM 3D Printer (Plastic)"
+    equipmentType === FDM_PRINTER_STRING
       ? getPrintersForLocation(selectedLocation, "fdm_printers") ?? []
-      : equipmentType === "SLA 3D Printer (Resin)"
+      : equipmentType === SLA_PRINTER_STRING
       ? getPrintersForLocation(selectedLocation, "sla_printers") ?? []
       : [];
 
@@ -110,9 +114,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
       </div>
 
       {/* Conditionally Render Printer Fields */}
-      {["FDM 3D Printer (Plastic)", "SLA 3D Printer (Resin)"].includes(
-        equipmentType
-      ) && (
+      {[FDM_PRINTER_STRING, SLA_PRINTER_STRING].includes(equipmentType) && (
         <>
           {/* Printer Name */}
           <div className="col-12 mb-2">
@@ -121,7 +123,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
             </label>
             <FormSelect
               control={control}
-              name="printer_name"
+              name="printer_3d_info.printer_name"
               values={printers}
             />
             {errors.printer_name && (
@@ -139,27 +141,44 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
               className="form-control"
               type="text"
               placeholder="Enter a name for the print"
-              {...register("print_name")}
+              {...register("printer_3d_info.print_name")}
             />
             {errors.print_name && (
               <p className="text-danger">{errors.print_name.message}</p>
             )}
           </div>
 
+          {/* Print Duration */}
+          <div className="col-12 mb-2">
+            <label htmlFor="print_duration" className="form-label">
+              Print Duration (minutes)
+            </label>
+            <input
+              id="print_duration"
+              className="form-control"
+              type="text"
+              placeholder="Enter print duration"
+              {...register("printer_3d_info.print_duration")}
+            />
+            {errors.print_duration && (
+              <p className="text-danger">{errors.print_duration.message}</p>
+            )}
+          </div>
+
           {/* FDM Printer Specific Fields */}
-          {equipmentType === "FDM 3D Printer (Plastic)" && (
+          {equipmentType === FDM_PRINTER_STRING && (
             <>
-              {/* Print Mass */}
+              {/* Print Mass Estimate */}
               <div className="col-12 mb-2">
                 <label htmlFor="print_mass_estimate" className="form-label">
-                  Print Mass Estimate
+                  Print Mass Estimate (grams)
                 </label>
                 <input
                   id="print_mass_estimate"
                   className="form-control"
                   type="text"
                   placeholder="Enter print mass"
-                  {...register("print_mass_estimate")}
+                  {...register("printer_3d_info.print_mass_estimate")}
                 />
                 {errors.print_mass && (
                   <p className="text-danger">{errors.print_mass.message}</p>
@@ -169,7 +188,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
           )}
 
           {/* SLA Printer Specific Fields */}
-          {equipmentType === "SLA 3D Printer (Resin)" && (
+          {equipmentType === SLA_PRINTER_STRING && (
             <>
               {/* Resin Volume */}
               <div className="col-12 mb-2">
@@ -181,7 +200,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
                   className="form-control"
                   type="text"
                   placeholder="Enter resin volume"
-                  {...register("resin_volume")}
+                  {...register("printer_3d_info.resin_volume")}
                 />
                 {errors.resin_volume && (
                   <p className="text-danger">{errors.resin_volume.message}</p>
@@ -195,7 +214,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
                 </label>
                 <FormSelect
                   control={control}
-                  name="resin_type"
+                  name="printer_3d_info.resin_type"
                   values={["Clear", "Grey"]}
                 />
                 {errors.resin_type && (
@@ -204,23 +223,6 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
               </div>
             </>
           )}
-
-          {/* Print Duration */}
-          <div className="col-12 mb-2">
-            <label htmlFor="print_duration" className="form-label">
-              Print Duration
-            </label>
-            <input
-              id="print_duration"
-              className="form-control"
-              type="text"
-              placeholder="Enter print duration"
-              {...register("print_duration")}
-            />
-            {errors.print_duration && (
-              <p className="text-danger">{errors.print_duration.message}</p>
-            )}
-          </div>
         </>
       )}
     </>

@@ -12,34 +12,13 @@ import InitialInfo from "../components/EquipmentFormStages/InitialInfo";
 import ProjectDetails from "../components/EquipmentFormStages/ProjectDetails";
 import Survey from "../components/EquipmentFormStages/Survey";
 
-interface Schema {
-  user_id: string;
-  timestamp: string;
-  location: string;
-  equipment_type: string;
-  equipment_history: string;
-  project_name: string;
-  project_type: string;
-  project_details?: string;
-  department?: string;
-  class_number?: string;
-  faculty_name?: string;
-  project_sponsor?: string;
-  organization_affiliation?: string;
-  printer_name?: string;
-  print_name?: string;
-  print_duration?: string;
-  print_mass?: string;
-  print_mass_estimate?: string;
-  resin_volume?: string;
-  resin_type?: string;
-  print_status?: string;
-  print_notes?: string;
-  intern?: string;
-  satisfaction?: string;
-  difficulties?: string;
-  issue_description?: string;
-}
+import EquipmentSchema from "../library/types.ts";
+
+import {
+  FDM_PRINTER_STRING,
+  SLA_PRINTER_STRING,
+  is3DPrinter,
+} from "../library/constants.ts";
 
 const stageSchemas = [
   // First stage - Initial Info
@@ -50,31 +29,40 @@ const stageSchemas = [
     equipment_history: yup.string().required(),
 
     // Printer fields with conditional validation
-    printer_name: yup.string().when("equipment_type", {
-      is: (value: string) =>
-        value === "FDM 3D Printer (Plastic)" ||
-        value === "SLA 3D Printer (Resin)",
-      then: yup.string().required(),
-    }),
-    print_name: yup.string(),
-    print_mass_estimate: yup.string().when("equipment_type", {
-      is: "FDM 3D Printer (Plastic)",
-      then: yup.string().required(),
-    }),
-    resin_volume: yup.string().when("equipment_type", {
-      is: "SLA 3D Printer (Resin)",
-      then: yup.string().required(),
-    }),
-    resin_type: yup.string().when("equipment_type", {
-      is: "SLA 3D Printer (Resin)",
-      then: yup.string().required(),
-    }),
-    print_duration: yup.string().when("equipment_type", {
-      is: (value: string) =>
-        value === "FDM 3D Printer (Plastic)" ||
-        value === "SLA 3D Printer (Resin)",
-      then: yup.string().required(),
-    }),
+    printer_3d_info: yup
+      .object()
+      .shape({
+        printer_name: yup.string().required(),
+        print_name: yup.string().required(),
+        print_duration: yup.string().required(),
+        print_status: yup.string().default("In Progress"),
+        print_notes: yup.string().default(""),
+
+        // Specifically require estimated print mass when using plastic 3d printers
+        print_mass_estimate: yup.string().when("equipment_type", {
+          is: FDM_PRINTER_STRING,
+          then: yup.string().required(),
+          otherwise: yup.string().notRequired(),
+        }),
+
+        // Specifically require resin volume and type when using resin 3d printers
+        resin_volume: yup.string().when("equipment_type", {
+          is: SLA_PRINTER_STRING,
+          then: yup.string().required(),
+          otherwise: yup.string().notRequired(),
+        }),
+        resin_type: yup.string().when("equipment_type", {
+          is: SLA_PRINTER_STRING,
+          then: yup.string().required(),
+          otherwise: yup.string().notRequired(),
+        }),
+      })
+      .when("equipment_type", {
+        // .when() here is for printer_3d_info
+        is: is3DPrinter,
+        then: yup.object().required(),
+        otherwise: yup.object().notRequired(),
+      }),
   }),
 
   // Second stage - Project Details
@@ -117,7 +105,7 @@ const EquipmentForm = () => {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [stage, setStage] = useState(0);
-  const [formData, setFormData] = useState<Partial<Schema>>({});
+  const [formData, setFormData] = useState<Partial<EquipmentSchema>>({});
 
   const currentSchema = stageSchemas[stage];
   type FormData = yup.InferType<typeof currentSchema>;
@@ -141,49 +129,46 @@ const EquipmentForm = () => {
     if (stage < stageComponents.length - 1) {
       setStage((prevStage) => prevStage + 1);
     } else {
-      log_equipment({ ...formData, ...data } as Schema);
+      post_equipment_form({ ...formData, ...data } as EquipmentSchema);
     }
   });
 
-  const log_equipment = async (form_data: Schema): Promise<void> => {
+  const post_equipment_form = async (
+    form_data: EquipmentSchema
+  ): Promise<void> => {
     // Add print status and notes defaults to form data
-    const printerTypes = ["FDM 3D Printer (Plastic)", "SLA 3D Printer (Resin)"];
     const dataWithDefaults = {
       ...form_data,
-      ...(printerTypes.includes(form_data.equipment_type) && {
-        print_status: form_data.print_status || "In Progress",
-        print_notes: form_data.print_notes || "",
-      }),
       timestamp: new Date().toISOString().split(".")[0],
     };
     console.log("Form Submission:", JSON.stringify(dataWithDefaults, null, 2));
 
-    try {
-      const response = await fetch(`${api_endpoint}/equipment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataWithDefaults),
-      });
+    //try {
+    //  const response = await fetch(`${api_endpoint}/equipment`, {
+    //    method: "POST",
+    //    headers: {
+    //      "Content-Type": "application/json",
+    //    },
+    //    body: JSON.stringify(dataWithDefaults),
+    //  });
 
-      if (response.ok) {
-        console.log(
-          "Data successfully sent to the API:",
-          await response.json()
-        );
-        setSaved(true);
-      } else {
-        console.error(
-          "Failed to send data to the API:",
-          response.status,
-          await response.text()
-        );
-        console.log("Failed to submit the form.");
-      }
-    } catch (error) {
-      console.error("An error occurred while submitting the form:", error);
-    }
+    //  if (response.ok) {
+    //    console.log(
+    //      "Data successfully sent to the API:",
+    //      await response.json()
+    //    );
+    //    setSaved(true);
+    //  } else {
+    //    console.error(
+    //      "Failed to send data to the API:",
+    //      response.status,
+    //      await response.text()
+    //    );
+    //    console.log("Failed to submit the form.");
+    //  }
+    //} catch (error) {
+    //  console.error("An error occurred while submitting the form:", error);
+    //}
   };
 
   if (saved) {

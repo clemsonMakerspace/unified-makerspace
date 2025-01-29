@@ -27,11 +27,11 @@ All URIs are relative to *https://api.cumaker.space*
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
- - [3dPrinterInfo](./Models/3dPrinterInfo.md)
  - [EquipmentUsage](./Models/EquipmentUsage.md)
  - [EquipmentUsageProperties](./Models/EquipmentUsageProperties.md)
  - [EquipmentUsageRequiredProperties](./Models/EquipmentUsageRequiredProperties.md)
  - [EquipmentUsages](./Models/EquipmentUsages.md)
+ - [Printer3DInfo](./Models/Printer3DInfo.md)
  - [Qualification](./Models/Qualification.md)
  - [Qualifications](./Models/Qualifications.md)
  - [QualificationsProperties](./Models/QualificationsProperties.md)
@@ -43,7 +43,7 @@ All URIs are relative to *https://api.cumaker.space*
  - [Visit](./Models/Visit.md)
  - [VisitProperties](./Models/VisitProperties.md)
  - [Visits](./Models/Visits.md)
- - [400 Response](./Models/400_response.md)
+ - [_users_post_400_response](./Models/_users_post_400_response.md)
  - [completableItem](./Models/completableItem.md)
  - [location](./Models/location.md)
  - [major](./Models/major.md)

@@ -407,6 +407,12 @@ components:
       format: double
       minimum: 0
 
+    displacement_volume:
+      description: The displacement volume (in mL) of an object.
+      type: number
+      format: double
+      minimum: 0
+
     printDuration:
       description: The duration of a 3d print in minutes.
       type: integer
@@ -429,10 +435,15 @@ components:
         - "Junior"
         - "Senior"
 
-    3dPrinterInfo:
+    Printer3DInfo:
       type: object
       properties:
         printer_name:
+          description: The name of the printer used.
+          type: string
+          minLength: 1
+        print_name:
+          description: A name for the printed object.
           type: string
           minLength: 1
         print_duration:
@@ -441,10 +452,15 @@ components:
           $ref: '#/components/schemas/mass'
         print_mass_estimate:
           $ref: '#/components/schemas/mass'
+        resin_volume:
+          $ref: '#/components/schemas/displacement_volume'
+        resin_type:
+          type: string
+          minLength: 1
         print_status:
           description: An enum of strings of possible print statuses.
           enum:
-            - "In progress"
+            - "In Progress"
             - "Success"
             - "Failure"
         print_notes:
@@ -452,10 +468,15 @@ components:
           type: string
       required:
         - printer_name
+        - print_name
         - print_duration
-        - print_mass
-        - print_mass_estimate
         - print_status
+      anyOf:
+        - required:
+          - print_mass_estimate
+        - required:
+          - resin_volume
+          - resin_type
 
     major:
       description: A major an undergraduate can study.
@@ -713,7 +734,7 @@ components:
             $ref: '#/components/schemas/Visit'
 
     EquipmentUsageProperties:
-      description: An object containing equipment usage data. If the project type is "class", the class_number, faculty_name, and project_sponsor fields are required. If the project type is club, the organization_affiliation field is required. If the equipment type is "FDM 3D Printer" or "SLA Printer", then the 3d_printer_info field is required.
+      description: An object containing equipment usage data. If the project type is "class", the class_number, faculty_name, and project_sponsor fields are required. If the project type is club, the organization_affiliation field is required. If the equipment type is "FDM 3D Printer (Plastic)" or "SLA 3D Printer (Resin)", then the printer_3d_info field is required.
       type: object
       properties:
         timestamp:
@@ -742,10 +763,10 @@ components:
         equipment_type:
           type: string
           enum:
-            - "FDM 3D Printer"
+            - "FDM 3D Printer (Plastic)"
+            - "SLA 3D Printer (Resin)"
             - "Laser Engraver"
             - "Glowforge"
-            - "SLA Printer"
             - "Fabric Printer"
             - "Vinyl Cutter"
             - "Button Maker"
@@ -753,8 +774,8 @@ components:
             - "Hand Tools"
             - "Sticker Printer"
             - "Embroidery Machine"
-        3d_printer_info:
-          $ref: '#/components/schemas/3dPrinterInfo'
+        printer_3d_info:
+          $ref: '#/components/schemas/Printer3DInfo'
 
     EquipmentUsageRequiredProperties:
       required:
@@ -772,7 +793,7 @@ components:
         - required:
           - organization_affiliation
         - required:
-          - 3d_printer_info
+          - printer_3d_info
 
     EquipmentUsage:
       allOf:
@@ -897,7 +918,7 @@ components:
             $ref: '#/components/schemas/EquipmentUsage'
 
     UpdateEquipmentUsage:
-      description: Update an equipment usage entry. Changed fields are required to exhibit any documented required field sets (e.g., changing equipment_type from "Laser Engraver"->"3D Printer" means a 3d_printer_info object must be provided in the request body). The user_id and timestamp fields will NEVER be changed, even if they are provided in the request body. If the timestamp field is not provided, the latest entry in the equipment usage table for the user will be updated instead.
+      description: Update an equipment usage entry. Changed fields are required to exhibit any documented required field sets (e.g., changing equipment_type from "Laser Engraver"->"3D Printer" means a printer_3d_info object must be provided in the request body). The user_id and timestamp fields will NEVER be changed, even if they are provided in the request body. If the timestamp field is not provided, the latest entry in the equipment usage table for the user will be updated instead.
       content:
         application/json:
           schema:

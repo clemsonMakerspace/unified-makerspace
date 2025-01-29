@@ -1,0 +1,2 @@
+To generate the documentation:
+openapi-generator generate -g markdown -i ./documentation.yaml -o ./

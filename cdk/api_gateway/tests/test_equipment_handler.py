@@ -1,9 +1,14 @@
+import json
 from moto import mock_aws
 import pytest
 from datetime import datetime
 
 # Lambda code imports
-from ..lambda_code.equipment_handler.equipment_handler import EquipmentHandler
+from ..lambda_code.equipment_handler.equipment_handler import (
+    EquipmentHandler,
+    EQUIPMENT_NAMES,
+)
+
 from ..lambda_code.api_defaults import (
     PRIMARY_KEY,
     equipment_path,
@@ -32,16 +37,16 @@ def generate_request_body(rest_method: str,
                           faculty_name: str = "",
                           project_sponsor: str = "",
                           organization_affiliation: str = "",
-                          printer_info: dict = {}
+                          printer_3d_info: dict = {}
                           ) -> dict:
 
     # Get arguments: values for arguments that don't have an "empty" value
     kwargs: dict = {key: value for key, value in locals().items() if value}
 
-    # Handle moving data from 'printer_info' key to '3d_printer_info'
-    if 'printer_info' in kwargs:
-        kwargs['3d_printer_info'] = kwargs['printer_info']
-        del kwargs['printer_info']
+    ## Handle moving data from 'printer_3d_info' key to 'printer_3d_info'
+    #if 'printer_3d_info' in kwargs:
+    #    kwargs['printer_3d_info'] = kwargs['printer_3d_info']
+    #    del kwargs['printer_3d_info']
 
     if rest_method == "POST":
         # Get every key: value pair in the arguments
@@ -70,7 +75,7 @@ def generate_items(rest_method: str,
                    faculty_names: list[str] = [],
                    project_sponsors: list[str] = [],
                    organization_affiliations: list[str] = [],
-                   printer_infos: dict = {}
+                   printer_3d_infos: dict = {}
                    ) -> list[dict]:
     
     items: list[dict] = []
@@ -87,9 +92,9 @@ def generate_items(rest_method: str,
         project_sponsor = project_sponsors[i]
         organization_affiliation = organization_affiliations[i]
         try:
-            printer_info = printer_infos[user_id]
+            printer_3d_info = printer_3d_infos[user_id]
         except:
-            printer_info = {}
+            printer_3d_info = {}
 
         item = generate_request_body(
                 rest_method,
@@ -103,7 +108,7 @@ def generate_items(rest_method: str,
                 faculty_name=faculty_name,
                 project_sponsor=project_sponsor,
                 organization_affiliation=organization_affiliation,
-                printer_info=printer_info,
+                printer_3d_info=printer_3d_info,
         )
 
         items.append(item)
@@ -231,7 +236,7 @@ class TestEquipment():
         response 'body' with a list of equipment_logs.
         """
 
-        # Get the user handler to use.
+        # Get the equipment handler to use.
         equipment_handler, table = get_equipment_handler
 
         # Create some test equipment logs
@@ -240,12 +245,12 @@ class TestEquipment():
         locations: list[str] = ["Watt"]
         project_names: list[str] = ["test"]
         project_types: list[str] = ["Personal"]
-        equipment_types: list[str] = ["Laser Engraver"]
+        equipment_types: list[str] = [EQUIPMENT_NAMES["LASER_ENGRAVER_STRING"]]
         class_numbers: list[str] = [""]
         faculty_names: list[str] = [""]
         project_sponsors: list[str] = [""]
         organization_affiliations: list[str] = [""]
-        printer_infos: dict = {}
+        printer_3d_infos: dict = {}
 
         put_items: list[dict] = generate_items(
                 "POST",
@@ -259,7 +264,7 @@ class TestEquipment():
                 faculty_names=faculty_names,
                 project_sponsors=project_sponsors,
                 organization_affiliations=organization_affiliations,
-                printer_infos=printer_infos,
+                printer_3d_infos=printer_3d_infos,
         )
 
         # Put them into the table
@@ -289,7 +294,7 @@ class TestEquipment():
         or equal to the passed in limit.
         """
 
-        # Get the user handler to use.
+        # Get the equipment handler to use.
         equipment_handler, table = get_equipment_handler
 
         # Create some test equipment logs
@@ -298,12 +303,12 @@ class TestEquipment():
         locations: list[str] = ["Watt"]
         project_names: list[str] = ["test"]
         project_types: list[str] = ["Personal"]
-        equipment_types: list[str] = ["Laser Engraver"]
+        equipment_types: list[str] = [EQUIPMENT_NAMES["LASER_ENGRAVER_STRING"]]
         class_numbers: list[str] = [""]
         faculty_names: list[str] = [""]
         project_sponsors: list[str] = [""]
         organization_affiliations: list[str] = [""]
-        printer_infos: dict = {}
+        printer_3d_infos: dict = {}
 
         put_items: list[dict] = generate_items(
                 "POST",
@@ -317,7 +322,7 @@ class TestEquipment():
                 faculty_names=faculty_names,
                 project_sponsors=project_sponsors,
                 organization_affiliations=organization_affiliations,
-                printer_infos=printer_infos,
+                printer_3d_infos=printer_3d_infos,
         )
 
         # Put them into the table
@@ -346,7 +351,7 @@ class TestEquipment():
         Tests for the successful creation of a new equipment log.
         """
 
-        # Get the user handler to use.
+        # Get the equipment handler to use.
         equipment_handler, table = get_equipment_handler
 
         # Generate a new equipment log
@@ -355,7 +360,7 @@ class TestEquipment():
         location: str = "Watt"
         project_name: str = "test"
         project_type: str = "Personal"
-        equipment_type: str = "Laser Engraver"
+        equipment_type: str = EQUIPMENT_NAMES["LASER_ENGRAVER_STRING"]
 
         request_body: dict = generate_request_body(
                 "POST",
@@ -367,7 +372,7 @@ class TestEquipment():
                 equipment_type,
         )
 
-        # Create the post event and context for the new user
+        # Create the post event and context for the new equipment log
         event, context = create_post_equipment_event_contex(request_body)
 
         # Simulate handling the event
@@ -390,13 +395,185 @@ class TestEquipment():
             assert key in item
             assert request_body[key] == item[key]
 
+    def test_post_valid_fdm_printer_equipment_log(self, get_equipment_handler):
+        """
+        Tests for the successful creation of a new and valid fdm 3d
+        printer equipment log.
+        """
+
+        # Get the equipment handler to use.
+        equipment_handler, table = get_equipment_handler
+
+        # Generate a new equipment log
+        user_id: str = "test1"
+        timestamp: str = datetime.now().strftime(TIMESTAMP_FORMAT)
+        location: str = "Watt"
+        project_name: str = "test"
+        project_type: str = "Personal"
+        equipment_type: str = EQUIPMENT_NAMES["FDM_PRINTER_STRING"]
+        printer_3d_info: dict = {
+            "printer_name": "test-printer",
+            "print_name": "test print",
+            "print_duration": "5",
+            "print_status": "In Progress",
+            "print_notes": "",
+            "print_mass_estimate": "5"
+        }
+
+        request_body: dict = generate_request_body(
+                "POST",
+                user_id,
+                timestamp,
+                location,
+                project_name,
+                project_type,
+                equipment_type,
+                printer_3d_info=printer_3d_info,
+        )
+
+        # Create the post event and context for the new equipment log
+        event, context = create_post_equipment_event_contex(request_body)
+
+        # Simulate handling the event
+        response = equipment_handler.handle_event(event, context)
+
+        # Get values to check from response
+        statusCode = response['statusCode']
+
+        assert statusCode == 201
+
+        # Ensure there is exactly one new item in the table
+        data: dict = get_all_table_items(table)
+        items: list = data['items']
+        assert len(items) == 1
+
+        # Check that the item matches what was posted
+        item: dict = items[0]
+        assert item["user_id"] == user_id
+        for key in request_body:
+            assert key in item
+            assert request_body[key] == item[key]
+
+    def test_post_valid_sla_printer_equipment_log(self, get_equipment_handler):
+        """
+        Tests for the successful creation of a new and valid sla 3d
+        printer equipment log.
+        """
+
+        # Get the equipment handler to use.
+        equipment_handler, table = get_equipment_handler
+
+        # Generate a new equipment log
+        user_id: str = "test1"
+        timestamp: str = datetime.now().strftime(TIMESTAMP_FORMAT)
+        location: str = "Watt"
+        project_name: str = "test"
+        project_type: str = "Personal"
+        equipment_type: str = EQUIPMENT_NAMES["SLA_PRINTER_STRING"]
+        printer_3d_info: dict = {
+            "printer_name": "test-printer",
+            "print_name": "test print",
+            "print_duration": "5",
+            "print_status": "In Progress",
+            "print_notes": "",
+            "resin_volume": "5",
+            "resin_type": "test type",
+        }
+
+        request_body: dict = generate_request_body(
+                "POST",
+                user_id,
+                timestamp,
+                location,
+                project_name,
+                project_type,
+                equipment_type,
+                printer_3d_info=printer_3d_info,
+        )
+
+        # Create the post event and context for the new equipment log
+        event, context = create_post_equipment_event_contex(request_body)
+
+        # Simulate handling the event
+        response = equipment_handler.handle_event(event, context)
+
+        # Get values to check from response
+        statusCode = response['statusCode']
+
+        assert statusCode == 201
+
+        # Ensure there is exactly one new item in the table
+        data: dict = get_all_table_items(table)
+        items: list = data['items']
+        assert len(items) == 1
+
+        # Check that the item matches what was posted
+        item: dict = items[0]
+        assert item["user_id"] == user_id
+        for key in request_body:
+            assert key in item
+            assert request_body[key] == item[key]
+
+    def test_post_invalid_printer_equipment_log(self, get_equipment_handler):
+        """
+        Tests that a missing field from the printer_3d_info object causes
+        the POST request to invalidate.
+        """
+
+        # Get the equipment handler to use.
+        equipment_handler, table = get_equipment_handler
+
+        # Generate a new equipment log
+        user_id: str = "test1"
+        timestamp: str = datetime.now().strftime(TIMESTAMP_FORMAT)
+        location: str = "Watt"
+        project_name: str = "test"
+        project_type: str = "Personal"
+        equipment_type: str = EQUIPMENT_NAMES["SLA_PRINTER_STRING"]
+        printer_3d_info: dict = {
+            "printer_name": "test-printer",
+            "print_name": "test print",
+            # "print_duration": "5", # Simulate missing the print_duration field
+            "print_status": "In Progress",
+            "print_notes": "",
+            "resin_volume": "5",
+            "resin_type": "test type",
+        }
+
+        request_body: dict = generate_request_body(
+                "POST",
+                user_id,
+                timestamp,
+                location,
+                project_name,
+                project_type,
+                equipment_type,
+                printer_3d_info=printer_3d_info,
+        )
+
+        # Create the post event and context for the new equipment log
+        event, context = create_post_equipment_event_contex(request_body)
+
+        # Simulate handling the event
+        response = equipment_handler.handle_event(event, context)
+
+        # Get values to check from response
+        statusCode = response['statusCode']
+
+        assert statusCode == 400
+
+        # Ensure there are no items in the table
+        data: dict = get_all_table_items(table)
+        items: list = data['items']
+        assert len(items) == 0
+
     def test_get_user_equipment_logs(self, get_equipment_handler):
         """
         Tests for a successful get response when requesting a specific
         user's equipment logs.
         """
 
-        # Get the user handler to use.
+        # Get the equipment handler to use.
         equipment_handler, table = get_equipment_handler
 
         # Create some test equipment logs
@@ -405,12 +582,12 @@ class TestEquipment():
         location: str = "Watt"
         project_name: str = "test"
         project_type: str = "Personal"
-        equipment_type: str = "Laser Engraver"
+        equipment_type: str = EQUIPMENT_NAMES["LASER_ENGRAVER_STRING"]
         class_number: str = ""
         faculty_name: str = ""
         project_sponsor: str = ""
         organization_affiliation: str = ""
-        printer_info: dict = {}
+        printer_3d_info: dict = {}
 
         put_items: list[dict] = generate_items(
                 "POST",
@@ -424,7 +601,7 @@ class TestEquipment():
                 faculty_names=[faculty_name],
                 project_sponsors=[project_sponsor],
                 organization_affiliations=[organization_affiliation],
-                printer_infos=printer_info,
+                printer_3d_infos=printer_3d_info,
         )
 
         # Build a POST request body to test later that what is returned
@@ -442,7 +619,7 @@ class TestEquipment():
         # Put them into the table
         put_all_items_in_table(table, put_items)
 
-        # Create the event and context of a get user
+        # Create the event and context of a get equipment
         event, context = create_get_user_equipment_event_contex(user_id)
 
         # Simulate handling the event
@@ -472,7 +649,7 @@ class TestEquipment():
         log.
         """
 
-        # Get the user handler to use.
+        # Get the equipment handler to use.
         equipment_handler, table = get_equipment_handler
 
         # Create some test equipment logs
@@ -481,12 +658,12 @@ class TestEquipment():
         location: str = "Watt"
         project_name: str = "test"
         project_type: str = "Personal"
-        equipment_type: str = "Laser Engraver"
+        equipment_type: str = EQUIPMENT_NAMES["LASER_ENGRAVER_STRING"]
         class_number: str = ""
         faculty_name: str = ""
         project_sponsor: str = ""
         organization_affiliation: str = ""
-        printer_info: dict = {}
+        printer_3d_info: dict = {}
 
         put_items: list[dict] = generate_items(
                 "POST",
@@ -500,7 +677,7 @@ class TestEquipment():
                 faculty_names=[faculty_name],
                 project_sponsors=[project_sponsor],
                 organization_affiliations=[organization_affiliation],
-                printer_infos=printer_info,
+                printer_3d_infos=printer_3d_info,
         )
 
         # Put it into the table
@@ -525,7 +702,7 @@ class TestEquipment():
                 equipment_type,
         )
 
-        # Create the post event and context for the new user
+        # Create the post event and context for the new equipment log
         event, context = create_patch_user_equipment_event_contex(user_id, patch_body)
 
         # Simulate handling the event

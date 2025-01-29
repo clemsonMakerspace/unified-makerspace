@@ -1,9 +1,10 @@
+.openapi-generator-ignore
 Apis/DefaultApi.md
-Models/3dPrinterInfo.md
 Models/EquipmentUsage.md
 Models/EquipmentUsageProperties.md
 Models/EquipmentUsageRequiredProperties.md
 Models/EquipmentUsages.md
+Models/Printer3DInfo.md
 Models/Qualification.md
 Models/Qualifications.md
 Models/QualificationsProperties.md

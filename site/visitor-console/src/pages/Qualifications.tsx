@@ -161,7 +161,10 @@ const Qualifications = () => {
           <p>Loading...</p>
         ) : qualifications ? (
           isEmptyQualifications(qualifications) ? (
-            <p>No qualifications found for user {qualifications.user_id}.</p>
+            <p>
+              User {qualifications.user_id} has not completed any qualifications
+              at this time.
+            </p>
           ) : (
             <table className="table table-bordered table-primary">
               <thead>
@@ -198,7 +201,10 @@ const Qualifications = () => {
             </table>
           )
         ) : userNotFound ? (
-          <p>No qualifications found for the specified user.</p>
+          <p>
+            Specified user not found in the database. There may be a typo, or
+            the user may not have completed any qualifications yet.
+          </p>
         ) : (
           <p>Search for a specific user to see their qualifications</p>
         )}
