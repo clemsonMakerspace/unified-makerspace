@@ -197,10 +197,6 @@ class EquipmentHandler():
         # Always force GSI_ATTRIBUTE_NAME key to have value of "1"
         data[GSI_ATTRIBUTE_NAME] = "1"
 
-        # Make sure "print_mass" field at least exists
-        if "print_mass" not in data:
-            data["print_mass"] = ""
-
         # Actually try putting the item into the table
         try:
             self.equipment_table.put_item(
@@ -437,7 +433,7 @@ class EquipmentHandler():
         general_printer_3d_info_fields: list[str] = ["printer_name", "print_name", "print_duration",
                                                      "print_status", "print_notes"]
         # Required fields specific to FDM 3D Printers
-        fdm_printer_3d_required_fields: list[str] = ["print_mass_estimate"] + general_printer_3d_info_fields
+        fdm_printer_3d_required_fields: list[str] = ["print_mass_estimate", "print_mass"] + general_printer_3d_info_fields
 
         # Required fields specific to SLA 3D Printers
         sla_printer_3d_required_fields: list[str] = ["resin_volume", "resin_type"] + general_printer_3d_info_fields

@@ -15,7 +15,12 @@ info:
     overwriting as the primary (and secondary) identifiers are provided by request
     bodies and not generated internally. POST methods will specify "Fails on existing
     UserID" or "Fails on existing UserID and Timestamp" if it fails to case 1 or 2
-    respectively.
+    respectively. Additionally, due to the want for consistency when storing and
+    retrieving data, ALL values passed in request bodies MUST be strings. In this
+    documentation, the expected data types will be listed to provide a reference
+    to infer the correct data types when parsing returned data. Any fields that can
+    have an empty value will declared what the string representation of that is
+    in its description.
   version: "1.0.0"
 
 servers:
@@ -401,12 +406,6 @@ components:
             - "Complete"
             - "Incomplete"
 
-    mass:
-      description: The mass of an object.
-      type: number
-      format: double
-      minimum: 0
-
     displacement_volume:
       description: The displacement volume (in mL) of an object.
       type: number
@@ -449,12 +448,21 @@ components:
         print_duration:
           $ref: '#/components/schemas/printDuration'
         print_mass:
-          $ref: '#/components/schemas/mass'
+          description: |
+            The actual mass of the print in grams. Use an empty string to specify an unknown mass.
+          type: number
+          format: double
+          minimum: 0
         print_mass_estimate:
-          $ref: '#/components/schemas/mass'
+          description: |
+            The expected mass of the print in grams.
+          type: number
+          format: double
+          minimum: 0
         resin_volume:
           $ref: '#/components/schemas/displacement_volume'
         resin_type:
+          description: The type of resin used in the print.
           type: string
           minLength: 1
         print_status:
@@ -474,6 +482,7 @@ components:
       anyOf:
         - required:
           - print_mass_estimate
+          - print_mass
         - required:
           - resin_volume
           - resin_type

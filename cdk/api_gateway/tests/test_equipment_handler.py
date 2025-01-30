@@ -417,7 +417,8 @@ class TestEquipment():
             "print_duration": "5",
             "print_status": "In Progress",
             "print_notes": "",
-            "print_mass_estimate": "5"
+            "print_mass_estimate": "5",
+            "print_mass": "",
         }
 
         request_body: dict = generate_request_body(

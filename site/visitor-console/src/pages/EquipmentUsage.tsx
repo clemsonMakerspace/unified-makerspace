@@ -5,11 +5,7 @@ import { withAuthenticator } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 import EditModal from "../components/EditModal";
 
-import { EquipmentSchema } from "../library/types";
-
-interface EquipmentLog extends EquipmentSchema {
-  _ignore?: string;
-}
+import { EquipmentLog } from "../library/types";
 
 const EquipmentUsage = () => {
   const [searchUsername, setSearchUsername] = useState("");
@@ -39,7 +35,7 @@ const EquipmentUsage = () => {
         }
 
         const data = await response.json();
-        console.log(data);
+        console.log(`Data received:\n${JSON.stringify(data, null, 2)}`);
         const logs = Array.isArray(data.equipment_logs)
           ? data.equipment_logs
           : [];
@@ -65,7 +61,7 @@ const EquipmentUsage = () => {
     setSelectedLog(null);
   };
 
-  const handleSave = (updatedLog: EquipmentLog) => {
+  const handleSave = async (updatedLog: EquipmentLog) => {
     setEquipmentLogs((prevLogs) =>
       prevLogs.map((log) =>
         log.timestamp === updatedLog.timestamp &&
@@ -74,6 +70,40 @@ const EquipmentUsage = () => {
           : log
       )
     );
+
+    console.log(JSON.stringify(updatedLog, null, 2));
+
+    try {
+      const user_id = updatedLog.user_id;
+      delete updatedLog.user_id;
+
+      const response = await fetch(`${api_endpoint}/equipment/${user_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": import.meta.env.VITE_BACKEND_KEY,
+        },
+        body: JSON.stringify(updatedLog),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Data successfully sent to the API:", responseData);
+      } else {
+        const errorText = await response.text();
+        console.error(
+          "Failed to send data to the API:",
+          response.status,
+          errorText
+        );
+        console.log("Failed to update the equipment log.");
+      }
+    } catch (error) {
+      console.error(
+        "An error occurred while updating the equipment log:",
+        error
+      );
+    }
   };
 
   const filteredLogs = equipmentLogs.filter((log) =>

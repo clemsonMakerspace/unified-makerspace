@@ -1,34 +1,11 @@
 import { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 
-interface EquipmentLog {
-  user_id: string;
-  timestamp: string;
-  location: string;
-  equipment_type: string;
-  equipment_history: string;
-  project_name: string;
-  project_type: string;
-  project_details?: string;
-  department?: string;
-  class_number?: string;
-  faculty_name?: string;
-  project_sponsor?: string;
-  organization_affiliation?: string;
-  printer_name?: string;
-  print_name?: string;
-  print_duration?: string;
-  print_mass?: string;
-  print_mass_estimate?: string;
-  resin_volume?: string;
-  resin_type?: string;
-  print_status?: string;
-  print_notes?: string;
-  intern?: string;
-  satisfaction?: string;
-  difficulties?: string;
-  issue_description?: string;
-}
+import { FDM_PRINTER_STRING, SLA_PRINTER_STRING } from "../library/constants";
+
+import { EquipmentLog } from "../library/types";
+
+import { is3DPrinter } from "../library/constants";
 
 interface EditModalProps {
   show: boolean;
@@ -41,24 +18,23 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
   const [printStatus, setPrintStatus] = useState<string>("");
   const [printNotes, setPrintNotes] = useState<string>("");
 
-  const is3DPrinter =
-    log?.equipment_type === "FDM 3D Printer (Plastic)" ||
-    log?.equipment_type === "SLA 3D Printer (Resin)";
-
   useEffect(() => {
-    if (log && is3DPrinter) {
-      setPrintStatus(log.print_status || "");
-      setPrintNotes(log.print_notes || "");
+    if (log && is3DPrinter(log?.equipment_type)) {
+      setPrintStatus(log?.printer_3d_info?.print_status || "");
+      setPrintNotes(log?.printer_3d_info?.print_notes || "");
     }
-  }, [log, is3DPrinter]);
+  }, [log]);
 
   const handleSaveClick = () => {
     if (log) {
       const updatedLog = {
         ...log,
-        ...(is3DPrinter && {
-          print_status: printStatus,
-          print_notes: printNotes,
+        ...(log.printer_3d_info && {
+          printer_3d_info: {
+            ...log.printer_3d_info,
+            print_status: printStatus,
+            print_notes: printNotes,
+          },
         }),
       };
       handleSave(updatedLog);
@@ -75,13 +51,7 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
         {log ? (
           <>
             {Object.entries(log).map(([key, value]) => {
-              if (
-                key === "print_status" ||
-                key === "print_notes" ||
-                key === "_ignore" ||
-                value === undefined ||
-                value === null
-              ) {
+              if (key === "_ignore" || value === undefined || value === null) {
                 return null;
               }
 
@@ -111,7 +81,7 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
             })}
 
             {/* Editable fields only for 3D printers */}
-            {is3DPrinter && (
+            {is3DPrinter(log.equipment_type) && (
               <>
                 <div className="mb-3">
                   <label htmlFor="printStatus" className="form-label">
@@ -123,9 +93,9 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
                     value={printStatus}
                     onChange={(e) => setPrintStatus(e.target.value)}
                   >
-                    <option value="in progress">In Progress</option>
-                    <option value="complete">Complete</option>
-                    <option value="failed">Failed</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Failed">Failed</option>
                   </select>
                 </div>
                 <div className="mb-3">

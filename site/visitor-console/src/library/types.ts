@@ -39,3 +39,7 @@ export interface EquipmentSchema {
   difficulties?: string;
   issue_description?: string;
 }
+
+export interface EquipmentLog extends EquipmentSchema {
+  _ignore?: string;
+}

@@ -44,6 +44,12 @@ const stageSchemas = [
           then: yup.string().required(),
           otherwise: yup.string().notRequired(),
         }),
+        // Always default print mass to the unknown value as the print isn't finished
+        print_mass: yup.string().when("equipment_type", {
+          is: FDM_PRINTER_STRING,
+          then: yup.string().default(""),
+          otherwise: yup.string().notRequired(),
+        }),
 
         // Specifically require resin volume and type when using resin 3d printers
         resin_volume: yup.string().when("equipment_type", {
