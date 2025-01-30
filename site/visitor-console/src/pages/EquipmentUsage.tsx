@@ -74,17 +74,19 @@ const EquipmentUsage = () => {
     console.log(JSON.stringify(updatedLog, null, 2));
 
     try {
-      const user_id = updatedLog.user_id;
-      delete updatedLog.user_id;
+      const { user_id, ...updatedLogWithoutUserId } = updatedLog;
 
-      const response = await fetch(`${api_endpoint}/equipment/${user_id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Api-Key": import.meta.env.VITE_BACKEND_KEY,
-        },
-        body: JSON.stringify(updatedLog),
-      });
+      const response = await fetch(
+        `${api_endpoint}/equipment/${updatedLog.user_id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": import.meta.env.VITE_BACKEND_KEY,
+          },
+          body: JSON.stringify(updatedLogWithoutUserId),
+        }
+      );
 
       if (response.ok) {
         const responseData = await response.json();
