@@ -454,9 +454,7 @@ class EquipmentHandler():
 
 
         # Ensure timestamp is in the correct format
-        try:
-            datetime.strptime(data['timestamp'], TIMESTAMP_FORMAT)
-        except ValueError:
+        if not validTimestamp(data['timestamp']):
             errorMsg: str = f"Timestamp not in the approved format. Approved format is 'YYYY-MM-DDThh:mm:ss'."
             raise InvalidRequestBody(errorMsg)
         

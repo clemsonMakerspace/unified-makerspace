@@ -12,19 +12,17 @@ import EquipmentForm from "./EquipmentForm";
 import Visits from "./Visits";
 import EquipmentUsage from "./EquipmentUsage";
 
-const App = () => {
-  useEffect(() => {
-    const config = getAmplifyConfig();
-    Amplify.configure({
-      Auth: {
-        Cognito: {
-          userPoolId: config.userPoolId,
-          userPoolClientId: config.userPoolClientId,
-        },
-      },
-    });
-  }, []);
+const config = getAmplifyConfig();
+Amplify.configure({
+  Auth: {
+    Cognito: {
+      userPoolId: config.userPoolId,
+      userPoolClientId: config.userPoolClientId,
+    },
+  },
+});
 
+const App = () => {
   return (
     <Router>
       <Routes>

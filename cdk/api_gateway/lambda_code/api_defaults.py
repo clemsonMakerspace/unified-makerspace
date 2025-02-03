@@ -396,3 +396,24 @@ def checkAndCleanRequestFields(data: dict, field_check):
             pass
     
     return data
+
+def validTimestamp(timestamp: str) -> bool:
+    """
+    Checks if a timestamp matches the TIMESTAMP_FORMAT.
+
+    :params timestamp: The timestamp to compare.
+    :returns: True if the timestamp matches the expected format.
+              False otherwise.
+    """
+
+    # Parse the timestamp into a datetime object
+    try:
+        parsed = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
+
+    # Timestamp not valid if an error occurs during parsing
+    except:
+        return False
+
+    # "Recreate" the timestamp from the parsed object according
+    # to the TIMESTAMP_FORMAT and compare it to the original
+    return timestamp == parsed.strftime(TIMESTAMP_FORMAT)

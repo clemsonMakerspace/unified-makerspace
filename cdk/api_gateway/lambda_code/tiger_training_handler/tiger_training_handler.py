@@ -18,9 +18,6 @@ logger.setLevel(logging.INFO)
 
 http = urllib3.PoolManager()
 
-# Taken from api_gateway/lambda_code/api_defaults.py
-BACKEND_TIMESTAMP_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
-
 # The bridge timestamp expects the seconds to be in milliseconds (3 decimal places)
 BRIDGE_TIMESTAMP_FORMAT: str = "%Y-%m-%dT%H:%M:%S.%f"
 # bridge also (as far as observed) only uses the timezone offset of -04:00
@@ -193,9 +190,9 @@ class Course():
             # Get the user_id to use for the learner
             user_id = learner_lookup[enrollment["links"]["learner"]["id"]]
 
-            # Convert updated_at timestamp to BACKEND_TIMESTAMP_FORMAT
+            # Convert updated_at timestamp to TIMESTAMP_FORMAT
             updated_datetime = datetime.fromisoformat(enrollment['updated_at'])
-            last_updated = updated_datetime.strftime(BACKEND_TIMESTAMP_FORMAT)
+            last_updated = updated_datetime.strftime(TIMESTAMP_FORMAT)
 
             # Update the learner's enrolled courses if they completed the course
             if enrollment["state"].lower() == "complete":

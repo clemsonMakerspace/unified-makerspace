@@ -123,7 +123,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
             </label>
             <FormSelect
               control={control}
-              name="printer_3d_info.printer_name"
+              name="printer_name"
               values={printers}
             />
             {errors.printer_name && (
@@ -141,7 +141,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
               className="form-control"
               type="text"
               placeholder="Enter a name for the print"
-              {...register("printer_3d_info.print_name")}
+              {...register("print_name")}
             />
             {errors.print_name && (
               <p className="text-danger">{errors.print_name.message}</p>
@@ -158,7 +158,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
               className="form-control"
               type="text"
               placeholder="Enter print duration"
-              {...register("printer_3d_info.print_duration")}
+              {...register("print_duration")}
             />
             {errors.print_duration && (
               <p className="text-danger">{errors.print_duration.message}</p>
@@ -178,10 +178,12 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
                   className="form-control"
                   type="text"
                   placeholder="Enter print mass"
-                  {...register("printer_3d_info.print_mass_estimate")}
+                  {...register("print_mass_estimate")}
                 />
-                {errors.print_mass && (
-                  <p className="text-danger">{errors.print_mass.message}</p>
+                {errors.print_mass_estimate && (
+                  <p className="text-danger">
+                    {errors.print_mass_estimate.message}
+                  </p>
                 )}
               </div>
             </>
@@ -200,7 +202,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
                   className="form-control"
                   type="text"
                   placeholder="Enter resin volume"
-                  {...register("printer_3d_info.resin_volume")}
+                  {...register("resin_volume")}
                 />
                 {errors.resin_volume && (
                   <p className="text-danger">{errors.resin_volume.message}</p>
@@ -214,7 +216,7 @@ const InitialInfo: React.FC<InitialInfoProps> = ({
                 </label>
                 <FormSelect
                   control={control}
-                  name="printer_3d_info.resin_type"
+                  name="resin_type"
                   values={["Clear", "Grey"]}
                 />
                 {errors.resin_type && (

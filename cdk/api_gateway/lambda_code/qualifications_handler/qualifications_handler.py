@@ -350,9 +350,7 @@ class QualificationsHandler():
             raise InvalidRequestBody(errorMsg)
 
         # Ensure last_updated is in the correct format
-        try:
-            datetime.strptime(data['last_updated'], TIMESTAMP_FORMAT)
-        except ValueError:
+        if not validTimestamp(data['last_updated']):
             errorMsg: str = f"Timestamp 'last_updated 'not in the approved format. Approved format is 'YYYY-MM-DDThh:mm:ss'."
             raise InvalidRequestBody(errorMsg)
 

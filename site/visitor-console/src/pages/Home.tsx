@@ -13,7 +13,7 @@ const Home = () => {
     >
       <div className="d-flex flex-wrap justify-content-center">
         <div className="m-2">
-          <a href="https://tigertraining.clemson.edu/">
+          <a href="https://clemson.bridgeapp.com/learner/programs/6b8a2dff/enroll">
             <button className="btn btn-secondary me-2">Tiger Training</button>
           </a>
           <Link to={"/register"}>
