@@ -182,11 +182,11 @@ const Visits = () => {
             </button>
             <button
               className={`btn btn-secondary me-2 ${
-                locationFilter === "CU ICAR" ? "active" : ""
+                locationFilter === "CUICAR" ? "active" : ""
               }`}
-              onClick={() => setLocationFilter("CU ICAR")}
+              onClick={() => setLocationFilter("CUICAR")}
             >
-              CU ICAR
+              CUICAR
             </button>
             <button
               onClick={() => handleRefresh()}

@@ -17,11 +17,13 @@ interface EditModalProps {
 const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
   const [printStatus, setPrintStatus] = useState<string>("");
   const [printNotes, setPrintNotes] = useState<string>("");
+  const [printMass, setPrintMass] = useState<string>("");
 
   useEffect(() => {
     if (log && is3DPrinter(log?.equipment_type)) {
       setPrintStatus(log?.printer_3d_info?.print_status || "");
       setPrintNotes(log?.printer_3d_info?.print_notes || "");
+      setPrintMass(log?.printer_3d_info?.print_mass || "");
     }
   }, [log]);
 
@@ -34,6 +36,7 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
             ...log.printer_3d_info,
             print_status: printStatus,
             print_notes: printNotes,
+            print_mass: printMass,
           },
         }),
       };
@@ -97,6 +100,17 @@ const EditModal = ({ show, handleClose, log, handleSave }: EditModalProps) => {
                     <option value="Complete">Complete</option>
                     <option value="Failed">Failed</option>
                   </select>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="printMass" className="form-label">
+                    Print Mass:
+                  </label>
+                  <textarea
+                    className="form-control"
+                    id="printMass"
+                    value={printMass}
+                    onChange={(e) => setPrintMass(e.target.value)}
+                  />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="printNotes" className="form-label">
