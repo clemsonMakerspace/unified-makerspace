@@ -8,8 +8,8 @@ interface AmplifyConfig {
 export function getAmplifyConfig(): AmplifyConfig {
   const hostname = window.location.hostname;
 
-  const prodUserPoolId = "us-east-1_TQ9FwRJ44";
-  const prodUserPoolClientId = "58lututlkaggp6h8tu9oauqp5p";
+  const prodUserPoolId = "us-east-1_biYxbm7Xf";
+  const prodUserPoolClientId = "1te4t5qtohl5t0c35lfcsl8vkr";
 
   const betaUserPoolId = "us-east-1_4w535EQDB";
   const betaUserPoolClientId = "6sfun4otg8chqplrmco2qvivni";
