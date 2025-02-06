@@ -26,6 +26,12 @@ To run the Makerspace, it’s helpful to track the machines and the individuals 
 
 **Students**
 
+<!-- Fall 2024 -->
+
+<a href="https://github.com/D42H5"><img src="https://github.com/D42H5.png" title="Duncan Hogg" width="50" height="50" style="border-radius: 50%"></a>
+<a href="https://github.com/nmbroome"><img src="https://github.com/nmbroome.png" title="Noah Broome" width="50" height="50" style="border-radius: 50%"></a>
+<a href="https://github.com/cmurp25"><img src="https://github.com/cmurp25.png" title="Caleb Murphy" width="50" height="50" style="border-radius: 50%"></a>
+
 <!-- Fall 2023 -->
 
 <a href="https://github.com/lrboyer"><img src="https://github.com/lrboyer.png" title="Lucas Boyer" width="50" height="50" style="border-radius: 50%"></a>
